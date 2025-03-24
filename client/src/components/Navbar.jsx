@@ -14,10 +14,9 @@ import {
 import { Menu, ShoppingBag, Search, Bell, Mail, User } from "lucide-react";
 
 const Navbar = () => {
-  const bg = useColorModeValue("white", "gray.800");
 
   return (
-    <Box as="nav" py={4} px={6} bg={bg} boxShadow="sm" width="100%">
+    <Box as="nav" py={4} px={6} boxShadow="sm" width="100%" bg="gray.50">
       <Flex
         justify="space-between"
         align="center"
@@ -28,7 +27,7 @@ const Navbar = () => {
           Menu
         </Button>
 
-        <Image
+        {/* <Image
           h={{ base: "30px", sm: "40px", md: "50px", lg: "55px" }}
           maxW={{ base: "140px", sm: "150px", md: "180px", lg: "200px" }}
           w="auto"
@@ -42,7 +41,7 @@ const Navbar = () => {
           <IconButton variant="ghost" icon={<Search />} />
           <IconButton variant="ghost" icon={<ShoppingBag />} />
           <IconButton variant="ghost" icon={<User />} />
-        </HStack>
+        </HStack> */}
       </Flex>
     </Box>
   );
