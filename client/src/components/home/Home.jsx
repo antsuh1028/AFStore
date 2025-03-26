@@ -24,6 +24,8 @@ import HowItWorks from "./HowItWorks";
 import Navbar from "../Navbar";
 import AFCompany from "./AFCompany";
 import Footer from "../Footer";
+import Contact from "./Contact";
+
 
 const HomePage = () => {
   const fontFace2 = {
@@ -486,6 +488,8 @@ const HomePage = () => {
       <HowItWorks />
       {/*Adam's Company*/}
       <AFCompany/>
+      {/*Contact Us Section w/ Email*/}
+      <Contact/>
       <Footer/>
     </Box>
   );
