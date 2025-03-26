@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Box,
   Heading,
@@ -15,32 +15,33 @@ import {
 } from '@chakra-ui/react';
 import emailjs from 'emailjs-com';
 
-const ContactPage = () => {
+const Contact = () => {
   const form = useRef();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   const validateEmail = (value) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    setEmailError(!regex.test(value) ? 'Invalid email address' : '');
+    if (!regex.test(value)) {
+      setEmailError("Invalid email address");
+    } else {
+      setEmailError("");
+    }
   };
 
   const inputStyle = {
-    borderRadius: '999px',
-    bg: 'gray.50',
-    border: '1px solid',
-    borderColor: 'gray.400',
+    borderRadius: "999px", // hemispherical ends
+    bg: "gray.50",
+    border: "1px solid",
+    borderColor: "gray.400",
     px: 4,
     py: 2,
     _focus: {
-      borderColor: 'blue.400',
-      boxShadow: '0 0 0 1px blue.400',
+      borderColor: "blue.400",
+      boxShadow: "0 0 0 1px blue.400",
     },
   };
 
@@ -62,13 +63,13 @@ const ContactPage = () => {
 
     emailjs
       .sendForm(
-        'your_service_id',     // Replace this
-        'your_template_f1qt8xitemplate_id',    // Replace this
+        'your_service_id',
+        'your_template_id',
         form.current,
-        'your_public_key'      // Replace this
+        'your_public_key'
       )
       .then(
-        () => {
+        (result) => {
           setLoading(false);
           toast({
             title: 'Message sent!',
@@ -78,7 +79,7 @@ const ContactPage = () => {
             isClosable: true,
           });
         },
-        () => {
+        (error) => {
           setLoading(false);
           toast({
             title: 'Error sending message.',
@@ -93,36 +94,32 @@ const ContactPage = () => {
 
   return (
     <Box p={8} maxW="700px" mx="auto" textAlign="center">
-      <Heading mb={3} fontWeight="bold" fontSize="3xl">
+      <Heading mb={4} fontFamily="serif" fontWeight="bold" fontSize="3xl">
         Contact
       </Heading>
-      <Text mb={4} color="gray.500" fontSize="md">
-        We look forward to hearing from you
+      <Text fontFamily="serif" mb={2} fontSize="lg">
+        We look forward to hearing from you.
       </Text>
       <Divider mb={6} borderColor="gray.300" />
 
-      <Heading as="h4" size="md" mb={1} fontWeight="bold" textAlign="left">
+      <Text fontFamily="serif" fontSize="sm" color="gray.600" mb={6}>
+        To ensure we can address your enquiry correctly, please provide a detailed message. <br />
+        <b>Support hours: Mon–Fri, 8:00AM–4:30PM </b>
+      </Text>
+
+      <Heading fontFamily="serif" as="h3" size="md" mb={4} fontWeight="bold" textAlign="left">
         Inquiries
       </Heading>
 
-      <Text fontSize="sm" mb={2} textAlign="left">
-        To ensure we can address your enquiry correctly, please provide a detailed message. <br />
-      </Text>
-
-      <Text fontSize="sm" mb={2} textAlign="left">
-        <b>Support hours:</b> Mon–Fri, 8:00AM–4:30PM
-      </Text>
-
-  
       <form ref={form} onSubmit={sendEmail}>
         <VStack spacing={4} align="stretch">
           <FormControl isRequired>
-            <FormLabel>Name</FormLabel>
+            <FormLabel fontFamily="serif">Name</FormLabel>
             <Input type="text" name="user_name" {...inputStyle} />
           </FormControl>
 
-          <FormControl isRequired isInvalid={emailError !== ''}>
-            <FormLabel>Email</FormLabel>
+          <FormControl isRequired isInvalid={emailError !== ""}>
+            <FormLabel fontFamily="serif">Email</FormLabel>
             <Input
               type="email"
               name="user_email"
@@ -137,19 +134,19 @@ const ContactPage = () => {
           </FormControl>
 
           <FormControl>
-            <FormLabel>Phone Number</FormLabel>
+            <FormLabel fontFamily="serif">Phone Number</FormLabel>
             <Input type="tel" name="user_phone" {...inputStyle} />
           </FormControl>
 
           <FormControl isRequired>
-            <FormLabel>Message</FormLabel>
+            <FormLabel fontFamily="serif">Message</FormLabel>
             <Textarea
               name="message"
               rows={5}
               borderRadius="lg"
               bg="gray.50"
               borderColor="gray.400"
-              _focus={{ borderColor: 'blue.400', boxShadow: '0 0 0 1px blue.400' }}
+              _focus={{ borderColor: "blue.400", boxShadow: "0 0 0 1px blue.400" }}
             />
           </FormControl>
 
@@ -162,4 +159,4 @@ const ContactPage = () => {
   );
 };
 
-export default ContactPage;
+export default Contact;
