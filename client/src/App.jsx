@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/Home";
 import { ContactPage } from "./pages/Contact";
 import PackingPage from "./pages/wholesale/Packing";
+import  ContactPage from "./pages/Contact";
 
 function App() {
   return (

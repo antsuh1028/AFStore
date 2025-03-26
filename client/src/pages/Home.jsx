@@ -17,6 +17,7 @@ import FeatureGrid from "../components/home/FeatureGrid";
 import HowItWorks from "../components/home/HowItWorks";
 import AFCompany from "../components/home/AFCompany";
 import Footer from "../components/Footer";
+import Contact from "./Contact.jsx"
 
 const HomePage = () => {
   const fontFace2 = {
@@ -321,6 +322,8 @@ const HomePage = () => {
       <HowItWorks />
       {/*Adam's Company*/}
       <AFCompany/>
+      {/*Contact Us Section w/ Email*/}
+      <Contact/>
       <Footer/>
     </Box>
   );
