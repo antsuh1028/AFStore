@@ -9,21 +9,14 @@ import {
   VStack,
   HStack,
   Flex,
-  SimpleGrid,
-  GridItem,
-  Divider,
-  Button,
-  Center,
-  Stack,
-  Icon,
+
   Link,
 } from "@chakra-ui/react";
 
-import FeatureGrid from "./FeatureGrid";
-import HowItWorks from "./HowItWorks";
-import Navbar from "../Navbar";
-import AFCompany from "./AFCompany";
-import Footer from "../Footer";
+import FeatureGrid from "../components/home/FeatureGrid";
+import HowItWorks from "../components/home/HowItWorks";
+import AFCompany from "../components/home/AFCompany";
+import Footer from "../components/Footer";
 
 const HomePage = () => {
   const fontFace2 = {
@@ -44,7 +37,6 @@ const HomePage = () => {
   };
   return (
     <Box>
-      <Navbar />
       {/* Hero Section with gray background */}
       <Box>
         <Box
@@ -145,7 +137,7 @@ const HomePage = () => {
                 width="100%"
                 textAlign="right"
                 pr={6}
-                mt={2}
+                mt={-4}
                 mb={4}
               >
                 <Link
@@ -174,7 +166,7 @@ const HomePage = () => {
             </VStack>
           </Container>
 
-          {/* Desktop Layout with Plate (shows on large screens) */}
+          {/* Desktop Layout */}
           <Container
             display={{ base: "none", lg: "block" }}
             maxW="container.xl"
@@ -276,7 +268,7 @@ const HomePage = () => {
                   </Box>
 
                   {/* Shop Now button */}
-                  <Box position="relative" mt={-4}>
+                  <Box position="relative" mt={-16} >
                     <Link
                       href="#"
                       display="inline-flex"
@@ -296,8 +288,8 @@ const HomePage = () => {
       </Box>
 
       {/* Why AdamsFoods Section */}
-      <Box py={20} bg="white" width="100%" mt={{base:"30%"}}>
-        <Container maxW="container.lg">
+      <Box bg="white" width="100%" mt={{ base: "30%", md: "15%" }}>
+      <Container maxW="container.lg">
           <VStack spacing={4} align="center">
             <Heading
               as="h2"
@@ -321,164 +313,7 @@ const HomePage = () => {
               products in our Federal USDA inspected establishment.
             </Text>
 
-            <SimpleGrid
-              columns={{ base: 2, md: 2 }}
-              spacing={10}
-              width="100%"
-              mt={10}
-            >
-              {/* Feature 1 */}
-              <GridItem>
-                <Center flexDirection="column">
-                  <Image
-                    src="/Main logo.png"
-                    alt="Wings Icon"
-                    width="40px"
-                    height="40px"
-                  />
-                  <Flex align="center" justify="center" py={4}>
-                    <Flex maxW="md" position="relative">
-                      {/* Left bracket */}
-                      <Image
-                        src="/bracket_L.jpg"
-                        alt="Left Bracket"
-                        width="10%"
-                        height="100%"
-                        mb={4}
-                      />
-
-                      {/* Quote text */}
-                      <Text fontSize="sm" fontWeight="bold" textAlign="center">
-                        "Exclusive Korean-style cutting technique."
-                      </Text>
-
-                      {/* Right bracket */}
-                      <Image
-                        src="/bracket_R.jpg"
-                        alt="Right Bracket"
-                        width="10%"
-                        height="100%"
-                        mb={4}
-                      />
-                    </Flex>
-                  </Flex>
-                </Center>
-              </GridItem>
-
-              {/* Feature 2 */}
-              <GridItem>
-                <Center flexDirection="column">
-                  <Image
-                    src="/Main logo.png"
-                    alt="Wings Icon"
-                    width="40px"
-                    height="40px"
-                  />
-                  <Flex align="center" justify="center" py={4}>
-                    <Flex maxW="md" position="relative">
-                      {/* Left bracket */}
-                      <Image
-                        src="/bracket_L.jpg"
-                        alt="Left Bracket"
-                        width="10%"
-                        height="100%"
-                        mb={4}
-                      />
-
-                      {/* Quote text */}
-                      <Text fontSize="sm" fontWeight="bold" textAlign="center">
-                        "USDA inspected and compliant."
-                      </Text>
-
-                      {/* Right bracket */}
-                      <Image
-                        src="/bracket_R.jpg"
-                        alt="Right Bracket"
-                        width="10%"
-                        height="100%"
-                        mb={4}
-                      />
-                    </Flex>
-                  </Flex>
-                </Center>
-              </GridItem>
-
-              {/* Feature 3 */}
-              <GridItem>
-                <Center flexDirection="column">
-                  <Image
-                    src="/Main logo.png"
-                    alt="Wings Icon"
-                    width="40px"
-                    height="40px"
-                  />
-                  <Flex align="center" justify="center" py={4}>
-                    <Flex maxW="md" position="relative">
-                      {/* Left bracket */}
-                      <Image
-                        src="/bracket_L.jpg"
-                        alt="Left Bracket"
-                        width="10%"
-                        height="100%"
-                        mb={4}
-                      />
-
-                      {/* Quote text */}
-                      <Text fontSize="sm" fontWeight="bold" textAlign="center">
-                        "The Unrivaled Benchmark of Korean BBQ"
-                      </Text>
-
-                      {/* Right bracket */}
-                      <Image
-                        src="/bracket_R.jpg"
-                        alt="Right Bracket"
-                        width="10%"
-                        height="100%"
-                        mb={4}
-                      />
-                    </Flex>
-                  </Flex>
-                </Center>
-              </GridItem>
-
-              {/* Feature 4 */}
-              <GridItem>
-                <Center flexDirection="column">
-                  <Image
-                    src="/Main logo.png"
-                    alt="Wings Icon"
-                    width="40px"
-                    height="40px"
-                  />
-                  <Flex align="center" justify="center" py={4}>
-                    <Flex maxW="md" position="relative">
-                      {/* Left bracket */}
-                      <Image
-                        src="/bracket_L.jpg"
-                        alt="Left Bracket"
-                        width="10%"
-                        height="100%"
-                        mb={4}
-                      />
-
-                      {/* Quote text */}
-                      <Text fontSize="sm" fontWeight="bold" textAlign="center">
-                        "We ensure reliable and timely delivery."
-                      </Text>
-
-                      {/* Right bracket */}
-                      <Image
-                        src="/bracket_R.jpg"
-                        alt="Right Bracket"
-                        width="10%"
-                        height="100%"
-                        mb={4}
-                      />
-                    </Flex>
-                  </Flex>
-                </Center>
-              </GridItem>
-            </SimpleGrid>
+            <FeatureGrid/>
           </VStack>
         </Container>
       </Box>

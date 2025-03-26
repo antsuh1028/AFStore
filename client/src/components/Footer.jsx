@@ -15,7 +15,7 @@ import {
       <Box as="footer" py={8} px={4}>
         <Container maxW="container.lg">
           {/* Divider */}
-          <Divider borderColor="gray.300" mb={8} />
+          <Divider borderColor="gray.900" mb={8} />
   
           {/* Social Media Icons */}
           <Flex justifyContent="center" mb={12}>
