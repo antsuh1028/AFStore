@@ -17,7 +17,7 @@ import FeatureGrid from "../components/home/FeatureGrid";
 import HowItWorks from "../components/home/HowItWorks";
 import AFCompany from "../components/home/AFCompany";
 import Footer from "../components/Footer";
-//import Contact from "../Contact";
+import Contact from "./Contact.jsx"
 
 const HomePage = () => {
   const fontFace2 = {
