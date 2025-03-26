@@ -2,9 +2,9 @@ import { Box } from "@chakra-ui/react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/Home";
-import { ContactPage } from "./pages/Contact";
+import ContactPage from "./pages/Contact";
 import PackingPage from "./pages/wholesale/Packing";
-import  ContactPage from "./pages/Contact";
+import FAQPage from "./pages/wholesale/Faq";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/wholesale/packing" element={<PackingPage />} />
-            <Route path="/wholesale/faq" element={<ContactPage />} />
+            <Route path="/wholesale/faq" element={<FAQPage />} />
             {/* <Route path="/contact" element={<ContactPage />} /> */}
             {/* Add more routes as needed */}
           </Routes>

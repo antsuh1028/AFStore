@@ -18,6 +18,8 @@ import HowItWorks from "../components/home/HowItWorks";
 import AFCompany from "../components/home/AFCompany";
 import Footer from "../components/Footer";
 import Contact from "./Contact.jsx"
+import FAQPage from "./wholesale/Faq.jsx";
+import { FaQ } from "react-icons/fa6";
 
 const HomePage = () => {
   const fontFace2 = {
@@ -324,6 +326,8 @@ const HomePage = () => {
       <AFCompany/>
       {/*Contact Us Section w/ Email*/}
       <Contact/>
+      {/*FAQ Section */}
+      <FAQPage />
       <Footer/>
     </Box>
   );
