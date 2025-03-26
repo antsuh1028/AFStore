@@ -1,65 +1,188 @@
-import { Box, Flex, Grid, GridItem, Heading, Divider, Image } from "@chakra-ui/react";
+import {
+  Center,
+  Flex,
+  Text,
+  GridItem,
+  SimpleGrid,
+  Divider,
+  Image,
+} from "@chakra-ui/react";
 
 const FeatureGrid = () => {
   return (
-    <Flex 
-      w="110%" 
-      position="relative"
-    
-    >
-      {/* Grid section */}
-      <Box flex="1" width="50%"  >
-        <Divider borderWidth="1px" mb={2} border="1px" w="150%"/>
-        
-        <Grid templateColumns="repeat(2, 1fr)" gap={0}>
-          <GridItem p={6} borderRight="1px solid" borderColor="gray.400">
-            <Heading as="h3" size="xs" textAlign="center">
-              Adams Cutting Method
-            </Heading>
-          </GridItem>
-          
-          <GridItem p={6}>
-            <Heading as="h3" size="xs" textAlign="center">
-              USDA Inspected
-            </Heading>
-          </GridItem>
-        </Grid>
-        
-        <Divider border="1px" borderWidth="1px" my={0} />
-        
-        <Grid templateColumns="repeat(2, 1fr)" gap={0}>
-          <GridItem p={6} borderRight="1px solid" borderColor="gray.400">
-            <Heading as="h3" size="xs" textAlign="center">
-              Korean BBQ
-            </Heading>
-          </GridItem>
-          
-          <GridItem p={6}>
-            <Heading as="h3" size="xs" textAlign="center">
-              Guaranteed Taste
-            </Heading>
-          </GridItem>
-        </Grid>
-        
-        <Divider border="1px" borderWidth="1px" mt={2} />
-      </Box>
-      
-      {/* Image positioned on the right side */}
-      <Box 
-        position="relative"
-        // rightx="0"
-        // top="50%"
-        transform="translateY(-8%)"
-        // border="1px"
-      >
-        <Image
-          src="/Meat1.png"
-          alt="Meat1"
-          h="auto"
-          w={{ base: "200px", md: "250px", lg: "300px" }}
-        />
-      </Box>
-    </Flex>
+    <SimpleGrid columns={{ base: 2, md: 2 }} spacing={10} width="100%" mt={10}>
+      {/* Feature 1 */}
+      <GridItem>
+        <Center flexDirection="column" h="100%">
+          <Image
+            src="/Main logo.png"
+            alt="Wings Icon"
+            width="40px"
+            height="40px"
+          />
+          <Flex align="center" justify="center" py={4} width="100%">
+            <Flex align="center" justify="center" maxW="md" position="relative">
+              {/* Left bracket */}
+              <Image
+                src="/bracket_L.jpg"
+                alt="Left Bracket"
+                width={{ base: "10%", sm: "10%", md: "5%" }}
+                height="10%"
+                mb={4}
+              />
+
+              {/* Quote text */}
+              <Text
+                fontSize={{ base: "sm", sm: "xl" }}
+                fontWeight="bold"
+                textAlign="center"
+                mx={2}
+              >
+                "Exclusive Korean-style cutting technique."
+              </Text>
+
+              {/* Right bracket */}
+              <Image
+                src="/bracket_R.jpg"
+                alt="Right Bracket"
+                width={{ base: "10%", sm: "10%", md: "5%" }}
+                height="100%"
+                mb={4}
+              />
+            </Flex>
+          </Flex>
+        </Center>
+      </GridItem>
+
+      {/* Feature 2 */}
+      <GridItem>
+        <Center flexDirection="column" h="100%">
+          <Image
+            src="/Main logo.png"
+            alt="Wings Icon"
+            width="40px"
+            height="40px"
+          />
+          <Flex align="center" justify="center" py={4} width="100%">
+            <Flex align="center" justify="center" maxW="md" position="relative">
+              {/* Left bracket */}
+              <Image
+                src="/bracket_L.jpg"
+                alt="Left Bracket"
+                width={{ base: "10%", sm: "10%", md: "5%" }}
+                height="100%"
+                mb={4}
+              />
+
+              {/* Quote text */}
+              <Text
+                fontSize={{ base: "sm", sm: "xl" }}
+                fontWeight="bold"
+                textAlign="center"
+                mx={2}
+              >
+                "USDA inspected and compliant."
+              </Text>
+
+              {/* Right bracket */}
+              <Image
+                src="/bracket_R.jpg"
+                alt="Right Bracket"
+                width={{ base: "10%", sm: "10%", md: "5%" }}
+                height="100%"
+                mb={4}
+              />
+            </Flex>
+          </Flex>
+        </Center>
+      </GridItem>
+
+      {/* Feature 3 */}
+      <GridItem>
+        <Center flexDirection="column" h="100%">
+          <Image
+            src="/Main logo.png"
+            alt="Wings Icon"
+            width="40px"
+            height="40px"
+          />
+          <Flex align="center" justify="center" py={4} width="100%">
+            <Flex align="center" justify="center" maxW="md" position="relative">
+              {/* Left bracket */}
+              <Image
+                src="/bracket_L.jpg"
+                alt="Left Bracket"
+                width={{ base: "10%", sm: "10%", md: "5%" }}
+                height="100%"
+                mb={4}
+              />
+
+              {/* Quote text */}
+              <Text
+                fontSize={{ base: "sm", sm: "xl" }}
+                fontWeight="bold"
+                textAlign="center"
+                mx={2}
+              >
+                "The Unrivaled Benchmark of Korean BBQ"
+              </Text>
+
+              {/* Right bracket */}
+              <Image
+                src="/bracket_R.jpg"
+                alt="Right Bracket"
+                width={{ base: "10%", sm: "10%", md: "5%" }}
+                height="100%"
+                mb={4}
+              />
+            </Flex>
+          </Flex>
+        </Center>
+      </GridItem>
+
+      {/* Feature 4 */}
+      <GridItem>
+        <Center flexDirection="column" h="100%">
+          <Image
+            src="/Main logo.png"
+            alt="Wings Icon"
+            width="40px"
+            height="40px"
+          />
+          <Flex align="center" justify="center" py={4} width="100%">
+            <Flex align="center" justify="center" maxW="md" position="relative">
+              {/* Left bracket */}
+              <Image
+                src="/bracket_L.jpg"
+                alt="Left Bracket"
+                width={{ base: "10%", sm: "10%", md: "5%" }}
+                height="100%"
+                mb={4}
+              />
+
+              {/* Quote text */}
+              <Text
+                fontSize={{ base: "sm", sm: "xl" }}
+                fontWeight="bold"
+                textAlign="center"
+                mx={2}
+              >
+                "We ensure reliable and timely delivery."
+              </Text>
+
+              {/* Right bracket */}
+              <Image
+                src="/bracket_R.jpg"
+                alt="Right Bracket"
+                width={{ base: "10%", sm: "10%", md: "5%" }}
+                height="100%"
+                mb={4}
+              />
+            </Flex>
+          </Flex>
+        </Center>
+      </GridItem>
+    </SimpleGrid>
   );
 };
 
