@@ -14,6 +14,7 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import emailjs from 'emailjs-com';
+import Footer from '../Footer';
 
 const Contact = () => {
   const form = useRef();

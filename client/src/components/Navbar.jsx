@@ -16,20 +16,20 @@ import {
   VStack,
   Divider,
   HStack,
-  useBreakpointValue,
   Container,
   Text,
   SimpleGrid,
   Image,
 } from "@chakra-ui/react";
 import { Menu } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const navigate = useNavigate();
 
   return (
-    <Box as="nav" py={4} px={6} boxShadow="sm" width="100%" >
+    <Box as="nav" py={4} px={6} boxShadow="sm" width="100%">
       <Flex
         justify="space-between"
         align="center"
@@ -39,6 +39,14 @@ const Navbar = () => {
         <Button variant="ghost" leftIcon={<Menu />} onClick={onOpen}>
           Menu
         </Button>
+
+        <Box
+          display={{ base: "none", md: "block" }}
+          cursor="pointer"
+          onClick={() => navigate("/")}
+        >
+          <Image src="/AdamsWings.png" alt="AdamsFoods" h="40px" />
+        </Box>
 
         <Box w="75px" />
 

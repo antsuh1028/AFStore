@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Container,
@@ -6,170 +7,140 @@ import {
   VStack,
   Image,
   Flex,
-  useBreakpointValue,
+  HStack,
+  Divider,
 } from "@chakra-ui/react";
 
 const AFCompany = () => {
-  // Responsive font size for brand names
-  const brandFontSize = useBreakpointValue({ base: "xs", md: "sm" });
-  // Responsive image size
-  const logoSize = useBreakpointValue({ base: "60px", md: "80px" });
-
+  const logoSize = "35%";
+  const brandFontSize = "15px";
   return (
-    <Box py={10} bg="white">
-      <Container maxW="container.md" centerContent>
-        <VStack spacing={8} align="center" w="full">
+    <Box bg="white" pt={6} pb={10}>
+      <Container maxW="container.sm" centerContent>
+        <VStack spacing={4} align="center" w="full">
           {/* Company Title */}
-          <Heading
-            as="h1"
-            fontFamily="serif"
-            fontWeight="bold"
-            fontSize={{ base: "2xl", md: "3xl" }}
-            textAlign="center"
-          >
+          <Heading as="h1" fontWeight="bold" fontSize="xl" mb={2} textAlign="left">
             AdamsFoods Company
           </Heading>
+
+          <Divider borderColor="gray.200" />
 
           {/* Image Placeholder */}
           <Box
             w="full"
-            h={{ base: "200px", md: "320px" }}
-            border="1px solid #e2e2e2"
-            borderRadius="sm"
+            h="180px"
+            borderRadius="lg"
+            overflow="hidden"
+            bg="gray.100"
           >
             <Image
-              src="/placeholder.jpg"
+              src="/api/placeholder/400/180"
               alt="AdamsFoods Company"
               w="full"
               h="full"
               objectFit="cover"
-              fallback={<Box w="full" h="full" />}
             />
           </Box>
 
           {/* First Paragraph */}
-          <Text
-            fontFamily="serif"
-            fontSize={{ base: "sm", md: "md" }}
-            textAlign="center"
-            lineHeight="tall"
-            px={4}
-          >
-            Our raw materials are sourced out daily, ensuring quality and price
-            competitiveness. Our suppliers make raw materials available to us
-            which are then processed according to AdamsFoods specifications.
-            Products that do not meet our strict quality control standards are
-            not accepted nor sold to our competitors.
+          <Text fontSize="sm" color="gray.600" lineHeight="tall" px={2} mt={2}>
+            We source only fresh, high-quality raw materials to ensure
+            consistent product quality and competitiveness. Our trusted beef
+            suppliers provide select cuts, processed carefully to Adams Foods'
+            strict specifications.
           </Text>
 
           {/* Second Paragraph */}
-          <Text
-            fontFamily="serif"
-            fontSize={{ base: "sm", md: "md" }}
-            textAlign="center"
-            lineHeight="tall"
-            px={4}
-          >
-            Envision the future with endless possibility and constant devotion.
-            Our products are only made from raw materials that we choose to use
-            and not from leftover scraps in our plant.
+          <Text fontSize="sm" color="gray.600" lineHeight="tall" px={2}>
+            Items that clearly fail to meet high quality standards are
+            immediately rejected—not sold or repurposed at all.
+          </Text>
+
+          {/* Third Paragraph */}
+          <Text fontSize="sm" color="gray.600" lineHeight="tall" px={2} mb={2}>
+            We envision a future full of bold, endless possibility, driven
+            always by consistency, passion, and care.
+          </Text>
+
+          {/* Brands Title */}
+          <Text fontWeight="bold" fontSize="sm" textAlign="center">
+            We are proudly growing our brands:
           </Text>
 
           {/* Brands Section */}
-          <VStack spacing={6} mt={8} w="full">
-            {/* Brand Logos - Side by Side Layout */}
+          <VStack spacing={2}>
+            <Flex
+              justifyContent="space-around"
+              w="full"
+              alignItems="center"
+              mb={1}
+            >
+              <Box w="70px" textAlign="center">
+                <Image
+                  src="/MeatPapa.png"
+                  alt="Meat Papa Logo"
+                  w="60px"
+                  objectFit="contain"
+                  mx="auto"
+                />
+              </Box>
+              <Box w="70px" textAlign="center">
+                <Image
+                  src="/AdamsGour.png"
+                  alt="Adams Gourmet Beef Logo"
+                  w="60px"
+                  objectFit="contain"
+                  mx="auto"
+                />
+              </Box>
+              <Box w="70px" textAlign="center">
+                <Image
+                  src="/Yukbul.png"
+                  alt="Yuk Bul Logo"
+                  w="60px"
+                  objectFit="contain"
+                  mx="auto"
+                />
+              </Box>
+            </Flex>
             <Flex
               w="full"
-              justifyContent="center"
               alignItems="center"
-              flexWrap="nowrap"
-              gap={{ base: 2, md: 4 }}
+              justify="center"
+              color="gray.700"
             >
-              {/* Meat Papa */}
-              <VStack spacing={2} flex="1">
-                <Box w={logoSize} h={logoSize}>
-                  <Image
-                    src="/MeatPapa.png"
-                    alt="Meat Papa Logo"
-                    w="full"
-                    h="full"
-                    objectFit="contain"
-                  />
-                </Box>
-                <Text
-                  fontWeight="bold"
-                  fontSize={brandFontSize}
-                  textAlign="center"
-                >
+              <Box position="relative" display="flex" alignItems="center">
+                <Text fontWeight="semibold" fontSize="12px" whiteSpace="nowrap">
                   MEAT PAPA
                 </Text>
-              </VStack>
-
-              {/* Dot Separator */}
-              <Text fontSize="xl" fontWeight="bold" alignSelf="center">
+              </Box>
+              <Text fontSize="sm" mx={2} color="gray.500">
                 •
               </Text>
-
-              {/* Adams Gourmet Beef */}
-              <VStack spacing={2} flex="1">
-                <Box w={logoSize} h={logoSize}>
-                  <Image
-                    src="/AdamsGour.png"
-                    alt="Adams Gourmet Beef Logo"
-                    w="full"
-                    h="full"
-                    objectFit="contain"
-                  />
-                </Box>
-                <Text
-                  fontWeight="bold"
-                  fontSize={brandFontSize}
-                  textAlign="center"
-                >
-                  ADAMS GOURMET BEEF
-                </Text>
-              </VStack>
-
-              {/* Dot Separator */}
-              <Text fontSize="xl" fontWeight="bold" alignSelf="center">
+              <Text fontWeight="semibold" fontSize="12px" whiteSpace="nowrap">
+                ADAMS GOURMET BEEF
+              </Text>
+              <Text fontSize="sm" mx={2} color="gray.500">
                 •
               </Text>
-
-              {/* Yuk Bul */}
-              <VStack spacing={2} flex="1">
-                <Box w={logoSize} h={logoSize}>
-                  <Image
-                    src="/Yukbul.png"
-                    alt="Yuk Bul Logo"
-                    w="full"
-                    h="full"
-                    objectFit="contain"
-                  />
-                </Box>
-                <Text
-                  fontWeight="bold"
-                  fontSize={brandFontSize}
-                  textAlign="center"
-                >
-                  YUK BUL
-                </Text>
-              </VStack>
+              <Text fontWeight="semibold" fontSize="12px" whiteSpace="nowrap">
+                YUK BUL
+              </Text>
             </Flex>
-
-            {/* Brands Description */}
-            <Text
-              fontFamily="serif"
-              fontSize={{ base: "sm", md: "md" }}
-              textAlign="center"
-              lineHeight="tall"
-              px={4}
-              mt={2}
-            >
-              We are growing our brands Meat Papa, Adams Gourmet Beef, and
-              Yukbul. Each has its own identity and market focus, helping us
-              provide high-quality meat and expand our reach.
-            </Text>
           </VStack>
+
+          {/* Brands Description */}
+          <Text
+            fontSize="sm"
+            color="gray.600"
+            textAlign="center"
+            lineHeight="tall"
+            px={4}
+            mt={2}
+          >
+            Meat Papa, Adams Gourmet Beef, and Yukbul together. Each brand has
+            its own unique identity, sharing authentic K-BBQ in diverse ways.
+          </Text>
         </VStack>
       </Container>
     </Box>

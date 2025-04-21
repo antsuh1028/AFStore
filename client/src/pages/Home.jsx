@@ -1,335 +1,303 @@
-// HomePage.jsx
 import React from "react";
+import "./fonts.css"; // Import the font CSS
 import {
   Box,
   Container,
-  Image,
-  Heading,
-  Text,
-  VStack,
-  HStack,
   Flex,
-
-  Link,
+  Heading,
+  Image,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Text,
+  Grid,
+  GridItem,
+  Circle,
+  Button,
+  IconButton,
+  HStack,
+  VStack,
+  useColorModeValue,
+  extendTheme,
+  ChakraProvider,
+  Divider,
 } from "@chakra-ui/react";
+import AdamsLogo from "../../public/MainLogo.png";
 
-import FeatureGrid from "../components/home/FeatureGrid";
-import HowItWorks from "../components/home/HowItWorks";
+// Add custom font
+const theme = extendTheme({
+  fonts: {
+    heading: "'SUIT-Regular', sans-serif",
+    body: "'SUIT-Regular', sans-serif",
+  },
+});
+import { SearchIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import AFCompany from "../components/home/AFCompany";
 import Footer from "../components/Footer";
-import Contact from "./Contact.jsx"
-import FAQPage from "./wholesale/Faq.jsx";
-import { FaQ } from "react-icons/fa6";
+import Sidebar from "../components/SideBar";
+
+// Icons (simplified versions using Chakra UI)
+const PercentIcon = () => (
+  <Text color="#ada59e" fontSize="lg">
+    %
+  </Text>
+);
+const ForkKnifeIcon = () => <Text fontSize="lg">🍴</Text>;
+const LocationIcon = () => <Text fontSize="lg">📍</Text>;
 
 const HomePage = () => {
-  const fontFace2 = {
-    "@font-face": {
-      fontFamily: "HSBomBaram",
-      src: `url('../fonts/HSBomBaram 2.0 Regular.ttf') format('truetype')`,
-      fontWeight: "100",
-      fontStyle: "normal",
-    },
-  };
-  const fontFace = {
-    "@font-face": {
-      fontFamily: "Million Asteroids",
-      src: `url('../fonts/times.ttf') format('truetype')`,
-      fontWeight: "100",
-      fontStyle: "normal",
-    },
-  };
+  const bgColor = useColorModeValue("gray.50", "gray.900");
+  const cardBgColor = useColorModeValue("gray.100", "gray.700");
+
   return (
-    <Box>
-      {/* Hero Section with gray background */}
-      <Box>
-        <Box
-          bg="gray.50"
-          py={10}
-          position="relative"
-          h={{ base: "70vh", md: "80vh", lg: "80vh" }}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          pt={{ base: "35%", sm: "70px", md: "80px" }} // Offset for navbar height
+    <Sidebar>
+      <ChakraProvider theme={theme}>
+        <Container
+          maxW={{ base: "100%", lg: "30%" }}
+          p={0}
+          bg="white"
+          border={{ base: "none", lg: "1px" }}
+          ml={{ base: 0, lg: "40%" }}
         >
-          {/* Mobile Layout (shows on small screens) */}
-          <Container
-            display={{ base: "block", lg: "none" }}
-            maxW="container.xl"
-            position="relative"
-            mt={4}
-          >
-            <VStack spacing={6} align="center" width="100%">
+          {" "}
+          {/* Header */}
+          <Flex p={4} justify="space-between" align="center">
+            <Image
+              src="../../grayAdams.png"
+              alt="AdamsFoods Logo"
+              width="40%"
+            />
+            <IconButton
+              aria-label="Menu"
+              icon={<Text>☰</Text>}
+              variant="ghost"
+            />
+          </Flex>
+          {/* Hero Section */}
+          <Box px={4} py={6} textAlign="center">
+            <Heading as="h1" size="xl">
+              <Text as="span">MEAT</Text>{" "}
+              <Text as="span" fontWeight="normal">
+                WHOLESALE
+              </Text>
+            </Heading>
+          </Box>
+          {/* Main Image */}
+          <Box px={4} mb={4}>
+            <Box
+              bg="tan.100"
+              borderRadius="lg"
+              overflow="hidden"
+              height="45vh"
+              position="relative"
+              border="1px"
+            >
               <Image
-                src="/MainLogo.png"
-                alt="Adams Foods Logo"
-                h={{ base: "40px", sm: "80px" }}
-                mt={4}
+                src="/api/placeholder/400/200"
+                alt="Various Meat Cuts"
+                objectFit="cover"
+                w="100%"
+                h="100%"
               />
-
-              <Box position="relative" width="100%" textAlign="center">
-                <VStack spacing={0} align="center">
-                  <Flex justifyContent="center" alignItems="baseline">
-                    <Text
-                      as="span"
-                      fontSize={{ base: "50px", sm: "70px" }}
-                      fontFamily="Times"
-                      fontWeight="bold"
-                      color="gray.700"
-                      sx={fontFace}
-                      lineHeight="1"
-                    >
-                      WHOLESALE
-                    </Text>
-                  </Flex>
-
-                  <Text
-                    fontSize={{ base: "2xs", sm: "xs" }}
-                    fontStyle="italic"
-                    color="gray.500"
-                    mt={{ base: "-3px", sm: "-3px" }}
-                    px={4}
-                    maxW="100%"
-                  >
-                    "Envision the future with endless possibility and constant
-                    devotion"
+            </Box>
+          </Box>
+          {/* Search Bar */}
+          <Box px={4} mb={6}>
+            <InputGroup size="lg" bg="white" borderRadius="full" boxShadow="sm">
+              <Input
+                textAlign="center"
+                placeholder="Search for..."
+                borderRadius="full"
+                py={6}
+                bg="#f9f9f9"
+              />
+              <InputRightElement h="full" pr={2}>
+                <SearchIcon color="gray.400" boxSize={5} />
+              </InputRightElement>
+            </InputGroup>
+          </Box>
+          {/* Categories */}
+          <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={6}>
+            {["Marinated", "Processed", "Un processed"].map((category, idx) => (
+              <GridItem key={idx}>
+                <VStack spacing={2}>
+                  <Circle size="60px" bg="#ada59e" overflow="hidden">
+                    <Image src="/api/placeholder/60/60" alt={category} />
+                  </Circle>
+                  <Text fontSize="sm" fontWeight="medium">
+                    {category}
                   </Text>
                 </VStack>
-              </Box>
-
-              {/* Navigation Links */}
-              <HStack spacing={3} width="100%" justifyContent="center">
-                <Link
-                  href="#"
-                  fontWeight="bold"
-                  fontSize={{ base: "lg", sm: "xl" }}
-                  fontFamily="Times New Roman"
-                  color="black"
-                >
-                  Pork
-                </Link>
-                <Text fontSize={{ base: "lg", sm: "xl" }} color="black">
-                  •
-                </Text>
-                <Link
-                  href="#"
-                  fontWeight="bold"
-                  fontSize={{ base: "lg", sm: "xl" }}
-                  fontFamily="Times New Roman"
-                  color="black"
-                >
-                  Beef
-                </Link>
-                <Text fontSize={{ base: "lg", sm: "xl" }} color="black">
-                  •
-                </Text>
-                <Link
-                  href="#"
-                  fontWeight="bold"
-                  fontSize={{ base: "lg", sm: "xl" }}
-                  fontFamily="Times New Roman"
-                  color="black"
-                >
-                  Poultry
-                </Link>
-              </HStack>
-
-              {/* Shop Now button */}
-              <Box
-                position="relative"
-                width="100%"
-                textAlign="right"
-                pr={6}
-                mt={-4}
-                mb={4}
-              >
-                <Link
-                  href="#"
-                  display="inline-flex"
-                  alignItems="center"
-                  fontWeight="medium"
-                  textDecoration="underline"
-                  fontSize={{ base: "md", sm: "lg" }}
-                >
-                  Shop Now <span style={{ marginLeft: "4px" }}>→</span>
-                </Link>
-              </Box>
-
-              {/* Central Image */}
-              <Box position="relative" width="100%" textAlign="center">
+              </GridItem>
+            ))}
+          </Grid>
+          {/* Action Buttons */}
+          <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={6}>
+            {[
+              { name: "Deal", icon: <PercentIcon /> },
+              { name: "Order", icon: <ForkKnifeIcon /> },
+              {
+                name: "Contact",
+                icon: (
+                  <Image
+                    src={AdamsLogo}
+                    boxSize="35px"
+                    alt="Adams Logo"
+                    filter="grayscale(100%)"
+                  />
+                ),
+              },
+            ].map((action, idx) => (
+              <GridItem key={idx}>
+                <VStack spacing={2}>
+                  <Circle size="60px" bg="#494949" color="white">
+                    {action.icon}
+                  </Circle>
+                  <Text fontSize="sm" fontWeight="medium">
+                    {action.name}
+                  </Text>
+                </VStack>
+              </GridItem>
+            ))}
+          </Grid>
+          {/* Location */}
+          <HStack px={4} mb={6} spacing={2}>
+            <Image
+              src="../../final/only here.png"
+              h="20px"
+              alt="Adams Logo"
+              filter="grayscale(100%)"
+            />
+            <Text fontSize="19px" fontWeight="bold">
+              Only Here
+            </Text>
+          </HStack>
+          {/* Featured Product */}
+          <Box px={4} position="relative" mb={6}>
+            <Flex direction="row" justify="space-between" gap={6}>
+              <Box flex="1" border="1px" height="20vh" borderRadius="lg">
                 <Image
-                  src="MeatM.png"
-                  alt="Meat plate"
-                  width={{ base: "260px", sm: "280px" }}
-                  height={{ base: "260px", sm: "280px" }}
+                  src="/api/placeholder/120/120"
+                  alt="Brisket Slice"
                   borderRadius="full"
-                  mx="auto"
+                  mb={2}
                 />
               </Box>
-            </VStack>
-          </Container>
-
-          {/* Desktop Layout */}
-          <Container
-            display={{ base: "none", lg: "block" }}
-            maxW="container.xl"
-            position="relative"
-            pt={16}
-          >
-            <VStack>
-              <Box
-                position="absolute"
-                top="-350%"
-                width="100%"
-                textAlign="center"
+              <VStack
+                align="flex-start"
+                flex="1"
+                spacing={1}
+                position="relative"
+                pb="4"
               >
-                <VStack align="center">
-                  <Text
-                    as="span"
-                    fontSize="110px"
-                    fontFamily="Times"
-                    color="gray.700"
-                    sx={fontFace}
-                  >
-                    WHOLESALE
-                  </Text>
-                  <Text
-                    mt="-10"
-                    ml="48"
-                    fontSize="sm"
-                    fontStyle="italic"
-                    color="gray.500"
-                  >
-                    "Envision the future with endless possibility and constant
-                    devotion"
-                  </Text>
-                </VStack>
-              </Box>
-
-              {/* Image + Navigation */}
-              <Flex width="60%">
-                <Box
+                <Divider
+                  borderColor="#e9e8e8"
+                  borderWidth="1px"
+                  marginBottom={4}
+                />
+                <Heading fontSize="16px" mb={4}>
+                  Brisket Slice
+                </Heading>
+                <Text fontSize="12px" width="100%">
+                  A cut only AdamsFoods can make, crafted with precision,
+                  delivered with pride.
+                </Text>
+                <IconButton
+                  icon={
+                    <ChevronRightIcon
+                      w={6}
+                      h={6}
+                      fontWeight="sm"
+                      color="#ada59e"
+                    />
+                  }
+                  isRound
+                  size="md"
+                  alignSelf="flex-end"
+                  position="relative"
+                  bg="#474745"
+                  color="white"
+                />
+                <Divider
+                  borderColor="#e9e8e8"
+                  borderWidth="1px"
                   position="absolute"
-                  left="50%"
-                  top="-80%"
-                  transform="translate(-50%, -0%)"
-                  width="550px"
-                  height="550px"
-                >
-                  <Image
-                    src="MeatM.png"
-                    alt="Meat plate"
-                    width="100%"
-                    height="100%"
-                    borderRadius="full"
-                  />
-                </Box>
+                  bottom="0"
+                  width="100%"
+                />
+              </VStack>
+            </Flex>
+          </Box>
 
-                <VStack
-                  position="absolute"
-                  left="53%"
-                  top="-75%"
-                  transform="translate(150%, -0%)"
-                >
-                  <Box textAlign="left" py={24} px={16}>
-                    <VStack spacing={2} width="100%">
-                      <Link
-                        href="#"
-                        fontWeight="bold"
-                        fontSize="2xl"
-                        fontFamily="Times New Roman"
-                      >
-                        Pork
-                      </Link>
-                      <Flex justify="center" width="100%">
-                        <Text fontSize="2xl" fontFamily="Times New Roman">
-                          •
-                        </Text>
-                      </Flex>
-                      <Link
-                        href="#"
-                        fontWeight="bold"
-                        fontSize="2xl"
-                        fontFamily="Times New Roman"
-                      >
-                        Beef
-                      </Link>
-                      <Flex justify="center" width="100%">
-                        <Text fontSize="2xl" fontFamily="Times New Roman">
-                          •
-                        </Text>
-                      </Flex>
-                      <Link
-                        href="#"
-                        fontWeight="bold"
-                        fontSize="2xl"
-                        fontFamily="Times New Roman"
-                      >
-                        Poultry
-                      </Link>
-                    </VStack>
-                  </Box>
-
-                  {/* Shop Now button */}
-                  <Box position="relative" mt={-16} >
-                    <Link
-                      href="#"
-                      display="inline-flex"
-                      alignItems="center"
-                      fontWeight="medium"
-                      textDecoration="underline"
-                      fontSize="lg"
-                    >
-                      Shop Now <span style={{ marginLeft: "4px" }}>→</span>
-                    </Link>
-                  </Box>
-                </VStack>
-              </Flex>
-            </VStack>
-          </Container>
-        </Box>
-      </Box>
-
-      {/* Why AdamsFoods Section */}
-      <Box bg="white" width="100%" mt={{ base: "30%", md: "15%" }}>
-      <Container maxW="container.lg">
-          <VStack spacing={4} align="center">
-            <Heading
-              as="h2"
-              size="xl"
-              fontFamily="Times New Roman"
-              fontWeight="bold"
-              textAlign="center"
-            >
+          {/*Why AdamsFoods*/}
+          <Box px={4} mb={6} py={6} borderRadius="lg">
+            <Heading size="md" mb={4}>
               Why AdamsFoods?
             </Heading>
-
-            <Text
-              textAlign="center"
-              maxW="700px"
-              fontSize="lg"
-              fontWeight="medium"
-              px={4}
-            >
-              Founded in 2012, AdamsFoods continues to do the best to serve the
-              needs of every single customer. Most importantly, we produce safe
-              products in our Federal USDA inspected establishment.
-            </Text>
-
-            <FeatureGrid/>
-          </VStack>
+            <Flex mb={4} gap={4}>
+              <Button
+                bg="#494949"
+                width="50%"
+                borderRadius="25px"
+              ></Button>
+              <VStack w="50%" justify="center">
+                <Divider border="1px" color="#626262" />
+                <Text fontSize="sm" color="gray.600">
+                  SINCE 2012
+                </Text>
+                <Divider border="1px" color="#626262" />
+              </VStack>
+            </Flex>
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={8} mt={8}>
+              <GridItem>
+                <VStack align="center" spacing={2}>
+                  <Circle size="30px" bg="white">
+                    <Image
+                      src="../../final/why adamsfoods-1.png"
+                      alt="Korean-style cutting"
+                      width="80%"
+                    />
+                  </Circle>
+                  <Text fontWeight="bold" fontSize="sm">
+                    "Korean-style cutting"
+                  </Text>
+                </VStack>
+              </GridItem>
+              <GridItem>
+                <VStack align="center" spacing={2}>
+                  <Circle size="30px" bg="white">
+                    <Image
+                      src="../../final/why adamsfoods-2.png"
+                      alt="Trusted partner"
+                      width="80%"
+                    />
+                  </Circle>
+                  <Text fontWeight="bold" fontSize="sm">
+                    "Trusted partner"
+                  </Text>
+                </VStack>
+              </GridItem>
+            </Grid>
+            <VStack align="flex-start" spacing={4}>
+              <Text fontSize="xs" color="gray.600">
+                Founded in 2012, Adams Foods produces safe, tailored products in
+                USDA-inspected facilities.
+              </Text>
+              <Text fontSize="xs" color="gray.600">
+                Our exclusive Korean-style cutting has built strong
+                partnerships, proudly representing K-BBQ.
+              </Text>
+              <Text fontSize="xs" color="gray.600">
+                Through quality and reliability, we have become a trusted
+                partner in LA and beyond.
+              </Text>
+            </VStack>
+          </Box>
+          <AFCompany />
+          <Footer />
         </Container>
-      </Box>
-      {/* How It Works Section */}
-      <HowItWorks />
-      {/*Adam's Company*/}
-      <AFCompany/>
-      {/*Contact Us Section w/ Email*/}
-      <Contact/>
-      {/*FAQ Section */}
-      <FAQPage />
-      <Footer/>
-    </Box>
+      </ChakraProvider>
+    </Sidebar>
   );
 };
 

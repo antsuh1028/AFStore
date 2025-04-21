@@ -9,8 +9,8 @@ import FAQPage from "./pages/wholesale/Faq";
 function App() {
   return (
     <BrowserRouter>
-      <Box minH="100vh">
-        <Navbar />
+      <Box minH="100vh"  bg="#f9f9f9">
+        {/* <Navbar /> */}
         <Box as="main">
           <Routes>
             <Route path="/" element={<HomePage />} />
