@@ -1,28 +1,32 @@
-import { Box } from "@chakra-ui/react";
+import { Box, ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/Home";
 import ContactPage from "./pages/Contact";
 import PackingPage from "./pages/wholesale/Packing";
 import FAQPage from "./pages/wholesale/Faq";
+import theme from "./theme"; // Import the theme
+import "./fonts.css"; // Import the font CSS at app level
 
 function App() {
   return (
-    <BrowserRouter>
-      <Box minH="100vh"  bg="#f9f9f9">
-        {/* <Navbar /> */}
-        <Box as="main">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/wholesale/packing" element={<PackingPage />} />
-            <Route path="/wholesale/faq" element={<FAQPage />} />
-            {/* <Route path="/contact" element={<ContactPage />} /> */}
-            {/* Add more routes as needed */}
-          </Routes>
+    <ChakraProvider theme={theme}>
+      <BrowserRouter>
+        <Box minH="100vh" bg="#f9f9f9">
+          {/* <Navbar /> */}
+          <Box as="main">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/wholesale/packing" element={<PackingPage />} />
+              <Route path="/wholesale/faq" element={<FAQPage />} />
+              {/* <Route path="/contact" element={<ContactPage />} /> */}
+              {/* Add more routes as needed */}
+            </Routes>
+          </Box>
         </Box>
-      </Box>
-    </BrowserRouter>
+      </BrowserRouter>
+    </ChakraProvider>
   );
 }
 

@@ -1,0 +1,17 @@
+/* Font face declaration for SUIT-Regular */
+@font-face {
+  font-family: 'SUIT-Regular';
+  src: url('../fonts/SUIT-Regular.otf') format('otf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Optional - add additional weights if needed */
+@font-face {
+  font-family: 'SUIT-Regular';
+  src: url('../fonts/SUIT-Regular.otf') format('otf');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
