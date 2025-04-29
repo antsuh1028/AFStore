@@ -74,12 +74,13 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
         transition="transform 0.1s ease, opacity 0.1s ease"
         height="100%"
       >
-        <Box p={4}>
+        <Box>
           <Flex
             justify="space-between"
             align="center"
             mx="auto"
             position="relative"
+            mb={7}
           >
             <IconButton
               aria-label="Back"
@@ -87,6 +88,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
               variant="ghost"
               onClick={onClose}
               size="xl"
+              ml={4}
             />
             <IconButton
               aria-label="Menu"
@@ -98,25 +100,31 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
               variant="ghost"
               onClick={onClose}
               size="lg"
+              p={5}
             />
           </Flex>
         </Box>
 
         <DrawerBody>
-          <Box p={4} >
+          <Box p={4}>
             {/* Shop Section */}
-            <Box mb={20} >
+            <Box mb={20}>
               <Flex justify="space-between" align="center" mb={2}>
-                <Heading as="h2" fontSize="sm" fontWeight="extrabold" marginLeft={4}>
+                <Heading
+                  as="h2"
+                  fontSize="sm"
+                  fontWeight="extrabold"
+                  marginLeft={4}
+                >
                   Shop
                 </Heading>
                 <Link
                   fontSize="sm"
                   color="gray.700"
-                  fontStyle=""
+                  fontWeight="medium"
                   marginRight={4}
                   textDecoration="underline"
-                  onClick={() => handleNavigate('/shop-all')}
+                  onClick={() => handleNavigate("/shop-all")}
                 >
                   Shop all
                 </Link>
@@ -125,31 +133,58 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
 
               <Grid templateColumns="repeat(3, 1fr)" gap={2} mb={4}>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/marinated')}>
-                    <Circle size="60px" bg="#efedef">
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/marinated")}
+                  >
+                    <Circle size="65px" bg="#efedef">
                       <Image src="/api/placeholder/50/50" alt="Marinated" />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
                       Marinated
                     </Text>
                   </VStack>
                 </GridItem>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/processed')}>
-                    <Circle size="60px" bg="#efedef">
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/processed")}
+                  >
+                    <Circle size="65px" bg="#efedef">
                       <Image src="/api/placeholder/50/50" alt="Processed" />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
                       Processed
                     </Text>
                   </VStack>
                 </GridItem>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/unprocessed')}>
-                    <Circle size="60px" bg="#efedef">
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/unprocessed")}
+                  >
+                    <Circle size="65px" bg="#efedef">
                       <Image src="/api/placeholder/50/50" alt="Un processed" />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
                       Unprocessed
                     </Text>
                   </VStack>
@@ -159,47 +194,92 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
 
             {/* Wholesale Info Section */}
             <Box mb={8}>
-              <Heading as="h2" fontSize="sm" fontWeight="extrabold" mb={2} ml={4}>
+              <Heading
+                as="h2"
+                fontSize="sm"
+                fontWeight="extrabold"
+                mb={2}
+                ml={4}
+              >
                 Wholesale Info
               </Heading>
-              <Divider mb={4} borderColor="black" border="1px"/>
+              <Divider mb={4} borderColor="black" border="1px" />
 
               <Grid templateColumns="repeat(3, 1fr)" gap={4} mb={8}>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/deal')}>
-                    <Circle size="60px" bg="#494949">
-                      <Text color="white" fontSize="lg">
-                        %
-                      </Text>
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/deal")}
+                  >
+                    <Circle size="65px" bg="#494949">
+                      <Image
+                        src="/final/deal.png"
+                        alt="Dealing"
+                        objectFit="cover"
+                        width="70%"
+                        height="70%"
+                        borderRadius="full"
+                      />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
                       Deal
                     </Text>
                   </VStack>
                 </GridItem>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/order')}>
-                    <Circle size="60px" bg="#494949">
-                      <Text color="white" fontSize="lg">
-                        🍴
-                      </Text>
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/order")}
+                  >
+                    <Circle size="65px" bg="#494949">
+                      <Image
+                        src="/final/order.png"
+                        alt="Order"
+                        objectFit="cover"
+                        width="60%"
+                        height="60%"
+                        borderRadius="full"
+                      />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
                       Order
                     </Text>
                   </VStack>
                 </GridItem>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/contact')}>
-                    <Circle size="60px" bg="#494949">
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/contact")}
+                  >
+                    <Circle size="65px" bg="#494949">
                       <Image
-                        src={AdamsLogo}
-                        boxSize="50%"
-                        alt="Adams Logo"
-                        filter="grayscale(100%)"
+                        src="/final/contact us.png"
+                        alt="Packing"
+                        objectFit="cover"
+                        width="70%"
+                        height="70%"
+                        borderRadius="full"
                       />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
                       Contact
                     </Text>
                   </VStack>
@@ -208,38 +288,80 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
 
               <Grid templateColumns="repeat(3, 1fr)" gap={4}>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/wholesale/packing')}>
-                    <Circle size="60px" bg="#494949">
-                      <Text color="white" fontSize="lg">
-                        📦
-                      </Text>
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/wholesale/packing")}
+                  >
+                    <Circle size="65px" bg="#494949">
+                      <Image
+                        src="/final/packing.png"
+                        alt="Packing"
+                        objectFit="cover"
+                        width="70%"
+                        height="70%"
+                        borderRadius="full"
+                      />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
                       Packing
                     </Text>
                   </VStack>
                 </GridItem>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/b2b')}>
-                    <Circle size="60px" bg="#494949">
-                      <Text color="white" fontSize="lg">
-                        B2B
-                      </Text>
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/b2b")}
+                  >
+                    <Circle size="65px" bg="#494949">
+                      <Image
+                        src="/final/b2b.png"
+                        alt="Processed"
+                        objectFit="cover"
+                        width="70%"
+                        height="70%"
+                        borderRadius="full"
+                      />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
                       B2B
                     </Text>
                   </VStack>
                 </GridItem>
                 <GridItem>
-                  <VStack spacing={1} cursor="pointer" onClick={() => handleNavigate('/wholesale/faq')}>
-                    <Circle size="60px" bg="#494949">
-                      <Text color="white" fontSize="lg">
-                        ?
-                      </Text>
+                  <VStack
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleNavigate("/wholesale/faq")}
+                  >
+                    <Circle size="65px" bg="#494949">
+                      <Image
+                        src="/final/FAQ.png"
+                        alt="FAQ"
+                        objectFit="cover"
+                        width="70%"
+                        height="70%"
+                        borderRadius="full"
+                      />
                     </Circle>
-                    <Text fontSize="13px" textAlign="center" marginTop={2} fontWeight="bold">
-                      FAQs
+                    <Text
+                      fontSize="13px"
+                      textAlign="center"
+                      marginTop={2}
+                      fontWeight="bold"
+                    >
+                      FAQ
                     </Text>
                   </VStack>
                 </GridItem>

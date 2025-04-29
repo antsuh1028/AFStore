@@ -11,27 +11,27 @@ const Sidebar = ({ children }) => {
           bg="#f9f9f9"
           borderColor="gray.200"
           px={6}
-          py={8}
+          py={24}
           position="fixed"
           top="calc(20% - 140px)"
           left="calc(37% - 140px)"
           overflowY="auto"
         >
-          <VStack align="flex-start" spacing={8}>
+          <VStack align="flex-start" spacing={4}>
             {/* Logo */}
-            <Text fontSize="2xl" fontWeight="normal" border="1px">
+            <Text fontSize="2xl" fontWeight="normal" border="1px" >
               <Box as="span" fontWeight="bold">
                 Adams
               </Box>
               Foods
             </Text>
-            <Box h="402px" w="100%" bg="white" border="1px" />
+            <Box h="45vh" w="100%" bg="white" border="1px" />
 
             {/* Menu Sections */}
-            <VStack align="flex-start" spacing={6} width="100%">
+            <VStack align="flex-start" spacing={4} width="100%">
               <Box
                 width="100%"
-                p={4}
+                p={3}
                 bg="white"
                 borderRadius="md"
                 boxShadow="sm"
@@ -56,7 +56,7 @@ const Sidebar = ({ children }) => {
 
               <Box
                 width="100%"
-                p={4}
+                p={3}
                 bg="white"
                 borderRadius="md"
                 boxShadow="sm"

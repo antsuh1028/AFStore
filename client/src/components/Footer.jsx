@@ -15,81 +15,62 @@ const Footer = () => {
     <Box as="footer" py={8} px={4}>
       <Container maxW="container.lg">
         {/* Divider */}
-        <Divider borderColor="gray.900" mb={8} />
+        <Divider borderColor="gray.700" mb={8} w="100%" />
 
         {/* Social Media Icons */}
         <Flex justifyContent="center" mb={12}>
-          <HStack spacing={8}>
+          <HStack width="50%">
             <Link href="#" aria-label="Instagram">
               <Image
                 src="/IG.png"
                 alt="Instagram Icon"
-                width="40px"
-                height="40px"
+                width="45%"
+                height="45%"
               />
             </Link>
             <Link href="#" aria-label="TikTok">
               <Image
                 src="/Tiktok.png"
                 alt="TikTok Icon"
-                width="40px"
-                height="40px"
+                width="45%"
+                height="45%"
               />
             </Link>
             <Link href="#" aria-label="YouTube">
               <Image
                 src="/Youtube.png"
                 alt="YouTube Icon"
-                width="40px"
-                height="40px"
+                width="45%"
+                height="45%"
               />
             </Link>
           </HStack>
         </Flex>
 
         {/* Contact and Location */}
-        <Flex
-          // justifyContent="space-between"
-          justifyContent="center"
-          mb={16} // Increased bottom margin for more space before language/currency
-          textAlign="center"
-          gap={16}
-        >
+        <Flex justifyContent="center" mb={4} textAlign="center" gap={4}>
           {/* Get in touch */}
-          <VStack align="center" mb={{ base: 4, md: 0 }}>
-            <Text
-              fontWeight="medium"
-              fontSize="lg"
-              mb={2}
-              textDecoration="underline"
-            >
+          <VStack align="center" mb={0} w="50%" spacing={0.5}>
+            <Text fontWeight="bold" fontSize="md" textDecoration="underline" mb={2}>
               Get in touch
             </Text>
-            <Text color="gray.600" fontSize="sm">
+            <Text color="gray.600" fontSize="xs" noOfLines={1}>
               Monday to Friday
             </Text>
-            <Text color="gray.600" fontSize="sm" mt={0}>
+            <Text color="gray.600" fontSize="xs" noOfLines={1}>
               8am - 4pm PST
             </Text>
           </VStack>
 
           {/* Location */}
-          <VStack
-            align="center"
-            spacing={0} // Reduced spacing between items in the VStack
-          >
-            <Text
-              fontWeight="medium"
-              fontSize="lg"
-              mb={2}
-              textDecoration="underline"
-            >
+          <VStack align="center" spacing={0.5} w="50%">
+            <Text fontWeight="bold" fontSize="md" textDecoration="underline" mb={2}>
               Location
             </Text>
-            <Text color="gray.600" fontSize="sm">
+            <Text color="gray.600" fontSize="xs" noOfLines={1}>
               DTLA-1805 Industrial St,
             </Text>
-            <Text color="gray.600" fontSize="sm" mt={0}>
+            <Text color="gray.600" fontSize="xs" noOfLines={1}>
               Los Angeles, CA 90021
             </Text>
           </VStack>

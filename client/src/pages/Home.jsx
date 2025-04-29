@@ -31,7 +31,9 @@ import Sidebar from "../components/SideBar";
 
 // Icons (simplified versions using Chakra UI)
 const PercentIcon = () => (
-  <Text color="#ada59e" fontSize="lg">%</Text>
+  <Text color="#ada59e" fontSize="lg">
+    %
+  </Text>
 );
 const ForkKnifeIcon = () => <Text fontSize="lg">🍴</Text>;
 
@@ -53,11 +55,7 @@ const HomePage = () => {
       >
         {/* Header */}
         <Flex p={4} justify="space-between" align="center">
-          <Image
-            src="../../grayAdams.png"
-            alt="AdamsFoods Logo"
-            width="40%"
-          />
+          <Image src="../../grayAdams.png" alt="AdamsFoods Logo" width="40%" />
           <IconButton
             aria-label="Menu"
             icon={<Text>☰</Text>}
@@ -65,17 +63,17 @@ const HomePage = () => {
             onClick={onOpen}
           />
         </Flex>
-        
+
         {/* Hero Section */}
-        <Box px={4} py={6} textAlign="center">
-          <Heading as="h1" size="xl">
+        <Box px={4} py={8} textAlign="center">
+          <Heading as="h1" size="lg">
             <Text as="span">MEAT</Text>{" "}
             <Text as="span" fontWeight="normal">
               WHOLESALE
             </Text>
           </Heading>
         </Box>
-        
+
         {/* Main Image */}
         <Box px={4} mb={4}>
           <Box
@@ -95,10 +93,17 @@ const HomePage = () => {
             />
           </Box>
         </Box>
-        
+
         {/* Search Bar */}
         <Box px={4} mb={6}>
-          <InputGroup size="lg" bg="white" borderRadius="full" boxShadow="sm">
+          <InputGroup
+            size="lg"
+            bg="white"
+            borderRadius="full"
+            boxShadow="sm"
+            mt={4}
+            mb={8}
+          >
             <Input
               textAlign="center"
               placeholder="Search for..."
@@ -111,55 +116,81 @@ const HomePage = () => {
             </InputRightElement>
           </InputGroup>
         </Box>
-        
+
         {/* Categories */}
-        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={6}>
-          {["Marinated", "Processed", "Un processed"].map((category, idx) => (
+        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={8}>
+          {["Marinated", "Processed", "Unprocessed"].map((category, idx) => (
             <GridItem key={idx}>
               <VStack spacing={2}>
-                <Circle size="60px" bg="#ada59e" overflow="hidden">
+                <Circle size="60px" bg="#efeeee" overflow="hidden">
                   <Image src="/api/placeholder/60/60" alt={category} />
                 </Circle>
-                <Text fontSize="sm" fontWeight="medium">
+                <Text fontSize="sm" fontWeight="semibold">
                   {category}
                 </Text>
               </VStack>
             </GridItem>
           ))}
         </Grid>
-        
+
         {/* Action Buttons */}
-        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={6}>
+        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={12}>
           {[
-            { name: "Deal", icon: <PercentIcon /> },
-            { name: "Order", icon: <ForkKnifeIcon /> },
+            {
+              name: "Deal",
+              icon: (
+                <Image
+                  src="/final/deal.png"
+                  alt="Order"
+                  objectFit="cover"
+                  width="60%"
+                  height="60%"
+                  borderRadius="full"
+                />
+              ),
+            },
+            {
+              name: "Order",
+              icon: (
+                <Image
+                  src="/final/order.png"
+                  alt="Order"
+                  objectFit="cover"
+                  width="60%"
+                  height="60%"
+                  borderRadius="full"
+                />
+              ),
+            },
             {
               name: "Contact",
               icon: (
                 <Image
-                  src={AdamsLogo}
-                  boxSize="35px"
-                  alt="Adams Logo"
-                  filter="grayscale(100%)"
+                  src="/final/contact us.png"
+                  alt="Order"
+                  objectFit="cover"
+                  width="60%"
+                  height="60%"
+                  borderRadius="full"
                 />
               ),
             },
           ].map((action, idx) => (
             <GridItem key={idx}>
               <VStack spacing={2}>
-                <Circle size="60px" bg="#494949" color="white">
+                <Circle size="65px" bg="#494949" color="white">
                   {action.icon}
                 </Circle>
-                <Text fontSize="sm" fontWeight="medium">
+                <Text fontSize="sm" fontWeight="semibold">
                   {action.name}
                 </Text>
               </VStack>
             </GridItem>
           ))}
         </Grid>
-        
+
         {/* Location */}
-        <HStack px={4} mb={6} spacing={2}>
+        <HStack px={6} mb={3} spacing={2}>
           <Image
             src="../../final/only here.png"
             h="20px"
@@ -170,7 +201,7 @@ const HomePage = () => {
             Only Here
           </Text>
         </HStack>
-        
+
         {/* Featured Product */}
         <Box px={4} position="relative" mb={6}>
           <Flex direction="row" justify="space-between" gap={6}>
@@ -203,11 +234,13 @@ const HomePage = () => {
               </Text>
               <IconButton
                 icon={
-                  <ChevronRightIcon
-                    w={6}
-                    h={6}
-                    fontWeight="sm"
-                    color="#ada59e"
+                  <Image
+                    src="/final/button.png"
+                    alt="Order"
+                    objectFit="cover"
+                    width="60%"
+                    height="60%"
+                    borderRadius="full"
                   />
                 }
                 isRound
@@ -216,6 +249,7 @@ const HomePage = () => {
                 position="relative"
                 bg="#474745"
                 color="white"
+                _hover={{ bg: "white" }}
               />
               <Divider
                 borderColor="#e9e8e8"
@@ -229,21 +263,25 @@ const HomePage = () => {
         </Box>
 
         {/*Why AdamsFoods*/}
-        <Box px={4} mb={6} py={6} borderRadius="lg">
-          <Heading size="md" mb={4}>
+        <Box px={4} mb={6} py={4} borderRadius="lg">
+          <Heading size="md" mb={8}>
             Why AdamsFoods?
           </Heading>
           <Flex mb={4} gap={4}>
-            <Button
-              bg="#494949"
-              width="50%"
-              borderRadius="25px"
-            >
-              <Image/>
+            <Button bg="#494949" width="50%" borderRadius="25px" _hover={{}}>
+              <Image
+                src="/final/why adamsfoods.png"
+                alt="button"
+                objectFit="cover"
+                width="100%"
+                height="100%"
+                borderRadius="full"
+                
+              />
             </Button>
             <VStack w="50%" justify="center">
               <Divider border="1px" color="#626262" />
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color="gray.600" fontWeight="medium">
                 SINCE 2012
               </Text>
               <Divider border="1px" color="#626262" />
@@ -280,17 +318,17 @@ const HomePage = () => {
             </GridItem>
           </Grid>
           <VStack align="flex-start" spacing={4}>
-            <Text fontSize="xs" color="gray.600">
+            <Text fontSize="sm" color="gray.600" lineHeight="tall">
               Founded in 2012, Adams Foods produces safe, tailored products in
               USDA-inspected facilities.
             </Text>
-            <Text fontSize="xs" color="gray.600">
-              Our exclusive Korean-style cutting has built strong
-              partnerships, proudly representing K-BBQ.
+            <Text fontSize="sm" color="gray.600" lineHeight="tall">
+              Our exclusive Korean-style cutting has built strong partnerships,
+              proudly representing K-BBQ.
             </Text>
-            <Text fontSize="xs" color="gray.600">
-              Through quality and reliability, we have become a trusted
-              partner in LA and beyond.
+            <Text fontSize="sm" color="gray.600" lineHeight="tall">
+              Through quality and reliability, we have become a trusted partner
+              in LA and beyond.
             </Text>
           </VStack>
         </Box>
