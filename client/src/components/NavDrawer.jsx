@@ -177,7 +177,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                     onClick={() => handleNavigate("/unprocessed")}
                   >
                     <Circle size="65px" bg="#efedef">
-                      <Image src="/api/placeholder/50/50" alt="Un processed" />
+                      <Image src="/api/placeholder/50/50" alt="Unprocessed" />
                     </Circle>
                     <Text
                       fontSize="13px"
@@ -317,7 +317,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/b2b")}
+                    onClick={() => handleNavigate("/wholesale/b2b")}
                   >
                     <Circle size="65px" bg="#494949">
                       <Image

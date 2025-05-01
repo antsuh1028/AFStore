@@ -5,6 +5,7 @@ import HomePage from "./pages/Home";
 import ContactPage from "./pages/Contact";
 import PackingPage from "./pages/wholesale/Packing";
 import FAQPage from "./pages/wholesale/Faq";
+import B2BPage from "./pages/wholesale/B2B";
 import theme from "./theme"; // Import the theme
 import "./fonts.css"; // Import the font CSS at app level
 
@@ -20,6 +21,7 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/wholesale/packing" element={<PackingPage />} />
               <Route path="/wholesale/faq" element={<FAQPage />} />
+              <Route path="/wholesale/b2b" element={<B2BPage />} />
               {/* <Route path="/contact" element={<ContactPage />} /> */}
               {/* Add more routes as needed */}
             </Routes>
