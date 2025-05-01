@@ -236,7 +236,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/order")}
+                    onClick={() => handleNavigate("/wholesale/how-to-order")}
                   >
                     <Circle size="65px" bg="#494949">
                       <Image
