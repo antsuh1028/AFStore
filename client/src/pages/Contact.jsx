@@ -84,11 +84,12 @@ const ContactPage = () => {
             isClosable: true,
           });
         },
-        () => {
+        (error) => {
           setLoading(false);
+          console.error("EmailJS error:", error); // 👈 this will help
           toast({
             title: "Error sending message.",
-            description: "Please try again later.",
+            description: error?.text || "Please try again later.",
             status: "error",
             duration: 5000,
             isClosable: true,
@@ -98,51 +99,60 @@ const ContactPage = () => {
   };
 
   return (
-    <Box p={12} maxW="700px" mx="auto" textAlign="center">
+    <Box p={12} maxW="700px" mx="auto" textAlign="center" fontFamily="'Outfit', sans-serif" >
 
       <Breadcrumb
-        spacing="8px"
-        separator={<ChevronRightIcon color="gray.500" />}
-        mb={8}
+        spacing="14px"
+        separator={<Text fontFamily="'Outfit', sans-serif">—</Text>}
+        mb={6}
         fontSize={{ base: "sm", md: "md" }}
+        justifyContent="center"
+        display="flex"  
       >
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          <BreadcrumbLink href="/">
+            Home
+          </BreadcrumbLink>
         </BreadcrumbItem>
 
         <BreadcrumbItem isCurrentPage>
-          <BreadcrumbLink href="#" fontWeight="semibold">
+          <BreadcrumbLink href="#">
             Contact
           </BreadcrumbLink>
         </BreadcrumbItem>
       </Breadcrumb>
 
-      <Heading mb={3} fontWeight="bold" fontSize="3xl">
-        Contact
+      <Heading mb={3} fontFamily="outfit" fontWeight='medium' fontSize="3xl">
+        Contact us
       </Heading>
-      <Text mb={4} color="gray.500" fontSize="md">
+      <Text mb={4} color="gray.500" fontSize="md" fontFamily="outfit">
         We look forward to hearing from you
       </Text>
       <Divider mb={6} borderColor="gray.300" />
 
-      <Heading as="h4" size="md" mb={4} fontWeight="bold" textAlign="left">
+      <Heading as="h4" size="sm" mb={4} fontWeight="extrabold" textAlign="left">
         Inquiries
       </Heading>
 
-      <Text fontSize="sm" mb={5} textAlign="left">
+      <Text fontSize="sm" mb={2} textAlign="left" fontWeight='hairline'>
         To ensure we can address your enquiry correctly, please provide a
         detailed message. <br />
       </Text>
 
-      <Text fontSize="sm" mb={6} textAlign="left">
-        <b>Support hours:</b> Mon–Fri, 8:00AM–4:30PM
+      <Text fontSize="md" mb={4} textAlign="left" fontWeight='bold'>
+        Support hours: Mon–Fri, 8:00AM–4:30PM
+      </Text>
+
+      <Text fontSize="sm" mb={4} textAlign="left" fontWeight='bold'>
+        Please make sure to specify the exact title of the meat! <br />
       </Text>
 
       <form ref={form} onSubmit={sendEmail}>
         <VStack spacing={4} align="stretch">
           <FormControl isRequired>
-            <FormLabel> Name</FormLabel>
+            <FormLabel fontFamily="outfit"> Name</FormLabel>
             <Input
+              bg="gray.500"
               type="text"
               name="user_name"
               {...inputStyle}
@@ -187,10 +197,9 @@ const ContactPage = () => {
           </FormControl>
 
           <FormControl>
-            <FormLabel>
-              Attached file{" "}
+            <FormLabel fontSize='sm' htmlFor="license-file-upload">
               <Text as="span" color="gray.500" fontSize="sm">
-                (Please attach the wholesale license)
+                Please attach the wholesale license!
               </Text>
             </FormLabel>
             <Box display="flex" alignItems="center">
@@ -198,13 +207,11 @@ const ContactPage = () => {
                 <Button
                   as="label"
                   htmlFor="license-file-upload"
-                  size="sm"
-                  bg="gray.200"
-                  color="black"
-                  borderRadius="sm"
-                  border="1px solid"
-                  borderColor="gray.300"
-                  _hover={{ bg: "gray.300" }}
+                  fontSize="sm"
+                  color="gray.500"
+                  textDecoration="underline"
+                  cursor="pointer"
+                  _hover={{ color: "gray.600" }}
                   mr={2}
                 >
                   Choose File
@@ -247,15 +254,15 @@ const ContactPage = () => {
             />
           </FormControl>
 
-          <Box display="flex" justifyContent="center" width="100%" p={12}>
+          <Box display="flex" justifyContent="center" width="100%" pt={4}>
             <Button
               type="submit"
-              bg="#7CBFE3"
+              bg="#494949"
               color="white"
               isLoading={loading}
               borderRadius="full"
-              size="sm"
-              width="120px"
+              size="lg" 
+              width="100%"  
               _hover={{ bg: "#6AAFDB" }}
             >
               SEND
@@ -264,7 +271,7 @@ const ContactPage = () => {
         </VStack>
       </form>
 
-      <Box mt={16}></Box>
+      <Box mt={2}></Box>
 
       <Footer />
     </Box>
