@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Public images (not meant for version control)
+client/public/Meat*.png
+client/public/final/
+client/public/*.png
+*.jpg
+*.jpeg
+*.svg
