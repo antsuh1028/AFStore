@@ -1,284 +1,132 @@
+import React, { useRef } from "react";
 import {
   Box,
   Container,
+  Flex,
   Heading,
+  IconButton,
   Text,
   VStack,
-  List,
-  ListItem,
-  Divider,
-  Flex,
   Image,
   Stack,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
+  Divider,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { ChevronRightIcon } from "@chakra-ui/icons";
+import { ChevronLeft } from "lucide-react";
+import NavDrawer from "../../components/NavDrawer";
+import Sidebar from "../../components/SideBar";
+import Breadcrumbs from "../../components/BreadCrumbs.";
 import Footer from "../../components/Footer";
 
 const PackingPage = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const contentRef = useRef(null);
+
+  const sectionData = [
+    {
+      heading: "40°F Full Cold Chain",
+      text: "From production to delivery, we strictly control the temperature to stay at or below 6°C at all times, preserving the freshness, quality, and safety of our meat products.",
+    },
+    {
+      heading: "Specialized Packaging for Safety",
+      text: "We invest in advanced packaging to preserve freshness, extend shelf life, and ensure safety, while preventing contamination and maintaining quality during storage and transport.",
+    },
+    {
+      heading: "Meat Browning",
+      text: "The browning happens because myoglobin in the meat doesn't bind with oxygen. Once exposed to air, the meat will return to a reddish color within 15 to 30 minutes.",
+      note: "This is a natural process, and the meat is safe.",
+    },
+  ];
+
+  const imageUrls = [
+    "/images/packing1.jpg",
+    "/images/packing2.jpg",
+  ];
+
   return (
-    <Box py={12} bg="white">
-      <Container maxW="container.lg" px={{ base: 4, md: 6 }}>
-        <Breadcrumb
-          spacing="8px"
-          separator={<ChevronRightIcon color="gray.500" />}
-          mb={8}
-          fontSize={{ base: "sm", md: "md" }}
-        >
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
+    <Sidebar>
+      <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+      <Container
+        ref={contentRef}
+        maxW={{ base: "100%", lg: "30%" }}
+        p={0}
+        bg="white"
+        border={{ base: "none", lg: "1px" }}
+        ml={{ base: 0, lg: "40%" }}
+      >
+        <Box>
+          <Flex p={4} justify="space-between" align="center">
+            <IconButton
+              aria-label="Back"
+              icon={<ChevronLeft size={24} />}
+              variant="ghost"
+              size="lg"
+              colorScheme="gray"
+            />
+            <IconButton
+              aria-label="Menu"
+              icon={<Text>☰</Text>}
+              variant="ghost"
+              onClick={onOpen}
+            />
+          </Flex>
+        </Box>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink>Wholesale Info</BreadcrumbLink>
-          </BreadcrumbItem>
+        <Box py={3} px={4} display="flex" justifyContent="center">
+          <Breadcrumbs
+            listOfBreadCrumbs={[
+              { label: "Home", url: "/" },
+              { label: "Wholesale", url: "/wholesale" },
+              { label: "Packing", url: "/wholesale/packing" },
+            ]}
+          />
+        </Box>
 
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink href="#" fontWeight="semibold">
+        <Box width="100%">
+          {/* Header Section */}
+          <Box py={4} px={6} borderColor="gray.200" bg="white" mb={4}>
+            <Heading as="h1" size="md" fontWeight="semibold" textAlign="center">
               Packing
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-
-        <VStack spacing={8} align="stretch">
-          {/* Packing Section */}
-          <Heading
-            as="h2"
-            size={{ base: "lg", md: "xl" }}
-            textAlign="left"
-            fontFamily="serif"
-            fontWeight="bold"
-          >
-            Packing
-          </Heading>
-
-          <Divider borderColor="gray.700" />
-
-          {/* Images and List Section - Responsive Layout */}
-          <Stack
-            direction={{ base: "column", lg: "row" }}
-            spacing={{ base: 8, lg: 6 }}
-            align="start"
-          >
-            {/* Left image - Full width on mobile */}
-            <Box width={{ base: "100%", lg: "40%" }}>
-              <Image
-                src="/placeholder1.jpg"
-                alt="Packing process example 1"
-                w="full"
-                h="auto"
-                objectFit="cover"
-                borderRadius="md"
-                fallbackSrc="https://via.placeholder.com/60x40?text=Packing+Process+1"
-              />
-            </Box>
-
-            {/* List items with images - Full width on mobile */}
-            <Box width={{ base: "100%", lg: "60%" }}>
-              <List spacing={6} styleType="none">
-                <ListItem>
-                  <Stack
-                    direction={{ base: "column", sm: "row" }}
-                    spacing={4}
-                    align="start"
-                  >
-                    <Image
-                      src="/placeholder2.jpg"
-                      alt="USDA Certification"
-                      w={{ base: "100%", sm: "120px" }}
-                      h="auto"
-                      objectFit="cover"
-                      borderRadius="md"
-                      fallbackSrc="https://via.placeholder.com/60x40?text=USDA+Certified"
-                    />
-                    <Box>
-                      <Flex align="center" mb={1}>
-                        <Box
-                          color="black"
-                          borderRadius="full"
-                          w={6}
-                          h={6}
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          mr={3}
-                          flexShrink={0}
-                          border="1px solid"
-                          borderColor="gray.300"
-                        >
-                          1
-                        </Box>
-                        <Text
-                          fontWeight="bold"
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                          USDA Certified: Quality Guaranteed
-                        </Text>
-                      </Flex>
-                      <Text fontSize={{ base: "sm", md: "md" }}>
-                        Only meat that meets strict USDA standards is served.
-                      </Text>
-                    </Box>
-                  </Stack>
-                </ListItem>
-
-                <ListItem>
-                  <Stack
-                    direction={{ base: "column", sm: "row" }}
-                    spacing={4}
-                    align="start"
-                  >
-                    <Image
-                      src="/placeholder2.jpg"
-                      alt="Cutting Technique"
-                      w={{ base: "100%", sm: "120px" }}
-                      h="auto"
-                      objectFit="cover"
-                      borderRadius="md"
-                      fallbackSrc="https://via.placeholder.com/60x40?text=Cutting+Technique"
-                    />
-                    <Box>
-                      <Flex align="center" mb={1}>
-                        <Box
-                          color="black"
-                          borderRadius="full"
-                          w={6}
-                          h={6}
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          mr={3}
-                          flexShrink={0}
-                          border="1px solid"
-                          borderColor="gray.300"
-                        >
-                          2
-                        </Box>
-                        <Text
-                          fontWeight="bold"
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                          Cutting with AdamsFoods Exclusive Technique
-                        </Text>
-                      </Flex>
-                      <Text fontSize={{ base: "sm", md: "md" }}>
-                        We offer USDA-certified, Korean-style trimmed meat.
-                      </Text>
-                    </Box>
-                  </Stack>
-                </ListItem>
-
-                <ListItem>
-                  <Stack
-                    direction={{ base: "column", sm: "row" }}
-                    spacing={4}
-                    align="start"
-                  >
-                    <Image
-                      src="/placeholder2.jpg"
-                      alt="Double-Sealed Packaging"
-                      w={{ base: "100%", sm: "120px" }}
-                      h="auto"
-                      objectFit="cover"
-                      borderRadius="md"
-                      fallbackSrc="https://via.placeholder.com/60x40?text=Double+Sealed"
-                    />
-                    <Box>
-                      <Flex align="center" mb={1}>
-                        <Box
-                          color="black"
-                          borderRadius="full"
-                          w={6}
-                          h={6}
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          mr={3}
-                          flexShrink={0}
-                          border="1px solid"
-                          borderColor="gray.300"
-                        >
-                          3
-                        </Box>
-                        <Text
-                          fontWeight="bold"
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                          Double-Sealed for Ultimate Freshness
-                        </Text>
-                      </Flex>
-                      <Text fontSize={{ base: "sm", md: "md" }}>
-                        Vacuum-packed and tray-sealed to lock in freshness.
-                      </Text>
-                    </Box>
-                  </Stack>
-                </ListItem>
-              </List>
-            </Box>
-          </Stack>
-
-          {/* Meat Browning Section - Made Responsive */}
-          <Box mt={{ base: 10, md: 12 }}>
-            <Heading
-              as="h2"
-              size={{ base: "lg", md: "xl" }}
-              textAlign="left"
-              fontFamily="serif"
-              fontWeight="bold"
-            >
-              Meat Browning
             </Heading>
+          </Box>
+          <Divider mt={2} borderColor="gray.200" />
+        </Box>
 
-            <Divider borderColor="gray.700" my={{ base: 4, md: 6 }} />
+        
 
-            <Box display="flex" justifyContent="center">
-              <Stack
-                direction={{ base: "column", md: "row" }}
-                w={{ base: "100%", md: "80%" }}
-                spacing={{ base: 6, md: 8 }}
-                alignItems="center"
-              >
-                <Box width={{ base: "100%", md: "50%" }}>
+        <VStack spacing={8} px={6} py={4} align="start">
+          {sectionData.map((section, index) => (
+            <Box key={index}>
+              <Heading size="md" mb={2}>
+                {section.heading}
+              </Heading>
+              <Text fontSize="sm" color="gray.700">
+                {section.text}
+              </Text>
+              {section.note && (
+                <Text fontSize="sm" mt={2} color="orange.400">
+                  {section.note}
+                </Text>
+              )}
+              <Stack direction="row" spacing={4} mt={4}>
+                {imageUrls.map((src, i) => (
                   <Image
-                    src="/placeholder3.jpg"
-                    alt="Meat color change demonstration"
-                    w="full"
-                    h="auto"
-                    objectFit="cover"
+                    key={i}
+                    src={src}
+                    alt={`Packing image ${i + 1}`}
                     borderRadius="md"
-                    fallbackSrc="https://via.placeholder.com/60x40?text=Meat+Browning"
+                    boxSize="120px"
+                    objectFit="cover"
                   />
-                  <Text fontStyle="italic" mt={2} textAlign="center">
-                    30 Min later
-                  </Text>
-                </Box>
-
-                <Box width={{ base: "100%", md: "50%" }}>
-                  <Text mb={4} fontSize={{ base: "sm", md: "md" }}>
-                    This phenomenon occurs because the myoglobin in the meat is
-                    unable to bind directly with oxygen. Once the packaging is
-                    opened and the meat comes into contact with oxygen, it will
-                    gradually return to a reddish color within 15 to 30 minutes.
-                  </Text>
-                  <Text fontSize={{ base: "sm", md: "md" }}>
-                    <Text as="span" bg="yellow.100" px={1} fontWeight="bold">
-                      This browning is a completely normal process
-                    </Text>
-                    , so you can rest assured that the meat is safe to eat.
-                  </Text>
-                </Box>
+                ))}
               </Stack>
             </Box>
-          </Box>
+          ))}
         </VStack>
+
+        <Footer />
       </Container>
-
-      <Box p={{ base: 8, md: 12 }}></Box>
-
-      <Footer />
-    </Box>
+    </Sidebar>
   );
 };
 
