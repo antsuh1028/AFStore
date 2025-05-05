@@ -1,317 +1,161 @@
+import React, { useRef } from "react";
 import {
   Box,
   Container,
+  Flex,
   Heading,
+  IconButton,
   Text,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Grid,
-  GridItem,
+  VStack,
   Divider,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { ChevronRightIcon } from "@chakra-ui/icons";
+import { ChevronLeft } from "lucide-react";
+import NavDrawer from "../../components/NavDrawer";
+import Sidebar from "../../components/SideBar";
+import Breadcrumbs from "../../components/BreadCrumbs.";
+import Footer from "../../components/Footer";
 
 const FAQPage = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const contentRef = useRef(null);
+
+  const faqData = [
+    {
+      heading: "Q. Delivery",
+      textStart:
+        "We offer free delivery within Los Angeles County for orders that meet our ",
+      highlight: "$4,000",
+      textEnd: " minimum.",
+      noteBody:
+        "If the minimum order is not met, we kindly ask that you pick up your order directly from our facility. This policy allows us to continue offering reliable wholesale pricing.\n\n",
+      noteBold: "📍1805 Industrial St, Los Angeles, CA 90021",
+    },
+    {
+      heading: "Q. Refund",
+      highlight: "All meat purchases are final and non-refundable,",
+      textEnd: " as we are confident in the safety and quality of our products.",
+      noteBody:
+        "If you have any questions or concerns about your order, feel free to reach out to us by phone or email we're happy to assist you.",
+      noteBold: "• (323)943-9318\n• admin@adamsfoods.us",
+    },
+    {
+      heading: "Q. Purchase",
+      highlight: "We accept cash, checks, and credit cards.\n",
+      noteBody:
+        "However, please note:\n• Cash payments receive the highest discount.\n• Credit card payments are subject to additional tax.\n\nWe appreciate your understanding and are happy to assist with any further questions.",
+    },
+    {
+      heading: "Q. Bulk Purchase",
+      textStart: "For bulk purchases, please reach out to us through the",
+      highlight: " 'Contact Us' page.",
+    },
+    {
+      heading: "Q. Cash & Carry",
+      textStart: "Cash payments and pick-up orders get",
+      highlight: " 00% off.",
+    },
+    {
+      heading: "Q. Allergy",
+      text: "Please make sure to check for any allergies related to this meat.",
+    },
+  ];
+
   return (
-    <Box bg="white">
-      <Container maxW="container.xl" px={{ base: 4, md: 8 }} pt={8} pb={20}>
-        {/* Breadcrumbs Navigation */}
-        <Breadcrumb
-          spacing="8px"
-          separator={<ChevronRightIcon color="gray.500" />}
-          mb={6}
-          fontSize={{ base: "sm", md: "md" }}
-        >
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
+    <Sidebar>
+      <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+      <Container
+        ref={contentRef}
+        maxW={{ base: "100%", lg: "30%" }}
+        p={0}
+        bg="white"
+        border={{ base: "none", lg: "1px" }}
+        ml={{ base: 0, lg: "40%" }}
+      >
+        {/* Top nav */}
+        <Box>
+          <Flex p={4} justify="space-between" align="center">
+            <IconButton
+              aria-label="Back"
+              icon={<ChevronLeft size={24} />}
+              variant="ghost"
+              size="lg"
+              colorScheme="gray"
+            />
+            <IconButton
+              aria-label="Menu"
+              icon={<Text>☰</Text>}
+              variant="ghost"
+              onClick={onOpen}
+            />
+          </Flex>
+        </Box>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/wholesale-info">Wholesale Info</BreadcrumbLink>
-          </BreadcrumbItem>
+        {/* Breadcrumbs */}
+        <Box py={3} px={4} display="flex" justifyContent="center">
+          <Breadcrumbs
+            listOfBreadCrumbs={[
+              { label: "Home", url: "/" },
+              { label: "Wholesale", url: "/wholesale" },
+              { label: "FAQ", url: "/wholesale/faq" },
+            ]}
+          />
+        </Box>
 
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink href="#" fontWeight="semibold">
+        {/* Page header */}
+        <Box width="100%">
+          <Box py={4} px={6} borderColor="gray.200" bg="white" mb={4}>
+            <Heading as="h1" size="md" fontWeight="semibold" textAlign="center">
               FAQ
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
+            </Heading>
+          </Box>
+          <Divider mt={2} borderColor="gray.200" />
+        </Box>
 
-        {/* Main FAQ Heading */}
-        <Heading
-          as="h1"
-          fontSize={{ base: "3xl", md: "4xl" }}
-          fontWeight="bold"
-          mb={4}
-          pl={{ base: 0, md: 4 }}
-        >
-          FAQ
-        </Heading>
+        {/* FAQ content */}
+        <VStack spacing={8} px={6} py={4} align="start">
+          {faqData.map((item, index) => (
+            <Box key={index}>
+              <Heading size="md" mb={2}>
+                <Text as="span" color="tan">
+                  {item.heading.split(" ")[0]}
+                </Text>{" "}
+                {item.heading.split(" ").slice(1).join(" ")}
+              </Heading>
 
-        {/* Horizontal Divider */}
-        <Divider mb={10} borderColor="gray.300" />
-
-        {/* FAQ Cards in Grid Layout */}
-        <Grid
-          templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
-          gap={{ base: 8, md: 10 }}
-          mx="auto"
-          maxW="1000px"
-        >
-          {/* Delivery Card */}
-          <GridItem>
-            <Box>
-              <Box bg="gray.100" borderRadius="lg" py={3} mb={5}>
-                <Heading
-                  as="h2"
-                  size="md"
-                  textAlign="center"
-                >
-                  Delivery
-                </Heading>
-              </Box>
-              <Box px={3}>
-                <Text fontSize="sm" lineHeight="1.8">
-                  Orders above the minimum amount qualify for free delivery within Los Angeles. For orders below the minimum, a delivery fee applies. Alternatively, pickup is available at the address below.
+              {/* Highlighted $4,000 if present */}
+              {item.text ? (
+                <Text fontSize="sm" color="gray.700" whiteSpace="pre-line">
+                  {item.text}
                 </Text>
-                <Text fontSize="sm" mt={4} fontWeight="medium">
-                  1805 Industrial St, Los Angeles, CA 90021
+              ) : (
+                <Text fontSize="sm" color="gray.700">
+                  {item.textStart}
+                  <Text fontSize="sm" as="span" color="tan" fontWeight="black">
+                    {item.highlight}
+                  </Text>
+                  {item.textEnd}
                 </Text>
-              </Box>
+              )}
+
+              {item.noteBody && (
+                <Text fontSize="sm" mt={1} color="gray.700" whiteSpace="pre-line">
+                  {item.noteBody}
+                </Text>
+              )}
+              {item.noteBold && (
+                <Text fontSize="sm" mt={2} fontWeight="semibold" whiteSpace="pre-line">
+                  {item.noteBold}
+                </Text>
+              )}
             </Box>
-          </GridItem>
+          ))}
+        </VStack>
 
-          {/* Refund Card */}
-          <GridItem>
-            <Box>
-              <Box bg="gray.100" borderRadius="lg" py={3} mb={5}>
-                <Heading
-                  as="h2"
-                  size="md"
-                  textAlign="center"
-                >
-                  Refund
-                </Heading>
-              </Box>
-              <Box px={3}>
-                <Text fontSize="sm" lineHeight="1.8">
-                  Exchanges are allowed within 24 hours if there's an issue with the product. Please provide a photo of the product if there is a defect.
-                </Text>
-                <Text color="red.500" fontSize="sm" mt={4} fontWeight="semibold">
-                  Exchanges/returns are not possible in these cases:
-                </Text>
-                <Text fontSize="sm" lineHeight="1.8" mt={2}>
-                  - Damage or value reduction due to buyer's actions
-                  <br />
-                  - Value decrease from use or consumption
-                  <br />
-                  - If the product's value decreases due to improper storage
-                  <br />
-                  - Buyer's change of mind, address errors, or loss of contact (except for product defects).
-                </Text>
-              </Box>
-            </Box>
-          </GridItem>
-
-          {/* Bulk Purchase Card */}
-          <GridItem>
-            <Box>
-              <Box bg="gray.100" borderRadius="lg" py={3} mb={5}>
-                <Heading
-                  as="h2"
-                  size="md"
-                  textAlign="center"
-                >
-                  Bulk Purchase
-                </Heading>
-              </Box>
-              <Box px={3}>
-                <Text fontSize="sm" lineHeight="1.8">
-                  Get a 00% discount on bulk orders over $500.
-                </Text>
-              </Box>
-            </Box>
-          </GridItem>
-
-          {/* Cash & Carry Card */}
-          <GridItem>
-            <Box>
-              <Box bg="gray.100" borderRadius="lg" py={3} mb={5}>
-                <Heading
-                  as="h2"
-                  size="md"
-                  textAlign="center"
-                >
-                  Cash & Carry
-                </Heading>
-              </Box>
-              <Box px={3}>
-                <Text fontSize="sm" lineHeight="1.8">
-                  Cash payments and pick-up orders get 00% off.
-                </Text>
-              </Box>
-            </Box>
-          </GridItem>
-
-          {/* B2B Card */}
-          <GridItem colSpan={{ base: 1, md: 2 }}>
-            <Box py={24}>
-              <Box bg="gray.100" borderRadius="lg" py={3} mb={5}>
-                <Heading
-                  as="h2"
-                  size="md"
-                  textAlign="center"
-                >
-                  B2B
-                </Heading>
-              </Box>
-              <Box px={3}>
-                <Text fontSize="sm" lineHeight="1.8">
-                  Partner with us for a reliable and fresh meat supply, ensuring top-quality products for your business. We offer competitive pricing, consistent inventory, and tailored solutions to meet your needs. Let's build a strong partnership for success in the meat industry.
-                </Text>
-              </Box>
-            </Box>
-          </GridItem>
-        </Grid>
+        <Footer />
       </Container>
-    </Box>
+    </Sidebar>
   );
 };
 
 export default FAQPage;
-
-// import {
-//   Box,
-//   Container,
-//   Heading,
-//   SimpleGrid,
-//   Text,
-//   Breadcrumb,
-//   BreadcrumbItem,
-//   BreadcrumbLink,
-// } from "@chakra-ui/react";
-// import { ChevronRightIcon } from "@chakra-ui/icons";
-
-
-// const FAQPage = () => {
-//   return (
-//     <Box py={{ base: 8, md: 12 }} bg="white">
-//       <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
-//         {/* Reduced the vertical padding at the top */}
-//         <Breadcrumb
-//           spacing="8px"
-//           separator={<ChevronRightIcon color="gray.500" />}
-//           mb={8}
-//           fontSize={{ base: "sm", md: "md" }}
-//           mt={{ base: 4, md: 6 }}
-//         >
-//           <BreadcrumbItem>
-//             <BreadcrumbLink href="/">Home</BreadcrumbLink>
-//           </BreadcrumbItem>
-
-//           <BreadcrumbItem>
-//             <BreadcrumbLink>Wholesale Info</BreadcrumbLink>
-//           </BreadcrumbItem>
-
-//           <BreadcrumbItem isCurrentPage>
-//             <BreadcrumbLink href="#" fontWeight="semibold">
-//               FAQ
-//             </BreadcrumbLink>
-//           </BreadcrumbItem>
-//         </Breadcrumb>
-
-//         <Heading
-//           textAlign="center"
-//           fontSize={{ base: "2xl", md: "3xl" }}
-//           fontFamily="serif"
-//           fontWeight="bold"
-//           mb={{ base: 8, md: 12 }}
-//           color="#000"
-//         >
-//           FAQ
-//         </Heading>
-
-//         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 6, md: 8 }} mb={{ base: 6, md: 8 }}>
-//           <Box p={{ base: 4, md: 6 }} borderWidth="1px" borderRadius="md" boxShadow="sm">
-//             <Heading as="h2" size="md" mb={3}>
-//               Delivery
-//             </Heading>
-//             <Text fontSize="sm" lineHeight="1.6">
-//               Orders above the minimum amount qualify for free delivery within
-//               Los Angeles. For orders below the minimum, a delivery fee applies.
-//               Alternatively, pickup is available at the address below.
-//               <br /><br />
-//               1805 Industrial St, Los Angeles, CA 90021
-//             </Text>
-//           </Box>
-
-//           {/* Refund Card */}
-//           <Box p={{ base: 4, md: 6 }} borderWidth="1px" borderRadius="md" boxShadow="sm">
-//             <Heading as="h2" size="md" mb={3}>
-//               Refund
-//             </Heading>
-//             <Text fontSize="sm" lineHeight="1.6">
-//               Exchanges are allowed within 24 hours if there's an issue with the
-//               product. Please provide a photo of the product if there is a
-//               defect.
-//               <br />
-//               <br />
-//               <Text as="span" color="red.500" fontWeight="bold">
-//                 Exchanges/returns are NOT possible in these cases:
-//               </Text>
-//               <br />
-//               - Damage or value reduction due to buyer's actions
-//               <br />
-//               - Value decrease from use or consumption
-//               <br />
-//               - If the product's value decreases due to improper storage
-//               <br />
-//               - Buyer's change of mind, address errors, or loss of contact
-//               (except for product defects).
-//             </Text>
-//           </Box>
-
-//           {/* Bulk Purchase Card */}
-//           <Box p={{ base: 4, md: 6 }} borderWidth="1px" borderRadius="md" boxShadow="sm">
-//             <Heading as="h2" size="md" mb={3}>
-//               Bulk Purchase
-//             </Heading>
-//             <Text fontSize="sm" lineHeight="1.6">
-//               Get a 00% discount on bulk orders over $500.
-//             </Text>
-//           </Box>
-//         </SimpleGrid>
-
-//         {/* Second Row: 2 Cards */}
-//         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 6, md: 8 }} mb={{ base: 8, md: 12 }}>
-//           {/* Cash & Carry Card */}
-//           <Box p={{ base: 4, md: 6 }} borderWidth="1px" borderRadius="md" boxShadow="sm">
-//             <Heading as="h2" size="md" mb={3}>
-//               Cash &amp; Carry
-//             </Heading>
-//             <Text fontSize="sm" lineHeight="1.6">
-//               Cash payments and pick-up orders get 00% off.
-//             </Text>
-//           </Box>
-
-//           {/* B2B Card */}
-//           <Box p={{ base: 4, md: 6 }} borderWidth="1px" borderRadius="md" boxShadow="sm">
-//             <Heading as="h2" size="md" mb={3}>
-//               B2B
-//             </Heading>
-//             <Text fontSize="sm" lineHeight="1.6">
-//               Partner with us for a reliable and fresh meat supply, ensuring
-//               top-quality products for your business. We offer competitive
-//               pricing, consistent inventory, and tailored solutions to meet your
-//               needs. Let's build a strong partnership for success in the meat
-//               industry.
-//             </Text>
-//           </Box>
-//         </SimpleGrid>
-//       </Container>
-//     </Box>
-//   );
-// };
-
-// export default FAQPage;
