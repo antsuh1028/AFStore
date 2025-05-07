@@ -148,6 +148,7 @@ const HomePage = () => {
                   borderRadius="full"
                 />
               ),
+              url: "/wholesale/deal",
             },
             {
               name: "Order",
@@ -161,6 +162,7 @@ const HomePage = () => {
                   borderRadius="full"
                 />
               ),
+              url: "/wholesale/how-to-order",
             },
             {
               name: "Contact",
@@ -174,11 +176,20 @@ const HomePage = () => {
                   borderRadius="full"
                 />
               ),
+              url: "/contact",
             },
           ].map((action, idx) => (
             <GridItem key={idx}>
               <VStack spacing={2}>
-                <Circle size="65px" bg="#494949" color="white">
+                <Circle
+                  size="65px"
+                  bg="#494949"
+                  color="white"
+                  onClick={() => {
+                    navigate(`${action.url}`);
+                  }}
+                  cursor="pointer"
+                >
                   {action.icon}
                 </Circle>
                 <Text fontSize="sm" fontWeight="semibold">
@@ -276,7 +287,6 @@ const HomePage = () => {
                 width="100%"
                 height="100%"
                 borderRadius="full"
-                
               />
             </Button>
             <VStack w="50%" justify="center">
@@ -332,6 +342,29 @@ const HomePage = () => {
             </Text>
           </VStack>
         </Box>
+        {/* Company Website Link */}
+        <VStack align="center" spacing={0} py={12} width="100%">
+          <Text
+            fontWeight="extrabold"
+            fontStyle="italic"
+            textAlign="center"
+            fontSize="sm"
+            mb={0}
+          >
+            More Detail Information:
+          </Text>
+          <Link
+            href="https://www.adamsfoods.us/"
+            isExternal
+            _hover={{ color: "blue.500" }}
+            textDecoration="underline"
+            color="#b2a796"
+            fontStyle="italic"
+            textAlign="center"
+          >
+            https://www.adamsfoods.us/
+          </Link>
+        </VStack>
         <AFCompany />
         <Footer />
       </Container>

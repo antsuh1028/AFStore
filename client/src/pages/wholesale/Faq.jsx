@@ -37,7 +37,7 @@ const FAQPage = () => {
       textEnd: " as we are confident in the safety and quality of our products.",
       noteBody:
         "If you have any questions or concerns about your order, feel free to reach out to us by phone or email we're happy to assist you.",
-      noteBold: "• (323)943-9318\n• admin@adamsfoods.us",
+      noteBold: "•  (323)943-9318\n•  admin@adamsfoods.us",
     },
     {
       heading: "Q. Purchase",
@@ -113,10 +113,10 @@ const FAQPage = () => {
         </Box>
 
         {/* FAQ content */}
-        <VStack spacing={8} px={6} py={4} align="start">
+        <VStack spacing={16} px={6} py={4} align="start">
           {faqData.map((item, index) => (
             <Box key={index}>
-              <Heading size="md" mb={2}>
+              <Heading size="md" my={6} >
                 <Text as="span" color="tan">
                   {item.heading.split(" ")[0]}
                 </Text>{" "}
@@ -139,12 +139,12 @@ const FAQPage = () => {
               )}
 
               {item.noteBody && (
-                <Text fontSize="sm" mt={1} color="gray.700" whiteSpace="pre-line">
+                <Text fontSize="sm" mt={1} color="gray.700" whiteSpace="pre-line" marginTop={4}>
                   {item.noteBody}
                 </Text>
               )}
               {item.noteBold && (
-                <Text fontSize="sm" mt={2} fontWeight="semibold" whiteSpace="pre-line">
+                <Text fontSize="sm" mt={4} fontWeight="semibold" whiteSpace="pre-line">
                   {item.noteBold}
                 </Text>
               )}
