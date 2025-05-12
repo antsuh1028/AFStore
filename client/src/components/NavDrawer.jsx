@@ -23,7 +23,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { Menu } from "lucide-react";
-import AdamsLogo from "../../public/MainLogo.png";
+// import AdamsLogo from "../../MainLogo.png";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -40,17 +40,14 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
       }
     };
 
-    // Update on initial render and when drawer opens
     if (isOpen) {
       updateWidth();
     }
 
-    // Update on window resize
     window.addEventListener("resize", updateWidth);
     return () => window.removeEventListener("resize", updateWidth);
   }, [isOpen, containerRef]);
-
-  // Create a handler for navigation
+  
   const handleNavigate = (path) => {
     if (path) {
       navigate(path);

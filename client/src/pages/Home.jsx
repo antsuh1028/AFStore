@@ -22,20 +22,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { SearchIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import AdamsLogo from "../../public/MainLogo.png";
+// import AdamsLogo from "../../public/MainLogo.png"
 import { useNavigate } from "react-router-dom";
 import NavDrawer from "../components/NavDrawer";
 import AFCompany from "../components/home/AFCompany";
 import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
-
-// Icons (simplified versions using Chakra UI)
-const PercentIcon = () => (
-  <Text color="#ada59e" fontSize="lg">
-    %
-  </Text>
-);
-const ForkKnifeIcon = () => <Text fontSize="lg">🍴</Text>;
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

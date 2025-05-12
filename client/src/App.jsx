@@ -3,13 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/Home";
 import ContactPage from "./pages/Contact";
-import PackingPage from "./pages/wholesale/Packing";
-import FAQPage from "./pages/wholesale/Faq";
-import B2BPage from "./pages/wholesale/B2B";
-import DealPage from "./pages/wholesale/Deal";
-import HowToOrderPage from "./pages/wholesale/Order";
-import theme from "./theme"; // Import the theme
-import "./fonts.css"; // Import the font CSS at app level
+import TermsAndPolicies from "./pages/Terms";
+import {PackingPage, FAQPage, B2BPage, DealPage, HowToOrderPage} from "./pages/wholesale"
+import theme from "./theme";
+import "./fonts.css"; 
 
 function App() {
   return (
@@ -26,6 +23,7 @@ function App() {
               <Route path="/wholesale/b2b" element={<B2BPage />} />
               <Route path="/wholesale/how-to-order" element={<HowToOrderPage />} />
               <Route path="/wholesale/deal" element={<DealPage />} />
+              <Route path="/terms-and-policies" element={<TermsAndPolicies />} />
 
               {/* <Route path="/contact" element={<ContactPage />} /> */}
               {/* Add more routes as needed */}

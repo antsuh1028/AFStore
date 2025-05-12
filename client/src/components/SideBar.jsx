@@ -49,6 +49,7 @@ const Sidebar = ({ children }) => {
                   mt={1}
                   display="block"
                   textDecoration="underline"
+                  href="/wholesale/how-to-order"
                 >
                   GO TO PAGES &gt;
                 </Link>
@@ -74,6 +75,7 @@ const Sidebar = ({ children }) => {
                   mt={1}
                   display="block"
                   textDecoration="underline"
+                  href="/contact"
                 >
                   GO TO PAGES &gt;
                 </Link>
