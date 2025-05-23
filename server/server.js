@@ -1,19 +1,12 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { apiRouter } from './routes/index.js';
-
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { apiRouter } from './routes/index.js';  // Add this
 
 dotenv.config();
 
 const app = express();
-
-const CLIENT_HOSTNAME =
-  process.env.NODE_ENV === "development"
-    ? `${process.env.DEV_CLIENT_HOSTNAME}:${process.env.DEV_CLIENT_PORT}`
-    : process.env.PROD_CLIENT_HOSTNAME;
-
-const SERVER_PORT =
+const PORT =
   process.env.NODE_ENV === "development"
     ? process.env.DEV_SERVER_PORT
     : process.env.PROD_SERVER_PORT;
@@ -22,10 +15,22 @@ const SERVER_PORT =
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  console.log("Root route hit!");
+  res.json({ message: "Server is working!" });
+});
+
 app.use('/api', apiRouter);
 
-// Start server
-app.listen(SERVER_PORT, () => {
-  console.log(`Server running on port ${SERVER_PORT}`);
-  console.log("Client: ", CLIENT_HOSTNAME);
+const server = app.listen(PORT, (err) => {
+  if (err) {
+    console.error("Server failed to start:", err);  
+  } else {
+    console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`Test: http://localhost:${PORT}/api/items`);
+  }
+});
+
+server.on("error", (err) => {
+  console.error("Server error:", err);
 });
