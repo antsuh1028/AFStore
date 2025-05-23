@@ -6,6 +6,7 @@ CREATE TABLE "Order" (
     total_amount INTEGER NOT NULL,
     shipping_address INTEGER,
     billing_address INTEGER,
+    order_number VARCHAR(256) NOT NULL;
     FOREIGN KEY (user_id) REFERENCES "User"(id),
     FOREIGN KEY (shipping_address) REFERENCES "Shipping_Address"(id),
     FOREIGN KEY (billing_address) REFERENCES "Shipping_Address"(id)

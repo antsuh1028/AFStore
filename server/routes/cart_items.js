@@ -12,56 +12,6 @@ CartItemsRouter.get("/", async (req, res) => {
   }
 });
 
-// Add item to cart
-CartItemsRouter.post("/", async (req, res) => {
-  try {
-    const { cart_id, item_id, quantity } = req.body;
-
-    if (!cart_id || !item_id || !quantity) {
-      return res.status(400).json({
-        error: "Missing required fields",
-        required: ["cart_id", "item_id", "quantity"],
-      });
-    }
-
-    // Check if item already exists in cart
-    const existingItem = await db.query(
-      `SELECT * FROM cart_items WHERE cart_id = $1 AND item_id = $2`,
-      [cart_id, item_id]
-    );
-
-    let result;
-    if (existingItem.rows.length > 0) {
-      result = await db.query(
-        `UPDATE cart_items 
-         SET quantity = quantity + $1 
-         WHERE cart_id = $2 AND item_id = $3 
-         RETURNING *`,
-        [quantity, cart_id, item_id]
-      );
-    } else {
-      result = await db.query(
-        `INSERT INTO cart_items (cart_id, item_id, quantity, date_added) 
-   VALUES ($1, $2, $3, CURRENT_TIMESTAMP) 
-   RETURNING *`,
-        [cart_id, item_id, quantity]
-      );
-    }
-
-    res.status(201).json({
-      success: true,
-      data: result.rows[0],
-      message: "Item added to cart",
-    });
-  } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({
-      error: "Internal server error",
-      message: err.message,
-    });
-  }
-});
-
 // Get specific cart item
 CartItemsRouter.get("/:id", async (req, res) => {
   try {
@@ -116,12 +66,6 @@ CartItemsRouter.get("/cart/:cart_id", async (req, res) => {
       [cartId]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        error: "Cart not found",
-      });
-    }
-
     res.json({
       success: true,
       data: result.rows,
@@ -172,6 +116,56 @@ CartItemsRouter.put("/:id", async (req, res) => {
       success: true,
       data: result.rows[0],
       message: "Cart item updated",
+    });
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({
+      error: "Internal server error",
+      message: err.message,
+    });
+  }
+});
+
+// Add item to cart
+CartItemsRouter.post("/", async (req, res) => {
+  try {
+    const { cart_id, item_id, quantity } = req.body;
+
+    if (!cart_id || !item_id || !quantity) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        required: ["cart_id", "item_id", "quantity"],
+      });
+    }
+
+    // Check if item already exists in cart
+    const existingItem = await db.query(
+      `SELECT * FROM cart_items WHERE cart_id = $1 AND item_id = $2`,
+      [cart_id, item_id]
+    );
+
+    let result;
+    if (existingItem.rows.length > 0) {
+      result = await db.query(
+        `UPDATE cart_items 
+         SET quantity = quantity + $1 
+         WHERE cart_id = $2 AND item_id = $3 
+         RETURNING *`,
+        [quantity, cart_id, item_id]
+      );
+    } else {
+      result = await db.query(
+        `INSERT INTO cart_items (cart_id, item_id, quantity, date_added) 
+   VALUES ($1, $2, $3, CURRENT_TIMESTAMP) 
+   RETURNING *`,
+        [cart_id, item_id, quantity]
+      );
+    }
+
+    res.status(201).json({
+      success: true,
+      data: result.rows[0],
+      message: "Item added to cart",
     });
   } catch (err) {
     console.error("Database error:", err);
