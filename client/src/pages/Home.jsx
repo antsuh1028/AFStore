@@ -77,9 +77,9 @@ const HomePage = () => {
             border="1px"
           >
             <Image
-              src="/api/placeholder/400/200"
+              src="../../public/final/meatt.webp"
               alt="Various Meat Cuts"
-              objectFit="cover"
+              // objectFit="cover"
               w="100%"
               h="100%"
             />
@@ -210,7 +210,7 @@ const HomePage = () => {
           <Flex direction="row" justify="space-between" gap={6}>
             <Box flex="1" border="1px" height="20vh" borderRadius="lg">
               <Image
-                src="/api/placeholder/120/120"
+                src="../../public/final/Raw-steak.png"
                 alt="Brisket Slice"
                 borderRadius="full"
                 mb={2}

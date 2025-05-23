@@ -364,6 +364,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                 </GridItem>
               </Grid>
             </Box>
+            <Link href="/terms-and-policies">Terms and Policies</Link>
           </Box>
         </DrawerBody>
       </DrawerContent>

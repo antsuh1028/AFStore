@@ -1,7 +1,9 @@
 import { Box, VStack, Text, Link, useBreakpointValue } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ children }) => {
   const isDesktop = useBreakpointValue({ base: false, lg: true });
+  const navigate = useNavigate();
 
   return (
     <Box display="flex">
@@ -19,12 +21,19 @@ const Sidebar = ({ children }) => {
         >
           <VStack align="flex-start" spacing={4}>
             {/* Logo */}
-            <Text fontSize="2xl" fontWeight="normal" border="1px" >
-              <Box as="span" fontWeight="bold">
-                Adams
-              </Box>
-              Foods
-            </Text>
+            <Box
+              onClick={() => navigate("/")}
+              cursor="pointer"
+              _hover={{ opacity: 0.8 }}
+              transition="opacity 0.2s"
+            >
+              <Text fontSize="2xl" fontWeight="normal">
+                <Box as="span" fontWeight="bold">
+                  Adams
+                </Box>
+                Foods
+              </Text>
+            </Box>
             <Box h="45vh" w="100%" bg="white" border="1px" />
 
             {/* Menu Sections */}
