@@ -1,20 +1,20 @@
 import { extendTheme } from "@chakra-ui/react";
 
-// Consolidated theme with SUIT-Regular font for all components
+
 const theme = extendTheme({
   fonts: {
-    heading: "'SUIT-Regular', sans-serif",
-    body: "'SUIT-Regular', sans-serif",
-    button: "'SUIT-Regular', sans-serif",
-    mono: "'SUIT-Regular', sans-serif",
+    heading: "'Suit', sans-serif",
+    body: "'Suit', sans-serif",
+    button: "'Suit', sans-serif",
+    mono: "'Suit', monospace", 
   },
   styles: {
     global: {
       body: {
-        fontFamily: "'SUIT-Regular', sans-serif",
+        fontFamily: "'Suit', sans-serif",
       },
       "h1, h2, h3, h4, h5, h6": {
-        fontFamily: "'SUIT-Regular', sans-serif",
+        fontFamily: "'Suit', sans-serif",
       },
     },
   },

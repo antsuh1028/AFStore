@@ -3,3 +3,6 @@ export { default as DealPage } from './Deal.jsx';
 export { default as FAQPage } from './Faq.jsx';
 export { default as HowToOrderPage } from './Order.jsx';
 export { default as PackingPage } from './Packing.jsx';
+export { default as MarinatedPage } from './Marinated.jsx';
+// export { default as PackingPage } from './Packing.jsx';
+// export { default as PackingPage } from './Packing.jsx';

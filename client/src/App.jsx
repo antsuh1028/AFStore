@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/Home";
 import ContactPage from "./pages/Contact";
 import TermsAndPolicies from "./pages/Terms";
-import {PackingPage, FAQPage, B2BPage, DealPage, HowToOrderPage} from "./pages/wholesale"
+import {PackingPage, FAQPage, B2BPage, DealPage, HowToOrderPage, MarinatedPage} from "./pages/wholesale"
 import theme from "./theme";
 import "./fonts.css"; 
 
@@ -23,6 +23,7 @@ function App() {
               <Route path="/wholesale/b2b" element={<B2BPage />} />
               <Route path="/wholesale/how-to-order" element={<HowToOrderPage />} />
               <Route path="/wholesale/deal" element={<DealPage />} />
+              <Route path="/wholesale/marinated" element={<MarinatedPage />} />
               <Route path="/terms-and-policies" element={<TermsAndPolicies />} />
 
               {/* <Route path="/contact" element={<ContactPage />} /> */}
