@@ -177,7 +177,21 @@ const Login = () => {
                 />
               </FormControl>
 
-              <Box display="flex" justifyContent="center" width="100%" pt={4}>
+              <Text
+                mt={-3}
+                ml={4}
+                fontSize="sm"
+                color="gray.600"
+                textDecoration="underline"
+                cursor="pointer"
+                _hover={{ color: "#6AAFDB" }}
+                onClick={() => navigate("/forgot-password")}
+              >
+                Forgot your password?
+              </Text>
+
+
+              <Box display="flex" justifyContent="center" width="100%" pt={4} mb={-4}>
                 <Button
                   type="submit"
                   bg="#494949"
@@ -191,6 +205,20 @@ const Login = () => {
                   LOG IN
                 </Button>
               </Box>
+              <Box pt={4} textAlign="center">
+              <Text
+                fontSize="sm"
+                color="#494949"
+                fontWeight="bold"
+                textDecoration="underline"
+                cursor="pointer"
+                _hover={{ color: "#6AAFDB" }}
+                onClick={() => navigate("/signup/agreements")}
+              >
+                Create Account
+              </Text>
+            </Box>
+
             </VStack>
           </form>
 
