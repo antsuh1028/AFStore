@@ -209,6 +209,7 @@ const MarinatedPage = () => {
               variant="ghost"
               size="lg"
               colorScheme="gray"
+              onClick={()=>{navigate("/")}}
             />
             <IconButton
               aria-label="Menu"

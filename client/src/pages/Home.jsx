@@ -111,14 +111,22 @@ const HomePage = () => {
 
         {/* Categories */}
         <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={8}>
-          {["Marinated", "Processed", "Unprocessed"].map((category, idx) => (
+          {[
+            { name: "Marinated", url: "/wholesale/marinated" },
+            { name: "Processed", url: "/wholesale/processed" },
+            { name: "Unprocessed", url: "/wholesale/unprocessed" },
+          ].map((category, idx) => (
             <GridItem key={idx}>
-              <VStack spacing={2}>
+              <VStack
+                spacing={2}
+                cursor="pointer"
+                onClick={() => navigate(category.url)}
+              >
                 <Circle size="60px" bg="#efeeee" overflow="hidden">
-                  <Image src="/api/placeholder/60/60" alt={category} />
+                  <Image src="/api/placeholder/60/60" alt={category.name} />
                 </Circle>
                 <Text fontSize="sm" fontWeight="semibold">
-                  {category}
+                  {category.name}
                 </Text>
               </VStack>
             </GridItem>

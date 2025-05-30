@@ -1,4 +1,5 @@
 import { Box, Image, Text } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 export const ProductCard = ({
   id,
@@ -14,7 +15,13 @@ export const ProductCard = ({
   avg_weight,
   style,
 }) => {
+  const navigate = useNavigate();
   const placeholderImage = "https://via.placeholder.com/200x150?text=No+Image";
+
+  const handleCardClick = () => {
+    navigate(`/wholesale/product/${id}`);
+  };
+
   return (
     <Box
       borderRadius="xl"
@@ -23,6 +30,18 @@ export const ProductCard = ({
       width="100%"
       bg="white"
       p={2}
+      cursor="pointer"
+      transition="all 0.2s ease"
+      _hover={{
+        transform: "translateY(-2px)",
+        boxShadow: "lg",
+        bg: "gray.50"
+      }}
+      _active={{
+        transform: "translateY(0)",
+        boxShadow: "md"
+      }}
+      onClick={handleCardClick}
     >
       {/* Product Image */}
       <Image
@@ -32,6 +51,7 @@ export const ProductCard = ({
         width="100%"
         height="auto"
         objectFit="cover"
+        loading="lazy"
       />
 
       {/* Product Name */}
@@ -45,7 +65,7 @@ export const ProductCard = ({
       </Text>
 
       {/* Price */}
-      <Text mt={1} fontWeight="bold">
+      <Text mt={1} fontWeight="bold" color="green.600">
         ${price}
       </Text>
     </Box>

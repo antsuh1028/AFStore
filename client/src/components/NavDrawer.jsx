@@ -133,7 +133,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/marinated")}
+                    onClick={() => handleNavigate("/wholesale/marinated")}
                   >
                     <Circle size="65px" bg="#efedef">
                       <Image src="/api/placeholder/50/50" alt="Marinated" />
@@ -152,7 +152,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/processed")}
+                    onClick={() => handleNavigate("/wholesale/processed")}
                   >
                     <Circle size="65px" bg="#efedef">
                       <Image src="/api/placeholder/50/50" alt="Processed" />
@@ -171,7 +171,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/unprocessed")}
+                    onClick={() => handleNavigate("/wholesale/unprocessed")}
                   >
                     <Circle size="65px" bg="#efedef">
                       <Image src="/api/placeholder/50/50" alt="Unprocessed" />

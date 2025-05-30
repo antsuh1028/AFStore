@@ -17,6 +17,7 @@ import {
   HowToOrderPage,
   MarinatedPage,
 } from "./pages/wholesale";
+import ProductDetailPage from "./pages/wholesale/product/ProductDetails";
 import theme from "./theme";
 import "./fonts.css";
 
@@ -42,6 +43,7 @@ function App() {
               <Route path="/signup/agreements" element={<AgreementGate />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/wholesale/product/:productId" element={<ProductDetailPage />} />
               {/* Add more routes as needed */}
             </Routes>
           </Box>
