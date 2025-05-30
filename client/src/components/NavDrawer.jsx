@@ -22,9 +22,7 @@ import {
   SimpleGrid,
   Link,
 } from "@chakra-ui/react";
-import { Menu } from "lucide-react";
-// import AdamsLogo from "../../MainLogo.png";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const NavDrawer = ({ isOpen, onClose, containerRef }) => {
@@ -47,13 +45,6 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
     window.addEventListener("resize", updateWidth);
     return () => window.removeEventListener("resize", updateWidth);
   }, [isOpen, containerRef]);
-  
-  const handleNavigate = (path) => {
-    if (path) {
-      navigate(path);
-    }
-    onClose();
-  };
 
   return (
     <Drawer
@@ -87,18 +78,32 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
               size="xl"
               ml={4}
             />
-            <IconButton
-              aria-label="Menu"
-              icon={
-                <Text fontSize="2xl" color="#8f8e8e">
-                  ☰
-                </Text>
-              }
-              variant="ghost"
-              onClick={onClose}
-              size="lg"
-              p={5}
-            />
+            <Flex>
+              <IconButton
+                aria-label="Menu"
+                icon={<UserRound size={24} />}
+                variant="ghost"
+                onClick={onClose}
+              />
+              <IconButton
+                aria-label="Menu"
+                icon={<ShoppingCart size={24} />}
+                variant="ghost"
+                onClick={onClose}
+              />
+              <IconButton
+                aria-label="Menu"
+                icon={
+                  <Text fontSize="2xl" color="#8f8e8e">
+                    ☰
+                  </Text>
+                }
+                variant="ghost"
+                onClick={onClose}
+                size="xs"
+                p={5}
+              />
+            </Flex>
           </Flex>
         </Box>
 
@@ -121,7 +126,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   fontWeight="medium"
                   marginRight={4}
                   textDecoration="underline"
-                  onClick={() => handleNavigate("/shop-all")}
+                  onClick={() => navigate("/wholesale/shop-all")}
                 >
                   Shop all
                 </Link>
@@ -133,10 +138,14 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/wholesale/marinated")}
+                    onClick={() => navigate("/wholesale/marinated")}
                   >
                     <Circle size="65px" bg="#efedef">
-                      <Image src="/api/placeholder/50/50" alt="Marinated" />
+                      <Image
+                        src="../../../public/gray.avif"
+                        objectFit="cover"
+                        alt="Marinated"
+                      />
                     </Circle>
                     <Text
                       fontSize="13px"
@@ -152,10 +161,10 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/wholesale/processed")}
+                    onClick={() => navigate("/wholesale/processed")}
                   >
                     <Circle size="65px" bg="#efedef">
-                      <Image src="/api/placeholder/50/50" alt="Processed" />
+                      <Image src="../../../public/gray.avif" alt="Processed" />
                     </Circle>
                     <Text
                       fontSize="13px"
@@ -171,10 +180,13 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/wholesale/unprocessed")}
+                    onClick={() => navigate("/wholesale/unprocessed")}
                   >
                     <Circle size="65px" bg="#efedef">
-                      <Image src="/api/placeholder/50/50" alt="Unprocessed" />
+                      <Image
+                        src="../../../public/gray.avif"
+                        alt="Unprocessed"
+                      />
                     </Circle>
                     <Text
                       fontSize="13px"
@@ -207,7 +219,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/wholesale/deal")}
+                    onClick={() => navigate("/wholesale/deal")}
                   >
                     <Circle size="65px" bg="#494949">
                       <Image
@@ -233,7 +245,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/wholesale/how-to-order")}
+                    onClick={() => navigate("/wholesale/how-to-order")}
                   >
                     <Circle size="65px" bg="#494949">
                       <Image
@@ -259,7 +271,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/contact")}
+                    onClick={() => navigate("/contact")}
                   >
                     <Circle size="65px" bg="#494949">
                       <Image
@@ -288,7 +300,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/wholesale/packing")}
+                    onClick={() => navigate("/wholesale/packing")}
                   >
                     <Circle size="65px" bg="#494949">
                       <Image
@@ -314,7 +326,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/wholesale/b2b")}
+                    onClick={() => navigate("/wholesale/b2b")}
                   >
                     <Circle size="65px" bg="#494949">
                       <Image
@@ -340,7 +352,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                   <VStack
                     spacing={1}
                     cursor="pointer"
-                    onClick={() => handleNavigate("/wholesale/faq")}
+                    onClick={() => navigate("/wholesale/faq")}
                   >
                     <Circle size="65px" bg="#494949">
                       <Image

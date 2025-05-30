@@ -23,8 +23,18 @@ import {
   ListItem,
   ListIcon,
 } from "@chakra-ui/react";
-import { ChevronLeft, ChevronDown, ChevronUp, MapPin, Clock, Thermometer, Package } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
+  MapPin,
+  Clock,
+  Thermometer,
+  Package,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
+import { FiPackage, FiThermometer, FiTruck, FiClock } from "react-icons/fi";
 
 import NavDrawer from "../../../components/NavDrawer";
 import Sidebar from "../../../components/SideBar";
@@ -36,12 +46,12 @@ const ProductDetailPage = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
   const contentRef = useRef(null);
-  
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  
+
   // Collapsible sections
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -51,17 +61,19 @@ const ProductDetailPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3001/api/items/${productId}`);
+        const response = await fetch(
+          `http://localhost:3001/api/items/${productId}`
+        );
         const data = await response.json();
-        
+
         if (!response.ok) {
-          throw new Error(data.error || 'Product not found');
+          throw new Error(data.error || "Product not found");
         }
-        
+
         setProduct(data.data);
       } catch (err) {
         setError(err.message);
-        console.error('Error fetching product:', err);
+        console.error("Error fetching product:", err);
       } finally {
         setLoading(false);
       }
@@ -72,28 +84,25 @@ const ProductDetailPage = () => {
   }, [productId]);
 
   const handleContactForOrder = () => {
-    navigate('/contact', { 
-      state: { 
+    navigate("/contact", {
+      state: {
         productName: product.name,
         productId: product.id,
-        quantity: quantity
-      }
+        quantity: quantity,
+      },
     });
   };
 
-  const getSpeciesColor = (type) => {
-    switch (type?.toLowerCase()) {
-      case 'beef': return 'red';
-      case 'pork': return 'pink';
-      case 'poultry': return 'blue';
-      default: return 'gray';
-    }
-  };
+  
 
   if (loading) {
     return (
       <Sidebar>
-        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+        <NavDrawer
+          isOpen={isOpen}
+          onClose={onClose}
+          containerRef={contentRef}
+        />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -103,7 +112,12 @@ const ProductDetailPage = () => {
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
         >
-          <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minH="400px"
+          >
             <VStack spacing={4}>
               <Spinner size="xl" color="blue.500" />
               <Text>Loading product...</Text>
@@ -117,7 +131,11 @@ const ProductDetailPage = () => {
   if (error) {
     return (
       <Sidebar>
-        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+        <NavDrawer
+          isOpen={isOpen}
+          onClose={onClose}
+          containerRef={contentRef}
+        />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -135,7 +153,9 @@ const ProductDetailPage = () => {
                 <Text>{error}</Text>
               </Box>
             </Alert>
-            <Button mt={4} onClick={() => navigate(-1)}>Go Back</Button>
+            <Button mt={4} onClick={() => navigate(-1)}>
+              Go Back
+            </Button>
           </Box>
         </Container>
       </Sidebar>
@@ -145,7 +165,11 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <Sidebar>
-        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+        <NavDrawer
+          isOpen={isOpen}
+          onClose={onClose}
+          containerRef={contentRef}
+        />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -224,7 +248,7 @@ const ProductDetailPage = () => {
               objectFit="cover"
               borderRadius="lg"
             />
-            
+
             {/* Image overlay - quantity indicator */}
             <Box
               position="absolute"
@@ -242,60 +266,65 @@ const ProductDetailPage = () => {
           </Box>
 
           {/* Contact and Price Section */}
-          <HStack w="100%" spacing={4} align="center">
+          <HStack w="100%" spacing={4} gap={24} px={4} align="center">
             <Button
               bg="#494949"
               color="white"
               size="md"
-              flex="1"
               onClick={handleContactForOrder}
               _hover={{ bg: "#6AAFDB" }}
+              borderRadius="full"
+              px={8}
             >
               CONTACT US
             </Button>
-            <Text fontSize="xl" fontWeight="bold" color="green.600">
+            <Text fontSize="xl" fontWeight="bold" color="black">
               ${product.price}
             </Text>
           </HStack>
 
-          {/* Quick Info Icons */}
-          <Grid templateColumns="repeat(4, 1fr)" gap={4} w="100%" py={4}>
-            <GridItem>
-              <VStack spacing={1}>
-                <MapPin size={20} color="#666" />
-                <Text fontSize="xs" color="gray.600" textAlign="center">
-                  Pick up available at DTLA Warehouse
+          <VStack spacing={2} align="stretch" w="100%">
+            <Box bg="#f9f9f9" p={4} borderRadius="md">
+              <HStack spacing={2}>
+                <CheckCircleIcon color="green.500" />
+                <VStack align="flex-start" spacing={0}>
+                  <Text fontSize="sm" fontWeight="medium">
+                    Pick up available at DTLA Warehouse
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    Usually ready in 24 hours
+                  </Text>
+                </VStack>
+              </HStack>
+            </Box>
+
+            <VStack align="flex-start" px={8} spacing={3}>
+              <HStack>
+                <FiThermometer />
+                <Text fontSize="sm">Keep frozen</Text>
+              </HStack>
+              <HStack>
+                <FiTruck />
+                <Text fontSize="sm">
+                  Free local shipping in orders over $3000
                 </Text>
-              </VStack>
-            </GridItem>
-            <GridItem>
-              <VStack spacing={1}>
-                <Clock size={20} color="#666" />
-                <Text fontSize="xs" color="gray.600" textAlign="center">
-                  Usually ready in 24 hours
-                </Text>
-              </VStack>
-            </GridItem>
-            <GridItem>
-              <VStack spacing={1}>
-                <Thermometer size={20} color="#666" />
-                <Text fontSize="xs" color="gray.600" textAlign="center">
-                  Keep frozen
-                </Text>
-              </VStack>
-            </GridItem>
-            <GridItem>
-              <VStack spacing={1}>
-                <Package size={20} color="#666" />
-                <Text fontSize="xs" color="gray.600" textAlign="center">
+              </HStack>
+              <HStack>
+                <WarningIcon />
+                <Text fontSize="sm">Cook thoroughly before consumption</Text>
+              </HStack>
+              <HStack>
+                <FiPackage />
+                <Text fontSize="sm">
                   Pack Date: See package label for details
                 </Text>
-              </VStack>
-            </GridItem>
-          </Grid>
+              </HStack>
+            </VStack>
+          </VStack>
+
 
           {/* Collapsible Sections */}
-          
+
           {/* DETAIL Section */}
           <Box w="100%" border="1px" borderColor="gray.200" borderRadius="md">
             <Button
@@ -313,19 +342,27 @@ const ProductDetailPage = () => {
               <Box px={4} pb={4}>
                 <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={4}>
                   <GridItem>
-                    <Text fontSize="sm" color="gray.500">Brand</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Brand
+                    </Text>
                     <Text fontWeight="medium">{product.brand}</Text>
                   </GridItem>
                   <GridItem>
-                    <Text fontSize="sm" color="gray.500">Grade</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Grade
+                    </Text>
                     <Text fontWeight="medium">{product.grade}</Text>
                   </GridItem>
                   <GridItem>
-                    <Text fontSize="sm" color="gray.500">Origin</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Origin
+                    </Text>
                     <Text fontWeight="medium">{product.origin}</Text>
                   </GridItem>
                   <GridItem>
-                    <Text fontSize="sm" color="gray.500">Weight</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Weight
+                    </Text>
                     <Text fontWeight="medium">{product.avg_weight} lbs</Text>
                   </GridItem>
                 </Grid>
@@ -355,7 +392,9 @@ const ProductDetailPage = () => {
                   {product.description}
                 </Text>
                 <Box mt={4}>
-                  <Text fontSize="sm" fontWeight="medium" mb={2}>Storage Instructions:</Text>
+                  <Text fontSize="sm" fontWeight="medium" mb={2}>
+                    Storage Instructions:
+                  </Text>
                   <List spacing={1} fontSize="sm" color="gray.600">
                     <ListItem>• Keep frozen until ready to use</ListItem>
                     <ListItem>• Thaw in refrigerator before cooking</ListItem>
@@ -383,12 +422,18 @@ const ProductDetailPage = () => {
             <Collapse in={isIngredientsOpen}>
               <Box px={4} pb={4}>
                 <Text fontSize="sm" color="gray.700" lineHeight="tall">
-                  {product.type} ({product.origin}), Marinade (Soy Sauce, Sugar, Garlic, Ginger, Sesame Oil, Rice Wine, Korean Chili Paste), Natural Flavoring, Preservatives (Sodium Benzoate).
+                  {/* {product.type} ({product.origin}), Marinade (Soy Sauce, Sugar,
+                  Garlic, Ginger, Sesame Oil, Rice Wine, Korean Chili Paste),
+                  Natural Flavoring, Preservatives (Sodium Benzoate). */}
+                  Ingredients Here
                 </Text>
                 <Box mt={4}>
-                  <Text fontSize="sm" fontWeight="medium" mb={2}>Allergen Information:</Text>
+                  <Text fontSize="sm" fontWeight="medium" mb={2}>
+                    Allergen Information:
+                  </Text>
                   <Text fontSize="sm" color="gray.600">
-                    Contains: Soy, Sesame. May contain traces of wheat and nuts.
+                    {/* Contains: Soy, Sesame. May contain traces of wheat and nuts. */}
+                    Allergen Info Here
                   </Text>
                 </Box>
               </Box>
@@ -398,7 +443,8 @@ const ProductDetailPage = () => {
           {/* Additional Info */}
           <Box bg="gray.50" p={4} borderRadius="md" w="100%">
             <Text fontSize="sm" color="gray.600" textAlign="center">
-              <strong>Wholesale Only:</strong> This product is available exclusively for wholesale customers with valid licensing.
+              <strong>Wholesale Only:</strong> This product is available
+              exclusively for wholesale customers with valid licensing.
             </Text>
           </Box>
         </VStack>

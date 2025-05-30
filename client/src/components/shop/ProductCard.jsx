@@ -42,10 +42,12 @@ export const ProductCard = ({
         boxShadow: "md"
       }}
       onClick={handleCardClick}
+      maxW="180px"
+      mx="auto"
     >
       {/* Product Image */}
       <Image
-        src={images?.[0] || placeholderImage}
+        src={images?.[0] || "/gray.avif"}
         alt={name}
         borderRadius="md"
         width="100%"

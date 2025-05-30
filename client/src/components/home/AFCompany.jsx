@@ -37,7 +37,7 @@ const AFCompany = () => {
             bg="gray.100"
           >
             <Image
-              src="/api/placeholder/400/180"
+              src="../../public/gray.avif"
               alt="AdamsFoods Company"
               w="full"
               h="full"

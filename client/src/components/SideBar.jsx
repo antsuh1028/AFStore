@@ -1,6 +1,5 @@
-import { Box, VStack, Text, Link, useBreakpointValue,  } from "@chakra-ui/react";
+import { Box, VStack, Text, Link, useBreakpointValue } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-
 
 const Sidebar = ({ children }) => {
   const isDesktop = useBreakpointValue({ base: false, lg: true });

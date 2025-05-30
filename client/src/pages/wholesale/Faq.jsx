@@ -15,6 +15,7 @@ import NavDrawer from "../../components/NavDrawer";
 import Sidebar from "../../components/SideBar";
 import Breadcrumbs from "../../components/BreadCrumbs.";
 import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
 
 const FAQPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -73,23 +74,7 @@ const FAQPage = () => {
         ml={{ base: 0, lg: "40%" }}
       >
         {/* Top nav */}
-        <Box>
-          <Flex p={4} justify="space-between" align="center">
-            <IconButton
-              aria-label="Back"
-              icon={<ChevronLeft size={24} />}
-              variant="ghost"
-              size="lg"
-              colorScheme="gray"
-            />
-            <IconButton
-              aria-label="Menu"
-              icon={<Text>☰</Text>}
-              variant="ghost"
-              onClick={onOpen}
-            />
-          </Flex>
-        </Box>
+        <Navbar onOpen={onOpen}/>
 
         {/* Breadcrumbs */}
         <Box py={3} px={4} display="flex" justifyContent="center">

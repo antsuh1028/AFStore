@@ -22,7 +22,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { SearchIcon, ChevronRightIcon } from "@chakra-ui/icons";
-// import AdamsLogo from "../../public/MainLogo.png"
+import { ShoppingCart, UserRound } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 import NavDrawer from "../components/NavDrawer";
 import AFCompany from "../components/home/AFCompany";
@@ -48,12 +49,26 @@ const HomePage = () => {
         {/* Header */}
         <Flex p={4} justify="space-between" align="center">
           <Image src="../../grayAdams.png" alt="AdamsFoods Logo" width="40%" />
-          <IconButton
-            aria-label="Menu"
-            icon={<Text>☰</Text>}
-            variant="ghost"
-            onClick={onOpen}
-          />
+          <Flex>
+            <IconButton
+              aria-label="Menu"
+              icon={<UserRound size={24} />}
+              variant="ghost"
+              onClick={onClose}
+            />
+            <IconButton
+              aria-label="Menu"
+              icon={<ShoppingCart size={24} />}
+              variant="ghost"
+              onClick={onClose}
+            />
+            <IconButton
+              aria-label="Menu"
+              icon={<Text>☰</Text>}
+              variant="ghost"
+              onClick={onOpen}
+            />
+          </Flex>
         </Flex>
 
         {/* Hero Section */}
@@ -77,7 +92,7 @@ const HomePage = () => {
             border="1px"
           >
             <Image
-              src="../../public/final/meatt.webp"
+              src="../../public/gray.avif"
               alt="Various Meat Cuts"
               // objectFit="cover"
               w="100%"
@@ -123,7 +138,7 @@ const HomePage = () => {
                 onClick={() => navigate(category.url)}
               >
                 <Circle size="60px" bg="#efeeee" overflow="hidden">
-                  <Image src="/api/placeholder/60/60" alt={category.name} />
+                  <Image src="../../public/gray.avif" alt={category.name} />
                 </Circle>
                 <Text fontSize="sm" fontWeight="semibold">
                   {category.name}
@@ -216,12 +231,11 @@ const HomePage = () => {
         {/* Featured Product */}
         <Box px={4} position="relative" mb={6}>
           <Flex direction="row" justify="space-between" gap={6}>
-            <Box flex="1" border="1px" height="20vh" borderRadius="lg">
+            <Box flex="1" border="1px" height="100%" borderRadius="xl">
               <Image
-                src="../../public/final/Raw-steak.png"
+                src="../../public/gray.avif"
                 alt="Brisket Slice"
-                borderRadius="full"
-                mb={2}
+                borderRadius="xl"
               />
             </Box>
             <VStack
@@ -243,25 +257,27 @@ const HomePage = () => {
                 A cut only AdamsFoods can make, crafted with precision,
                 delivered with pride.
               </Text>
-              <IconButton
-                icon={
-                  <Image
-                    src="/final/button.png"
-                    alt="Order"
-                    objectFit="cover"
-                    width="60%"
-                    height="60%"
-                    borderRadius="full"
-                  />
-                }
-                isRound
-                size="md"
+              <Box
+                width="40px"
+                height="40px"
+                borderRadius="50%"
+                bg="#474745"
                 alignSelf="flex-end"
                 position="relative"
-                bg="#474745"
-                color="white"
-                _hover={{ bg: "white" }}
-              />
+                cursor="pointer"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                onClick={() => console.log("Circle clicked")}
+              >
+                <Image
+                  src="/final/button.png"
+                  alt="Order"
+                  width="60%"
+                  height="60%"
+                  objectFit="cover"
+                />
+              </Box>
               <Divider
                 borderColor="#e9e8e8"
                 borderWidth="1px"
@@ -279,7 +295,7 @@ const HomePage = () => {
             Why AdamsFoods?
           </Heading>
           <Flex mb={4} gap={4}>
-            <Button bg="#494949" width="50%" borderRadius="25px" _hover={{}}>
+            <Button bg="#494949" width="50%" borderRadius="25px">
               <Image
                 src="/final/why adamsfoods.png"
                 alt="button"

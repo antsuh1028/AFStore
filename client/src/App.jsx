@@ -16,6 +16,9 @@ import {
   DealPage,
   HowToOrderPage,
   MarinatedPage,
+  ProcessedPage,
+  UnprocessedPage,
+  AllProductsPage,
 } from "./pages/wholesale";
 import ProductDetailPage from "./pages/wholesale/product/ProductDetails";
 import theme from "./theme";
@@ -34,17 +37,34 @@ function App() {
               <Route path="/wholesale/packing" element={<PackingPage />} />
               <Route path="/wholesale/faq" element={<FAQPage />} />
               <Route path="/wholesale/b2b" element={<B2BPage />} />
-              <Route path="/wholesale/how-to-order" element={<HowToOrderPage />} />
+              <Route
+                path="/wholesale/how-to-order"
+                element={<HowToOrderPage />}
+              />
               <Route path="/wholesale/deal" element={<DealPage />} />
               <Route path="/wholesale/marinated" element={<MarinatedPage />} />
-              <Route path="/terms-and-policies" element={<TermsAndPolicies />} />
+              <Route
+                path="/terms-and-policies"
+                element={<TermsAndPolicies />}
+              />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signup/agreements" element={<AgreementGate />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/wholesale/product/:productId" element={<ProductDetailPage />} />
-              {/* Add more routes as needed */}
+              <Route
+                path="/wholesale/product/:productId"
+                element={<ProductDetailPage />}
+              />
+              <Route path="/wholesale/processed" element={<ProcessedPage />} />
+              <Route
+                path="/wholesale/unprocessed"
+                element={<UnprocessedPage />}
+              />
+              <Route
+                path="/wholesale/shop-all"
+                element={<AllProductsPage />}
+              />
             </Routes>
           </Box>
         </Box>

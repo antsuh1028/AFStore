@@ -25,6 +25,7 @@ import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
 import Breadcrumbs from "../components/BreadCrumbs.";
 import NavDrawer from "../components/NavDrawer";
+import Navbar from "../components/Navbar";
 
 const ContactPage = () => {
   const form = useRef();
@@ -119,24 +120,7 @@ const ContactPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
       >
-        <Box>
-          <Flex p={4} justify="space-between" align="center">
-            <IconButton
-              aria-label="Back"
-              icon={<ChevronLeft size={24} />}
-              variant="ghost"
-              size="lg"
-              colorScheme="gray"
-              onClick={() => navigate(-1)}
-            />
-            <IconButton
-              aria-label="Menu"
-              icon={<Text>☰</Text>}
-              variant="ghost"
-              onClick={onOpen}
-            />
-          </Flex>
-        </Box>
+        <Navbar onOpen={onOpen} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
           <Breadcrumbs
@@ -156,7 +140,13 @@ const ContactPage = () => {
           </Text>
           <Divider mb={6} borderColor="gray.300" />
 
-          <Heading as="h4" size="sm" mb={4} fontWeight="extrabold" textAlign="left">
+          <Heading
+            as="h4"
+            size="sm"
+            mb={4}
+            fontWeight="extrabold"
+            textAlign="left"
+          >
             Inquiries
           </Heading>
 
@@ -198,7 +188,9 @@ const ContactPage = () => {
                   }}
                   {...inputStyle}
                 />
-                {emailError && <FormErrorMessage>{emailError}</FormErrorMessage>}
+                {emailError && (
+                  <FormErrorMessage>{emailError}</FormErrorMessage>
+                )}
               </FormControl>
 
               <FormControl>
@@ -255,7 +247,9 @@ const ContactPage = () => {
                       overflow="hidden"
                       zIndex="-1"
                       onChange={(e) => {
-                        setFileName(e.target.files[0]?.name || "No file chosen");
+                        setFileName(
+                          e.target.files[0]?.name || "No file chosen"
+                        );
                       }}
                     />
                   </Box>

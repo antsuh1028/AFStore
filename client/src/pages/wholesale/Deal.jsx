@@ -16,12 +16,13 @@ import { ChevronLeft } from "lucide-react";
 import Breadcrumbs from "../../components/BreadCrumbs.";
 import DealContent from "../../components/deal/DealComponent";
 import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
 
 const DealPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const contentRef = useRef(null);
-  
+
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
@@ -33,25 +34,7 @@ const DealPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
       >
-        <Box>
-          <Flex p={4} justify="space-between" align="center">
-            <IconButton
-              aria-label="Back"
-              icon={<ChevronLeft size={24} />}
-              variant="ghost"
-              size="lg"
-              colorScheme="gray"
-              onClick={() => navigate(-1)}
-            />
-            <IconButton
-              aria-label="Menu"
-              icon={<Text>☰</Text>}
-              variant="ghost"
-              onClick={onOpen}
-            />
-          </Flex>
-        </Box>
-
+        <Navbar onOpen={onOpen} />
         <Box py={3} px={4} display="flex" justifyContent="center">
           <Breadcrumbs
             listOfBreadCrumbs={[

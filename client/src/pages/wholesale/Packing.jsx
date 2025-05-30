@@ -17,6 +17,7 @@ import NavDrawer from "../../components/NavDrawer";
 import Sidebar from "../../components/SideBar";
 import Breadcrumbs from "../../components/BreadCrumbs.";
 import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
 
 const PackingPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,10 +39,7 @@ const PackingPage = () => {
     },
   ];
 
-  const imageUrls = [
-    "/images/packing1.jpg",
-    "/images/packing2.jpg",
-  ];
+  const imageUrls = ["/images/packing1.jpg", "/images/packing2.jpg"];
 
   return (
     <Sidebar>
@@ -54,23 +52,7 @@ const PackingPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
       >
-        <Box>
-          <Flex p={4} justify="space-between" align="center">
-            <IconButton
-              aria-label="Back"
-              icon={<ChevronLeft size={24} />}
-              variant="ghost"
-              size="lg"
-              colorScheme="gray"
-            />
-            <IconButton
-              aria-label="Menu"
-              icon={<Text>☰</Text>}
-              variant="ghost"
-              onClick={onOpen}
-            />
-          </Flex>
-        </Box>
+        <Navbar onOpen={onOpen} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
           <Breadcrumbs
@@ -91,8 +73,6 @@ const PackingPage = () => {
           </Box>
           <Divider mt={2} borderColor="gray.200" />
         </Box>
-
-        
 
         <VStack spacing={8} px={6} py={4} align="start">
           {sectionData.map((section, index) => (
