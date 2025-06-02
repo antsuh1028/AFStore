@@ -234,7 +234,7 @@ const ProductDetailPage = () => {
         {/* Product Content */}
         <VStack spacing={4} px={4} pb={8}>
           {/* Product Title */}
-          <Heading as="h1" size="md" textAlign="left" w="100%" lineHeight="1.3">
+          <Heading as="h1" size="md" textAlign="left" w="100%" lineHeight="1.3" mt={8} mb={2} ml={4}>
             {product.name}
           </Heading>
 
@@ -261,7 +261,7 @@ const ProductDetailPage = () => {
               borderRadius="md"
               fontSize="sm"
             >
-              1/3
+              {product.images ? product.images.length():"0/0"}
             </Box>
           </Box>
 
@@ -326,7 +326,7 @@ const ProductDetailPage = () => {
           {/* Collapsible Sections */}
 
           {/* DETAIL Section */}
-          <Box w="100%" border="1px" borderColor="gray.200" borderRadius="md">
+          <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
             <Button
               w="100%"
               justifyContent="space-between"
@@ -374,7 +374,7 @@ const ProductDetailPage = () => {
           </Box>
 
           {/* INFORMATION Section */}
-          <Box w="100%" border="1px" borderColor="gray.200" borderRadius="md">
+          <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
             <Button
               w="100%"
               justifyContent="space-between"
@@ -407,7 +407,7 @@ const ProductDetailPage = () => {
           </Box>
 
           {/* INGREDIENTS Section */}
-          <Box w="100%" border="1px" borderColor="gray.200" borderRadius="md">
+          <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
             <Button
               w="100%"
               justifyContent="space-between"
@@ -422,10 +422,7 @@ const ProductDetailPage = () => {
             <Collapse in={isIngredientsOpen}>
               <Box px={4} pb={4}>
                 <Text fontSize="sm" color="gray.700" lineHeight="tall">
-                  {/* {product.type} ({product.origin}), Marinade (Soy Sauce, Sugar,
-                  Garlic, Ginger, Sesame Oil, Rice Wine, Korean Chili Paste),
-                  Natural Flavoring, Preservatives (Sodium Benzoate). */}
-                  Ingredients Here
+                  {product.ingredients || "Ingredients Here"}
                 </Text>
                 <Box mt={4}>
                   <Text fontSize="sm" fontWeight="medium" mb={2}>

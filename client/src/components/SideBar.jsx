@@ -60,7 +60,7 @@ const Sidebar = ({ children }) => {
                   textDecoration="underline"
                   href="/wholesale/how-to-order"
                 >
-                  GO TO PAGES &gt;
+                  GO TO PAGE &gt;
                 </Link>
               </Box>
 
@@ -86,7 +86,7 @@ const Sidebar = ({ children }) => {
                   textDecoration="underline"
                   href="/contact"
                 >
-                  GO TO PAGES &gt;
+                  GO TO PAGE &gt;
                 </Link>
               </Box>
             </VStack>

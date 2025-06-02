@@ -60,7 +60,7 @@ const HomePage = () => {
               aria-label="Menu"
               icon={<ShoppingCart size={24} />}
               variant="ghost"
-              onClick={onClose}
+              onClick={()=>{navigate('/cart')}}
             />
             <IconButton
               aria-label="Menu"
@@ -79,6 +79,9 @@ const HomePage = () => {
               WHOLESALE
             </Text>
           </Heading>
+        </Box>
+        <Box bg="gray" width="100%" my={4}height="20vh">DEAL DEAL DEAL DEAL DEAL DEAL DEAL DEAL 
+
         </Box>
 
         {/* Main Image */}

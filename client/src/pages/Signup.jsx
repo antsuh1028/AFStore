@@ -173,7 +173,7 @@ const Signup = () => {
         </Box>
 
         <Box px={6} py={4}>
-          <Heading mb={6} fontWeight="medium" fontSize="3xl" textAlign="center">
+          <Heading mb={6} fontWeight="semibold" fontSize="3xl" textAlign="center">
             Sign Up
           </Heading>
 

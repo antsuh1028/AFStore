@@ -146,11 +146,11 @@ const MarinatedPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
         minHeight="100vh"
-        position="relative" // Ensure stable positioning
+        position="relative" 
       >
        <Navbar onOpen={onOpen}/>
 
-        <VStack spacing={0}> {/* Remove spacing to prevent layout shifts */}
+        <VStack spacing={0} px={4}> 
           <Box fontSize="2xl" fontWeight="semibold" mb={4}>
             Marinated Meat
           </Box>
@@ -171,7 +171,7 @@ const MarinatedPage = () => {
                   }}
                   _focus={{ boxShadow: "none" }}
                   p={0}
-                  transition="none" // Remove transitions that might cause shifts
+                  transition="none"
                 >
                   <Box
                     border="1px"

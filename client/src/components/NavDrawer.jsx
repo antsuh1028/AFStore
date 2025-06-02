@@ -83,13 +83,13 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                 aria-label="Menu"
                 icon={<UserRound size={24} />}
                 variant="ghost"
-                onClick={onClose}
+                // onClick={onClose}
               />
               <IconButton
                 aria-label="Menu"
                 icon={<ShoppingCart size={24} />}
                 variant="ghost"
-                onClick={onClose}
+                onClick={()=>{navigate("/cart")}}
               />
               <IconButton
                 aria-label="Menu"

@@ -102,7 +102,7 @@ const OrderContent = () => {
               lineHeight="1.6"
               width={{base:"95%", md:"90%"}}
             >
-              Once you've selected your meat, please contact us through the{" "}
+              Once you've selected your product(s), please contact us through the{" "}
               <Link
                 href="/contact"
                 color={accentColor}
