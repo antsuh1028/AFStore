@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import NavDrawer from "../components/NavDrawer";
 import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
+import Navbar from "../components/Navbar";
 
 const TermsAndPoliciesPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -28,6 +29,7 @@ const TermsAndPoliciesPage = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+      
       <Container
         ref={contentRef}
         maxW={{ base: "100%", lg: "30%" }}
@@ -36,8 +38,9 @@ const TermsAndPoliciesPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
       >
+        <Navbar onOpen={onOpen}/>
         {/* Header */}
-        <Flex p={4} justify="space-between" align="center">
+        {/* <Flex p={4} justify="space-between" align="center">
           <Image src="../../grayAdams.png" alt="AdamsFoods Logo" width="40%" />
           <IconButton
             aria-label="Menu"
@@ -45,7 +48,7 @@ const TermsAndPoliciesPage = () => {
             variant="ghost"
             onClick={onOpen}
           />
-        </Flex>
+        </Flex> */}
 
         {/* Terms & Policies Header */}
         <Box px={4} py={8} textAlign="center">

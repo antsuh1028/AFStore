@@ -25,8 +25,10 @@ import {
 } from "@chakra-ui/react";
 import {
   ChevronLeft,
+  ChevronRight,
   ChevronDown,
   ChevronUp,
+  ShoppingCart,
   MapPin,
   Clock,
   Thermometer,
@@ -52,10 +54,11 @@ const ProductDetailPage = () => {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
-  // Collapsible sections
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isIngredientsOpen, setIsIngredientsOpen] = useState(false);
+
+  const [imagePage, setImagePage] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -92,8 +95,6 @@ const ProductDetailPage = () => {
       },
     });
   };
-
-  
 
   if (loading) {
     return (
@@ -207,12 +208,13 @@ const ProductDetailPage = () => {
               aria-label="Back"
               icon={<ChevronLeft size={24} />}
               variant="ghost"
-              size="lg"
+              size="sm"
               colorScheme="gray"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(`/wholesale/${product.style}`)}
             />
             <IconButton
               aria-label="Menu"
+              size="sm"
               icon={<Text>☰</Text>}
               variant="ghost"
               onClick={onOpen}
@@ -225,7 +227,12 @@ const ProductDetailPage = () => {
           <Breadcrumbs
             listOfBreadCrumbs={[
               { label: "Home", url: "/" },
-              { label: "Marinated", url: "/wholesale/marinated" },
+              {
+                label:
+                  product.style.charAt(0).toUpperCase() +
+                  product.style.slice(1),
+                url: `/wholesale/${product.style}`,
+              },
               { label: (product?.name || "Product").substring(0, 30) + "..." },
             ]}
           />
@@ -234,14 +241,22 @@ const ProductDetailPage = () => {
         {/* Product Content */}
         <VStack spacing={4} px={4} pb={8}>
           {/* Product Title */}
-          <Heading as="h1" size="md" textAlign="left" w="100%" lineHeight="1.3" mt={8} mb={2} ml={4}>
+          <Heading
+            as="h1"
+            size="md"
+            textAlign="left"
+            w="100%"
+            lineHeight="1.3"
+            mt={8}
+            mb={2}
+            ml={4}
+          >
             {product.name}
           </Heading>
 
-          {/* Product Image with overlay info */}
           <Box position="relative" w="100%">
             <Image
-              src={product.images?.[0] || "/gray.avif"}
+              src={product.images?.[imagePage - 1] || "/gray.avif"}
               alt={product.name}
               w="100%"
               h="280px"
@@ -249,35 +264,134 @@ const ProductDetailPage = () => {
               borderRadius="lg"
             />
 
-            {/* Image overlay - quantity indicator */}
+            {product.images && product.images.length > 1 && (
+              <>
+                {/* Left Arrow */}
+                <IconButton
+                  aria-label="previous-image"
+                  icon={<ChevronLeft size={20} />}
+                  variant="ghost"
+                  size="sm"
+                  position="absolute"
+                  left="2"
+                  top="50%"
+                  transform="translateY(-50%)"
+                  bg="blackAlpha.600"
+                  color="white"
+                  borderRadius="full"
+                  _hover={{ bg: "blackAlpha.800" }}
+                  disabled={imagePage <= 1}
+                  onClick={() => {
+                    if (imagePage > 1) {
+                      setImagePage(imagePage - 1);
+                    }
+                  }}
+                  _disabled={{
+                    color: "whiteAlpha.300",
+                    cursor: "not-allowed",
+                    opacity: 0.4,
+                    bg: "blackAlpha.400",
+                  }}
+                />
+
+                {/* Right Arrow */}
+                <IconButton
+                  aria-label="next-image"
+                  icon={<ChevronRight size={20} />}
+                  variant="ghost"
+                  size="sm"
+                  position="absolute"
+                  right="2"
+                  top="50%"
+                  transform="translateY(-50%)"
+                  bg="blackAlpha.600"
+                  color="white"
+                  borderRadius="full"
+                  _hover={{ bg: "blackAlpha.800" }}
+                  disabled={imagePage >= product.images.length}
+                  onClick={() => {
+                    if (imagePage < product.images.length) {
+                      setImagePage(imagePage + 1);
+                    }
+                  }}
+                  _disabled={{
+                    color: "whiteAlpha.300",
+                    cursor: "not-allowed",
+                    opacity: 0.4,
+                    bg: "blackAlpha.400",
+                  }}
+                />
+
+                <HStack
+                  position="absolute"
+                  bottom="4"
+                  left="50%"
+                  transform="translateX(-50%)"
+                  spacing={2}
+                >
+                  {product.images.map((_, index) => (
+                    <Box
+                      key={index}
+                      w="8px"
+                      h="8px"
+                      borderRadius="full"
+                      bg={imagePage === index + 1 ? "white" : "whiteAlpha.500"}
+                      cursor="pointer"
+                      onClick={() => setImagePage(index + 1)}
+                      transition="all 0.2s"
+                      _hover={{ bg: "white" }}
+                    />
+                  ))}
+                </HStack>
+              </>
+            )}
+
+            {/* Image counter in top right */}
             <Box
               position="absolute"
-              bottom="4"
+              top="4"
               right="4"
               bg="blackAlpha.700"
               color="white"
               px={2}
               py={1}
               borderRadius="md"
-              fontSize="sm"
+              fontSize="xs"
             >
-              {product.images ? product.images.length():"0/0"}
+              {imagePage}/{product.images?.length || 1}
             </Box>
           </Box>
 
           {/* Contact and Price Section */}
-          <HStack w="100%" spacing={4} gap={24} px={4} align="center">
-            <Button
-              bg="#494949"
-              color="white"
-              size="md"
-              onClick={handleContactForOrder}
-              _hover={{ bg: "#6AAFDB" }}
-              borderRadius="full"
-              px={8}
-            >
-              CONTACT US
-            </Button>
+          <HStack
+            w="100%"
+            spacing={0}
+            px={4}
+            align="center"
+            justify="space-between"
+          >
+            <HStack>
+              <Button
+                bg="#494949"
+                color="white"
+                size="md"
+                onClick={handleContactForOrder}
+                _hover={{ bg: "#6AAFDB" }}
+                borderRadius="full"
+                px={8}
+              >
+                CONTACT US
+              </Button>
+              <IconButton
+                icon={<ShoppingCart size={20} />}
+                aria-label="Add to cart"
+                colorScheme="gray"
+                size="md"
+                bg="white"
+                borderRadius="full"
+                // onClick={handleAddToCart}
+              />
+            </HStack>
             <Text fontSize="xl" fontWeight="bold" color="black">
               ${product.price}
             </Text>
@@ -321,7 +435,6 @@ const ProductDetailPage = () => {
               </HStack>
             </VStack>
           </VStack>
-
 
           {/* Collapsible Sections */}
 

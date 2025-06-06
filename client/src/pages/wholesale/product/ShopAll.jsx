@@ -66,7 +66,7 @@ const AllProductsPage = () => {
     );
   };
 
-  // Render product grid with consistent height
+  // Render product grid
   const renderProductGrid = (filteredProducts, emptyMessage) => (
     <Box minHeight="400px">
       {filteredProducts.length === 0 ? (

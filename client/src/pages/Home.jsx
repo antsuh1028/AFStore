@@ -60,7 +60,9 @@ const HomePage = () => {
               aria-label="Menu"
               icon={<ShoppingCart size={24} />}
               variant="ghost"
-              onClick={()=>{navigate('/cart')}}
+              onClick={() => {
+                navigate("/cart");
+              }}
             />
             <IconButton
               aria-label="Menu"
@@ -80,8 +82,8 @@ const HomePage = () => {
             </Text>
           </Heading>
         </Box>
-        <Box bg="gray" width="100%" my={4}height="20vh">DEAL DEAL DEAL DEAL DEAL DEAL DEAL DEAL 
-
+        <Box bg="gray" width="100%" my={4} height="20vh">
+          DEAL DEAL DEAL DEAL DEAL DEAL DEAL DEAL
         </Box>
 
         {/* Main Image */}
@@ -297,23 +299,22 @@ const HomePage = () => {
           <Heading size="md" mb={8}>
             Why AdamsFoods?
           </Heading>
-          <Flex mb={4} gap={4}>
-            <Button bg="#494949" width="50%" borderRadius="25px">
-              <Image
-                src="/final/why adamsfoods.png"
-                alt="button"
-                objectFit="cover"
-                width="100%"
-                height="100%"
-                borderRadius="full"
-              />
-            </Button>
-            <VStack w="50%" justify="center">
-              <Divider border="1px" color="#626262" />
+          <Flex mb={4} gap={4} align="center">
+            <Image
+              src="/final/why adamsfoods.png"
+              alt="Why AdamsFoods"
+              objectFit="contain"
+              maxWidth="100%"
+              maxHeight="100%"
+              width="50%"
+              borderRadius="full"
+            />
+            <VStack w="50%" justify="center" spacing={2}>
+              <Divider borderColor="#626262" borderWidth="1px" />
               <Text fontSize="sm" color="gray.600" fontWeight="medium">
                 SINCE 2012
               </Text>
-              <Divider border="1px" color="#626262" />
+              <Divider borderColor="#626262" borderWidth="1px" />
             </VStack>
           </Flex>
           <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={8} mt={8}>

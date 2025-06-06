@@ -69,7 +69,7 @@ const MarinatedPage = () => {
 
   // Render product grid with consistent height
   const renderProductGrid = (filteredProducts, emptyMessage) => (
-    <Box minHeight="400px"> {/* Fixed minimum height */}
+    <Box minHeight="400px">
       {filteredProducts.length === 0 ? (
         <Box 
           textAlign="center" 

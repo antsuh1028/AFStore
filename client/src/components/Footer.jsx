@@ -36,7 +36,7 @@ const Footer = () => {
                 height="45%"
               />
             </Link>
-            <Link href="#" aria-label="YouTube">
+            <Link href="https://www.youtube.com/" aria-label="YouTube">
               <Image
                 src="/Youtube.png"
                 alt="YouTube Icon"

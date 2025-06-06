@@ -21,6 +21,7 @@ import {
   AllProductsPage,
 } from "./pages/wholesale";
 import ProductDetailPage from "./pages/wholesale/product/ProductDetails";
+import OrderSummaryPage from "./pages/OrderSummary";
 import CartPage from "./pages/Cart";
 import theme from "./theme";
 import "./fonts.css";
@@ -69,6 +70,10 @@ function App() {
               <Route
                 path="/cart"
                 element={<CartPage />}
+              />
+              <Route
+                path="/order-summary"
+                element={<OrderSummaryPage />}
               />
             </Routes>
           </Box>

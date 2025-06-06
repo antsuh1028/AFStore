@@ -75,7 +75,7 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
               icon={<ChevronLeft size={36} color="#8f8e8e" />}
               variant="ghost"
               onClick={onClose}
-              size="xl"
+              size="sm"
               ml={4}
             />
             <Flex>
@@ -89,7 +89,9 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                 aria-label="Menu"
                 icon={<ShoppingCart size={24} />}
                 variant="ghost"
-                onClick={()=>{navigate("/cart")}}
+                onClick={() => {
+                  navigate("/cart");
+                }}
               />
               <IconButton
                 aria-label="Menu"
@@ -376,9 +378,19 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
                 </GridItem>
               </Grid>
             </Box>
-            {/* <Box mt={20}>
-            <Link py={20} color="gray" fontSize="sm" href="/terms-and-policies">Terms and Policies</Link>
-            </Box> */}
+            <Box position="fixed" bottom="4" left="4" zIndex="10">
+              <Link
+                py={2}
+                px={3}
+                color="gray"
+                fontSize="xs"
+                href="/terms-and-policies"
+                textDecoration="underline"
+                _hover={{ color: "gray.700" }}
+              >
+                Terms and Policies
+              </Link>
+            </Box>
           </Box>
         </DrawerBody>
       </DrawerContent>

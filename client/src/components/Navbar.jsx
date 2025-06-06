@@ -11,7 +11,7 @@ const Navbar = ({ onOpen }) => {
           aria-label="Back"
           icon={<ChevronLeft size={24} />}
           variant="ghost"
-          size="lg"
+          size="sm"
           colorScheme="gray"
           onClick={() => {
             navigate("/");

@@ -81,8 +81,8 @@ const CartItem = ({
             Qty: {quantity}
           </Text>
           <HStack spacing={1}>
-            <Button 
-              size="xs" 
+            <Button
+              size="xs"
               onClick={() => onSubtract(id)}
               borderRadius="full"
               variant="outline"
@@ -97,9 +97,9 @@ const CartItem = ({
             >
               +
             </Button>
-            <Button 
-              size="xs" 
-              colorScheme="red" 
+            <Button
+              size="xs"
+              colorScheme="red"
               onClick={() => onRemove(id)}
               borderRadius="full"
               variant="outline"
@@ -133,7 +133,10 @@ const CartPage = () => {
   };
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   const dummyProduct = {
     id: 10,
@@ -185,7 +188,7 @@ const CartPage = () => {
             Shopping Cart
           </Heading>
           <Text color="gray.600" textAlign="center" mb={6}>
-            {totalItems} {totalItems === 1 ? 'item' : 'items'} in your cart
+            {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
           </Text>
 
           {cartItems.length === 0 ? (
@@ -193,7 +196,10 @@ const CartPage = () => {
               <Text color="gray.500" fontSize="lg" mb={4}>
                 Your cart is empty
               </Text>
-              <Button colorScheme="blue" onClick={() => navigate('/wholesale/shop-all')}>
+              <Button
+                colorScheme="blue"
+                onClick={() => navigate("/wholesale/shop-all")}
+              >
                 Continue Shopping
               </Button>
             </Box>
@@ -212,26 +218,30 @@ const CartPage = () => {
               </VStack>
 
               <Divider mb={4} />
-              
+
               <Box bg="gray.50" p={4} borderRadius="lg" mb={6}>
                 <Flex justify="space-between" mb={2}>
                   <Text fontWeight="medium">Total Items:</Text>
                   <Text>{totalItems}</Text>
                 </Flex>
                 <Flex justify="space-between" mb={4}>
-                  <Text fontWeight="bold" fontSize="lg">Total:</Text>
+                  <Text fontWeight="bold" fontSize="lg">
+                    Total:
+                  </Text>
                   <Text fontWeight="bold" fontSize="lg" color="green.600">
                     ${totalPrice.toFixed(2)}
                   </Text>
                 </Flex>
-                <Button 
-                  bg="#494949" 
-                  color="white" 
-                  size="lg" 
-                  w="100%" 
+                <Button
+                  bg="#494949"
+                  color="white"
+                  size="lg"
+                  w="100%"
                   borderRadius="full"
                   _hover={{ bg: "#6AAFDB" }}
-                  onClick={()=>{navigate('/contact')}}
+                  onClick={() => {
+                    navigate("/contact");
+                  }}
                 >
                   Contact Us
                 </Button>
@@ -240,14 +250,24 @@ const CartPage = () => {
           )}
 
           <Divider my={6} />
-          
+
           <Box>
-            <Text fontSize="sm" fontWeight="medium" mb={3}>Test Products:</Text>
+            <Text fontSize="sm" fontWeight="medium" mb={3}>
+              Test Products:
+            </Text>
             <HStack spacing={2} wrap="wrap">
-              <Button size="sm" onClick={() => handleAdd(dummyProduct)} variant="outline">
+              <Button
+                size="sm"
+                onClick={() => handleAdd(dummyProduct)}
+                variant="outline"
+              >
                 Add Beef
               </Button>
-              <Button size="sm" onClick={() => handleAdd(dummyProduct2)} variant="outline">
+              <Button
+                size="sm"
+                onClick={() => handleAdd(dummyProduct2)}
+                variant="outline"
+              >
                 Add Pork
               </Button>
             </HStack>
