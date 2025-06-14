@@ -21,9 +21,15 @@ import {
   TabList,
   TabPanels,
   TabPanel,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
 } from "@chakra-ui/react";
-import { ChevronLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Info } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import emailjs from "emailjs-com";
 import { getCart } from "../utils/cartActions";
 
@@ -46,8 +52,13 @@ const ContactPage = () => {
   const [fileName, setFileName] = useState("");
   const [cartItems, setCartItems] = useState(() => getCart());
 
+  const location = useLocation();
+
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    const state = location.state;
+    console.log("location:", state);
   }, []);
 
   const validateEmail = (value) => {
@@ -150,7 +161,7 @@ const ContactPage = () => {
           <Tabs variant="enclosed" colorScheme="gray">
             <TabList justifyContent="center">
               <Tab>Contact Form</Tab>
-              <Tab>Quick Order</Tab>
+              <Tab>Order Now</Tab>
             </TabList>
 
             <TabPanels>
@@ -224,20 +235,72 @@ const ContactPage = () => {
                     </FormControl>
 
                     <FormControl isRequired>
+                      <Flex>
                       <FormLabel>Wholesale license numbers</FormLabel>
+                      <Popover>
+                            <PopoverTrigger>
+                              <IconButton
+                                icon={<Info size={16} color="gray" />}
+                                bg="none"
+                                size="xs"
+                                borderRadius="full"
+                                aria-label="License information"
+                              />
+                            </PopoverTrigger>
+
+                            <PopoverContent>
+                              <PopoverArrow />
+                              <PopoverCloseButton />
+                              <PopoverBody>
+                                <Text fontSize="sm">
+                                  Upload your valid wholesale license document.
+                                  Accepted formats: PDF, JPG, PNG.
+                                  A picture is also valid
+                                </Text>
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
+                          </Flex>
                       <Input
                         type="password"
                         name="license_number"
                         placeholder="Enter License #..."
                         {...inputStyle}
                       />
+                      
                     </FormControl>
 
                     <FormControl>
                       <FormLabel fontSize="sm" htmlFor="license-file-upload">
-                        <Text as="span" color="gray.500" fontSize="sm">
-                          Please attach the wholesale license!
-                        </Text>
+                        <Flex align="center" gap={2}>
+                          <Text as="span" color="gray.500" fontSize="sm">
+                            Please attach the wholesale license:
+                          </Text>
+
+                          <Popover>
+                            <PopoverTrigger>
+                              <IconButton
+                                icon={<Info size={16} color="gray" />}
+                                bg="none"
+                                size="xs"
+                                borderRadius="full"
+                                aria-label="License information"
+                              />
+                            </PopoverTrigger>
+
+                            <PopoverContent>
+                              <PopoverArrow />
+                              <PopoverCloseButton />
+                              <PopoverBody>
+                                <Text fontSize="sm">
+                                  Upload your valid wholesale license document.
+                                  Accepted formats: PDF, JPG, PNG.
+                                  A picture is also valid
+                                </Text>
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
+                        </Flex>
                       </FormLabel>
                       <Box display="flex" alignItems="center">
                         <Box position="relative" width="fit-content">
@@ -257,7 +320,7 @@ const ContactPage = () => {
                             id="license-file-upload"
                             name="license_file"
                             type="file"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            accept=".pdf,.jpg,.jpeg,.png"
                             position="absolute"
                             top="0"
                             left="0"
@@ -402,7 +465,7 @@ const ContactPage = () => {
                     size="lg"
                     bg="#494949"
                     color="white"
-                    onClick={() => navigate("/quick-order")}
+                    onClick={() => navigate("/wholesale/shop-all")}
                     _hover={{ bg: "#6AAFDB" }}
                   >
                     Go to Quick Order

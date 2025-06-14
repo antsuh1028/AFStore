@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import Cookies from "js-cookie";
+import { addToCart, getCart, subtractFromCart, removeFromCart } from "../../../utils/cartActions";
 import {
   Box,
   Container,
@@ -88,11 +90,7 @@ const ProductDetailPage = () => {
 
   const handleContactForOrder = () => {
     navigate("/contact", {
-      state: {
-        productName: product.name,
-        productId: product.id,
-        quantity: quantity,
-      },
+      state: product,
     });
   };
 
@@ -389,7 +387,7 @@ const ProductDetailPage = () => {
                 size="md"
                 bg="white"
                 borderRadius="full"
-                // onClick={handleAddToCart}
+                onClick={()=>{console.log("Product Info:", product); addToCart(product); getCart();}}
               />
             </HStack>
             <Text fontSize="xl" fontWeight="bold" color="black">

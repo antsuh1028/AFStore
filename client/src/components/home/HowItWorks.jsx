@@ -122,7 +122,7 @@ const HowItWorks = () => {
                 </Text>
                 <Box>
                   <Heading as="h3" fontSize="xl" fontWeight="bold" mb={2}>
-                    Pick Up Your Meat
+                    Pick Up Your Order
                   </Heading>
                   <Text fontSize="md" lineHeight="tall">
                     Collect your order from our warehouse location.

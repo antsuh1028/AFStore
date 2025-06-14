@@ -170,7 +170,7 @@ const OrderContent = () => {
               color={textColor}
               mb={1}
             >
-              Pick Up Your Meat
+              Pick Up Your Product
             </Heading>
             <Text
               fontSize="xs"
