@@ -1,5 +1,6 @@
 import { Box, Image, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export const ProductCard = ({
   id,
@@ -16,7 +17,28 @@ export const ProductCard = ({
   style,
 }) => {
   const navigate = useNavigate();
-  const placeholderImage = "https://via.placeholder.com/200x150?text=No+Image";
+  const placeholderImage = "/gray.avif";
+  const [displayImage, setDisplayImage] = useState(placeholderImage);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:3001/api/s3/item/${id}/images`
+        );
+        const data = await res.json();
+        console.log("Fetched images:", data);
+        if (res.ok && data.images.length > 0) {
+          setDisplayImage(data.images[0]);
+        } else {
+          setDisplayImage(placeholderImage);
+        }
+      } catch {
+        setDisplayImage(placeholderImage);
+      }
+    };
+    fetchImage();
+  }, [id]);
 
   const handleCardClick = () => {
     navigate(`/wholesale/product/${id}`);
@@ -47,7 +69,7 @@ export const ProductCard = ({
     >
       {/* Product Image */}
       <Image
-        src={images?.[0] || "/gray.avif"}
+        src={displayImage}
         alt={name}
         borderRadius="md"
         width="100%"
@@ -61,7 +83,7 @@ export const ProductCard = ({
         {name}
       </Text>
 
-      {/* Specs (e.g., "30 lb – 5 lb × 6 packs") */}
+      {/* Specs */}
       <Text fontSize="xs" color="gray.600">
         {spec}
       </Text>

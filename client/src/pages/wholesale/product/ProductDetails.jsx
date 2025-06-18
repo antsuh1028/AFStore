@@ -76,6 +76,23 @@ const ProductDetailPage = () => {
         }
 
         setProduct(data.data);
+        const imageResponse = await fetch(
+          `http://localhost:3001/api/s3/item/${productId}/images`
+        );
+        const imageData = await imageResponse.json();
+
+        if (!imageResponse.ok) {
+          throw new Error(imageData.error || "Failed to fetch images");
+        }
+        // If images are returned as URLs, set them directly
+        if (imageData.images && imageData.images.length > 0) {
+          setProduct((prevProduct) => ({
+            ...prevProduct,
+            images: imageData.images,
+          }));
+        }
+
+        // If images are returned as keys, construct URLs
       } catch (err) {
         setError(err.message);
         console.error("Error fetching product:", err);

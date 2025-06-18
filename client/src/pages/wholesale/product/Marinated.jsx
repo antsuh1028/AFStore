@@ -182,7 +182,7 @@ const MarinatedPage = () => {
                     bg="#fafafa"
                     color="gray.600"
                     fontSize="small"
-                    transition="none" // Remove transitions
+                    transition="none"
                   >
                     {label.charAt(0).toUpperCase() + label.slice(1)}
                   </Box>
@@ -190,7 +190,7 @@ const MarinatedPage = () => {
               ))}
             </TabList>
 
-            <TabPanels minHeight="500px"> {/* Fixed minimum height for all panels */}
+            <TabPanels minHeight="500px"> 
               <TabPanel p={0}>
                 {renderProductGrid(
                   getProductsByType('pork'), 
