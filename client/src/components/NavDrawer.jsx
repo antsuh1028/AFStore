@@ -25,7 +25,19 @@ import {
 import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const NavDrawer = ({ isOpen, onClose, containerRef }) => {
+const ITEMS = [
+  { label: "Marinated", to: "/wholesale/marinated", icon: "/icons/gray.avif" },
+  { label: "Processed", to: "/wholesale/processed", icon: "/icons/gray.avif" },
+  { label: "Unprocessed", to: "/wholesale/unprocessed", icon: "/icons/gray.avif" },
+  { label: "Deal", to: "/wholesale/deal", icon: "/final/deal.png" },
+  { label: "Order", to: "/wholesale/how-to-order", icon: "/final/order.png" },
+  { label: "Contact", to: "/contact", icon: "/final/contact us.png" },
+  { label: "Packing", to: "/wholesale/packing", icon: "/final/packing.png" },
+  { label: "B2B", to: "/wholesale/b2b", icon: "/final/b2b.png" },
+  { label: "FAQ", to: "/wholesale/faq", icon: "/final/FAQ.png" },
+];
+
+export default function NavDrawer({ isOpen, onClose, containerRef }){
   const [drawerWidth, setDrawerWidth] = useState("100%");
   const navigate = useNavigate();
 
@@ -46,6 +58,8 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
     return () => window.removeEventListener("resize", updateWidth);
   }, [isOpen, containerRef]);
 
+  if (!isOpen) return null;
+
   return (
     <Drawer
       placement="top"
@@ -57,345 +71,107 @@ const NavDrawer = ({ isOpen, onClose, containerRef }) => {
         bg="white"
         width={drawerWidth}
         ml={containerRef?.current?.offsetLeft || 0}
-        position="absolute"
-        boxShadow="md"
-        transition="transform 0.1s ease, opacity 0.1s ease"
         height="100%"
       >
-        <Box>
-          <Flex
-            justify="space-between"
-            align="center"
-            mx="auto"
-            position="relative"
-            mb={7}
-          >
+        {/* Top controls */}
+        <Flex justify="space-between" align="center" p={4}>
+          <IconButton
+            aria-label="Back"
+            icon={<ChevronLeft size={36} color="#8f8e8e" />}
+            variant="ghost"
+            onClick={onClose}
+          />
+          <Flex>
             <IconButton
-              aria-label="Back"
-              icon={<ChevronLeft size={36} color="#8f8e8e" />}
+              aria-label="Profile"
+              icon={<UserRound size={24} />}
+              variant="ghost"
+            />
+            <IconButton
+              aria-label="Cart"
+              icon={<ShoppingCart size={24} />}
+              variant="ghost"
+              onClick={() => navigate("/cart")}
+            />
+            <IconButton
+              aria-label="Close menu"
+              icon={<Text fontSize="2xl" color="#8f8e8e">☰</Text>}
               variant="ghost"
               onClick={onClose}
-              size="sm"
-              ml={4}
+              size="xs"
+              p={5}
             />
-            <Flex>
-              <IconButton
-                aria-label="Menu"
-                icon={<UserRound size={24} />}
-                variant="ghost"
-                // onClick={onClose}
-              />
-              <IconButton
-                aria-label="Menu"
-                icon={<ShoppingCart size={24} />}
-                variant="ghost"
-                onClick={() => {
-                  navigate("/cart");
-                }}
-              />
-              <IconButton
-                aria-label="Menu"
-                icon={
-                  <Text fontSize="2xl" color="#8f8e8e">
-                    ☰
-                  </Text>
-                }
-                variant="ghost"
-                onClick={onClose}
-                size="xs"
-                p={5}
-              />
-            </Flex>
           </Flex>
+        </Flex>
+
+        {/* Greeting */}
+        <Box textAlign="center" mb={4}>
+          <Heading as="h2" fontSize="2xl" fontWeight="semibold">
+            <Text as="span" color="gray.500">Hello </Text>
+            <Text as="span" color="black">User</Text>
+          </Heading>
+          <Box mt={2} fontSize="sm">
+            <Link onClick={() => navigate("/login")} mr={2} color="gray.600">
+              Login
+            </Link>
+            |{' '}
+            <Link onClick={() => navigate("/signup")} color="gray.600">
+              Sign up
+            </Link>
+          </Box>
         </Box>
 
-        <DrawerBody>
-          <Box p={4}>
-            {/* Shop Section */}
-            <Box mb={20}>
-              <Flex justify="space-between" align="center" mb={2}>
-                <Heading
-                  as="h2"
-                  fontSize="sm"
-                  fontWeight="extrabold"
-                  marginLeft={4}
-                >
-                  Shop
-                </Heading>
-                <Link
-                  fontSize="sm"
-                  color="gray.700"
-                  fontWeight="medium"
-                  marginRight={4}
-                  textDecoration="underline"
-                  onClick={() => navigate("/wholesale/shop-all")}
-                >
-                  Shop all
-                </Link>
-              </Flex>
-              <Divider mb={4} border="1px" borderColor="black" />
+        <Divider mb={4} />
 
-              <Grid templateColumns="repeat(3, 1fr)" gap={2} mb={4}>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/wholesale/marinated")}
-                  >
-                    <Circle size="65px" bg="#efedef">
-                      <Image
-                        src="../../../public/gray.avif"
-                        objectFit="cover"
-                        alt="Marinated"
-                      />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      Marinated
-                    </Text>
-                  </VStack>
-                </GridItem>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/wholesale/processed")}
-                  >
-                    <Circle size="65px" bg="#efedef">
-                      <Image src="../../../public/gray.avif" alt="Processed" />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      Processed
-                    </Text>
-                  </VStack>
-                </GridItem>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/wholesale/unprocessed")}
-                  >
-                    <Circle size="65px" bg="#efedef">
-                      <Image
-                        src="../../../public/gray.avif"
-                        alt="Unprocessed"
-                      />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      Unprocessed
-                    </Text>
-                  </VStack>
-                </GridItem>
-              </Grid>
-            </Box>
-
-            {/* Wholesale Info Section */}
-            <Box mb={8}>
-              <Heading
-                as="h2"
-                fontSize="sm"
-                fontWeight="extrabold"
-                mb={2}
-                ml={4}
+        {/* Grid*/}
+        <DrawerBody p={4}>
+          <Grid
+            templateColumns="repeat(3, 1fr)"
+            gap={6}
+            justifyItems="center"
+            alignItems="center"
+          >
+            {ITEMS.map(({ label, to, icon }) => (
+              <GridItem
+                key={label}
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
               >
-                Wholesale Info
-              </Heading>
-              <Divider mb={4} borderColor="black" border="1px" />
-
-              <Grid templateColumns="repeat(3, 1fr)" gap={4} mb={8}>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/wholesale/deal")}
-                  >
-                    <Circle size="65px" bg="#494949">
-                      <Image
-                        src="/final/deal.png"
-                        alt="Dealing"
-                        objectFit="cover"
-                        width="70%"
-                        height="70%"
-                        borderRadius="full"
-                      />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      Deal
-                    </Text>
-                  </VStack>
-                </GridItem>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/wholesale/how-to-order")}
-                  >
-                    <Circle size="65px" bg="#494949">
-                      <Image
-                        src="/final/order.png"
-                        alt="Order"
-                        objectFit="cover"
-                        width="60%"
-                        height="60%"
-                        borderRadius="full"
-                      />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      Order
-                    </Text>
-                  </VStack>
-                </GridItem>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/contact")}
-                  >
-                    <Circle size="65px" bg="#494949">
-                      <Image
-                        src="/final/contact us.png"
-                        alt="Packing"
-                        objectFit="cover"
-                        width="70%"
-                        height="70%"
-                        borderRadius="full"
-                      />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      Contact
-                    </Text>
-                  </VStack>
-                </GridItem>
-              </Grid>
-
-              <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/wholesale/packing")}
-                  >
-                    <Circle size="65px" bg="#494949">
-                      <Image
-                        src="/final/packing.png"
-                        alt="Packing"
-                        objectFit="cover"
-                        width="70%"
-                        height="70%"
-                        borderRadius="full"
-                      />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      Packing
-                    </Text>
-                  </VStack>
-                </GridItem>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/wholesale/b2b")}
-                  >
-                    <Circle size="65px" bg="#494949">
-                      <Image
-                        src="/final/b2b.png"
-                        alt="Processed"
-                        objectFit="cover"
-                        width="70%"
-                        height="70%"
-                        borderRadius="full"
-                      />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      B2B
-                    </Text>
-                  </VStack>
-                </GridItem>
-                <GridItem>
-                  <VStack
-                    spacing={1}
-                    cursor="pointer"
-                    onClick={() => navigate("/wholesale/faq")}
-                  >
-                    <Circle size="65px" bg="#494949">
-                      <Image
-                        src="/final/FAQ.png"
-                        alt="FAQ"
-                        objectFit="cover"
-                        width="70%"
-                        height="70%"
-                        borderRadius="full"
-                      />
-                    </Circle>
-                    <Text
-                      fontSize="13px"
-                      textAlign="center"
-                      marginTop={2}
-                      fontWeight="bold"
-                    >
-                      FAQ
-                    </Text>
-                  </VStack>
-                </GridItem>
-              </Grid>
-            </Box>
-            <Box position="fixed" bottom="4" left="4" zIndex="10">
-              <Link
-                py={2}
-                px={3}
-                color="gray"
-                fontSize="xs"
-                href="/terms-and-policies"
-                textDecoration="underline"
-                _hover={{ color: "gray.700" }}
-              >
-                Terms and Policies
-              </Link>
-            </Box>
-          </Box>
+                <Circle
+                  size="65px"
+                  bg="#efedef"
+                  cursor="pointer"
+                  onClick={() => navigate(to)}
+                >
+                  <Image
+                    src={icon}
+                    fallbackSrc="/gray.avif"
+                    boxSize="65px"
+                    objectFit="cover"
+                    borderRadius="full"
+                    alt={label}
+                  />
+                </Circle>
+                <Text fontSize="13px" fontWeight="bold" mt={2}>
+                  {label}
+                </Text>
+              </GridItem>
+            ))}
+          </Grid>
         </DrawerBody>
+
+        {/* Footer Link */}
+        <Box position="absolute" bottom="4" left="4" p={4}>
+          <Link
+            onClick={() => navigate("/terms-and-policies")}
+            fontSize="xs"
+            textDecoration="underline"
+          >
+            Terms & Policies
+          </Link>
+        </Box>
       </DrawerContent>
     </Drawer>
   );
-};
-
-export default NavDrawer;
+}
