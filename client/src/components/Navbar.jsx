@@ -27,7 +27,9 @@ const Navbar = ({ onOpen }) => {
             aria-label="Menu"
             icon={<ShoppingCart size={24} />}
             variant="ghost"
-            onClick={()=>{navigate('/cart')}}
+            onClick={() => {
+              navigate("/cart");
+            }}
           />
           <IconButton
             aria-label="Menu"

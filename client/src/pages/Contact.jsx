@@ -58,7 +58,7 @@ const ContactPage = () => {
     window.scrollTo(0, 0);
 
     const state = location.state;
-    console.log("location:", state);
+    // console.log("location:", state);
   }, []);
 
   const validateEmail = (value) => {
@@ -236,38 +236,37 @@ const ContactPage = () => {
 
                     <FormControl isRequired>
                       <Flex>
-                      <FormLabel>Wholesale license numbers</FormLabel>
-                      <Popover>
-                            <PopoverTrigger>
-                              <IconButton
-                                icon={<Info size={16} color="gray" />}
-                                bg="none"
-                                size="xs"
-                                borderRadius="full"
-                                aria-label="License information"
-                              />
-                            </PopoverTrigger>
+                        <FormLabel>Wholesale license numbers</FormLabel>
+                        <Popover>
+                          <PopoverTrigger>
+                            <IconButton
+                              icon={<Info size={16} color="gray" />}
+                              bg="none"
+                              size="xs"
+                              borderRadius="full"
+                              aria-label="License information"
+                            />
+                          </PopoverTrigger>
 
-                            <PopoverContent>
-                              <PopoverArrow />
-                              <PopoverCloseButton />
-                              <PopoverBody>
-                                <Text fontSize="sm">
-                                  Upload your valid wholesale license document.
-                                  Accepted formats: PDF, JPG, PNG.
-                                  A picture is also valid
-                                </Text>
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                          </Flex>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverBody>
+                              <Text fontSize="sm">
+                                Upload your valid wholesale license document.
+                                Accepted formats: PDF, JPG, PNG. A picture is
+                                also valid
+                              </Text>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                      </Flex>
                       <Input
                         type="password"
                         name="license_number"
                         placeholder="Enter License #..."
                         {...inputStyle}
                       />
-                      
                     </FormControl>
 
                     <FormControl>
@@ -294,8 +293,8 @@ const ContactPage = () => {
                               <PopoverBody>
                                 <Text fontSize="sm">
                                   Upload your valid wholesale license document.
-                                  Accepted formats: PDF, JPG, PNG.
-                                  A picture is also valid
+                                  Accepted formats: PDF, JPG, PNG. A picture is
+                                  also valid
                                 </Text>
                               </PopoverBody>
                             </PopoverContent>
@@ -459,7 +458,7 @@ const ContactPage = () => {
               <TabPanel p={0} pt={6}>
                 <VStack spacing={6} align="center" py={12}>
                   <Text fontSize="lg" textAlign="center">
-                    Need to place a quick order or have questions?
+                    Need to place an order or have questions?
                   </Text>
                   <Button
                     size="lg"
@@ -468,7 +467,7 @@ const ContactPage = () => {
                     onClick={() => navigate("/wholesale/shop-all")}
                     _hover={{ bg: "#6AAFDB" }}
                   >
-                    Go to Quick Order
+                    Go to Orders
                   </Button>
                 </VStack>
               </TabPanel>

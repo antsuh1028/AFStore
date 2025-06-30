@@ -11,7 +11,7 @@ const Breadcrumbs = ({ listOfBreadCrumbs }) => {
   return (
     <Box>
       <Stack spacing={4}>
-      <Breadcrumb separator={<Minus size={16}/>}>
+        <Breadcrumb separator={<Minus size={16} />}>
           {listOfBreadCrumbs.map((breadcrumb, index) => (
             <BreadcrumbItem key={index}>
               <BreadcrumbLink

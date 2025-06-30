@@ -16,13 +16,13 @@ import { ChevronLeft } from "lucide-react";
 import Breadcrumbs from "../../components/BreadCrumbs.";
 import OrderContent from "../../components/order/OrderComponent";
 import Footer from "../../components/Footer";
-import Navbar  from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
 
 const HowToOrderPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const contentRef = useRef(null);
-  
+
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
@@ -34,7 +34,7 @@ const HowToOrderPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
       >
-        <Navbar onOpen={onOpen}/>
+        <Navbar onOpen={onOpen} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
           <Breadcrumbs

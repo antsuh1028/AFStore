@@ -16,7 +16,9 @@ CartsRouter.get("/", async (req, res) => {
 CartsRouter.get("/user/:user_id", async (req, res) => {
   try {
     const userId = req.params.user_id;
-    const result = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
+    const result = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [
+      userId,
+    ]);
     res.json({
       success: true,
       data: result.rows,
@@ -34,30 +36,30 @@ CartsRouter.get("/user/:user_id", async (req, res) => {
 CartsRouter.post("/", async (req, res) => {
   try {
     const { user_id } = req.body;
-    
+
     if (!user_id) {
       return res.status(400).json({
-        error: "Missing required field: user_id"
+        error: "Missing required field: user_id",
       });
     }
-    
+
     const result = await db.query(
       `INSERT INTO carts (user_id, created_at) 
        VALUES ($1, CURRENT_TIMESTAMP) 
        RETURNING *`,
       [user_id]
     );
-    
+
     res.status(201).json({
       success: true,
       data: result.rows[0],
-      message: "Cart created successfully"
+      message: "Cart created successfully",
     });
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       error: "Internal server error",
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -66,64 +68,68 @@ CartsRouter.post("/", async (req, res) => {
 CartsRouter.get("/:id", async (req, res) => {
   try {
     const cartId = req.params.id;
-    
+
     if (isNaN(cartId)) {
       return res.status(400).json({
-        error: "Invalid cart ID"
+        error: "Invalid cart ID",
       });
     }
-    
-    const result = await db.query(`SELECT * FROM carts WHERE id = $1`, [cartId]);
-    
+
+    const result = await db.query(`SELECT * FROM carts WHERE id = $1`, [
+      cartId,
+    ]);
+
     if (result.rows.length === 0) {
       return res.status(404).json({
-        error: "Cart not found"
+        error: "Cart not found",
       });
     }
-    
+
     res.json({
       success: true,
-      data: result.rows[0]
+      data: result.rows[0],
     });
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       error: "Internal server error",
-      message: err.message
+      message: err.message,
     });
   }
 });
-
 
 // Delete cart
 CartsRouter.delete("/:id", async (req, res) => {
   try {
     const cartId = req.params.id;
-    
+
     if (isNaN(cartId)) {
       return res.status(400).json({
-        error: "Invalid cart ID"
+        error: "Invalid cart ID",
       });
     }
-    
-    const result = await db.query(`DELETE FROM carts WHERE id = $1 RETURNING *`, [cartId]);
-    
+
+    const result = await db.query(
+      `DELETE FROM carts WHERE id = $1 RETURNING *`,
+      [cartId]
+    );
+
     if (result.rows.length === 0) {
       return res.status(404).json({
-        error: "Cart not found"
+        error: "Cart not found",
       });
     }
-    
+
     res.json({
       success: true,
       data: result.rows[0],
-      message: "Cart deleted successfully"
+      message: "Cart deleted successfully",
     });
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       error: "Internal server error",
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -132,30 +138,33 @@ CartsRouter.delete("/:id", async (req, res) => {
 CartsRouter.get("/:id/items", async (req, res) => {
   try {
     const cartId = req.params.id;
-    
+
     if (isNaN(cartId)) {
       return res.status(400).json({
-        error: "Invalid cart ID"
+        error: "Invalid cart ID",
       });
     }
-    
-    const result = await db.query(`
+
+    const result = await db.query(
+      `
       SELECT ci.*, i.name, i.price, i.brand, i.images 
       FROM cart_items ci
       JOIN items i ON ci.item_id = i.id
       WHERE ci.cart_id = $1
-    `, [cartId]);
-    
+    `,
+      [cartId]
+    );
+
     res.json({
       success: true,
       data: result.rows,
-      count: result.rows.length
+      count: result.rows.length,
     });
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       error: "Internal server error",
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -164,15 +173,13 @@ CartsRouter.get("/:id/items", async (req, res) => {
 CartsRouter.get("/:id/total", async (req, res) => {
   // try {
   //   const cartId = req.params.id;
-    
   //   if (isNaN(cartId)) {
   //     return res.status(400).json({
   //       error: "Invalid cart ID"
   //     });
   //   }
-    
   //   const result = await db.query(`
-  //     SELECT 
+  //     SELECT
   //       SUM(ci.quantity * i.price) as total,
   //       COUNT(ci.id) as item_count,
   //       SUM(ci.quantity) as total_quantity
@@ -180,7 +187,6 @@ CartsRouter.get("/:id/total", async (req, res) => {
   //     JOIN items i ON ci.item_id = i.id
   //     WHERE ci.cart_id = $1
   //   `, [cartId]);
-    
   //   res.json({
   //     success: true,
   //     data: {
@@ -197,6 +203,5 @@ CartsRouter.get("/:id/total", async (req, res) => {
   //   });
   // }
 });
-
 
 export { CartsRouter };

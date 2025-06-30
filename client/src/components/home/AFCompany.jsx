@@ -15,7 +15,7 @@ const AFCompany = () => {
   return (
     <Box bg="white" pt={6} pb={10}>
       <Container maxW="container.sm" centerContent>
-        <VStack spacing={4}  w="full">
+        <VStack spacing={4} w="full">
           {/* Company Title */}
           <Heading
             as="h1"
@@ -37,7 +37,7 @@ const AFCompany = () => {
             bg="gray.100"
           >
             <Image
-              src="../../public/gray.avif"
+              src="../../final/Adams_enterance.png"
               alt="AdamsFoods Company"
               w="full"
               h="full"

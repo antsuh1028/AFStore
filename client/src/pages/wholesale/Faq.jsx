@@ -35,7 +35,8 @@ const FAQPage = () => {
     {
       heading: "Q. Refund",
       highlight: "All meat purchases are final and non-refundable,",
-      textEnd: " as we are confident in the safety and quality of our products.",
+      textEnd:
+        " as we are confident in the safety and quality of our products.",
       noteBody:
         "If you have any questions or concerns about your order, feel free to reach out to us by phone or email we're happy to assist you.",
       noteBold: "•  (323)943-9318\n•  admin@adamsfoods.us",
@@ -74,7 +75,7 @@ const FAQPage = () => {
         ml={{ base: 0, lg: "40%" }}
       >
         {/* Top nav */}
-        <Navbar onOpen={onOpen}/>
+        <Navbar onOpen={onOpen} />
 
         {/* Breadcrumbs */}
         <Box py={3} px={4} display="flex" justifyContent="center">
@@ -101,7 +102,7 @@ const FAQPage = () => {
         <VStack spacing={16} px={6} py={4} align="start">
           {faqData.map((item, index) => (
             <Box key={index}>
-              <Heading size="md" my={6} >
+              <Heading size="md" my={6}>
                 <Text as="span" color="tan">
                   {item.heading.split(" ")[0]}
                 </Text>{" "}
@@ -124,12 +125,23 @@ const FAQPage = () => {
               )}
 
               {item.noteBody && (
-                <Text fontSize="sm" mt={1} color="gray.700" whiteSpace="pre-line" marginTop={4}>
+                <Text
+                  fontSize="sm"
+                  mt={1}
+                  color="gray.700"
+                  whiteSpace="pre-line"
+                  marginTop={4}
+                >
                   {item.noteBody}
                 </Text>
               )}
               {item.noteBold && (
-                <Text fontSize="sm" mt={4} fontWeight="semibold" whiteSpace="pre-line">
+                <Text
+                  fontSize="sm"
+                  mt={4}
+                  fontWeight="semibold"
+                  whiteSpace="pre-line"
+                >
                   {item.noteBold}
                 </Text>
               )}

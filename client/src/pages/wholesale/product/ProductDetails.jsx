@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
-import { addToCart, getCart, subtractFromCart, removeFromCart } from "../../../utils/cartActions";
+import {
+  addToCart,
+  getCart,
+  subtractFromCart,
+  removeFromCart,
+} from "../../../utils/cartActions";
 import {
   Box,
   Container,
@@ -45,6 +50,31 @@ import Sidebar from "../../../components/SideBar";
 import Breadcrumbs from "../../../components/BreadCrumbs.";
 import Footer from "../../../components/Footer";
 
+const CartConfirmation = ({ product, onClose }) => {
+  return (
+    <Alert status="success" borderRadius="md" mb={4} onClose={onClose}>
+      <AlertIcon />
+      <Box>
+        <Text fontWeight="bold">Added to Cart!</Text>
+        <Text>
+          {product.name} has been added to your cart. You can view your cart{" "}
+          <Button
+            variant="link"
+            colorScheme="blue"
+            onClick={() => {
+              onClose();
+              window.location.href = "/cart";
+            }}
+          >
+            here
+          </Button>
+          .
+        </Text>
+      </Box>
+    </Alert>
+  );
+};
+
 const ProductDetailPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
@@ -61,6 +91,7 @@ const ProductDetailPage = () => {
   const [isIngredientsOpen, setIsIngredientsOpen] = useState(false);
 
   const [imagePage, setImagePage] = useState(1);
+  const [showCartAlert, setShowCartAlert] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -253,6 +284,15 @@ const ProductDetailPage = () => {
           />
         </Box>
 
+        {showCartAlert && (
+          <Box px={4}>
+            <CartConfirmation
+              product={product}
+              onClose={() => setShowCartAlert(false)}
+            />
+          </Box>
+        )}
+
         {/* Product Content */}
         <VStack spacing={4} px={4} pb={8}>
           {/* Product Title */}
@@ -404,7 +444,15 @@ const ProductDetailPage = () => {
                 size="md"
                 bg="white"
                 borderRadius="full"
-                onClick={()=>{console.log("Product Info:", product); addToCart(product); getCart();}}
+                onClick={() => {
+                  console.log("Product Info:", product);
+                  addToCart(product);
+                  getCart();
+                  setShowCartAlert(true);
+                  setTimeout(() => {
+                    setShowCartAlert(false);
+                  }, 5000);
+                }}
               />
             </HStack>
             <Text fontSize="xl" fontWeight="bold" color="black">
@@ -467,7 +515,7 @@ const ProductDetailPage = () => {
               DETAIL
             </Button>
             <Collapse in={isDetailOpen}>
-              <Box px={4} pb={4}>
+              <Box px={4} pb={4} py={4}>
                 <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={4}>
                   <GridItem>
                     <Text fontSize="sm" color="gray.500">
@@ -515,12 +563,12 @@ const ProductDetailPage = () => {
               INFORMATION
             </Button>
             <Collapse in={isInfoOpen}>
-              <Box px={4} pb={4}>
+              <Box px={4} pb={4} py={4}>
                 <Text fontSize="sm" color="gray.700" lineHeight="tall">
                   {product.description}
                 </Text>
                 <Box mt={4}>
-                  <Text fontSize="sm" fontWeight="medium" mb={2}>
+                  <Text fontSize="sm" fontWeight="semibold" mb={2}>
                     Storage Instructions:
                   </Text>
                   <List spacing={1} fontSize="sm" color="gray.600">
@@ -548,12 +596,12 @@ const ProductDetailPage = () => {
               INGREDIENTS
             </Button>
             <Collapse in={isIngredientsOpen}>
-              <Box px={4} pb={4}>
+              <Box px={4} pb={4} py={4}>
                 <Text fontSize="sm" color="gray.700" lineHeight="tall">
                   {product.ingredients || "Ingredients Here"}
                 </Text>
                 <Box mt={4}>
-                  <Text fontSize="sm" fontWeight="medium" mb={2}>
+                  <Text fontSize="sm" fontWeight="semibold" mb={2}>
                     Allergen Information:
                   </Text>
                   <Text fontSize="sm" color="gray.600">

@@ -67,7 +67,7 @@ const OrderContent = () => {
               fontSize="xs"
               color={lightTextColor}
               lineHeight="1.6"
-              width={{base:"95%", md:"90%"}}
+              width={{ base: "95%", md: "90%" }}
             >
               We sell wholesale meat, so please make your order accordingly.
             </Text>
@@ -86,7 +86,7 @@ const OrderContent = () => {
           >
             <CheckIcon color={"white"} fontSize={"14px"} />
           </Circle>
-          <Box  ml={4}>
+          <Box ml={4}>
             <Heading
               as="h3"
               size="sm"
@@ -100,9 +100,10 @@ const OrderContent = () => {
               fontSize="xs"
               color={lightTextColor}
               lineHeight="1.6"
-              width={{base:"95%", md:"90%"}}
+              width={{ base: "95%", md: "90%" }}
             >
-              Once you've selected your product(s), please contact us through the{" "}
+              Once you've selected your product(s), please contact us through
+              the{" "}
               <Link
                 href="/contact"
                 color={accentColor}
@@ -129,7 +130,7 @@ const OrderContent = () => {
           >
             <CheckIcon color={"white"} fontSize={"14px"} />
           </Circle>
-          <Box  ml={4}>
+          <Box ml={4}>
             <Heading
               as="h3"
               size="sm"
@@ -143,7 +144,7 @@ const OrderContent = () => {
               fontSize="xs"
               color={lightTextColor}
               lineHeight="1.6"
-              width={{base:"95%", md:"90%"}}
+              width={{ base: "95%", md: "90%" }}
             >
               We will coordinate a suitable pickup time for both parties.
             </Text>
@@ -162,7 +163,7 @@ const OrderContent = () => {
           >
             <CheckIcon color={"white"} fontSize={"14px"} />
           </Circle>
-          <Box  ml={4}>
+          <Box ml={4}>
             <Heading
               as="h3"
               size="sm"
@@ -176,7 +177,7 @@ const OrderContent = () => {
               fontSize="xs"
               color={lightTextColor}
               lineHeight="1.6"
-              width={{base:"95%", md:"90%"}}
+              width={{ base: "95%", md: "90%" }}
             >
               After scheduling, please come to the designated location to pick
               up your order.

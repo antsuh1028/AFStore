@@ -29,7 +29,7 @@ const TermsAndPoliciesPage = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      
+
       <Container
         ref={contentRef}
         maxW={{ base: "100%", lg: "30%" }}
@@ -38,7 +38,7 @@ const TermsAndPoliciesPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
       >
-        <Navbar onOpen={onOpen}/>
+        <Navbar onOpen={onOpen} />
         {/* Header */}
         {/* <Flex p={4} justify="space-between" align="center">
           <Image src="../../grayAdams.png" alt="AdamsFoods Logo" width="40%" />
@@ -59,7 +59,14 @@ const TermsAndPoliciesPage = () => {
           </Heading>
         </Box>
 
-        <Heading size="sm" fontWeight="bold" textAlign="right" mb={-2} mr={10} mt={8} >
+        <Heading
+          size="sm"
+          fontWeight="bold"
+          textAlign="right"
+          mb={-2}
+          mr={10}
+          mt={8}
+        >
           Terms of Service
         </Heading>
         {/* Terms of Service Section */}
@@ -188,9 +195,15 @@ const TermsAndPoliciesPage = () => {
           </VStack>
         </Box>
 
-
         {/* Privacy Policy Section */}
-        <Heading size="sm" fontWeight="bold" textAlign="right" mb={-2} mr={10} mt={12} >
+        <Heading
+          size="sm"
+          fontWeight="bold"
+          textAlign="right"
+          mb={-2}
+          mr={10}
+          mt={12}
+        >
           Privacy Policy
         </Heading>
         <Box
@@ -343,9 +356,15 @@ const TermsAndPoliciesPage = () => {
           </VStack>
         </Box>
 
-
         {/* Return & Refund Policy Section */}
-        <Heading size="sm" fontWeight="bold" textAlign="right" mb={-2} mr={10} mt={12} >
+        <Heading
+          size="sm"
+          fontWeight="bold"
+          textAlign="right"
+          mb={-2}
+          mr={10}
+          mt={12}
+        >
           Return & Refund Policy
         </Heading>
         <Box
@@ -417,7 +436,14 @@ const TermsAndPoliciesPage = () => {
         </Box>
 
         {/* Disclaimer Section */}
-        <Heading size="sm" fontWeight="bold" textAlign="right" mb={-2} mr={10} mt={12} >
+        <Heading
+          size="sm"
+          fontWeight="bold"
+          textAlign="right"
+          mb={-2}
+          mr={10}
+          mt={12}
+        >
           Disclaimer
         </Heading>
         <Box
@@ -429,7 +455,7 @@ const TermsAndPoliciesPage = () => {
           bg="#f9f9f9"
         >
           <Box>
-            <Text fontSize="sm" color="gray.700" >
+            <Text fontSize="sm" color="gray.700">
               Adams Foods provides meat products intended for commercial use. We
               do not guarantee product outcomes once items are outside of our
               handling, including storage and cooking methods. Customers are

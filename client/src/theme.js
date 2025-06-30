@@ -1,12 +1,11 @@
 import { extendTheme } from "@chakra-ui/react";
 
-
 const theme = extendTheme({
   fonts: {
     heading: "'Suit', sans-serif",
     body: "'Suit', sans-serif",
     button: "'Suit', sans-serif",
-    mono: "'Suit', monospace", 
+    mono: "'Suit', monospace",
   },
   styles: {
     global: {

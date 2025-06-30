@@ -64,7 +64,6 @@ const StyledCheckbox = ({ isChecked, onChange, children }) => {
 };
 
 const OrderPayment = () => {
-    
   const [isAgreed, setIsAgreed] = useState(false);
   return (
     <Box
@@ -123,12 +122,12 @@ const OrderPayment = () => {
         </Box>
         <Divider borderColor="gray.300" />
 
-        <StyledCheckbox 
-  isChecked={isAgreed}
-  onChange={() => setIsAgreed(!isAgreed)}
->
-  I have read and agree to the Payment & No-Show Policy.
-</StyledCheckbox>
+        <StyledCheckbox
+          isChecked={isAgreed}
+          onChange={() => setIsAgreed(!isAgreed)}
+        >
+          I have read and agree to the Payment & No-Show Policy.
+        </StyledCheckbox>
 
         <Button bg="#b6a595" textColor="white" borderRadius="full" mt={16}>
           {" "}
@@ -140,7 +139,6 @@ const OrderPayment = () => {
 };
 
 const OrderSummaryPage = () => {
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const contentRef = React.useRef(null);
   return (

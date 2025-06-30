@@ -63,18 +63,9 @@ function App() {
                 path="/wholesale/unprocessed"
                 element={<UnprocessedPage />}
               />
-              <Route
-                path="/wholesale/shop-all"
-                element={<AllProductsPage />}
-              />
-              <Route
-                path="/cart"
-                element={<CartPage />}
-              />
-              <Route
-                path="/order-summary"
-                element={<OrderSummaryPage />}
-              />
+              <Route path="/wholesale/shop-all" element={<AllProductsPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/order-summary" element={<OrderSummaryPage />} />
             </Routes>
           </Box>
         </Box>

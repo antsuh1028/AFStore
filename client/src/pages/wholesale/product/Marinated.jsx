@@ -40,17 +40,19 @@ const MarinatedPage = () => {
     const fetchMarinatedProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3001/api/items/style/marinated`);
+        const response = await fetch(
+          `http://localhost:3001/api/items/style/marinated`
+        );
         const data = await response.json();
-        
+
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch products');
+          throw new Error(data.error || "Failed to fetch products");
         }
-        
+
         setProducts(data.data);
       } catch (err) {
         setError(err.message);
-        console.error('Error fetching marinated products:', err);
+        console.error("Error fetching marinated products:", err);
       } finally {
         setLoading(false);
       }
@@ -61,18 +63,18 @@ const MarinatedPage = () => {
 
   // Filter products by type
   const getProductsByType = (type) => {
-    if (type === 'all') return products;
-    return products.filter(product => 
-      product.species?.toLowerCase() === type.toLowerCase()
-    ); 
+    if (type === "all") return products;
+    return products.filter(
+      (product) => product.species?.toLowerCase() === type.toLowerCase()
+    );
   };
 
   // Render product grid with consistent height
   const renderProductGrid = (filteredProducts, emptyMessage) => (
     <Box minHeight="400px">
       {filteredProducts.length === 0 ? (
-        <Box 
-          textAlign="center" 
+        <Box
+          textAlign="center"
           py={8}
           display="flex"
           alignItems="center"
@@ -102,7 +104,12 @@ const MarinatedPage = () => {
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
         >
-          <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minH="400px"
+          >
             <VStack spacing={4}>
               <Spinner size="xl" color="blue.500" />
               <Text>Loading marinated products...</Text>
@@ -146,20 +153,16 @@ const MarinatedPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
         minHeight="100vh"
-        position="relative" 
+        position="relative"
       >
-       <Navbar onOpen={onOpen}/>
+        <Navbar onOpen={onOpen} />
 
-        <VStack spacing={0} px={4}> 
+        <VStack spacing={0} px={4}>
           <Box fontSize="2xl" fontWeight="semibold" mb={4}>
             Marinated Meat
           </Box>
-          
-          <Tabs 
-            w="100%" 
-            variant="unstyled"
-            isFitted={false}
-          >
+
+          <Tabs w="100%" variant="unstyled" isFitted={false}>
             <TabList justifyContent="center" gap={4} mb={6}>
               {["pork", "beef", "poultry", "all"].map((label) => (
                 <Tab
@@ -190,38 +193,35 @@ const MarinatedPage = () => {
               ))}
             </TabList>
 
-            <TabPanels minHeight="500px"> 
+            <TabPanels minHeight="500px">
               <TabPanel p={0}>
                 {renderProductGrid(
-                  getProductsByType('pork'), 
+                  getProductsByType("pork"),
                   "No marinated pork products found"
                 )}
               </TabPanel>
-              
+
               <TabPanel p={0}>
                 {renderProductGrid(
-                  getProductsByType('beef'), 
+                  getProductsByType("beef"),
                   "No marinated beef products found"
                 )}
               </TabPanel>
-              
+
               <TabPanel p={0}>
                 {renderProductGrid(
-                  getProductsByType('chicken'), 
+                  getProductsByType("chicken"),
                   "No marinated poultry products found"
                 )}
               </TabPanel>
-              
+
               <TabPanel p={0}>
-                {renderProductGrid(
-                  products, 
-                  "No marinated products found"
-                )}
+                {renderProductGrid(products, "No marinated products found")}
               </TabPanel>
             </TabPanels>
           </Tabs>
         </VStack>
-        
+
         <Footer />
       </Container>
     </Sidebar>

@@ -31,8 +31,15 @@ const AgreementGate = () => {
   const checkboxItems = [
     { key: "terms", label: "I have agreed to the Terms of Use" },
     { key: "privacy", label: "I agree to the Privacy Policy" },
-    { key: "returnPolicy", label: "I acknowledge the Return and Refund Policy is final" },
-    { key: "disclaimer", label: "I understand and accept the Disclaimer regarding product handling and use" },
+    {
+      key: "returnPolicy",
+      label: "I acknowledge the Return and Refund Policy is final",
+    },
+    {
+      key: "disclaimer",
+      label:
+        "I understand and accept the Disclaimer regarding product handling and use",
+    },
   ];
 
   return (
@@ -59,20 +66,20 @@ const AgreementGate = () => {
                 size="lg"
                 colorScheme="gray"
                 onClick={() => navigate(-1)}
-              >
-              </Button>
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={onOpen}
-              >
+              ></Button>
+              <Button variant="ghost" size="lg" onClick={onOpen}>
                 <Text fontSize="lg">☰</Text>
               </Button>
             </Flex>
           </Box>
 
           <Box px={6} py={4} flex="1">
-            <Heading mb={12} fontWeight="bold" fontSize="2xl" textAlign="center">
+            <Heading
+              mb={12}
+              fontWeight="bold"
+              fontSize="2xl"
+              textAlign="center"
+            >
               Agreements
             </Heading>
 
@@ -84,7 +91,10 @@ const AgreementGate = () => {
                   alignItems="center"
                   cursor="pointer"
                   onClick={() =>
-                    setChecked((prev) => ({ ...prev, [item.key]: !prev[item.key] }))
+                    setChecked((prev) => ({
+                      ...prev,
+                      [item.key]: !prev[item.key],
+                    }))
                   }
                 >
                   <Box
@@ -98,9 +108,9 @@ const AgreementGate = () => {
                     bg="transparent"
                     mr={3}
                     position="relative"
-                    >
+                  >
                     {checked[item.key] && (
-                        <Box
+                      <Box
                         position="absolute"
                         top="2px"
                         left="2px"
@@ -110,7 +120,7 @@ const AgreementGate = () => {
                         borderRadius="50%"
                         bg="#494949"
                         transition="background-color 0.2s ease-in-out"
-                        />
+                      />
                     )}
                   </Box>
 

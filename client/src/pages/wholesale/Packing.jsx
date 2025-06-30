@@ -92,11 +92,13 @@ const PackingPage = () => {
                 {imageUrls.map((src, i) => (
                   <Image
                     key={i}
-                    src={src}
+                    // src={src}
+                    src="../../gray.avif"
                     alt={`Packing image ${i + 1}`}
                     borderRadius="md"
                     boxSize="120px"
                     objectFit="cover"
+                    width="50%"
                   />
                 ))}
               </Stack>

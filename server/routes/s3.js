@@ -1,10 +1,12 @@
 import express from "express";
 import { db } from "../db/index.js";
 import multer from "multer";
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-
 
 const S3Router = express.Router();
 
@@ -58,10 +60,14 @@ S3Router.post("/upload", upload.single("file"), async (req, res) => {
 S3Router.get("/item/:itemId/images", async (req, res) => {
   const { itemId } = req.params;
   try {
-    const result = await db.query("SELECT image_url FROM images WHERE item_id = $1", [itemId]);
-    const rows = result.rows; 
-    const urls = rows.map(row =>
-      `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${row.image_url}`
+    const result = await db.query(
+      "SELECT image_url FROM images WHERE item_id = $1",
+      [itemId]
+    );
+    const rows = result.rows;
+    const urls = rows.map(
+      (row) =>
+        `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${row.image_url}`
     );
     res.json({ images: urls });
   } catch (err) {
@@ -76,7 +82,9 @@ S3Router.get("/signed-url/:key", async (req, res) => {
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: key,
     });
-    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 1 hour
+    const signedUrl = await getSignedUrl(s3Client, command, {
+      expiresIn: 3600,
+    }); // 1 hour
     res.json({ url: signedUrl });
   } catch (err) {
     res.status(500).json({ error: "Failed to generate signed URL" });
@@ -89,5 +97,4 @@ S3Router.get("/signed-url/:key", async (req, res) => {
 //     //Get the file URL from S3, and return it safely using the structure above
 // });
 
-
-export {S3Router};
+export { S3Router };

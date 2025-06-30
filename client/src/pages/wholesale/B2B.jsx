@@ -34,8 +34,7 @@ const B2BPage = () => {
         border={{ base: "none", lg: "1px" }}
         ml={{ base: 0, lg: "40%" }}
       >
-        
-        <Navbar onOpen={onOpen}/>
+        <Navbar onOpen={onOpen} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
           <Breadcrumbs

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode"; // Changed from default import to named import
 import {
   Box,
   Button,
@@ -24,25 +25,111 @@ import {
 } from "@chakra-ui/react";
 import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { color } from "framer-motion";
 
 const ITEMS = [
-  { label: "Marinated", to: "/wholesale/marinated", icon: "/icons/gray.avif" },
-  { label: "Processed", to: "/wholesale/processed", icon: "/icons/gray.avif" },
-  { label: "Unprocessed", to: "/wholesale/unprocessed", icon: "/icons/gray.avif" },
-  { label: "Deal", to: "/wholesale/deal", icon: "/final/deal.png" },
-  { label: "Order", to: "/wholesale/how-to-order", icon: "/final/order.png" },
-  { label: "Contact", to: "/contact", icon: "/final/contact us.png" },
-  { label: "Packing", to: "/wholesale/packing", icon: "/final/packing.png" },
-  { label: "B2B", to: "/wholesale/b2b", icon: "/final/b2b.png" },
-  { label: "FAQ", to: "/wholesale/faq", icon: "/final/FAQ.png" },
+  {
+    label: "Marinated",
+    to: "/wholesale/marinated",
+    icon: "/products/marinated.jpg",
+    color: "white",
+  },
+  {
+    label: "Processed",
+    to: "/wholesale/processed",
+    icon: "/products/processed.webp",
+    color: "white",
+  },
+  {
+    label: "Unprocessed",
+    to: "/wholesale/unprocessed",
+    icon: "/products/unprocessed.jpg",
+    color: "white",
+  },
+  {
+    label: "Deal",
+    to: "/wholesale/deal",
+    icon: "/final/deal.png",
+    color: "#484849",
+  },
+  {
+    label: "Order",
+    to: "/wholesale/how-to-order",
+    icon: "/final/order.png",
+    color: "#484849",
+  },
+  {
+    label: "Contact",
+    to: "/contact",
+    icon: "/final/contact us.png",
+    color: "#484849",
+  },
+  {
+    label: "Packing",
+    to: "/wholesale/packing",
+    icon: "/final/packing.png",
+    color: "#484849",
+  },
+  {
+    label: "B2B",
+    to: "/wholesale/b2b",
+    icon: "/final/b2b.png",
+    color: "#484849",
+  },
+  {
+    label: "FAQ",
+    to: "/wholesale/faq",
+    icon: "/final/FAQ.png",
+    color: "#484849",
+  },
 ];
 
-export default function NavDrawer({ isOpen, onClose, containerRef }){
+export default function NavDrawer({ isOpen, onClose, containerRef }) {
   const [drawerWidth, setDrawerWidth] = useState("100%");
   const navigate = useNavigate();
+  const [currUser, setCurrUser] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState(null);
+
+  const getUserInfo = (userId) => {
+    console.log("Fetching user info for userId:", userId);
+    fetch(`http://localhost:3001/api/users/${userId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setUserInfo(data.user);
+        console.log("Current user:", data.user);
+      })
+      .catch((error) => {
+        console.error("Error fetching user info:", error);
+      });
+  };
 
   useEffect(() => {
-    // Function to update drawer width based on container width
+    const storedToken = localStorage.getItem("token");
+    console.log("Stored token:", storedToken);
+    if (storedToken) {
+      try {
+        const decoded = jwtDecode(storedToken);
+        console.log(decoded);
+        getUserInfo(decoded.userId);
+
+        if (decoded.exp > Date.now() / 1000) {
+          setToken(storedToken);
+          setCurrUser(decoded);
+          setIsAuthenticated(true);
+        } else {
+          // Token expired, remove it
+          localStorage.removeItem("token");
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        localStorage.removeItem("token");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     const updateWidth = () => {
       if (containerRef && containerRef.current) {
         const width = containerRef.current.offsetWidth;
@@ -57,6 +144,15 @@ export default function NavDrawer({ isOpen, onClose, containerRef }){
     window.addEventListener("resize", updateWidth);
     return () => window.removeEventListener("resize", updateWidth);
   }, [isOpen, containerRef]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setCurrUser(null);
+    setUserInfo(null);
+    setIsAuthenticated(false);
+    navigate("/");
+  };
 
   if (!isOpen) return null;
 
@@ -95,7 +191,11 @@ export default function NavDrawer({ isOpen, onClose, containerRef }){
             />
             <IconButton
               aria-label="Close menu"
-              icon={<Text fontSize="2xl" color="#8f8e8e">☰</Text>}
+              icon={
+                <Text fontSize="2xl" color="#8f8e8e">
+                  ☰
+                </Text>
+              }
               variant="ghost"
               onClick={onClose}
               size="xs"
@@ -104,20 +204,35 @@ export default function NavDrawer({ isOpen, onClose, containerRef }){
           </Flex>
         </Flex>
 
-        {/* Greeting */}
         <Box textAlign="center" mb={4}>
           <Heading as="h2" fontSize="2xl" fontWeight="semibold">
-            <Text as="span" color="gray.500">Hello </Text>
-            <Text as="span" color="black">User</Text>
+            <Text as="span" color="gray.500">
+              Hello{" "}
+            </Text>
+            <Text as="span" color="black">
+              {userInfo?.name?.split(" ")[0] || "User"}
+            </Text>
           </Heading>
           <Box mt={2} fontSize="sm">
-            <Link onClick={() => navigate("/login")} mr={2} color="gray.600">
-              Login
-            </Link>
-            |{' '}
-            <Link onClick={() => navigate("/signup")} color="gray.600">
-              Sign up
-            </Link>
+            {isAuthenticated ? (
+              <Link onClick={handleLogout} color="gray.600">
+                Logout
+              </Link>
+            ) : (
+              <>
+                <Link
+                  onClick={() => navigate("/login")}
+                  mr={2}
+                  color="gray.600"
+                >
+                  Login
+                </Link>
+                |{" "}
+                <Link onClick={() => navigate("/signup")} color="gray.600">
+                  Sign up
+                </Link>
+              </>
+            )}
           </Box>
         </Box>
 
@@ -131,7 +246,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }){
             justifyItems="center"
             alignItems="center"
           >
-            {ITEMS.map(({ label, to, icon }) => (
+            {ITEMS.map(({ label, to, icon, color }) => (
               <GridItem
                 key={label}
                 display="flex"
@@ -140,14 +255,14 @@ export default function NavDrawer({ isOpen, onClose, containerRef }){
               >
                 <Circle
                   size="65px"
-                  bg="#efedef"
+                  bg={color}
                   cursor="pointer"
                   onClick={() => navigate(to)}
                 >
                   <Image
                     src={icon}
                     fallbackSrc="/gray.avif"
-                    boxSize="65px"
+                    boxSize="50px"
                     objectFit="cover"
                     borderRadius="full"
                     alt={label}

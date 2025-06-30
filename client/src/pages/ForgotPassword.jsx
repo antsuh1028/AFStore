@@ -1,4 +1,4 @@
-import { useState, useRef, } from "react";
+import { useState, useRef } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -52,7 +52,7 @@ const ForgotPassword = () => {
 
   return (
     <Sidebar>
-      <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef}/>
+      <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
       <Container
         ref={contentRef}
         maxW={{ base: "100%", lg: "30%" }}

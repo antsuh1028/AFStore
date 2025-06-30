@@ -1,6 +1,5 @@
-import express from 'express';
-import {db} from '../db/index.js';
-
+import express from "express";
+import { db } from "../db/index.js";
 
 const ShippingAddrsRouter = express.Router();
 
@@ -29,7 +28,9 @@ ShippingAddrsRouter.get("/id/:id", async (req, res) => {
   try {
     const addrId = req.params.id;
     if (isNaN(addrId)) {
-      return res.status(400).json({ error: "Invalid address ID. Must be a number." });
+      return res
+        .status(400)
+        .json({ error: "Invalid address ID. Must be a number." });
     }
 
     const result = await db.query(
@@ -62,7 +63,9 @@ ShippingAddrsRouter.get("/user/:user_id", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: "No addresses found for that user" });
+      return res
+        .status(404)
+        .json({ error: "No addresses found for that user" });
     }
 
     res.json({
@@ -95,7 +98,14 @@ ShippingAddrsRouter.post("/", async (req, res) => {
     } = req.body;
 
     // required fields
-    if (!user_id || !address_line1 || !city || !state || !postal_code || !country) {
+    if (
+      !user_id ||
+      !address_line1 ||
+      !city ||
+      !state ||
+      !postal_code ||
+      !country
+    ) {
       return res.status(400).json({
         error: "Missing required fields",
         required: [
@@ -146,7 +156,9 @@ ShippingAddrsRouter.put("/:id", async (req, res) => {
   try {
     const addrId = req.params.id;
     if (isNaN(addrId)) {
-      return res.status(400).json({ error: "Invalid address ID. Must be a number." });
+      return res
+        .status(400)
+        .json({ error: "Invalid address ID. Must be a number." });
     }
 
     const {
@@ -161,7 +173,14 @@ ShippingAddrsRouter.put("/:id", async (req, res) => {
       address_type = null,
     } = req.body;
 
-    if (!user_id || !address_line1 || !city || !state || !postal_code || !country) {
+    if (
+      !user_id ||
+      !address_line1 ||
+      !city ||
+      !state ||
+      !postal_code ||
+      !country
+    ) {
       return res.status(400).json({
         error: "Missing required fields",
         required: [
@@ -225,7 +244,9 @@ ShippingAddrsRouter.delete("/:id", async (req, res) => {
   try {
     const addrId = req.params.id;
     if (isNaN(addrId)) {
-      return res.status(400).json({ error: "Invalid address ID. Must be a number." });
+      return res
+        .status(400)
+        .json({ error: "Invalid address ID. Must be a number." });
     }
 
     const result = await db.query(

@@ -27,7 +27,7 @@ export const ProductCard = ({
           `http://localhost:3001/api/s3/item/${id}/images`
         );
         const data = await res.json();
-        console.log("Fetched images:", data);
+        // console.log("Fetched images:", data);
         if (res.ok && data.images.length > 0) {
           setDisplayImage(data.images[0]);
         } else {
@@ -57,11 +57,11 @@ export const ProductCard = ({
       _hover={{
         transform: "translateY(-2px)",
         boxShadow: "lg",
-        bg: "gray.50"
+        bg: "gray.50",
       }}
       _active={{
         transform: "translateY(0)",
-        boxShadow: "md"
+        boxShadow: "md",
       }}
       onClick={handleCardClick}
       maxW="180px"
@@ -89,7 +89,7 @@ export const ProductCard = ({
       </Text>
 
       {/* Price */}
-      <Text mt={1} fontWeight="bold" color="green.600">
+      <Text mt={1} fontWeight="bold" color="gray.600">
         ${price}
       </Text>
     </Box>

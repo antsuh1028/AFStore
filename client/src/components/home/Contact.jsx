@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import {
   Box,
   Heading,
@@ -12,9 +12,9 @@ import {
   useToast,
   FormErrorMessage,
   Divider,
-} from '@chakra-ui/react';
-import emailjs from 'emailjs-com';
-import Footer from '../Footer';
+} from "@chakra-ui/react";
+import emailjs from "emailjs-com";
+import Footer from "../Footer";
 
 const Contact = () => {
   const form = useRef();
@@ -53,9 +53,9 @@ const Contact = () => {
     if (emailError) {
       setLoading(false);
       toast({
-        title: 'Invalid email address.',
-        description: 'Please fix your email and try again.',
-        status: 'error',
+        title: "Invalid email address.",
+        description: "Please fix your email and try again.",
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -64,18 +64,18 @@ const Contact = () => {
 
     emailjs
       .sendForm(
-        'your_service_id',
-        'your_template_id',
+        "your_service_id",
+        "your_template_id",
         form.current,
-        'your_public_key'
+        "your_public_key"
       )
       .then(
         (result) => {
           setLoading(false);
           toast({
-            title: 'Message sent!',
+            title: "Message sent!",
             description: "We've received your inquiry.",
-            status: 'success',
+            status: "success",
             duration: 5000,
             isClosable: true,
           });
@@ -83,9 +83,9 @@ const Contact = () => {
         (error) => {
           setLoading(false);
           toast({
-            title: 'Error sending message.',
-            description: 'Please try again later.',
-            status: 'error',
+            title: "Error sending message.",
+            description: "Please try again later.",
+            status: "error",
             duration: 5000,
             isClosable: true,
           });
@@ -104,11 +104,19 @@ const Contact = () => {
       <Divider mb={6} borderColor="gray.300" />
 
       <Text fontFamily="serif" fontSize="sm" color="gray.600" mb={6}>
-        To ensure we can address your enquiry correctly, please provide a detailed message. <br />
+        To ensure we can address your enquiry correctly, please provide a
+        detailed message. <br />
         <b>Support hours: Mon–Fri, 8:00AM–4:30PM </b>
       </Text>
 
-      <Heading fontFamily="serif" as="h3" size="md" mb={4} fontWeight="bold" textAlign="left">
+      <Heading
+        fontFamily="serif"
+        as="h3"
+        size="md"
+        mb={4}
+        fontWeight="bold"
+        textAlign="left"
+      >
         Inquiries
       </Heading>
 
@@ -147,11 +155,19 @@ const Contact = () => {
               borderRadius="lg"
               bg="gray.50"
               borderColor="gray.400"
-              _focus={{ borderColor: "blue.400", boxShadow: "0 0 0 1px blue.400" }}
+              _focus={{
+                borderColor: "blue.400",
+                boxShadow: "0 0 0 1px blue.400",
+              }}
             />
           </FormControl>
 
-          <Button type="submit" colorScheme="blue" isLoading={loading} borderRadius="full">
+          <Button
+            type="submit"
+            colorScheme="blue"
+            isLoading={loading}
+            borderRadius="full"
+          >
             SEND
           </Button>
         </VStack>

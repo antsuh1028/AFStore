@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -20,6 +20,14 @@ import {
   SimpleGrid,
   Link,
   useDisclosure,
+  List,
+  ListItem,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { SearchIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { ShoppingCart, UserRound } from "lucide-react";
@@ -32,8 +40,82 @@ import Sidebar from "../components/SideBar";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isSearchOpen,
+    onOpen: onSearchOpen,
+    onClose: onSearchClose,
+  } = useDisclosure();
   const navigate = useNavigate();
   const contentRef = useRef(null);
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [apiStatus, setApiStatus] = useState("unknown");
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchQuery.trim().length > 1) {
+        searchItems();
+      } else {
+        setSearchResults([]);
+        setShowDropdown(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
+
+  const searchItems = async () => {
+    setIsLoading(true);
+    try {
+      const url = "http://localhost:3001/api/items";
+      const response = await fetch(url);
+
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          if (data.data && Array.isArray(data.data)) {
+            const filteredItems = data.data.filter(
+              (item) =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.species
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+                item.description
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase())
+            );
+            setSearchResults(filteredItems.slice(0, 10));
+            setShowDropdown(true);
+            setApiStatus("connected");
+            return;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResultClick = (item) => {
+    setShowDropdown(false);
+    setSearchQuery("");
+    navigate(`wholesale/product/${item.id}`);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      onSearchOpen();
+    }
+  };
 
   return (
     <Sidebar>
@@ -82,9 +164,6 @@ const HomePage = () => {
             </Text>
           </Heading>
         </Box>
-        <Box bg="gray" width="100%" my={4} height="20vh">
-          DEAL DEAL DEAL DEAL DEAL DEAL DEAL DEAL
-        </Box>
 
         {/* Main Image */}
         <Box px={4} mb={4}>
@@ -92,49 +171,190 @@ const HomePage = () => {
             bg="tan.100"
             borderRadius="lg"
             overflow="hidden"
-            height="45vh"
+            height="100%"
             position="relative"
-            border="1px"
           >
             <Image
-              src="../../public/gray.avif"
+              src="../../products/cover.jpg"
               alt="Various Meat Cuts"
-              // objectFit="cover"
-              w="100%"
-              h="100%"
+              height="100%"
+              width="100%"
+              objectFit="cover"
             />
           </Box>
         </Box>
 
-        {/* Search Bar */}
-        <Box px={4} mb={6}>
-          <InputGroup
-            size="lg"
-            bg="white"
-            borderRadius="full"
-            boxShadow="sm"
-            mt={4}
-            mb={8}
-          >
-            <Input
-              textAlign="center"
-              placeholder="Search for..."
+        {/* Enhanced Search Bar */}
+        <Box px={4} mb={6} position="relative">
+          <form onSubmit={handleSearchSubmit}>
+            <InputGroup
+              size="lg"
+              bg="white"
               borderRadius="full"
-              py={6}
-              bg="#f9f9f9"
-            />
-            <InputRightElement h="full" pr={2}>
-              <SearchIcon color="gray.400" boxSize={5} />
-            </InputRightElement>
-          </InputGroup>
+              boxShadow="sm"
+              mt={4}
+              mb={8}
+            >
+              <Input
+                textAlign="center"
+                placeholder="Search for meat products..."
+                borderRadius="full"
+                py={6}
+                bg="#f9f9f9"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => searchQuery.length > 2 && setShowDropdown(true)}
+              />
+              <InputRightElement h="full" pr={2}>
+                <IconButton
+                  aria-label="Search"
+                  icon={<SearchIcon color="gray.400" boxSize={5} />}
+                  variant="ghost"
+                  type="submit"
+                  isLoading={isLoading}
+                />
+              </InputRightElement>
+            </InputGroup>
+          </form>
+
+          {/* API Status Indicator */}
+          {apiStatus === "disconnected" && (
+            <Text fontSize="xs" color="orange.600" textAlign="center" mt={2}>
+              API disconnected - showing sample data
+            </Text>
+          )}
+
+          {/* Search Dropdown Results */}
+          {showDropdown && searchResults.length > 0 && (
+            <Box
+              position="absolute"
+              top="100%"
+              left={4}
+              right={4}
+              bg="white"
+              borderRadius="md"
+              boxShadow="lg"
+              zIndex={1000}
+              maxH="300px"
+              overflowY="auto"
+              border="1px"
+              borderColor="gray.200"
+            >
+              <List spacing={0}>
+                {searchResults.map((item) => (
+                  <ListItem
+                    key={item.id}
+                    p={3}
+                    cursor="pointer"
+                    _hover={{ bg: "gray.50" }}
+                    onClick={() => handleResultClick(item)}
+                    borderBottom="1px"
+                    borderColor="gray.100"
+                  >
+                    <Flex align="center" gap={3}>
+                      {item.images && (
+                        <Image
+                          src={item.images}
+                          alt={item.name}
+                          boxSize="40px"
+                          objectFit="cover"
+                          borderRadius="md"
+                        />
+                      )}
+                      <VStack align="start" spacing={1} flex={1}>
+                        <Text fontWeight="semibold" fontSize="sm">
+                          {item.name}
+                        </Text>
+                        <Text fontSize="xs" color="gray.600">
+                          {item.species} • ${item.price}
+                        </Text>
+                      </VStack>
+                    </Flex>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          )}
         </Box>
+
+        {/* Search Results Modal */}
+        <Modal isOpen={isSearchOpen} onClose={onSearchClose} size="lg">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Search Results for "{searchQuery}"</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              {searchResults.length > 0 ? (
+                <Grid templateColumns="repeat(1, 1fr)" gap={4}>
+                  {searchResults.map((item) => (
+                    <GridItem key={item.id}>
+                      <Flex
+                        p={4}
+                        border="1px"
+                        borderColor="gray.200"
+                        borderRadius="md"
+                        cursor="pointer"
+                        _hover={{ bg: "gray.50" }}
+                        onClick={() => {
+                          handleResultClick(item);
+                          onSearchClose();
+                        }}
+                      >
+                        {item.images && (
+                          <Image
+                            src={item.images}
+                            alt={item.name}
+                            boxSize="60px"
+                            objectFit="cover"
+                            borderRadius="md"
+                            mr={4}
+                          />
+                        )}
+                        <VStack align="start" spacing={2} flex={1}>
+                          <Text fontWeight="bold">{item.name}</Text>
+                          <Text fontSize="sm" color="gray.600">
+                            {item.description}
+                          </Text>
+                          <HStack>
+                            <Text fontSize="sm" color="blue.600">
+                              {item.species}
+                            </Text>
+                            <Text fontSize="sm" fontWeight="bold">
+                              ${item.price}
+                            </Text>
+                          </HStack>
+                        </VStack>
+                      </Flex>
+                    </GridItem>
+                  ))}
+                </Grid>
+              ) : (
+                <Text textAlign="center" color="gray.500">
+                  No products found for "{searchQuery}"
+                </Text>
+              )}
+            </ModalBody>
+          </ModalContent>
+        </Modal>
 
         {/* Categories */}
         <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={8}>
           {[
-            { name: "Marinated", url: "/wholesale/marinated" },
-            { name: "Processed", url: "/wholesale/processed" },
-            { name: "Unprocessed", url: "/wholesale/unprocessed" },
+            {
+              name: "Marinated",
+              url: "/wholesale/marinated",
+              image: "../../products/marinated.jpg",
+            },
+            {
+              name: "Processed",
+              url: "/wholesale/processed",
+              image: "../../products/processed.webp",
+            },
+            {
+              name: "Unprocessed",
+              url: "/wholesale/unprocessed",
+              image: "../../products/unprocessed.jpg",
+            },
           ].map((category, idx) => (
             <GridItem key={idx}>
               <VStack
@@ -142,8 +362,20 @@ const HomePage = () => {
                 cursor="pointer"
                 onClick={() => navigate(category.url)}
               >
-                <Circle size="60px" bg="#efeeee" overflow="hidden">
-                  <Image src="../../public/gray.avif" alt={category.name} />
+                <Circle
+                  size="60px"
+                  bg="white"
+                  border="1px"
+                  borderColor="gray.100"
+                  overflow="hidden"
+                >
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    width="60px"
+                    height="60px"
+                    objectFit="cover"
+                  />
                 </Circle>
                 <Text fontSize="sm" fontWeight="semibold">
                   {category.name}
@@ -238,7 +470,7 @@ const HomePage = () => {
           <Flex direction="row" justify="space-between" gap={6}>
             <Box flex="1" border="1px" height="100%" borderRadius="xl">
               <Image
-                src="../../public/gray.avif"
+                src="../../products/Screenshot 2025-04-09 113049.jpg"
                 alt="Brisket Slice"
                 borderRadius="xl"
               />
@@ -363,7 +595,7 @@ const HomePage = () => {
           </VStack>
         </Box>
         {/* Company Website Link */}
-        <VStack align="center" spacing={0} py={12} width="100%">
+        <VStack align="center" spacing={0} py={8} width="100%">
           <Text
             fontWeight="extrabold"
             fontStyle="italic"

@@ -1,6 +1,13 @@
 import { useState } from "react";
 import {
-  Box, Heading, Text, Input, Button, VStack, useToast, Container,
+  Box,
+  Heading,
+  Text,
+  Input,
+  Button,
+  VStack,
+  useToast,
+  Container,
 } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
 
@@ -13,11 +20,14 @@ const ResetPassword = () => {
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/users/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, token, newPassword }),
-      });
+      const res = await fetch(
+        "http://localhost:3001/api/users/reset-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, token, newPassword }),
+        }
+      );
       const data = await res.json();
       if (res.ok) {
         toast({ title: "Password reset!", status: "success" });
@@ -25,7 +35,11 @@ const ResetPassword = () => {
         toast({ title: "Error", description: data.message, status: "error" });
       }
     } catch (err) {
-      toast({ title: "Server error", description: err.message, status: "error" });
+      toast({
+        title: "Server error",
+        description: err.message,
+        status: "error",
+      });
     }
   };
 

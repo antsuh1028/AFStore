@@ -87,51 +87,51 @@ ItemsRouter.get("/name/:name", async (req, res) => {
 
 //Get Item by Species
 ItemsRouter.get("/species/:species", async (req, res) => {
- try {
-   const species = req.params.species;
+  try {
+    const species = req.params.species;
 
-   const result = await db.query(
-     "SELECT * FROM items WHERE LOWER(species) = LOWER($1) ORDER BY name ASC",
-     [species]
-   );
+    const result = await db.query(
+      "SELECT * FROM items WHERE LOWER(species) = LOWER($1) ORDER BY name ASC",
+      [species]
+    );
 
-   res.json({
-     success: true,
-     data: result.rows,
-     count: result.rows.length,
-     species: species,
-   });
- } catch (err) {
-   console.error("Database error:", err);
-   res.status(500).json({
-     error: "Internal server error",
-     message: err.message,
-   });
- }
+    res.json({
+      success: true,
+      data: result.rows,
+      count: result.rows.length,
+      species: species,
+    });
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({
+      error: "Internal server error",
+      message: err.message,
+    });
+  }
 });
 
 //Get Item by Style
 ItemsRouter.get("/style/:style", async (req, res) => {
- try {
-   const style = req.params.style;
-const result = await db.query(
-  "SELECT * FROM items WHERE style::text = $1 ORDER BY name ASC",
-  [style]
-);
+  try {
+    const style = req.params.style;
+    const result = await db.query(
+      "SELECT * FROM items WHERE style::text = $1 ORDER BY name ASC",
+      [style]
+    );
 
-   res.json({
-     success: true,
-     data: result.rows,
-     count: result.rows.length,
-     style: style,
-   });
- } catch (err) {
-   console.error("Database error:", err);
-   res.status(500).json({
-     error: "Internal server error",
-     message: err.message,
-   });
- }
+    res.json({
+      success: true,
+      data: result.rows,
+      count: result.rows.length,
+      style: style,
+    });
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({
+      error: "Internal server error",
+      message: err.message,
+    });
+  }
 });
 
 //Add Item
@@ -148,7 +148,7 @@ ItemsRouter.post("/", async (req, res) => {
       origin,
       spec,
       avg_weight,
-      style
+      style,
     } = req.body;
 
     if (
@@ -175,7 +175,7 @@ ItemsRouter.post("/", async (req, res) => {
           "origin",
           "spec",
           "avg_weight",
-          "style"
+          "style",
         ],
       });
     }
@@ -197,7 +197,7 @@ ItemsRouter.post("/", async (req, res) => {
         origin,
         spec,
         avg_weight,
-        style
+        style,
       ]
     );
 
@@ -206,7 +206,7 @@ ItemsRouter.post("/", async (req, res) => {
       data: result.rows[0],
       message: "Item created successfully",
     });
-  } catch (err) { 
+  } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       error: "Internal server error",
@@ -237,7 +237,7 @@ ItemsRouter.put("/:id", async (req, res) => {
       origin,
       spec,
       avg_weight,
-      style
+      style,
     } = req.body;
 
     if (
@@ -264,7 +264,7 @@ ItemsRouter.put("/:id", async (req, res) => {
           "origin",
           "spec",
           "avg_weight",
-          "style"
+          "style",
         ],
       });
     }

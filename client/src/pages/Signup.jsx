@@ -52,7 +52,9 @@ const Signup = () => {
 
   const validateLicense = (value) => {
     const regex = /^C-\d{7}$/;
-    setLicenseError(value && !regex.test(value) ? "License must be in format C-1234567" : "");
+    setLicenseError(
+      value && !regex.test(value) ? "License must be in format C-1234567" : ""
+    );
   };
 
   const inputStyle = {
@@ -70,7 +72,7 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-  
+
     if (emailError) {
       toast({
         title: "Invalid email.",
@@ -83,21 +85,20 @@ const Signup = () => {
     }
 
     if (!agreementChecked) {
-        toast({
-          title: "Agreement required.",
-          description: "You must acknowledge the wholesale eligibility note.",
-          status: "error",
-          duration: 4000,
-          isClosable: true,
-        });
-        return;
+      toast({
+        title: "Agreement required.",
+        description: "You must acknowledge the wholesale eligibility note.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
     }
-      
-  
+
     setLoading(true);
     try {
       const fullName = `${firstName} ${lastName}`.trim();
-  
+
       const res = await fetch("http://localhost:3001/api/users/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -108,7 +109,7 @@ const Signup = () => {
           license_number: licenseNumber,
         }),
       });
-  
+
       const data = await res.json();
       if (res.ok) {
         toast({
@@ -139,7 +140,6 @@ const Signup = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <Sidebar>
@@ -173,90 +173,99 @@ const Signup = () => {
         </Box>
 
         <Box px={6} py={4}>
-          <Heading mb={6} fontWeight="semibold" fontSize="3xl" textAlign="center">
+          <Heading
+            mb={6}
+            fontWeight="semibold"
+            fontSize="3xl"
+            textAlign="center"
+          >
             Sign Up
           </Heading>
 
           <form onSubmit={handleSignup}>
             <VStack spacing={4} align="stretch">
-            <FormControl isRequired>
+              <FormControl isRequired>
                 <FormLabel>First Name</FormLabel>
                 <Input
-                    type="text"
-                    placeholder="Enter First Name..."
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    {...inputStyle}
+                  type="text"
+                  placeholder="Enter First Name..."
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  {...inputStyle}
                 />
-                </FormControl>
+              </FormControl>
 
-                <FormControl isRequired>
+              <FormControl isRequired>
                 <FormLabel>Last Name</FormLabel>
                 <Input
-                    type="text"
-                    placeholder="Enter Last Name..."
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    {...inputStyle}
+                  type="text"
+                  placeholder="Enter Last Name..."
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  {...inputStyle}
                 />
-                </FormControl>
+              </FormControl>
 
-                <FormControl isRequired isInvalid={emailError !== ""}>
+              <FormControl isRequired isInvalid={emailError !== ""}>
                 <FormLabel>Email</FormLabel>
                 <Input
-                    type="email"
-                    placeholder="Enter Email..."
-                    value={email}
-                    onChange={(e) => {
+                  type="email"
+                  placeholder="Enter Email..."
+                  value={email}
+                  onChange={(e) => {
                     setEmail(e.target.value);
                     validateEmail(e.target.value);
-                    }}
-                    {...inputStyle}
+                  }}
+                  {...inputStyle}
                 />
-                {emailError && <FormErrorMessage>{emailError}</FormErrorMessage>}
-                </FormControl>
+                {emailError && (
+                  <FormErrorMessage>{emailError}</FormErrorMessage>
+                )}
+              </FormControl>
 
-                <FormControl isRequired>
+              <FormControl isRequired>
                 <FormLabel>Password</FormLabel>
                 <Input
-                    type="password"
-                    placeholder="Enter Password..."
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    {...inputStyle}
+                  type="password"
+                  placeholder="Enter Password..."
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  {...inputStyle}
                 />
-                </FormControl>
+              </FormControl>
 
-                <FormControl isInvalid={licenseError !== ""}>
+              <FormControl isInvalid={licenseError !== ""}>
                 <FormLabel>Wholesale License (optional)</FormLabel>
                 <Input
-                    type="text"
-                    placeholder="C-1234567"
-                    value={licenseNumber}
-                    onChange={(e) => {
+                  type="text"
+                  placeholder="C-1234567"
+                  value={licenseNumber}
+                  onChange={(e) => {
                     setLicenseNumber(e.target.value);
                     validateLicense(e.target.value);
-                    }}
-                    {...inputStyle}
+                  }}
+                  {...inputStyle}
                 />
-                {licenseError && <FormErrorMessage>{licenseError}</FormErrorMessage>}
-                </FormControl>
+                {licenseError && (
+                  <FormErrorMessage>{licenseError}</FormErrorMessage>
+                )}
+              </FormControl>
 
-                <Box display="flex" alignItems="flex-start" mt={2}>
+              <Box display="flex" alignItems="flex-start" mt={2}>
                 <Box
-                    as="label"
-                    display="flex"
-                    alignItems="flex-start"
-                    cursor="pointer"
-                    mt="4px"
+                  as="label"
+                  display="flex"
+                  alignItems="flex-start"
+                  cursor="pointer"
+                  mt="4px"
                 >
-                    <input
+                  <input
                     type="checkbox"
                     checked={agreementChecked}
                     onChange={(e) => setAgreementChecked(e.target.checked)}
                     style={{ display: "none" }}
-                    />
-                    <Box
+                  />
+                  <Box
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
@@ -268,35 +277,33 @@ const Signup = () => {
                     bg={agreementChecked ? "#494949" : "white"}
                     mr={3}
                     transition="background-color 0.2s ease-in-out"
-                    >
+                  >
                     {agreementChecked && (
-                <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 12 10"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                    d="M1 5L4 8L11 1"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    />
-                </svg>
-                )}
-
-                    </Box>
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 12 10"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M1 5L4 8L11 1"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </Box>
                 </Box>
 
                 <Text fontSize="sm" color="gray.700">
-                    To ensure wholesale eligibility, please upload your license number and a copy
-                    during sign-up. Approval details will be sent via email.
+                  To ensure wholesale eligibility, please upload your license
+                  number and a copy during sign-up. Approval details will be
+                  sent via email.
                 </Text>
-                </Box>
-
-
+              </Box>
 
               <Button
                 type="submit"
@@ -312,19 +319,17 @@ const Signup = () => {
               </Button>
               <Box textAlign="center" pt={3} mb={5}>
                 <Text
-                    fontSize="sm"
-                    fontWeight='bold'
-                    color="#494949"
-                    textDecoration="underline"
-                    cursor="pointer"
-                    onClick={() => navigate("/login")}
-                    _hover={{ color: "#c1ab8f" }}
+                  fontSize="sm"
+                  fontWeight="bold"
+                  color="#494949"
+                  textDecoration="underline"
+                  cursor="pointer"
+                  onClick={() => navigate("/login")}
+                  _hover={{ color: "#c1ab8f" }}
                 >
-                    Already have an account? Sign in
+                  Already have an account? Sign in
                 </Text>
               </Box>
-
-
             </VStack>
           </form>
         </Box>

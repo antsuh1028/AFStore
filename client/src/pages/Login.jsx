@@ -54,7 +54,7 @@ const Login = () => {
       });
       return;
     }
-  
+
     setLoading(true);
     try {
       const res = await fetch("http://localhost:3001/api/users/login", {
@@ -62,6 +62,7 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+      console.log("Login request sent:", { email, password });
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem("token", data.token);
@@ -71,7 +72,7 @@ const Login = () => {
           duration: 3000,
           isClosable: true,
         });
-        navigate("/"); // ✅ Redirect to homepage
+        navigate("/");
       } else {
         toast({
           title: "Login failed.",
@@ -93,7 +94,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   const inputStyle = {
     borderRadius: "999px",
     bg: "#f9f9f9",
@@ -121,7 +122,6 @@ const Login = () => {
         display="flex"
         flexDirection="column"
         justifyContent="space-between"
-      
       >
         <Box>
           <Flex p={4} justify="space-between" align="center">
@@ -142,12 +142,17 @@ const Login = () => {
           </Flex>
         </Box>
 
-
-        <Box px={6} py={4} flex="1" display="flex" flexDirection="column" justifyContent="flex-start">
+        <Box
+          px={6}
+          py={4}
+          flex="1"
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start"
+        >
           <Heading mb={50} fontWeight="bold" fontSize="3xl" textAlign="center">
             Log in
           </Heading>
-
 
           <form onSubmit={handleLogin}>
             <VStack spacing={4} align="stretch">
@@ -163,7 +168,9 @@ const Login = () => {
                   }}
                   {...inputStyle}
                 />
-                {emailError && <FormErrorMessage>{emailError}</FormErrorMessage>}
+                {emailError && (
+                  <FormErrorMessage>{emailError}</FormErrorMessage>
+                )}
               </FormControl>
 
               <FormControl isRequired>
@@ -190,8 +197,13 @@ const Login = () => {
                 Forgot your password?
               </Text>
 
-
-              <Box display="flex" justifyContent="center" width="100%" pt={4} mb={-4}>
+              <Box
+                display="flex"
+                justifyContent="center"
+                width="100%"
+                pt={4}
+                mb={-4}
+              >
                 <Button
                   type="submit"
                   bg="#494949"
@@ -206,24 +218,22 @@ const Login = () => {
                 </Button>
               </Box>
               <Box pt={4} textAlign="center">
-              <Text
-                fontSize="sm"
-                color="#494949"
-                fontWeight="bold"
-                textDecoration="underline"
-                cursor="pointer"
-                _hover={{ color: "#6AAFDB" }}
-                onClick={() => navigate("/signup/agreements")}
-              >
-                Create Account
-              </Text>
-            </Box>
-
+                <Text
+                  fontSize="sm"
+                  color="#494949"
+                  fontWeight="bold"
+                  textDecoration="underline"
+                  cursor="pointer"
+                  _hover={{ color: "#6AAFDB" }}
+                  onClick={() => navigate("/signup/agreements")}
+                >
+                  Create Account
+                </Text>
+              </Box>
             </VStack>
           </form>
 
           <Box mt={2}></Box>
-
         </Box>
       </Container>
     </Sidebar>

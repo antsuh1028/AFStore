@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { apiRouter } from './routes/index.js';  // Add this
+import { apiRouter } from "./routes/index.js"; // Add this
 
 dotenv.config();
 
@@ -20,11 +20,11 @@ app.get("/", (req, res) => {
   res.json({ message: "Server is working!" });
 });
 
-app.use('/api', apiRouter);
+app.use("/api", apiRouter);
 
 const server = app.listen(PORT, (err) => {
   if (err) {
-    console.error("Server failed to start:", err);  
+    console.error("Server failed to start:", err);
   } else {
     console.log(`✅ Server running on http://localhost:${PORT}`);
     console.log(`Test: http://localhost:${PORT}/api/items`);

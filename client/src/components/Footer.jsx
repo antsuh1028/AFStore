@@ -51,7 +51,12 @@ const Footer = () => {
         <Flex justifyContent="center" mb={4} textAlign="center" gap={4}>
           {/* Get in touch */}
           <VStack align="center" mb={0} w="50%" spacing={0.5}>
-            <Text fontWeight="bold" fontSize="md" textDecoration="underline" mb={2}>
+            <Text
+              fontWeight="bold"
+              fontSize="md"
+              textDecoration="underline"
+              mb={2}
+            >
               Get in touch
             </Text>
             <Text color="gray.600" fontSize="xs" noOfLines={1}>
@@ -64,7 +69,12 @@ const Footer = () => {
 
           {/* Location */}
           <VStack align="center" spacing={0.5} w="50%">
-            <Text fontWeight="bold" fontSize="md" textDecoration="underline" mb={2}>
+            <Text
+              fontWeight="bold"
+              fontSize="md"
+              textDecoration="underline"
+              mb={2}
+            >
               Location
             </Text>
             <Text color="gray.600" fontSize="xs" noOfLines={1}>

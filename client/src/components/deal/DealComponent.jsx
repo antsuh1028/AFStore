@@ -95,13 +95,7 @@ const DealContent = () => {
             </Badge>
           </Flex>
 
-          <VStack
-            align="end"
-            spacing={3}
-            p={6}
-            bg="#f9f9f9"
-            borderRadius={24}
-          >
+          <VStack align="end" spacing={3} p={6} bg="#f9f9f9" borderRadius={24}>
             <Box textAlign="right">
               <Text fontSize="sm" fontWeight="semibold" color="#b3967f">
                 10% Off First Order:
@@ -203,13 +197,7 @@ const DealContent = () => {
             </Badge>
           </Flex>
 
-          <VStack
-            align="end"
-            spacing={3}
-            p={6}
-            bg="#f9f9f9"
-            borderRadius={24}
-          >
+          <VStack align="end" spacing={3} p={6} bg="#f9f9f9" borderRadius={24}>
             <Box textAlign="right">
               <Text fontSize="sm" fontWeight="semibold" color="#b3967f">
                 Referral Bonus:
