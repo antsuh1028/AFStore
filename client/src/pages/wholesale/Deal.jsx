@@ -39,7 +39,7 @@ const DealPage = () => {
           <Breadcrumbs
             listOfBreadCrumbs={[
               { label: "Home", url: "/" },
-              { label: "Wholesale", url: "/wholesale" },
+              { label: "Wholesale", url: "/" },
               { label: "Order", url: "/wholesale/how-to-order" },
             ]}
           />

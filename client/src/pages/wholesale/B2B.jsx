@@ -40,7 +40,7 @@ const B2BPage = () => {
           <Breadcrumbs
             listOfBreadCrumbs={[
               { label: "Home", url: "/" },
-              { label: "Wholesale", url: "/wholesale" },
+              { label: "Wholesale", url: "/" },
               { label: "B2B", url: "/wholesale/b2b" },
             ]}
           />

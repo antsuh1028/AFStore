@@ -82,7 +82,7 @@ const FAQPage = () => {
           <Breadcrumbs
             listOfBreadCrumbs={[
               { label: "Home", url: "/" },
-              { label: "Wholesale", url: "/wholesale" },
+              { label: "Wholesale", url: "/" },
               { label: "FAQ", url: "/wholesale/faq" },
             ]}
           />

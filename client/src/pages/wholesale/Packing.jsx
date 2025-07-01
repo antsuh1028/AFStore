@@ -58,7 +58,7 @@ const PackingPage = () => {
           <Breadcrumbs
             listOfBreadCrumbs={[
               { label: "Home", url: "/" },
-              { label: "Wholesale", url: "/wholesale" },
+              { label: "Wholesale", url: "/" },
               { label: "Packing", url: "/wholesale/packing" },
             ]}
           />
