@@ -30,7 +30,6 @@ const OrderContent = () => {
       </Heading>
       <Divider mb={14} />
       <VStack spacing={0} align="stretch" position="relative">
-        {/* Vertical line connecting steps with gradient */}
         <Box
           position="absolute"
           left={{ base: "8px", md: "9px" }}
@@ -61,7 +60,7 @@ const OrderContent = () => {
               color={textColor}
               mb={1}
             >
-              Select the Meat You Want
+              Select the Product You Would Like to Order
             </Heading>
             <Text
               fontSize="xs"
@@ -185,6 +184,51 @@ const OrderContent = () => {
           </Box>
         </Flex>
       </VStack>
+
+      {/* Payment Policy Section */}
+      <Box mt={24} borderRadius="lg" >
+        <Heading as="h2" size="md" mb={4}>
+          Payment Policy
+        </Heading>
+        <Text fontSize="sm" my={6}>
+          At AdamsFoods, we accept cash and credit card payments for all orders.
+          Payment requirements vary by order type as follows:
+        </Text>
+
+        <VStack align="start" spacing={3} my={6}>
+          <Text fontSize="sm">
+            • Delivery Orders: Full prepayment is required before delivery.
+          </Text>
+
+          <Box>
+            <Text fontSize="sm">
+              • Pickup Orders: 50% prepayment is required, with the remaining balance payable at
+              the time of pickup.
+            </Text>
+            <Text fontSize="sm" ml={4} mt={1}>
+              ★ A 5% discount will be applied to the remaining balance if paid
+              in cash at pickup.
+            </Text>
+          </Box>
+        </VStack>
+
+        <Text fontSize="sm" mb={6}>
+          All prepayments are processed through secure invoicing systems such as
+          Stripe or Square. An invoice will be sent to your email, allowing you
+          to complete payment safely by entering your card information.
+        </Text>
+
+        <VStack align="start" spacing={2}>
+          <Text fontSize="sm" fontWeight="semibold">
+            ※ Applicable sales tax will be added to all credit card payments.
+          </Text>
+          <Text fontSize="sm" fontWeight="semibold">
+            ※ Two or more missed pickups without notice may result in
+            suspension. Refunds and future orders may be subject to policy and
+            deposit requirements.
+          </Text>
+        </VStack>
+      </Box>
     </Box>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 
 import {
   Box,
@@ -61,7 +61,7 @@ const ContactPage = () => {
   const location = useLocation();
 
   // useEffect(() => {
-    
+
   //   // console.log("location:", state);
   // }, []);
 
@@ -81,34 +81,34 @@ const ContactPage = () => {
       });
   };
 
-useEffect(() => {
-  const storedToken = localStorage.getItem("token");
-  if (storedToken) {
-    try {
-      const decoded = jwtDecode(storedToken);
-      getUserInfo(decoded.userId);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      try {
+        const decoded = jwtDecode(storedToken);
+        getUserInfo(decoded.userId);
 
-      if (decoded.exp > Date.now() / 1000) {
-        setToken(storedToken);
-        setCurrUser(decoded);
-        setIsAuthenticated(true);
-      } else {
+        if (decoded.exp > Date.now() / 1000) {
+          setToken(storedToken);
+          setCurrUser(decoded);
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem("token");
+        }
+      } catch (error) {
         localStorage.removeItem("token");
       }
-    } catch (error) {
-      localStorage.removeItem("token");
     }
-  }
-}, []);
+  }, []);
 
-useEffect(() => {
-  if (form.current && userInfo) {
-    form.current.user_name.value = userInfo.name || "";
-    form.current.user_email.value = userInfo.email || "";
-    form.current.user_phone.value = userInfo.phone_number || "";
-    form.current.license_number.value = userInfo.license_number || "";
-  }
-}, [userInfo]);
+  useEffect(() => {
+    if (form.current && userInfo) {
+      form.current.user_name.value = userInfo.name || "";
+      form.current.user_email.value = userInfo.email || "";
+      form.current.user_phone.value = userInfo.phone_number || "";
+      form.current.license_number.value = userInfo.license_number || "";
+    }
+  }, [userInfo]);
 
   const validateEmail = (value) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -296,7 +296,6 @@ useEffect(() => {
                               aria-label="License information"
                             />
                           </PopoverTrigger>
-
                           <PopoverContent>
                             <PopoverArrow />
                             <PopoverCloseButton />
@@ -311,86 +310,55 @@ useEffect(() => {
                         </Popover>
                       </Flex>
                       <Input
-                        type="password"
+                        type="text"
                         name="license_number"
-                        placeholder="Enter License #..."
+                        placeholder="C-1234567"
                         {...inputStyle}
+                        isReadOnly={false}
                       />
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel fontSize="sm" htmlFor="license-file-upload">
-                        <Flex align="center" gap={2}>
-                          <Text as="span" color="gray.500" fontSize="sm">
-                            Please attach the wholesale license:
-                          </Text>
-
-                          <Popover>
-                            <PopoverTrigger>
-                              <IconButton
-                                icon={<Info size={16} color="gray" />}
-                                bg="none"
-                                size="xs"
-                                borderRadius="full"
-                                aria-label="License information"
-                              />
-                            </PopoverTrigger>
-
-                            <PopoverContent>
-                              <PopoverArrow />
-                              <PopoverCloseButton />
-                              <PopoverBody>
-                                <Text fontSize="sm">
-                                  Upload your valid wholesale license document.
-                                  Accepted formats: PDF, JPG, PNG. A picture is
-                                  also valid
-                                </Text>
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                        </Flex>
-                      </FormLabel>
-                      <Box display="flex" alignItems="center">
-                        <Box position="relative" width="fit-content">
-                          <Button
-                            as="label"
-                            htmlFor="license-file-upload"
-                            fontSize="sm"
-                            color="gray.500"
-                            textDecoration="underline"
-                            cursor="pointer"
-                            _hover={{ color: "gray.600" }}
-                            mr={2}
-                          >
-                            Choose File
-                          </Button>
-                          <Input
-                            id="license-file-upload"
-                            name="license_file"
-                            type="file"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            position="absolute"
-                            top="0"
-                            left="0"
-                            opacity="0"
-                            width="0.1px"
-                            height="0.1px"
-                            overflow="hidden"
-                            zIndex="-1"
-                            onChange={(e) => {
-                              setFileName(
-                                e.target.files[0]?.name || "No file chosen"
-                              );
-                            }}
-                          />
-                        </Box>
-                        <Text color="gray.600">
-                          {fileName || "No file chosen"}
+                      <Box display="flex" alignItems="center" mt={2}>
+                        <Button
+                          as="label"
+                          htmlFor="license-file-upload"
+                          fontSize="sm"
+                          color="gray.500"
+                          textDecoration="underline"
+                          cursor="pointer"
+                          bg="none"
+                          mx={2}
+                          minW="unset"
+                          p={0}
+                          h="auto"
+                          lineHeight="1"
+                        >
+                          Attached file
+                        </Button>
+                        <Input
+                          id="license-file-upload"
+                          name="license_file"
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          position="absolute"
+                          top="0"
+                          left="0"
+                          opacity="0"
+                          width="0.1px"
+                          height="0.1px"
+                          overflow="hidden"
+                          zIndex="-1"
+                          onChange={(e) => {
+                            setFileName(
+                              e.target.files[0]?.name || "No file chosen"
+                            );
+                          }}
+                        />
+                        <Text color="gray.500" fontSize="sm" ml={2}>
+                          *Please attach the wholesale license.
                         </Text>
                       </Box>
                     </FormControl>
 
-                    <FormControl isRequired>
+                    <FormControl>
                       <FormLabel>Message</FormLabel>
                       <Textarea
                         name="message"

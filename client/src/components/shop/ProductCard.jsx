@@ -90,7 +90,7 @@ export const ProductCard = ({
 
       {/* Price */}
       <Text mt={1} fontWeight="bold" color="gray.600">
-        ${price}
+        ${price}/lb
       </Text>
     </Box>
   );
