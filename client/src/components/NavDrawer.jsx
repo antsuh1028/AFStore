@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode"; // Changed from default import to named import
+import { jwtDecode } from "jwt-decode"; 
 import {
   Box,
   Button,
@@ -93,12 +93,12 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
   const [token, setToken] = useState(null);
 
   const getUserInfo = (userId) => {
-    console.log("Fetching user info for userId:", userId);
+    // console.log("Fetching user info for userId:", userId);
     fetch(`http://localhost:3001/api/users/${userId}`)
       .then((response) => response.json())
       .then((data) => {
         setUserInfo(data.user);
-        console.log("Current user:", data.user);
+        // console.log("Current user:", data.user);
       })
       .catch((error) => {
         console.error("Error fetching user info:", error);
@@ -107,11 +107,11 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    console.log("Stored token:", storedToken);
+    // console.log("Stored token:", storedToken);
     if (storedToken) {
       try {
         const decoded = jwtDecode(storedToken);
-        console.log(decoded);
+        // console.log(decoded);
         getUserInfo(decoded.userId);
 
         if (decoded.exp > Date.now() / 1000) {

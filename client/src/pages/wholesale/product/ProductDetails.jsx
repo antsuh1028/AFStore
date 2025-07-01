@@ -445,7 +445,7 @@ const ProductDetailPage = () => {
                 bg="white"
                 borderRadius="full"
                 onClick={() => {
-                  console.log("Product Info:", product);
+                  // console.log("Product Info:", product);
                   addToCart(product);
                   getCart();
                   setShowCartAlert(true);

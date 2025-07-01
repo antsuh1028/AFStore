@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  console.log("Root route hit!");
+  // console.log("Root route hit!");
   res.json({ message: "Server is working!" });
 });
 
@@ -27,7 +27,6 @@ const server = app.listen(PORT, (err) => {
     console.error("Server failed to start:", err);
   } else {
     console.log(`✅ Server running on http://localhost:${PORT}`);
-    console.log(`Test: http://localhost:${PORT}/api/items`);
   }
 });
 

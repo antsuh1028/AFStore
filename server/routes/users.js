@@ -33,7 +33,7 @@ UsersRouter.get("/", async (req, res) => {
 // POST /api/users/login — login and return JWT
 UsersRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log("Incoming login:", { email, password });
+  // console.log("Incoming login:", { email, password });
 
   try {
     const result = await db.query("SELECT * FROM users WHERE email = $1", [
@@ -41,12 +41,12 @@ UsersRouter.post("/login", async (req, res) => {
     ]);
 
     if (result.rows.length === 0) {
-      console.log("No user found with email:", email);
+      // console.log("No user found with email:", email);
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const user = result.rows[0];
-    console.log("User found:", user);
+    // console.log("User found:", user);
 
     let isMatch = false;
 
@@ -61,11 +61,11 @@ UsersRouter.post("/login", async (req, res) => {
           hashedPassword,
           user.id,
         ]);
-        console.log("Password updated to hashed version for user:", user.email);
+        // console.log("Password updated to hashed version for user:", user.email);
       }
     }
 
-    console.log("Password match?", isMatch);
+    // console.log("Password match?", isMatch);
 
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
@@ -187,12 +187,12 @@ UsersRouter.post("/reset-password", async (req, res) => {
 UsersRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    console.log("Fetching user with ID:", id);
+    // console.log("Fetching user with ID:", id);
     const result = await db.query(
-      "SELECT id, name, email, license_number FROM users WHERE id = $1",
+      "SELECT id, name, email, license_number, phone_number FROM users WHERE id = $1",
       [id]
     );
-    console.log("Query result:", result.rows);
+    // console.log("Query result:", result.rows);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }

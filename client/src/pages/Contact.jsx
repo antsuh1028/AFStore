@@ -1,4 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode"; 
+
 import {
   Box,
   Heading,
@@ -51,15 +53,62 @@ const ContactPage = () => {
   const [emailError, setEmailError] = useState("");
   const [fileName, setFileName] = useState("");
   const [cartItems, setCartItems] = useState(() => getCart());
+  const [userInfo, setUserInfo] = useState({});
+  const [token, setToken] = useState("");
+  const [currUser, setCurrUser] = useState({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const location = useLocation();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
+  // useEffect(() => {
+    
+  //   // console.log("location:", state);
+  // }, []);
 
+  const getUserInfo = (userId) => {
+    window.scrollTo(0, 0);
     const state = location.state;
-    // console.log("location:", state);
-  }, []);
+
+    // console.log("Fetching user info for userId:", userId);
+    fetch(`http://localhost:3001/api/users/${userId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setUserInfo(data.user);
+        // console.log("Current user:", data.user);
+      })
+      .catch((error) => {
+        console.error("Error fetching user info:", error);
+      });
+  };
+
+useEffect(() => {
+  const storedToken = localStorage.getItem("token");
+  if (storedToken) {
+    try {
+      const decoded = jwtDecode(storedToken);
+      getUserInfo(decoded.userId);
+
+      if (decoded.exp > Date.now() / 1000) {
+        setToken(storedToken);
+        setCurrUser(decoded);
+        setIsAuthenticated(true);
+      } else {
+        localStorage.removeItem("token");
+      }
+    } catch (error) {
+      localStorage.removeItem("token");
+    }
+  }
+}, []);
+
+useEffect(() => {
+  if (form.current && userInfo) {
+    form.current.user_name.value = userInfo.name || "";
+    form.current.user_email.value = userInfo.email || "";
+    form.current.user_phone.value = userInfo.phone_number || "";
+    form.current.license_number.value = userInfo.license_number || "";
+  }
+}, [userInfo]);
 
   const validateEmail = (value) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

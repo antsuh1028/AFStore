@@ -505,7 +505,7 @@ const HomePage = () => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                onClick={() => console.log("Circle clicked")}
+                // onClick={() => console.log("Circle clicked")}
               >
                 <Image
                   src="/final/button.png"

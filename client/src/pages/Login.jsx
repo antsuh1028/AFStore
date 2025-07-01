@@ -62,7 +62,7 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      console.log("Login request sent:", { email, password });
+      // console.log("Login request sent:", { email, password });
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem("token", data.token);
