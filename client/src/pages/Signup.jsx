@@ -73,7 +73,7 @@ const Signup = () => {
   };
 
   const FileUploadField = ({ id, name, fileName, setFileName, helpText }) => (
-    <Box mb={2}>
+    <Box mb={2} key={`file-upload-${id}`}>
       <input
         id={id}
         name={name}
@@ -81,10 +81,11 @@ const Signup = () => {
         accept=".pdf,.jpg,.jpeg,.png"
         style={{ display: "none" }}
         onChange={(e) => {
-          setFileName(e.target.files[0]?.name || "");
+          const file = e.target.files?.[0];
+          setFileName(file ? file.name : "");
         }}
       />
-      <Flex>
+      <Flex align="flex-start" gap={2}>
         <Button
           as="label"
           htmlFor={id}
@@ -96,24 +97,30 @@ const Signup = () => {
           p={0}
           h="auto"
           fontWeight="normal"
-          mx={2}
+          flexShrink={0}
         >
           Attached file
         </Button>
-        <Text fontSize="sm" color="gray.500" mt={1}>
+        <Text fontSize="sm" color="gray.500" lineHeight="1.4">
           {helpText}
         </Text>
       </Flex>
+      {fileName && (
+        <Text fontSize="xs" color="gray.600" mt={1}>
+          Selected: {fileName}
+        </Text>
+      )}
     </Box>
   );
 
-  const CustomCheckbox = ({ checked, onChange, children }) => (
+  const CustomCheckbox = ({ checked, onChange, children, disabled = false }) => (
     <Box
       display="flex"
       alignItems="flex-start"
-      cursor="pointer"
-      onClick={onChange}
+      cursor={disabled ? "default" : "pointer"}
+      onClick={disabled ? undefined : onChange}
       mb={4}
+      key={`checkbox-${Math.random()}`}
     >
       <Box
         display="flex"
@@ -130,7 +137,7 @@ const Signup = () => {
         mt={1}
         transition="all 0.2s"
       >
-        {checked && (
+        {checked ? (
           <svg
             width="10"
             height="10"
@@ -146,7 +153,7 @@ const Signup = () => {
               strokeLinejoin="round"
             />
           </svg>
-        )}
+        ) : null}
       </Box>
       <Text fontSize="sm" color="gray.700" lineHeight="1.4">
         {children}
@@ -199,10 +206,13 @@ const Signup = () => {
         toast({
           title: "Account created successfully!",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
-        navigate("/login");
+        // Add small delay before navigation to prevent DOM errors
+        setTimeout(() => {
+          navigate("/login", { replace: true });
+        }, 100);
       } else {
         toast({
           title: "Signup failed.",
@@ -213,6 +223,7 @@ const Signup = () => {
         });
       }
     } catch (err) {
+      console.error("Signup error:", err);
       toast({
         title: "Server error.",
         description: "Please try again later.",
@@ -308,9 +319,9 @@ const Signup = () => {
                   }}
                   {...inputStyle}
                 />
-                {emailError && (
+                {emailError ? (
                   <FormErrorMessage>{emailError}</FormErrorMessage>
-                )}
+                ) : null}
               </FormControl>
 
               <FormControl isRequired>
@@ -340,9 +351,9 @@ const Signup = () => {
                   }}
                   {...inputStyle}
                 />
-                {licenseError && (
+                {licenseError ? (
                   <FormErrorMessage>{licenseError}</FormErrorMessage>
-                )}
+                ) : null}
 
                 <FileUploadField
                   id="license-file-upload"
@@ -353,7 +364,10 @@ const Signup = () => {
                 />
               </FormControl>
 
-              <CustomCheckbox checked={true}>
+              <CustomCheckbox 
+                checked={agreementChecked}
+                onChange={() => setAgreementChecked(!agreementChecked)}
+              >
                 To ensure wholesale eligibility, please provide your license
                 number and upload a copy during sign-up.
               </CustomCheckbox>
@@ -367,7 +381,7 @@ const Signup = () => {
                   name="gov_id_file"
                   fileName={govIdFileName}
                   setFileName={setGovIdFileName}
-                  helpText="*Please attach the wholesale license."
+                  helpText="*Please attach the government ID."
                 />
               </FormControl>
 
@@ -380,18 +394,19 @@ const Signup = () => {
                   name="business_file"
                   fileName={businessFileName}
                   setFileName={setBusinessFileName}
-                  helpText="*Please attach the wholesale license."
+                  helpText="*Please attach the business license."
                 />
               </FormControl>
 
               <Box
-                display="flex"
-                alignItems="center"
                 bg="gray.50"
                 p={4}
                 borderRadius="md"
               >
-                <CustomCheckbox checked={true} onChange={() => {}}>
+                <CustomCheckbox 
+                  checked={true} 
+                  disabled={true}
+                >
                   Please allow 24 - 48 hours for account review and
                   verification. Accounts that do not meet our criteria may be
                   declined without notice. Providing complete and accurate
@@ -404,10 +419,12 @@ const Signup = () => {
                 bg="#494949"
                 color="white"
                 isLoading={loading}
+                loadingText="Creating Account..."
                 borderRadius="full"
                 size="lg"
                 width="100%"
                 _hover={{ bg: "#6AAFDB" }}
+                _disabled={{ bg: "gray.400" }}
                 mt={4}
               >
                 CREATE ACCOUNT

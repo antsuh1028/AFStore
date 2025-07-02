@@ -163,7 +163,7 @@ const UnprocessedPage = () => {
 
           <Tabs w="100%" variant="unstyled" isFitted={false}>
             <TabList justifyContent="center" gap={4} mb={6}>
-              {["pork", "beef", "poultry", "all"].map((label) => (
+              {["all", "beef", "pork", "poultry"].map((label) => (
                 <Tab
                   key={label}
                   _selected={{
@@ -194,10 +194,7 @@ const UnprocessedPage = () => {
 
             <TabPanels minHeight="500px">
               <TabPanel p={0}>
-                {renderProductGrid(
-                  getProductsByType("pork"),
-                  "No unprocessed pork products found"
-                )}
+                {renderProductGrid(products, "No unprocessed products found")}
               </TabPanel>
 
               <TabPanel p={0}>
@@ -209,13 +206,16 @@ const UnprocessedPage = () => {
 
               <TabPanel p={0}>
                 {renderProductGrid(
-                  getProductsByType("chicken"),
-                  "No unprocessed poultry products found"
+                  getProductsByType("pork"),
+                  "No unprocessed pork products found"
                 )}
               </TabPanel>
 
               <TabPanel p={0}>
-                {renderProductGrid(products, "No unprocessed products found")}
+                {renderProductGrid(
+                  getProductsByType("chicken"),
+                  "No unprocessed poultry products found"
+                )}
               </TabPanel>
             </TabPanels>
           </Tabs>
