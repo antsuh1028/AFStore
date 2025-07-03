@@ -20,13 +20,10 @@ import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
-import Breadcrumbs from "../components/BreadCrumbs.";
 
 const Signup = () => {
-  const [name, setName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-
   const [email, setEmail] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -35,6 +32,11 @@ const Signup = () => {
   const [licenseError, setLicenseError] = useState("");
   const [loading, setLoading] = useState(false);
   const [agreementChecked, setAgreementChecked] = useState(false);
+
+  // File upload states
+  const [licenseFileName, setLicenseFileName] = useState("");
+  const [govIdFileName, setGovIdFileName] = useState("");
+  const [businessFileName, setBusinessFileName] = useState("");
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -70,13 +72,101 @@ const Signup = () => {
     },
   };
 
+  const FileUploadField = ({ id, name, fileName, setFileName, helpText }) => (
+    <Box mb={2} key={`file-upload-${id}`}>
+      <input
+        id={id}
+        name={name}
+        type="file"
+        accept=".pdf,.jpg,.jpeg,.png"
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          setFileName(file ? file.name : "");
+        }}
+      />
+      <Flex align="flex-start" gap={2}>
+        <Button
+          as="label"
+          htmlFor={id}
+          variant="link"
+          fontSize="sm"
+          color="gray.700"
+          textDecoration="underline"
+          cursor="pointer"
+          p={0}
+          h="auto"
+          fontWeight="normal"
+          flexShrink={0}
+        >
+          Attached file
+        </Button>
+        <Text fontSize="sm" color="gray.500" lineHeight="1.4">
+          {helpText}
+        </Text>
+      </Flex>
+      {fileName && (
+        <Text fontSize="xs" color="gray.600" mt={1}>
+          Selected: {fileName}
+        </Text>
+      )}
+    </Box>
+  );
+
+  const CustomCheckbox = ({ checked, onChange, children, disabled = false }) => (
+    <Box
+      display="flex"
+      alignItems="flex-start"
+      cursor={disabled ? "default" : "pointer"}
+      onClick={disabled ? undefined : onChange}
+      mb={4}
+      key={`checkbox-${Math.random()}`}
+    >
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        borderRadius="50%"
+        width="18px"
+        height="18px"
+        minWidth="18px"
+        border="2px solid"
+        borderColor="#494949"
+        bg={checked ? "#494949" : "white"}
+        mr={3}
+        mt={1}
+        transition="all 0.2s"
+      >
+        {checked ? (
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 12 10"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M1 5L4 8L11 1"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        ) : null}
+      </Box>
+      <Text fontSize="sm" color="gray.700" lineHeight="1.4">
+        {children}
+      </Text>
+    </Box>
+  );
+
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    if (emailError) {
+    if (emailError || licenseError) {
       toast({
-        title: "Invalid email.",
-        description: "Please check your email format.",
+        title: "Please fix form errors.",
         status: "error",
         duration: 4000,
         isClosable: true,
@@ -87,7 +177,8 @@ const Signup = () => {
     if (!agreementChecked) {
       toast({
         title: "Agreement required.",
-        description: "You must acknowledge the wholesale eligibility note.",
+        description:
+          "You must acknowledge the wholesale eligibility requirements.",
         status: "error",
         duration: 4000,
         isClosable: true,
@@ -113,12 +204,15 @@ const Signup = () => {
       const data = await res.json();
       if (res.ok) {
         toast({
-          title: "Signup successful.",
+          title: "Account created successfully!",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
-        navigate("/"); // or redirect elsewhere
+        // Add small delay before navigation to prevent DOM errors
+        setTimeout(() => {
+          navigate("/login", { replace: true });
+        }, 100);
       } else {
         toast({
           title: "Signup failed.",
@@ -129,9 +223,10 @@ const Signup = () => {
         });
       }
     } catch (err) {
+      console.error("Signup error:", err);
       toast({
         title: "Server error.",
-        description: err.message,
+        description: "Please try again later.",
         status: "error",
         duration: 4000,
         isClosable: true,
@@ -153,6 +248,7 @@ const Signup = () => {
         ml={{ base: 0, lg: "40%" }}
         pt={8}
       >
+        {/* Header */}
         <Box>
           <Flex p={4} justify="space-between" align="center">
             <IconButton
@@ -160,7 +256,6 @@ const Signup = () => {
               icon={<ChevronLeft size={24} />}
               variant="ghost"
               size="lg"
-              colorScheme="gray"
               onClick={() => navigate(-1)}
             />
             <IconButton
@@ -174,21 +269,23 @@ const Signup = () => {
 
         <Box px={6} py={4}>
           <Heading
-            mb={6}
+            mb={8}
             fontWeight="semibold"
             fontSize="3xl"
             textAlign="center"
           >
-            Sign Up
+            Create Account
           </Heading>
 
           <form onSubmit={handleSignup}>
-            <VStack spacing={4} align="stretch">
+            <VStack spacing={5} align="stretch">
               <FormControl isRequired>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel fontSize="sm" fontWeight="semibold">
+                  First Name
+                </FormLabel>
                 <Input
                   type="text"
-                  placeholder="Enter First Name..."
+                  placeholder="First Name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   {...inputStyle}
@@ -196,10 +293,12 @@ const Signup = () => {
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel fontSize="sm" fontWeight="semibold">
+                  Last Name
+                </FormLabel>
                 <Input
                   type="text"
-                  placeholder="Enter Last Name..."
+                  placeholder="Last Name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   {...inputStyle}
@@ -207,10 +306,12 @@ const Signup = () => {
               </FormControl>
 
               <FormControl isRequired isInvalid={emailError !== ""}>
-                <FormLabel>Email</FormLabel>
+                <FormLabel fontSize="sm" fontWeight="semibold">
+                  Email
+                </FormLabel>
                 <Input
                   type="email"
-                  placeholder="Enter Email..."
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -218,24 +319,28 @@ const Signup = () => {
                   }}
                   {...inputStyle}
                 />
-                {emailError && (
+                {emailError ? (
                   <FormErrorMessage>{emailError}</FormErrorMessage>
-                )}
+                ) : null}
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel>Password</FormLabel>
+                <FormLabel fontSize="sm" fontWeight="semibold">
+                  Password
+                </FormLabel>
                 <Input
                   type="password"
-                  placeholder="Enter Password..."
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   {...inputStyle}
                 />
               </FormControl>
 
-              <FormControl isInvalid={licenseError !== ""}>
-                <FormLabel>Wholesale License (optional)</FormLabel>
+              <FormControl isRequired isInvalid={licenseError !== ""}>
+                <FormLabel fontSize="sm" fontWeight="semibold">
+                  Wholesale license numbers
+                </FormLabel>
                 <Input
                   type="text"
                   placeholder="C-1234567"
@@ -246,63 +351,67 @@ const Signup = () => {
                   }}
                   {...inputStyle}
                 />
-                {licenseError && (
+                {licenseError ? (
                   <FormErrorMessage>{licenseError}</FormErrorMessage>
-                )}
+                ) : null}
+
+                <FileUploadField
+                  id="license-file-upload"
+                  name="license_file"
+                  fileName={licenseFileName}
+                  setFileName={setLicenseFileName}
+                  helpText="*Please attach the wholesale license."
+                />
               </FormControl>
 
-              <Box display="flex" alignItems="flex-start" mt={2}>
-                <Box
-                  as="label"
-                  display="flex"
-                  alignItems="flex-start"
-                  cursor="pointer"
-                  mt="4px"
-                >
-                  <input
-                    type="checkbox"
-                    checked={agreementChecked}
-                    onChange={(e) => setAgreementChecked(e.target.checked)}
-                    style={{ display: "none" }}
-                  />
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    borderRadius="50%"
-                    width="18px"
-                    height="18px"
-                    minWidth="18px"
-                    border="2px solid #494949"
-                    bg={agreementChecked ? "#494949" : "white"}
-                    mr={3}
-                    transition="background-color 0.2s ease-in-out"
-                  >
-                    {agreementChecked && (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 12 10"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M1 5L4 8L11 1"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </Box>
-                </Box>
+              <CustomCheckbox 
+                checked={agreementChecked}
+                onChange={() => setAgreementChecked(!agreementChecked)}
+              >
+                To ensure wholesale eligibility, please provide your license
+                number and upload a copy during sign-up.
+              </CustomCheckbox>
 
-                <Text fontSize="sm" color="gray.700">
-                  To ensure wholesale eligibility, please upload your license
-                  number and a copy during sign-up. Approval details will be
-                  sent via email.
-                </Text>
+              <FormControl>
+                <FormLabel fontSize="sm" fontWeight="semibold">
+                  Government issued ID (e.g., Driver's License)
+                </FormLabel>
+                <FileUploadField
+                  id="gov-id-file-upload"
+                  name="gov_id_file"
+                  fileName={govIdFileName}
+                  setFileName={setGovIdFileName}
+                  helpText="*Please attach the government ID."
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontSize="sm" fontWeight="semibold">
+                  Business License or Reseller Permit
+                </FormLabel>
+                <FileUploadField
+                  id="business-file-upload"
+                  name="business_file"
+                  fileName={businessFileName}
+                  setFileName={setBusinessFileName}
+                  helpText="*Please attach the business license."
+                />
+              </FormControl>
+
+              <Box
+                bg="gray.50"
+                p={4}
+                borderRadius="md"
+              >
+                <CustomCheckbox 
+                  checked={true} 
+                  disabled={true}
+                >
+                  Please allow 24 - 48 hours for account review and
+                  verification. Accounts that do not meet our criteria may be
+                  declined without notice. Providing complete and accurate
+                  documentation helps speed up the approval process.
+                </CustomCheckbox>
               </Box>
 
               <Button
@@ -310,25 +419,28 @@ const Signup = () => {
                 bg="#494949"
                 color="white"
                 isLoading={loading}
+                loadingText="Creating Account..."
                 borderRadius="full"
                 size="lg"
                 width="100%"
                 _hover={{ bg: "#6AAFDB" }}
+                _disabled={{ bg: "gray.400" }}
+                mt={4}
               >
                 CREATE ACCOUNT
               </Button>
-              <Box textAlign="center" pt={3} mb={5}>
-                <Text
-                  fontSize="sm"
-                  fontWeight="bold"
+
+              <Box textAlign="center" pt={4}>
+                <Button
+                  variant="link"
                   color="#494949"
+                  fontWeight="bold"
                   textDecoration="underline"
-                  cursor="pointer"
                   onClick={() => navigate("/login")}
-                  _hover={{ color: "#c1ab8f" }}
+                  _hover={{ color: "#6AAFDB" }}
                 >
-                  Already have an account? Sign in
-                </Text>
+                  Already have an account? Login
+                </Button>
               </Box>
             </VStack>
           </form>

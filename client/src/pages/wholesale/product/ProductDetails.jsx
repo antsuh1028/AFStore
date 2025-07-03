@@ -101,6 +101,7 @@ const ProductDetailPage = () => {
           `http://localhost:3001/api/items/${productId}`
         );
         const data = await response.json();
+        console.log(data)
 
         if (!response.ok) {
           throw new Error(data.error || "Product not found");
@@ -134,6 +135,7 @@ const ProductDetailPage = () => {
 
     fetchProduct();
     window.scrollTo(0, 0);
+
   }, [productId]);
 
   const handleContactForOrder = () => {
@@ -456,7 +458,7 @@ const ProductDetailPage = () => {
               />
             </HStack>
             <Text fontSize="xl" fontWeight="bold" color="black">
-              ${product.price}
+              ${product.price}/lb
             </Text>
           </HStack>
 
@@ -598,15 +600,14 @@ const ProductDetailPage = () => {
             <Collapse in={isIngredientsOpen}>
               <Box px={4} pb={4} py={4}>
                 <Text fontSize="sm" color="gray.700" lineHeight="tall">
-                  {product.ingredients || "Ingredients Here"}
+                  {product.ingredients.join(", ") || "Ingredients Here"}
                 </Text>
                 <Box mt={4}>
                   <Text fontSize="sm" fontWeight="semibold" mb={2}>
                     Allergen Information:
                   </Text>
                   <Text fontSize="sm" color="gray.600">
-                    {/* Contains: Soy, Sesame. May contain traces of wheat and nuts. */}
-                    Allergen Info Here
+                    {product.allergens.join(", ") || "Allergen information not provided."}
                   </Text>
                 </Box>
               </Box>

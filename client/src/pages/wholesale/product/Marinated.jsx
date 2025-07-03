@@ -164,7 +164,7 @@ const MarinatedPage = () => {
 
           <Tabs w="100%" variant="unstyled" isFitted={false}>
             <TabList justifyContent="center" gap={4} mb={6}>
-              {["pork", "beef", "poultry", "all"].map((label) => (
+              {["all", "beef", "pork", "poultry"].map((label) => (
                 <Tab
                   key={label}
                   _selected={{
@@ -195,10 +195,7 @@ const MarinatedPage = () => {
 
             <TabPanels minHeight="500px">
               <TabPanel p={0}>
-                {renderProductGrid(
-                  getProductsByType("pork"),
-                  "No marinated pork products found"
-                )}
+                {renderProductGrid(products, "No marinated products found")}
               </TabPanel>
 
               <TabPanel p={0}>
@@ -210,13 +207,16 @@ const MarinatedPage = () => {
 
               <TabPanel p={0}>
                 {renderProductGrid(
-                  getProductsByType("chicken"),
-                  "No marinated poultry products found"
+                  getProductsByType("pork"),
+                  "No marinated pork products found"
                 )}
               </TabPanel>
 
               <TabPanel p={0}>
-                {renderProductGrid(products, "No marinated products found")}
+                {renderProductGrid(
+                  getProductsByType("chicken"),
+                  "No marinated poultry products found"
+                )}
               </TabPanel>
             </TabPanels>
           </Tabs>
