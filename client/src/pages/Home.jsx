@@ -37,6 +37,7 @@ import NavDrawer from "../components/NavDrawer";
 import AFCompany from "../components/home/AFCompany";
 import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
+import { useAuthContext } from "../hooks/useAuth"; // Import auth context
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -47,8 +48,8 @@ const HomePage = () => {
   } = useDisclosure();
   const navigate = useNavigate();
   const contentRef = useRef(null);
+  const { isAuthenticated, userId, loading } = useAuthContext();
 
-  // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -117,6 +118,21 @@ const HomePage = () => {
     }
   };
 
+  const handleUserIconClick = () => {
+    console.log("User icon clicked - Auth Status:", isAuthenticated);
+    console.log("User ID:", userId);
+    
+    if (loading) {
+      return;
+    }
+    
+    if (isAuthenticated && userId) {
+      navigate(`/profile/user/${userId}`);
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
@@ -133,18 +149,21 @@ const HomePage = () => {
           <Image src="../../grayAdams.png" alt="AdamsFoods Logo" width="40%" />
           <Flex>
             <IconButton
-              aria-label="Menu"
+              aria-label="Profile"
               icon={<UserRound size={24} />}
               variant="ghost"
-              onClick={onClose}
+              onClick={handleUserIconClick}
+              isLoading={loading}
+              _hover={{ bg: "gray.100" }}
             />
             <IconButton
-              aria-label="Menu"
+              aria-label="Cart"
               icon={<ShoppingCart size={24} />}
               variant="ghost"
               onClick={() => {
                 navigate("/cart");
               }}
+              _hover={{ bg: "gray.100" }}
             />
             <IconButton
               aria-label="Menu"

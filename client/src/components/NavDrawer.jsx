@@ -1,9 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode"; 
 import {
   Box,
-  Button,
-  Container,
   Circle,
   Drawer,
   DrawerBody,
@@ -13,19 +10,16 @@ import {
   GridItem,
   Heading,
   Image,
-  Input,
-  InputGroup,
-  InputRightElement,
   Text,
   IconButton,
-  VStack,
   Divider,
-  SimpleGrid,
   Link,
+  Spinner,
+  VStack,
 } from "@chakra-ui/react";
 import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { color } from "framer-motion";
+import { useAuthContext } from "../hooks/useAuth"; // Changed from useAuth to useAuthContext
 
 const ITEMS = [
   {
@@ -87,47 +81,17 @@ const ITEMS = [
 export default function NavDrawer({ isOpen, onClose, containerRef }) {
   const [drawerWidth, setDrawerWidth] = useState("100%");
   const navigate = useNavigate();
-  const [currUser, setCurrUser] = useState(null);
-  const [userInfo, setUserInfo] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState(null);
-
-  const getUserInfo = (userId) => {
-    // console.log("Fetching user info for userId:", userId);
-    fetch(`http://localhost:3001/api/users/${userId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setUserInfo(data.user);
-        // console.log("Current user:", data.user);
-      })
-      .catch((error) => {
-        console.error("Error fetching user info:", error);
-      });
-  };
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    // console.log("Stored token:", storedToken);
-    if (storedToken) {
-      try {
-        const decoded = jwtDecode(storedToken);
-        // console.log(decoded);
-        getUserInfo(decoded.userId);
-
-        if (decoded.exp > Date.now() / 1000) {
-          setToken(storedToken);
-          setCurrUser(decoded);
-          setIsAuthenticated(true);
-        } else {
-          // Token expired, remove it
-          localStorage.removeItem("token");
-        }
-      } catch (error) {
-        console.error("Error decoding token:", error);
-        localStorage.removeItem("token");
-      }
-    }
-  }, []);
+  
+  // Use the shared auth context instead of individual hook
+  const { 
+    userInfo, 
+    isAuthenticated, 
+    logout, 
+    userName, 
+    userId, 
+    loading,
+    error 
+  } = useAuthContext(); // This is the key change!
 
   useEffect(() => {
     const updateWidth = () => {
@@ -146,12 +110,20 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
   }, [isOpen, containerRef]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
-    setCurrUser(null);
-    setUserInfo(null);
-    setIsAuthenticated(false);
+    logout();
+    onClose(); 
     navigate("/");
+  };
+
+  const handleProfileClick = () => {
+    
+    if (isAuthenticated && userId) {
+      navigate(`/profile/user/${userId}`);
+      onClose();
+    } else {
+      navigate("/login");
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
@@ -181,13 +153,19 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
             <IconButton
               aria-label="Profile"
               icon={<UserRound size={24} />}
+              onClick={handleProfileClick}
               variant="ghost"
+              _hover={{ bg: "gray.100" }}
             />
             <IconButton
               aria-label="Cart"
               icon={<ShoppingCart size={24} />}
               variant="ghost"
-              onClick={() => navigate("/cart")}
+              onClick={() => {
+                navigate("/cart");
+                onClose();
+              }}
+              _hover={{ bg: "gray.100" }}
             />
             <IconButton
               aria-label="Close menu"
@@ -204,41 +182,90 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
           </Flex>
         </Flex>
 
+        {/* Greeting Section */}
         <Box textAlign="center" mb={4}>
-          <Heading as="h2" fontSize="2xl" fontWeight="semibold">
-            <Text as="span" color="gray.500">
-              Hello{" "}
-            </Text>
-            <Text as="span" color="black">
-              {userInfo?.name?.split(" ")[0] || "User"}
-            </Text>
-          </Heading>
-          <Box mt={2} fontSize="sm">
-            {isAuthenticated ? (
-              <Link onClick={handleLogout} color="gray.600">
-                Logout
-              </Link>
-            ) : (
-              <>
-                <Link
-                  onClick={() => navigate("/login")}
-                  mr={2}
-                  color="gray.600"
-                >
-                  Login
-                </Link>
-                |{" "}
-                <Link onClick={() => navigate("/signup")} color="gray.600">
-                  Sign up
-                </Link>
-              </>
-            )}
-          </Box>
+          {loading ? (
+            <VStack spacing={2}>
+              <Spinner size="sm" />
+              <Text fontSize="sm" color="gray.500">Loading...</Text>
+            </VStack>
+          ) : (
+            <>
+              <Heading as="h2" fontSize="2xl" fontWeight="semibold">
+                <Text as="span" color="gray.500">
+                  Hello{" "}
+                </Text>
+                <Text as="span" color="black">
+                  {isAuthenticated ? userName : "Guest"}
+                </Text>
+              </Heading>
+              
+              <Box mt={2} fontSize="sm">
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      onClick={handleLogout}
+                      mr={2}
+                      color="gray.600"
+                      cursor="pointer"
+                      _hover={{ color: "blue.500" }}
+                    >
+                      Logout
+                    </Link>
+                    |{" "}
+                    <Link
+                      onClick={handleProfileClick}
+                      color="gray.600"
+                      cursor="pointer"
+                      _hover={{ color: "blue.500" }}
+                    >
+                      Profile
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      onClick={() => {
+                        navigate("/login");
+                        onClose();
+                      }}
+                      mr={2}
+                      color="gray.600"
+                      cursor="pointer"
+                      _hover={{ color: "blue.500" }}
+                    >
+                      Login
+                    </Link>
+                    |{" "}
+                    <Link 
+                      onClick={() => {
+                        navigate("/signup");
+                        onClose();
+                      }}
+                      color="gray.600"
+                      cursor="pointer"
+                      _hover={{ color: "blue.500" }}
+                    >
+                      Sign up
+                    </Link>
+                  </>
+                )}
+              </Box>
+
+              {/* Show error if any */}
+              {error && (
+                <Text fontSize="xs" color="red.500" mt={1}>
+                  {error}
+                </Text>
+              )}
+
+            </>
+          )}
         </Box>
 
         <Divider mb={4} />
 
-        {/* Grid*/}
+        {/* Navigation Grid */}
         <DrawerBody p={4}>
           <Grid
             templateColumns="repeat(3, 1fr)"
@@ -257,7 +284,14 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                   size="65px"
                   bg={color}
                   cursor="pointer"
-                  onClick={() => navigate(to)}
+                  onClick={() => {
+                    navigate(to);
+                    onClose(); // Close drawer after navigation
+                  }}
+                  _hover={{ 
+                    transform: "scale(1.05)",
+                    transition: "transform 0.2s"
+                  }}
                 >
                   <Image
                     src={icon}
@@ -279,9 +313,14 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
         {/* Footer Link */}
         <Box position="absolute" bottom="4" left="4" p={4}>
           <Link
-            onClick={() => navigate("/terms-and-policies")}
+            onClick={() => {
+              navigate("/terms-and-policies");
+              onClose(); // Close drawer after navigation
+            }}
             fontSize="xs"
             textDecoration="underline"
+            cursor="pointer"
+            _hover={{ color: "blue.500" }}
           >
             Terms & Policies
           </Link>

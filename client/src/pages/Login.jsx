@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
-import Breadcrumbs from "../components/BreadCrumbs.";
+import { useAuthContext } from "../hooks/useAuth"; // Import the auth context
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -33,9 +33,19 @@ const Login = () => {
   const contentRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // Get auth functions from context
+  const { login, isAuthenticated, userId } = useAuthContext();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && userId) {
+      navigate(`/profile/user/${userId}`);
+    }
+  }, [isAuthenticated, userId, navigate]);
 
   const validateEmail = (value) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -62,30 +72,47 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      // console.log("Login request sent:", { email, password });
+      
       const data = await res.json();
+      
       if (res.ok) {
-        localStorage.setItem("token", data.token);
-        toast({
-          title: "Login successful.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-        navigate("/");
+        // Use the auth context login function instead of manual localStorage
+        const result = await login(data.token);
+        
+        if (result.success) {
+          toast({
+            title: "Login successful.",
+            description: `Welcome back, ${result.user.name}!`,
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+          
+          // Navigate to profile or home
+          navigate(result.user.id ? `/profile/user/${result.user.id}` : "/");
+        } else {
+          toast({
+            title: "Login failed.",
+            description: result.error || "Unknown error occurred",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+          });
+        }
       } else {
         toast({
           title: "Login failed.",
-          description: data.message,
+          description: data.message || "Invalid credentials",
           status: "error",
           duration: 4000,
           isClosable: true,
         });
       }
     } catch (err) {
+      console.error("Login error:", err);
       toast({
         title: "Server error.",
-        description: err.message,
+        description: err.message || "Unable to connect to server",
         status: "error",
         duration: 4000,
         isClosable: true,
@@ -213,6 +240,7 @@ const Login = () => {
                   size="lg"
                   width="100%"
                   _hover={{ bg: "#6AAFDB" }}
+                  loadingText="Logging in..."
                 >
                   LOG IN
                 </Button>
