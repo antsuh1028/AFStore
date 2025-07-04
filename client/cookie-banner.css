@@ -1,0 +1,30 @@
+/* cookie-banner.css */
+#cookie-banner {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: rgb(151, 151, 151) !important;
+  color: white;
+  padding: 20px;
+  z-index: 9999;
+}
+.cookie-buttons {
+  margin-top: 10px;
+}
+
+#cookie-accept {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#cookie-reject {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+}
