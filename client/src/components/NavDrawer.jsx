@@ -25,19 +25,19 @@ const ITEMS = [
   {
     label: "Marinated",
     to: "/wholesale/marinated",
-    icon: "/products/marinated.jpg",
+    icon: "/products/home/marinated.jpg",
     color: "white",
   },
   {
     label: "Processed",
     to: "/wholesale/processed",
-    icon: "/products/processed.webp",
+    icon: "/products/home/processed.webp",
     color: "white",
   },
   {
     label: "Unprocessed",
     to: "/wholesale/unprocessed",
-    icon: "/products/unprocessed.jpg",
+    icon: "/products/home/unprocessed.jpg",
     color: "white",
   },
   {

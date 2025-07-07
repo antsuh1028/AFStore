@@ -1,10 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import Cookies from "js-cookie";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
   addToCart,
   getCart,
-  subtractFromCart,
-  removeFromCart,
 } from "../../../utils/cartActions";
 import {
   Box,
@@ -15,10 +12,8 @@ import {
   Image,
   VStack,
   HStack,
-  Badge,
   Button,
   IconButton,
-  Divider,
   Grid,
   GridItem,
   Spinner,
@@ -28,7 +23,6 @@ import {
   Collapse,
   List,
   ListItem,
-  ListIcon,
 } from "@chakra-ui/react";
 import {
   ChevronLeft,
@@ -36,44 +30,174 @@ import {
   ChevronDown,
   ChevronUp,
   ShoppingCart,
-  MapPin,
-  Clock,
-  Thermometer,
-  Package,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
-import { FiPackage, FiThermometer, FiTruck, FiClock } from "react-icons/fi";
+import { FiPackage, FiThermometer, FiTruck } from "react-icons/fi";
 
 import NavDrawer from "../../../components/NavDrawer";
 import Sidebar from "../../../components/SideBar";
 import Breadcrumbs from "../../../components/BreadCrumbs.";
 import Footer from "../../../components/Footer";
 
-const CartConfirmation = ({ product, onClose }) => {
+// Simple product image carousel with no validation
+const ProductImageCarousel = ({ productName, productStyle }) => {
+  const [imagePage, setImagePage] = useState(1);
+  
+  // Just create the image paths without any validation
+  const imagePaths = useMemo(() => {
+    if (!productName || !productStyle) return ['/gray.avif'];
+    
+    const basePath = `/products/${productStyle}/${productName}`;
+    return [
+      `${basePath}/01.jpg`,
+      `${basePath}/02.jpg`,
+      `${basePath}/03.jpg`,
+      `${basePath}/04.jpg`,
+    ];
+  }, [productName, productStyle]);
+
+  const currentImage = imagePaths[imagePage - 1] || '/gray.avif';
+  const hasMultipleImages = imagePaths.length > 1;
+
+  const nextImage = () => {
+    if (imagePage < imagePaths.length) {
+      setImagePage(prev => prev + 1);
+    }
+  };
+
+  const prevImage = () => {
+    if (imagePage > 1) {
+      setImagePage(prev => prev - 1);
+    }
+  };
+
+  const goToImage = (index) => {
+    setImagePage(index + 1);
+  };
+
   return (
-    <Alert status="success" borderRadius="md" mb={4} onClose={onClose}>
-      <AlertIcon />
-      <Box>
-        <Text fontWeight="bold">Added to Cart!</Text>
-        <Text>
-          {product.name} has been added to your cart. You can view your cart{" "}
-          <Button
-            variant="link"
-            colorScheme="blue"
-            onClick={() => {
-              onClose();
-              window.location.href = "/cart";
+    <Box position="relative" w="100%">
+      <Image
+        src={currentImage}
+        alt={productName}
+        w="100%"
+        h="280px"
+        objectFit="cover"
+        borderRadius="lg"
+        fallbackSrc="/gray.avif"
+      />
+
+      {hasMultipleImages && (
+        <>
+          <IconButton
+            aria-label="previous-image"
+            icon={<ChevronLeft size={20} />}
+            variant="ghost"
+            size="sm"
+            position="absolute"
+            left="2"
+            top="50%"
+            transform="translateY(-50%)"
+            bg="blackAlpha.600"
+            color="white"
+            borderRadius="full"
+            _hover={{ bg: "blackAlpha.800" }}
+            disabled={imagePage <= 1}
+            onClick={prevImage}
+            _disabled={{
+              color: "whiteAlpha.300",
+              cursor: "not-allowed",
+              opacity: 0.4,
+              bg: "blackAlpha.400",
             }}
+          />
+
+          <IconButton
+            aria-label="next-image"
+            icon={<ChevronRight size={20} />}
+            variant="ghost"
+            size="sm"
+            position="absolute"
+            right="2"
+            top="50%"
+            transform="translateY(-50%)"
+            bg="blackAlpha.600"
+            color="white"
+            borderRadius="full"
+            _hover={{ bg: "blackAlpha.800" }}
+            disabled={imagePage >= imagePaths.length}
+            onClick={nextImage}
+            _disabled={{
+              color: "whiteAlpha.300",
+              cursor: "not-allowed",
+              opacity: 0.4,
+              bg: "blackAlpha.400",
+            }}
+          />
+
+          <HStack
+            position="absolute"
+            bottom="4"
+            left="50%"
+            transform="translateX(-50%)"
+            spacing={2}
           >
-            here
-          </Button>
-          .
-        </Text>
+            {imagePaths.map((_, index) => (
+              <Box
+                key={index}
+                w="8px"
+                h="8px"
+                borderRadius="full"
+                bg={imagePage === index + 1 ? "white" : "whiteAlpha.500"}
+                cursor="pointer"
+                onClick={() => goToImage(index)}
+                transition="all 0.2s"
+                _hover={{ bg: "white" }}
+              />
+            ))}
+          </HStack>
+        </>
+      )}
+
+      <Box
+        position="absolute"
+        top="4"
+        right="4"
+        bg="blackAlpha.700"
+        color="white"
+        px={2}
+        py={1}
+        borderRadius="md"
+        fontSize="xs"
+      >
+        {imagePage}/{imagePaths.length}
       </Box>
-    </Alert>
+    </Box>
   );
 };
+
+// Simple collapsible section
+const CollapsibleSection = ({ title, isOpen, onToggle, children }) => (
+  <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
+    <Button
+      w="100%"
+      justifyContent="space-between"
+      variant="ghost"
+      onClick={onToggle}
+      rightIcon={isOpen ? <ChevronUp /> : <ChevronDown />}
+      fontWeight="bold"
+      py={4}
+    >
+      {title}
+    </Button>
+    <Collapse in={isOpen}>
+      <Box px={4} pb={4} py={4}>
+        {children}
+      </Box>
+    </Collapse>
+  </Box>
+);
 
 const ProductDetailPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -84,74 +208,91 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+  const [showCartAlert, setShowCartAlert] = useState(false);
+  const [showCartReject, setShowCartReject] = useState(false);
 
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isIngredientsOpen, setIsIngredientsOpen] = useState(false);
 
-  const [imagePage, setImagePage] = useState(1);
-  const [showCartAlert, setShowCartAlert] = useState(false);
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `http://localhost:3001/api/items/${productId}`
-        );
-        const data = await response.json();
-        console.log(data)
-
-        if (!response.ok) {
-          throw new Error(data.error || "Product not found");
+  const fetchProduct = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const productResponse = await fetch(`http://localhost:3001/api/items/${productId}`, {
+        headers: {
+          'Accept': 'application/json',
         }
+      });
 
-        setProduct(data.data);
-        const imageResponse = await fetch(
-          `http://localhost:3001/api/s3/item/${productId}/images`
-        );
-        const imageData = await imageResponse.json();
-
-        if (!imageResponse.ok) {
-          throw new Error(imageData.error || "Failed to fetch images");
-        }
-        // If images are returned as URLs, set them directly
-        if (imageData.images && imageData.images.length > 0) {
-          setProduct((prevProduct) => ({
-            ...prevProduct,
-            images: imageData.images,
-          }));
-        }
-
-        // If images are returned as keys, construct URLs
-      } catch (err) {
-        setError(err.message);
-        console.error("Error fetching product:", err);
-      } finally {
-        setLoading(false);
+      if (!productResponse.ok) {
+        const errorData = await productResponse.json();
+        throw new Error(errorData.error || 'Product not found');
       }
-    };
 
-    fetchProduct();
-    window.scrollTo(0, 0);
+      const productData = await productResponse.json();
+      
+      setProduct({
+        ...productData.data,
+        ingredients: productData.data.ingredients || [],
+        allergens: productData.data.allergens || []
+      });
 
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [productId]);
 
-  const handleContactForOrder = () => {
-    navigate("/contact", {
-      state: product,
-    });
-  };
+  useEffect(() => {
+    fetchProduct();
+    window.scrollTo(0, 0);
+  }, [fetchProduct]);
+
+  const handleContactForOrder = useCallback(() => {
+    navigate("/contact", { state: product });
+  }, [navigate, product]);
+
+  const handleAcceptCookies = useCallback(() => {
+    localStorage.setItem("cookieAgreement", "accepted");
+    setShowCartReject(false);
+    addToCart(product);
+    getCart();
+    setShowCartAlert(true);
+    setTimeout(() => setShowCartAlert(false), 5000);
+  }, [product]);
+
+  const handleAddToCart = useCallback(() => {
+    if (localStorage.getItem("cookieAgreement") === "accepted") {
+      addToCart(product);
+      getCart();
+      setShowCartAlert(true);
+      setTimeout(() => setShowCartAlert(false), 5000);
+    } else {
+      setShowCartReject(true);
+      setTimeout(() => setShowCartReject(false), 10000);
+    }
+  }, [product]);
+
+  const handleBackNavigation = useCallback(() => {
+    navigate(`/wholesale/${product.style}`);
+  }, [navigate, product?.style]);
+
+  const breadcrumbs = useMemo(() => [
+    { label: "Home", url: "/" },
+    {
+      label: product?.style?.charAt(0).toUpperCase() + product?.style?.slice(1),
+      url: `/wholesale/${product?.style}`,
+    },
+    { label: (product?.name || "Product").substring(0, 30) + "..." },
+  ], [product?.style, product?.name]);
 
   if (loading) {
     return (
       <Sidebar>
-        <NavDrawer
-          isOpen={isOpen}
-          onClose={onClose}
-          containerRef={contentRef}
-        />
+        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -161,12 +302,7 @@ const ProductDetailPage = () => {
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
         >
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minH="400px"
-          >
+          <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
             <VStack spacing={4}>
               <Spinner size="xl" color="blue.500" />
               <Text>Loading product...</Text>
@@ -180,11 +316,7 @@ const ProductDetailPage = () => {
   if (error) {
     return (
       <Sidebar>
-        <NavDrawer
-          isOpen={isOpen}
-          onClose={onClose}
-          containerRef={contentRef}
-        />
+        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -214,11 +346,7 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <Sidebar>
-        <NavDrawer
-          isOpen={isOpen}
-          onClose={onClose}
-          containerRef={contentRef}
-        />
+        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -249,7 +377,6 @@ const ProductDetailPage = () => {
         ml={{ base: 0, lg: "40%" }}
         minHeight="100vh"
       >
-        {/* Header */}
         <Box>
           <Flex p={4} justify="space-between" align="center">
             <IconButton
@@ -258,7 +385,7 @@ const ProductDetailPage = () => {
               variant="ghost"
               size="sm"
               colorScheme="gray"
-              onClick={() => navigate(`/wholesale/${product.style}`)}
+              onClick={handleBackNavigation}
             />
             <IconButton
               aria-label="Menu"
@@ -270,34 +397,62 @@ const ProductDetailPage = () => {
           </Flex>
         </Box>
 
-        {/* Breadcrumbs */}
         <Box py={3} px={4} display="flex" justifyContent="center">
-          <Breadcrumbs
-            listOfBreadCrumbs={[
-              { label: "Home", url: "/" },
-              {
-                label:
-                  product.style.charAt(0).toUpperCase() +
-                  product.style.slice(1),
-                url: `/wholesale/${product.style}`,
-              },
-              { label: (product?.name || "Product").substring(0, 30) + "..." },
-            ]}
-          />
+          <Breadcrumbs listOfBreadCrumbs={breadcrumbs} />
         </Box>
 
+        {/* Simple alerts without complex animations */}
         {showCartAlert && (
-          <Box px={4}>
-            <CartConfirmation
-              product={product}
-              onClose={() => setShowCartAlert(false)}
-            />
+          <Box px={4} mb={4}>
+            <Alert status="success" borderRadius="md">
+              <AlertIcon />
+              <Box flex="1">
+                <Text fontWeight="bold">Added to Cart!</Text>
+                <Text>
+                  {product.name} has been added to your cart.
+                </Text>
+              </Box>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowCartAlert(false)}
+              >
+                ×
+              </Button>
+            </Alert>
           </Box>
         )}
 
-        {/* Product Content */}
+        {showCartReject && (
+          <Box px={4} mb={4}>
+            <Alert status="error" borderRadius="md">
+              <AlertIcon />
+              <Box flex="1">
+                <Text fontWeight="bold">Failed Adding to Cart!</Text>
+                <Text>
+                  Cart functionality requires cookies.
+                  <Button
+                    variant="link"
+                    colorScheme="blue"
+                    ml={1}
+                    onClick={handleAcceptCookies}
+                  >
+                    Accept Cookies & Add to Cart
+                  </Button>
+                </Text>
+              </Box>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowCartReject(false)}
+              >
+                ×
+              </Button>
+            </Alert>
+          </Box>
+        )}
+
         <VStack spacing={4} px={4} pb={8}>
-          {/* Product Title */}
           <Heading
             as="h1"
             size="md"
@@ -311,115 +466,8 @@ const ProductDetailPage = () => {
             {product.name}
           </Heading>
 
-          <Box position="relative" w="100%">
-            <Image
-              src={product.images?.[imagePage - 1] || "/gray.avif"}
-              alt={product.name}
-              w="100%"
-              h="280px"
-              objectFit="cover"
-              borderRadius="lg"
-            />
+          <ProductImageCarousel productName={product.name} productStyle={product.style} />
 
-            {product.images && product.images.length > 1 && (
-              <>
-                {/* Left Arrow */}
-                <IconButton
-                  aria-label="previous-image"
-                  icon={<ChevronLeft size={20} />}
-                  variant="ghost"
-                  size="sm"
-                  position="absolute"
-                  left="2"
-                  top="50%"
-                  transform="translateY(-50%)"
-                  bg="blackAlpha.600"
-                  color="white"
-                  borderRadius="full"
-                  _hover={{ bg: "blackAlpha.800" }}
-                  disabled={imagePage <= 1}
-                  onClick={() => {
-                    if (imagePage > 1) {
-                      setImagePage(imagePage - 1);
-                    }
-                  }}
-                  _disabled={{
-                    color: "whiteAlpha.300",
-                    cursor: "not-allowed",
-                    opacity: 0.4,
-                    bg: "blackAlpha.400",
-                  }}
-                />
-
-                {/* Right Arrow */}
-                <IconButton
-                  aria-label="next-image"
-                  icon={<ChevronRight size={20} />}
-                  variant="ghost"
-                  size="sm"
-                  position="absolute"
-                  right="2"
-                  top="50%"
-                  transform="translateY(-50%)"
-                  bg="blackAlpha.600"
-                  color="white"
-                  borderRadius="full"
-                  _hover={{ bg: "blackAlpha.800" }}
-                  disabled={imagePage >= product.images.length}
-                  onClick={() => {
-                    if (imagePage < product.images.length) {
-                      setImagePage(imagePage + 1);
-                    }
-                  }}
-                  _disabled={{
-                    color: "whiteAlpha.300",
-                    cursor: "not-allowed",
-                    opacity: 0.4,
-                    bg: "blackAlpha.400",
-                  }}
-                />
-
-                <HStack
-                  position="absolute"
-                  bottom="4"
-                  left="50%"
-                  transform="translateX(-50%)"
-                  spacing={2}
-                >
-                  {product.images.map((_, index) => (
-                    <Box
-                      key={index}
-                      w="8px"
-                      h="8px"
-                      borderRadius="full"
-                      bg={imagePage === index + 1 ? "white" : "whiteAlpha.500"}
-                      cursor="pointer"
-                      onClick={() => setImagePage(index + 1)}
-                      transition="all 0.2s"
-                      _hover={{ bg: "white" }}
-                    />
-                  ))}
-                </HStack>
-              </>
-            )}
-
-            {/* Image counter in top right */}
-            <Box
-              position="absolute"
-              top="4"
-              right="4"
-              bg="blackAlpha.700"
-              color="white"
-              px={2}
-              py={1}
-              borderRadius="md"
-              fontSize="xs"
-            >
-              {imagePage}/{product.images?.length || 1}
-            </Box>
-          </Box>
-
-          {/* Contact and Price Section */}
           <HStack
             w="100%"
             spacing={0}
@@ -446,15 +494,7 @@ const ProductDetailPage = () => {
                 size="md"
                 bg="white"
                 borderRadius="full"
-                onClick={() => {
-                  // console.log("Product Info:", product);
-                  addToCart(product);
-                  getCart();
-                  setShowCartAlert(true);
-                  setTimeout(() => {
-                    setShowCartAlert(false);
-                  }, 5000);
-                }}
+                onClick={handleAddToCart}
               />
             </HStack>
             <Text fontSize="xl" fontWeight="bold" color="black">
@@ -501,120 +541,74 @@ const ProductDetailPage = () => {
             </VStack>
           </VStack>
 
-          {/* Collapsible Sections */}
+          <CollapsibleSection
+            title="DETAIL"
+            isOpen={isDetailOpen}
+            onToggle={() => setIsDetailOpen(!isDetailOpen)}
+          >
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={4}>
+              <GridItem>
+                <Text fontSize="sm" color="gray.500">Brand</Text>
+                <Text fontWeight="medium">{product.brand}</Text>
+              </GridItem>
+              <GridItem>
+                <Text fontSize="sm" color="gray.500">Grade</Text>
+                <Text fontWeight="medium">{product.grade}</Text>
+              </GridItem>
+              <GridItem>
+                <Text fontSize="sm" color="gray.500">Origin</Text>
+                <Text fontWeight="medium">{product.origin}</Text>
+              </GridItem>
+              <GridItem>
+                <Text fontSize="sm" color="gray.500">Weight</Text>
+                <Text fontWeight="medium">{product.avg_weight} lbs</Text>
+              </GridItem>
+            </Grid>
+            <Text fontSize="sm" color="gray.600">
+              Specifications: {product.spec}
+            </Text>
+          </CollapsibleSection>
 
-          {/* DETAIL Section */}
-          <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
-            <Button
-              w="100%"
-              justifyContent="space-between"
-              variant="ghost"
-              onClick={() => setIsDetailOpen(!isDetailOpen)}
-              rightIcon={isDetailOpen ? <ChevronUp /> : <ChevronDown />}
-              fontWeight="bold"
-              py={4}
-            >
-              DETAIL
-            </Button>
-            <Collapse in={isDetailOpen}>
-              <Box px={4} pb={4} py={4}>
-                <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={4}>
-                  <GridItem>
-                    <Text fontSize="sm" color="gray.500">
-                      Brand
-                    </Text>
-                    <Text fontWeight="medium">{product.brand}</Text>
-                  </GridItem>
-                  <GridItem>
-                    <Text fontSize="sm" color="gray.500">
-                      Grade
-                    </Text>
-                    <Text fontWeight="medium">{product.grade}</Text>
-                  </GridItem>
-                  <GridItem>
-                    <Text fontSize="sm" color="gray.500">
-                      Origin
-                    </Text>
-                    <Text fontWeight="medium">{product.origin}</Text>
-                  </GridItem>
-                  <GridItem>
-                    <Text fontSize="sm" color="gray.500">
-                      Weight
-                    </Text>
-                    <Text fontWeight="medium">{product.avg_weight} lbs</Text>
-                  </GridItem>
-                </Grid>
-                <Text fontSize="sm" color="gray.600">
-                  Specifications: {product.spec}
-                </Text>
-              </Box>
-            </Collapse>
-          </Box>
+          <CollapsibleSection
+            title="INFORMATION"
+            isOpen={isInfoOpen}
+            onToggle={() => setIsInfoOpen(!isInfoOpen)}
+          >
+            <Text fontSize="sm" color="gray.700" lineHeight="tall">
+              {product.description}
+            </Text>
+            <Box mt={4}>
+              <Text fontSize="sm" fontWeight="semibold" mb={2}>
+                Storage Instructions:
+              </Text>
+              <List spacing={1} fontSize="sm" color="gray.600">
+                <ListItem>• Keep frozen until ready to use</ListItem>
+                <ListItem>• Thaw in refrigerator before cooking</ListItem>
+                <ListItem>• Cook thoroughly before consumption</ListItem>
+                <ListItem>• Do not refreeze once thawed</ListItem>
+              </List>
+            </Box>
+          </CollapsibleSection>
 
-          {/* INFORMATION Section */}
-          <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
-            <Button
-              w="100%"
-              justifyContent="space-between"
-              variant="ghost"
-              onClick={() => setIsInfoOpen(!isInfoOpen)}
-              rightIcon={isInfoOpen ? <ChevronUp /> : <ChevronDown />}
-              fontWeight="bold"
-              py={4}
-            >
-              INFORMATION
-            </Button>
-            <Collapse in={isInfoOpen}>
-              <Box px={4} pb={4} py={4}>
-                <Text fontSize="sm" color="gray.700" lineHeight="tall">
-                  {product.description}
-                </Text>
-                <Box mt={4}>
-                  <Text fontSize="sm" fontWeight="semibold" mb={2}>
-                    Storage Instructions:
-                  </Text>
-                  <List spacing={1} fontSize="sm" color="gray.600">
-                    <ListItem>• Keep frozen until ready to use</ListItem>
-                    <ListItem>• Thaw in refrigerator before cooking</ListItem>
-                    <ListItem>• Cook thoroughly before consumption</ListItem>
-                    <ListItem>• Do not refreeze once thawed</ListItem>
-                  </List>
-                </Box>
-              </Box>
-            </Collapse>
-          </Box>
+          <CollapsibleSection
+            title="INGREDIENTS"
+            isOpen={isIngredientsOpen}
+            onToggle={() => setIsIngredientsOpen(!isIngredientsOpen)}
+          >
+            <Text fontSize="sm" color="gray.700" lineHeight="tall">
+              {product.ingredients?.join(", ") || "Ingredients Here"}
+            </Text>
+            <Box mt={4}>
+              <Text fontSize="sm" fontWeight="semibold" mb={2}>
+                Allergen Information:
+              </Text>
+              <Text fontSize="sm" color="gray.600">
+                {product.allergens?.join(", ") ||
+                  "Allergen information not provided."}
+              </Text>
+            </Box>
+          </CollapsibleSection>
 
-          {/* INGREDIENTS Section */}
-          <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
-            <Button
-              w="100%"
-              justifyContent="space-between"
-              variant="ghost"
-              onClick={() => setIsIngredientsOpen(!isIngredientsOpen)}
-              rightIcon={isIngredientsOpen ? <ChevronUp /> : <ChevronDown />}
-              fontWeight="bold"
-              py={4}
-            >
-              INGREDIENTS
-            </Button>
-            <Collapse in={isIngredientsOpen}>
-              <Box px={4} pb={4} py={4}>
-                <Text fontSize="sm" color="gray.700" lineHeight="tall">
-                  {product.ingredients.join(", ") || "Ingredients Here"}
-                </Text>
-                <Box mt={4}>
-                  <Text fontSize="sm" fontWeight="semibold" mb={2}>
-                    Allergen Information:
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    {product.allergens.join(", ") || "Allergen information not provided."}
-                  </Text>
-                </Box>
-              </Box>
-            </Collapse>
-          </Box>
-
-          {/* Additional Info */}
           <Box bg="gray.50" p={4} borderRadius="md" w="100%">
             <Text fontSize="sm" color="gray.600" textAlign="center">
               <strong>Wholesale Only:</strong> This product is available

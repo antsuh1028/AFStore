@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="./cookie-banner.css">
-</head>
-<body>
-  <!-- Cookie Banner -->
-  <div id="cookie-banner">
-    <p>Cookies are used to remember cart items. No personal information is stored.</p>
-    <div class="cookie-buttons">
-      <button id="cookie-accept">Accept</button>
-      <button id="cookie-reject">Reject</button>
-    </div>
-  </div>
-
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="AdamsFoods.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AFWholesale</title>
+    <link rel="stylesheet" href="./cookie-banner.css" />
   </head>
   <body>
+    <!-- Cookie Banner -->
+    <div id="cookie-banner">
+      <p>
+        To add items to your cart, we need to store them using cookies. No
+        personal information is collected.
+        <br />
+        By clicking "Accept", you agree to the use of cookies for this purpose.
+        <br />
+        You can also choose to reject cookies, but this will prevent you from
+        adding items to your cart.
+      </p>
+      <div class="cookie-buttons">
+        <button id="cookie-accept">Accept</button>
+        <button id="cookie-reject">Reject</button>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script src="./cookie-banner.js"></script>

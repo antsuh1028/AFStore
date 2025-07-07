@@ -1,30 +1,99 @@
-/* cookie-banner.css */
+/* cookie-banner.css - AdamsFoods Theme */
 #cookie-banner {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: rgb(151, 151, 151) !important;
+  background-color: rgba(73, 73, 73, 0.95) !important; /* Matches your app's #494949 */
   color: white;
-  padding: 20px;
+  padding: 20px 24px;
   z-index: 9999;
+  border-top: 2px solid #b2a796; /* Subtle accent from your brand colors */
+  backdrop-filter: blur(8px);
+  font-family: 'SUIT-Regular', sans-serif; /* Match your app's font */
 }
+
+#cookie-banner p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #f9f9f9; /* Slightly off-white for better readability */
+}
+
 .cookie-buttons {
-  margin-top: 10px;
+  margin-top: 15px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 #cookie-accept {
-  background: #4CAF50;
+  background: #494949; /* Match your app's primary button color */
   color: white;
-  border: none;
-  padding: 8px 15px;
-  margin-right: 10px;
+  border: 2px solid #494949;
+  padding: 10px 20px;
+  border-radius: 24px; /* Rounded like your app buttons */
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-family: 'SUIT-Regular', sans-serif;
+}
+
+#cookie-accept:hover {
+  background: #6AAFDB; /* Your hover color */
+  border-color: #6AAFDB;
+  transform: translateY(-1px);
 }
 
 #cookie-reject {
-  background: #f44336;
-  color: white;
-  border: none;
-  padding: 8px 15px;
+  background: transparent;
+  color: #f9f9f9;
+  border: 2px solid #ada59e; /* Muted border */
+  padding: 10px 20px;
+  border-radius: 24px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-family: 'SUIT-Regular', sans-serif;
+}
+
+#cookie-reject:hover {
+  background: rgba(173, 165, 158, 0.2);
+  border-color: #ada59e;
+  transform: translateY(-1px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  #cookie-banner {
+    padding: 16px 20px;
+  }
+  
+  #cookie-banner p {
+    font-size: 13px;
+  }
+  
+  .cookie-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  #cookie-accept,
+  #cookie-reject {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Desktop center alignment for larger screens */
+@media (min-width: 1024px) {
+  #cookie-banner {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 600px;
+    border-radius: 12px 12px 0 0;
+    margin: 0 auto;
+  }
 }

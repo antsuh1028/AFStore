@@ -194,7 +194,7 @@ const HomePage = () => {
             position="relative"
           >
             <Image
-              src="../../products/cover.jpg"
+              src="../../products/home/cover.jpg"
               alt="Various Meat Cuts"
               height="100%"
               width="100%"
@@ -362,17 +362,17 @@ const HomePage = () => {
             {
               name: "Marinated",
               url: "/wholesale/marinated",
-              image: "../../products/marinated.jpg",
+              image: "../../products/home/marinated.jpg",
             },
             {
               name: "Processed",
               url: "/wholesale/processed",
-              image: "../../products/processed.webp",
+              image: "../../products/home/processed.webp",
             },
             {
               name: "Unprocessed",
               url: "/wholesale/unprocessed",
-              image: "../../products/unprocessed.jpg",
+              image: "../../products/home/unprocessed.jpg",
             },
           ].map((category, idx) => (
             <GridItem key={idx}>
@@ -489,7 +489,7 @@ const HomePage = () => {
           <Flex direction="row" justify="space-between" gap={6}>
             <Box flex="1" border="1px" height="100%" borderRadius="xl">
               <Image
-                src="../../products/Screenshot 2025-04-09 113049.jpg"
+                src="../../products/home/Screenshot 2025-04-09 113049.jpg"
                 alt="Brisket Slice"
                 borderRadius="xl"
               />

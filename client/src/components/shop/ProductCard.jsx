@@ -1,13 +1,41 @@
 import { Box, Image, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+// Function to get all images for a product based on exact folder name match
+const getProductImages = (productName, productStyle, maxImages = 10) => {
+  if (!productName || !productStyle) {
+    return ['/gray.avif'];
+  }
+
+  const images = [];
+  const basePath = `/products/${productStyle}/${productName}`;
+  
+  // Try numbered images starting from 01, 02, 03, etc. (only .jpg)
+  for (let i = 1; i <= maxImages; i++) {
+    const imageNumber = String(i).padStart(2, '0'); // 01, 02, 03, etc.
+    const imagePath = `${basePath}/${imageNumber}.jpg`;
+    images.push(imagePath);
+  }
+  
+  return images.length > 0 ? images : ['/gray.avif'];
+};
+
+// Function to get the primary (first) image for a product
+const getPrimaryProductImage = (productName, productStyle) => {
+  if (!productName || !productStyle) {
+    return '/gray.avif';
+  }
+  
+  const basePath = `/products/${productStyle}/${productName}`;
+  return `${basePath}/01.jpg`;
+};
 
 export const ProductCard = ({
   id,
   name,
   type,
   description,
-  images,
   price,
   brand,
   grade,
@@ -17,31 +45,24 @@ export const ProductCard = ({
   style,
 }) => {
   const navigate = useNavigate();
-  const placeholderImage = "/gray.avif";
-  const [displayImage, setDisplayImage] = useState(placeholderImage);
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:3001/api/s3/item/${id}/images`
-        );
-        const data = await res.json();
-        // console.log("Fetched images:", data);
-        if (res.ok && data.images.length > 0) {
-          setDisplayImage(data.images[0]);
-        } else {
-          setDisplayImage(placeholderImage);
-        }
-      } catch {
-        setDisplayImage(placeholderImage);
-      }
-    };
-    fetchImage();
-  }, [id]);
+  const [imageError, setImageError] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Get all possible images for this product
+  const productImages = getProductImages(name, style, 5); // Try up to 5 images
+  const currentImage = productImages[currentImageIndex] || '/gray.avif';
 
   const handleCardClick = () => {
     navigate(`/wholesale/product/${id}`);
+  };
+
+  const handleImageError = () => {
+    // Try the next image in the list
+    if (currentImageIndex < productImages.length - 1) {
+      setCurrentImageIndex(prev => prev + 1);
+    } else {
+      setImageError(true);
+    }
   };
 
   return (
@@ -68,28 +89,32 @@ export const ProductCard = ({
       mx="auto"
     >
       {/* Product Image */}
-      <Image
-        src={displayImage}
-        alt={name}
-        borderRadius="md"
-        width="100%"
-        height="auto"
-        objectFit="cover"
-        loading="lazy"
-      />
+      <Box position="relative" height="120px">
+        <Image
+          src={imageError ? '/gray.avif' : currentImage}
+          alt={name}
+          borderRadius="md"
+          width="100%"
+          height="100%"
+          objectFit="cover"
+          loading="lazy"
+          fallbackSrc="/gray.avif"
+          onError={handleImageError}
+        />
+      </Box>
 
       {/* Product Name */}
-      <Text mt={2} fontWeight="semibold" fontSize="sm" noOfLines={2}>
+      <Text mt={2} fontWeight="semibold" fontSize="sm" noOfLines={2} lineHeight="1.2">
         {name}
       </Text>
 
       {/* Specs */}
-      <Text fontSize="xs" color="gray.600">
+      <Text fontSize="xs" color="gray.600" noOfLines={1} mt={1}>
         {spec}
       </Text>
 
       {/* Price */}
-      <Text mt={1} fontWeight="bold" color="gray.600">
+      <Text mt={1} fontWeight="bold" color="green.600" fontSize="sm">
         ${price}/lb
       </Text>
     </Box>

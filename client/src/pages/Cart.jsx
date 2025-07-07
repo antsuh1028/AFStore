@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sidebar from "../components/SideBar";
 import {
   Box,
@@ -36,6 +36,16 @@ const CartItem = ({
   onSubtract,
 }) => {
   const navigate = useNavigate();
+
+  const getImagePath = () => {
+    if (style && name) {
+      const safeName = name.replace(/[^a-zA-Z0-9-_]/g, " ");
+      const safeStyle = style.replace(/[^a-zA-Z0-9-_]/g, " ");
+      return `/products/${safeStyle}/${safeName}/01.jpg`;
+    }
+    return images?.[0] || "/gray.avif";
+  };
+
   return (
     <Box
       border="1px"
@@ -48,12 +58,13 @@ const CartItem = ({
     >
       <Flex gap={4} align="center">
         <Image
-          src={images?.[0] || "/gray.avif"}
+          src={getImagePath()}
           alt={name}
           w="60px"
           h="60px"
           objectFit="cover"
           borderRadius="md"
+          fallbackSrc="/gray.avif"
         />
 
         <Box flex="1">
@@ -117,6 +128,7 @@ const CartPage = () => {
   const contentRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [cartItems, setCartItems] = useState(() => getCart());
+  const cookieAgreement = localStorage.getItem("cookieAgreement");
   const navigate = useNavigate();
 
   const handleAdd = (product) => {
@@ -183,96 +195,92 @@ const CartPage = () => {
       >
         <Navbar onOpen={onOpen} />
 
-        <Box p={6}>
-          <Heading as="h1" size="lg" mb={2} textAlign="center">
-            Shopping Cart
-          </Heading>
-          <Text color="gray.600" textAlign="center" mb={6}>
-            {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
-          </Text>
+        {cookieAgreement === "accepted" ? (
+          <Box p={6}>
+            <Heading as="h1" size="lg" mb={2} textAlign="center">
+              Shopping Cart
+            </Heading>
+            <Text color="gray.600" textAlign="center" mb={6}>
+              {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
+            </Text>
 
-          {cartItems.length === 0 ? (
-            <Box textAlign="center" py={12}>
-              <Text color="gray.500" fontSize="lg" mb={4}>
-                Your cart is empty
-              </Text>
-              <Button
-                colorScheme="blue"
-                onClick={() => navigate("/wholesale/shop-all")}
-              >
-                Continue Shopping
-              </Button>
-            </Box>
-          ) : (
-            <>
-              <VStack spacing={3} mb={6}>
-                {cartItems.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    {...item}
-                    onAdd={handleAdd}
-                    onRemove={handleRemove}
-                    onSubtract={handleSubtract}
-                  />
-                ))}
-              </VStack>
-
-              <Divider mb={4} />
-
-              <Box bg="gray.50" p={4} borderRadius="lg" mb={6}>
-                <Flex justify="space-between" mb={2}>
-                  <Text fontWeight="medium">Total Items:</Text>
-                  <Text>{totalItems}</Text>
-                </Flex>
-                <Flex justify="space-between" mb={4}>
-                  <Text fontWeight="bold" fontSize="lg">
-                    Total:
-                  </Text>
-                  <Text fontWeight="bold" fontSize="lg" color="green.600">
-                    ${totalPrice.toFixed(2)}
-                  </Text>
-                </Flex>
+            {cartItems.length === 0 ? (
+              <Box textAlign="center" py={12}>
+                <Text color="gray.500" fontSize="lg" mb={4}>
+                  Your cart is empty
+                </Text>
                 <Button
-                  bg="#494949"
-                  color="white"
-                  size="lg"
-                  w="100%"
-                  borderRadius="full"
-                  _hover={{ bg: "#6AAFDB" }}
-                  onClick={() => {
-                    navigate("/contact");
-                  }}
+                  colorScheme="blue"
+                  onClick={() => navigate("/wholesale/shop-all")}
                 >
-                  Contact Us
+                  Continue Shopping
                 </Button>
               </Box>
-            </>
-          )}
+            ) : (
+              <>
+                <VStack spacing={3} mb={6}>
+                  {cartItems.map((item) => (
+                    <CartItem
+                      key={item.id}
+                      {...item}
+                      onAdd={handleAdd}
+                      onRemove={handleRemove}
+                      onSubtract={handleSubtract}
+                    />
+                  ))}
+                </VStack>
 
-          <Divider my={6} />
+                <Divider mb={4} />
 
-          <Box>
-            <Text fontSize="sm" fontWeight="medium" mb={3}>
-              Test Products:
-            </Text>
-            <HStack spacing={2} wrap="wrap">
-              <Button
-                size="sm"
-                onClick={() => handleAdd(dummyProduct)}
-                variant="outline"
-              >
-                Add Beef
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => handleAdd(dummyProduct2)}
-                variant="outline"
-              >
-                Add Pork
-              </Button>
-            </HStack>
+                <Box bg="gray.50" p={4} borderRadius="lg" mb={6}>
+                  <Flex justify="space-between" mb={2}>
+                    <Text fontWeight="medium">Total Items:</Text>
+                    <Text>{totalItems}</Text>
+                  </Flex>
+                  <Flex justify="space-between" mb={4}>
+                    <Text fontWeight="bold" fontSize="lg">
+                      Total:
+                    </Text>
+                    <Text fontWeight="bold" fontSize="lg" color="green.600">
+                      ${totalPrice.toFixed(2)}
+                    </Text>
+                  </Flex>
+                  <Button
+                    bg="#494949"
+                    color="white"
+                    size="lg"
+                    w="100%"
+                    borderRadius="full"
+                    _hover={{ bg: "#6AAFDB" }}
+                    onClick={() => {
+                      navigate("/contact");
+                    }}
+                  >
+                    Contact Us
+                  </Button>
+                </Box>
+              </>
+            )}
+
+            <Divider my={6} />
+
           </Box>
-        </Box>
+        ) : (
+          <Box p={6} textAlign="center">
+            <Text color="gray.500" fontSize="lg" mb={4}>
+              Cookies Rejected. Cart functionality is disabled.
+            </Text>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                localStorage.setItem("cookieAgreement", "accepted");
+                window.location.reload();
+              }}
+            >
+              Accept Cookies & Use Cart
+            </Button>
+          </Box>
+        )}
       </Container>
     </Sidebar>
   );
