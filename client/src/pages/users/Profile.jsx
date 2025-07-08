@@ -34,8 +34,173 @@ import { ChevronLeft } from "lucide-react";
 import { useAuthContext } from "../../hooks/useAuth";
 import { CheckCircleIcon } from "lucide-react";
 import Footer from "../../components/Footer";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
-const myPages = (currPage, { userInfo, userName, userEmail, handleLogout, setCurrPage }) => {
+// OrdersList component to show orders, order items, and item details
+import { SimpleGrid } from "@chakra-ui/react";
+
+const OrdersList = ({ orders }) => {
+  const navigate = useNavigate();
+  const [orderItemsMap, setOrderItemsMap] = useState({});
+  const [itemDetailsMap, setItemDetailsMap] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!orders || orders.length === 0) return;
+    console.log("Fetching order items and details for orders:", orders);
+    setLoading(true);
+
+    const fetchOrderItemsAndDetails = async () => {
+      const itemsMap = {};
+      const itemIds = new Set();
+
+      await Promise.all(
+        orders.map(async (order) => {
+          const res = await fetch(
+            `http://localhost:3001/api/order-items/orders/${order.id}`
+          );
+          const data = await res.json();
+          if (data.success) {
+            itemsMap[order.id] = data.data;
+            data.data.forEach((oi) => itemIds.add(oi.item_id));
+          }
+        })
+      );
+      setOrderItemsMap(itemsMap);
+
+      const detailsMap = {};
+      await Promise.all(
+        Array.from(itemIds).map(async (itemId) => {
+          const res = await fetch(`http://localhost:3001/api/items/${itemId}`);
+          const data = await res.json();
+          if (data.data) {
+            detailsMap[itemId] = data.data;
+          }
+        })
+      );
+      setItemDetailsMap(detailsMap);
+      setLoading(false);
+    };
+
+    fetchOrderItemsAndDetails();
+  }, [orders]);
+
+  if (loading) {
+    return (
+      <Center py={6}>
+        <Spinner size="md" />
+        <Text ml={2}>Loading order details...</Text>
+      </Center>
+    );
+  }
+
+  if (!orders || orders.length === 0) {
+    return (
+      <Text color="gray.500" py={4}>
+        No orders found.
+      </Text>
+    );
+  }
+
+  return (
+    <VStack align="stretch" spacing={8} py={4}>
+      {orders.map((order) => (
+        <Box key={order.id}>
+          <Flex
+            gap={4}
+            alignItems="center"
+            justifyContent="center"
+            alignSelf="center"
+            height="24px"
+          >
+            {" "}
+            <Text
+              fontSize="sm"
+              color="gray.500"
+              mb={2}
+              textAlign="left"
+              textDecoration="underline"
+            >
+              {order.order_date
+                ? new Date(order.order_date).toLocaleDateString()
+                : ""}
+            </Text>
+            <Divider
+              orientation="vertical"
+              borderColor="black"
+              bg="black"
+              height="20px"
+            />
+            <Text
+              fontSize="sm"
+              color="gray.500"
+              mb={2}
+              textAlign="left"
+              fontWeight="bold"
+            >
+              {order.order_status}
+            </Text>
+          </Flex>
+          <SimpleGrid columns={1} spacing={4}>
+            {(orderItemsMap[order.id] || []).map((oi) => {
+              const item = itemDetailsMap[oi.item_id] || {};
+              const safeStyle = item.style
+                ? item.style.replace(/[^a-zA-Z0-9-_]/g, " ")
+                : "";
+              const safeName = item.name
+                ? item.name.replace(/[^a-zA-Z0-9-_]/g, " ")
+                : "";
+              const imgSrc =
+                safeStyle && safeName
+                  ? `/products/${safeStyle}/${safeName}/01.jpg`
+                  : "/gray.avif";
+              return (
+                <Flex
+                  key={oi.id}
+                  bg="white"
+                  borderRadius="xl"
+                  boxShadow="md"
+                  p={3}
+                  alignItems="center"
+                  _hover={{ cursor: "pointer" }}
+                  onClick={() => {
+                    navigate(`/wholesale/product/${item.id}`);
+                  }}
+                >
+                  <Image
+                    src={imgSrc}
+                    alt={item.name || ""}
+                    boxSize="80px"
+                    objectFit="cover"
+                    borderRadius="md"
+                    fallbackSrc="/gray.avif"
+                    mr={4}
+                  />
+                  <Box flex="1">
+                    <Text fontWeight="semibold" fontSize="sm" noOfLines={2} textAlign="left">
+                      {item.name || "Item"}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500" mt={1} textAlign="left">
+                      {item.spec || ""}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500" mt={1} textAlign="left">
+                      Qty: {oi.quantity}
+                    </Text>
+                  </Box>
+                </Flex>
+              );
+            })}
+          </SimpleGrid>
+        </Box>
+      ))}
+    </VStack>
+  );
+};
+
+const myPages = (
+  currPage,
+  { userInfo, userName, userEmail, handleLogout, setCurrPage, orders }
+) => {
   if (currPage === "all") {
     return (
       <>
@@ -159,11 +324,14 @@ const myPages = (currPage, { userInfo, userName, userEmail, handleLogout, setCur
             _hover={{ color: "gray.200" }}
             minW="48px"
             textAlign="right"
-            onClick={() => {setCurrPage("orders")}}
+            onClick={() => {
+              setCurrPage("orders");
+            }}
           >
             View all
           </Link>
         </Flex>
+        <OrdersList orders={orders.slice(0, 2)} />
 
         <Flex
           p={4}
@@ -185,7 +353,9 @@ const myPages = (currPage, { userInfo, userName, userEmail, handleLogout, setCur
             _hover={{ color: "gray.200" }}
             minW="48px"
             textAlign="right"
-            onClick={() => {setCurrPage("history")}}
+            onClick={() => {
+              setCurrPage("history");
+            }}
           >
             View all
           </Link>
@@ -206,20 +376,10 @@ const myPages = (currPage, { userInfo, userName, userEmail, handleLogout, setCur
           mb={2}
         >
           <Text color="white" fontWeight="bold" ml={2}>
-            My Order
+            My Orders
           </Text>
-          <Link
-            fontSize="10px"
-            color="white"
-            textDecoration="underline"
-            mx={2}
-            _hover={{ color: "gray.200" }}
-            minW="48px"
-            textAlign="right"
-          >
-            View all
-          </Link>
         </Flex>
+        <OrdersList orders={orders} />
         <VStack bg="#f9f9f9" p={2} my={4}>
           <Flex>
             <Icon as={CheckCircleIcon} color="black" m={2} />
@@ -249,7 +409,6 @@ export const UserProfile = () => {
   const navigate = useNavigate();
   const contentRef = useRef(null);
   const toast = useToast();
-  const pages = ["all", "orders", "history"];
   const [currPage, setCurrPage] = useState("all");
 
   const {
@@ -263,48 +422,28 @@ export const UserProfile = () => {
     userEmail,
   } = useAuthContext();
 
-  // Mock order data - replace with actual API call
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      date: "04.17.2024",
-      items: [
-        {
-          name: "Beef Clod, Korean-Inspired Marinated Sliced Boneless Beef",
-          weight: "5 lbs/1 ~ 4 packs",
-          image: "/api/placeholder/120/120",
-        },
-        {
-          name: "Beef Clod, Korean-Inspired Marinated Sliced Boneless Beef",
-          weight: "5 lbs/1 ~ 4 packs",
-          image: "/api/placeholder/120/120",
-        },
-      ],
-    },
-    {
-      id: 2,
-      date: "02.28.2024",
-      items: [
-        {
-          name: "Beef Clod, Korean-Inspired Marinated Sliced Boneless Beef",
-          weight: "5 lbs/1 ~ 4 packs",
-          image: "/api/placeholder/120/120",
-        },
-        {
-          name: "Beef Clod, Korean-Inspired Marinated Sliced Boneless Beef",
-          weight: "5 lbs/1 ~ 4 packs",
-          image: "/api/placeholder/120/120",
-        },
-        {
-          name: "Beef Clod, Korean-Inspired Marinated Sliced Boneless Beef",
-          weight: "5 lbs/1 ~ 4 packs",
-          image: "/api/placeholder/120/120",
-        },
-      ],
-    },
-  ]);
+  const [orders, setOrders] = useState([]);
 
-  // Redirect if not authenticated
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/orders/user/${userId}`
+        );
+        const data = await response.json();
+        if (data.success) {
+          setOrders(data.data);
+        }
+      } catch (err) {
+        // handle error
+      }
+    };
+
+    if (userId) {
+      fetchOrders();
+    }
+  }, [userId]);
+
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate("/login");
@@ -322,7 +461,6 @@ export const UserProfile = () => {
     navigate("/");
   };
 
-  // Show loading state
   if (loading) {
     return (
       <Sidebar>
@@ -344,7 +482,6 @@ export const UserProfile = () => {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <Sidebar>
@@ -367,7 +504,6 @@ export const UserProfile = () => {
     );
   }
 
-  // Don't render if not authenticated (will redirect)
   if (!isAuthenticated) {
     return null;
   }
@@ -405,7 +541,7 @@ export const UserProfile = () => {
         <Box textAlign="center" mb={6} px={4}>
           <Heading as="h1" size="lg" mb={2}>
             <Text as="span" color="gray.500" fontWeight="normal">
-              Hello.{" "}
+              Hello,{" "}
             </Text>
             <Text as="span" color="black" fontWeight="medium">
               {userName}
@@ -461,13 +597,20 @@ export const UserProfile = () => {
             </TabList>
             <TabPanels my={12}>
               <TabPanel p={0}>
-                {myPages(currPage, { userInfo, userName, userEmail, handleLogout, setCurrPage })}
+                {myPages(currPage, {
+                  userInfo,
+                  userName,
+                  userEmail,
+                  handleLogout,
+                  setCurrPage,
+                  orders,
+                })}
               </TabPanel>
               <TabPanel p={0}>Cart</TabPanel>
             </TabPanels>
           </Tabs>
         </Box>
-        <Footer/>
+        <Footer />
       </Container>
     </Sidebar>
   );

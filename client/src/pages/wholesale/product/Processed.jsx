@@ -85,9 +85,11 @@ const ProcessedPage = () => {
         </Box>
       ) : (
         <SimpleGrid columns={2} spacing={4} pb={8}>
-          {filteredProducts.map((item) => (
-            <ProductCard key={item.id} {...item} />
-          ))}
+          {filteredProducts
+            .filter((item) => item.show)
+            .map((item) => (
+              <ProductCard key={item.id} {...item} />
+            ))}
         </SimpleGrid>
       )}
     </Box>

@@ -200,7 +200,7 @@ const ContactPage = () => {
 
         <Box px={6} py={4}>
           <Heading mb={3} fontWeight="medium" fontSize="3xl" textAlign="center">
-            Contact us
+            Contact Us
           </Heading>
           <Text mb={4} color="gray.500" fontSize="md" textAlign="center">
             We look forward to hearing from you
@@ -246,7 +246,7 @@ const ContactPage = () => {
                 <form ref={form} onSubmit={sendEmail}>
                   <VStack spacing={4} align="stretch">
                     <FormControl isRequired>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>Name:</FormLabel>
                       <Input
                         type="text"
                         name="user_name"
@@ -256,7 +256,7 @@ const ContactPage = () => {
                     </FormControl>
 
                     <FormControl isRequired isInvalid={emailError !== ""}>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Email:</FormLabel>
                       <Input
                         type="email"
                         name="user_email"
@@ -274,7 +274,7 @@ const ContactPage = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel>Phone Number:</FormLabel>
                       <Input
                         type="tel"
                         name="user_phone"
@@ -285,7 +285,7 @@ const ContactPage = () => {
 
                     <FormControl isRequired>
                       <Flex>
-                        <FormLabel>Wholesale license numbers</FormLabel>
+                        <FormLabel>Wholesale License #:</FormLabel>
                         <Popover>
                           <PopoverTrigger>
                             <IconButton
