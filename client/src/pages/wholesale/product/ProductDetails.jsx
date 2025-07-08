@@ -401,7 +401,7 @@ const ProductDetailPage = () => {
           <Breadcrumbs listOfBreadCrumbs={breadcrumbs} />
         </Box>
 
-        {/* Simple alerts without complex animations */}
+        {/* Alerts*/}
         {showCartAlert && (
           <Box px={4} mb={4}>
             <Alert status="success" borderRadius="md">

@@ -371,7 +371,7 @@ const ContactPage = () => {
                           borderColor: "blue.400",
                           boxShadow: "0 0 0 1px blue.400",
                         }}
-                        placeholder="Include product name..."
+                        placeholder="Include product name and company you represent"
                       />
                     </FormControl>
 

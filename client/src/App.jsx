@@ -104,6 +104,7 @@ import {
 import ProductDetailPage from "./pages/wholesale/product/ProductDetails";
 import OrderSummaryPage from "./pages/OrderSummary";
 import CartPage from "./pages/Cart";
+import AdminDashboard from "./pages/AdminDashboard";
 import theme from "./theme";
 import "./fonts.css";
 import { AuthProvider } from "./hooks/useAuth";
@@ -158,6 +159,7 @@ function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/order-summary" element={<OrderSummaryPage />} />
                 <Route path="/profile/user/:userId" element={<UserProfile />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
               </Routes>
             </Box>
           </Box>

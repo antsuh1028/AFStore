@@ -158,7 +158,7 @@ const Login = () => {
               variant="ghost"
               size="lg"
               colorScheme="gray"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/")}
             />
             <IconButton
               aria-label="Menu"

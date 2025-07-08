@@ -47,7 +47,6 @@ const OrdersList = ({ orders }) => {
 
   useEffect(() => {
     if (!orders || orders.length === 0) return;
-    console.log("Fetching order items and details for orders:", orders);
     setLoading(true);
 
     const fetchOrderItemsAndDetails = async () => {

@@ -187,9 +187,8 @@ UsersRouter.post("/reset-password", async (req, res) => {
 UsersRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    // console.log("Fetching user with ID:", id);
     const result = await db.query(
-      "SELECT id, name, email, license_number, phone_number FROM users WHERE id = $1",
+      "SELECT id, name, email, license_number, phone_number, is_admin FROM users WHERE id = $1",
       [id]
     );
     // console.log("Query result:", result.rows);
