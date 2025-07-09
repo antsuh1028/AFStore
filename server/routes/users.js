@@ -30,6 +30,16 @@ UsersRouter.get("/", async (req, res) => {
   }
 });
 
+// GET /api/users/signup-requests — fetch all signup requests
+UsersRouter.get("/signup-requests", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM signup_requests ORDER BY timestamp DESC");
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/users/login — login and return JWT
 UsersRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -83,11 +93,20 @@ UsersRouter.post("/login", async (req, res) => {
 });
 
 UsersRouter.post("/signup", async (req, res) => {
-  const { name, email, password, license_number } = req.body;
-  if (!name || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: "Name, email, and password are required" });
+  const { 
+    firstName, 
+    lastName, 
+    companyName, 
+    email, 
+    password, 
+    licenseNumber 
+  } = req.body;
+
+  // Validation
+  if (!firstName || !lastName || !companyName || !email || !password || !licenseNumber) {
+    return res.status(400).json({ 
+      message: "All fields are required: firstName, lastName, companyName, email, password, licenseNumber" 
+    });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -97,30 +116,36 @@ UsersRouter.post("/signup", async (req, res) => {
     return res.status(400).json({ message: "Invalid email format" });
   }
 
-  if (license_number && !licenseRegex.test(license_number)) {
-    return res
-      .status(400)
-      .json({ message: "License number must match C-1234567 format" });
+  if (!licenseRegex.test(licenseNumber)) {
+    return res.status(400).json({ 
+      message: "License number must match C-1234567 format" 
+    });
   }
 
   try {
-    const existing = await db.query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
+    // Check if email already exists
+    const existing = await db.query("SELECT * FROM users WHERE email = $1", [email]);
     if (existing.rows.length > 0) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
+    
+    // Insert into signup_requests table
     const result = await db.query(
-      `INSERT INTO users (name, email, password, license_number)
-       VALUES ($1, $2, $3, $4) RETURNING id, name, email`,
-      [name, email, hashedPassword, license_number || null]
+      `INSERT INTO signup_requests (first_name, last_name, email, password, license_number, company, timestamp)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, first_name, last_name, email, company`,
+      [firstName, lastName, email, hashedPassword, licenseNumber, companyName, new Date()]
     );
 
-    res.status(201).json({ user: result.rows[0] });
+    res.status(201).json({ 
+      message: "Signup request submitted successfully. Please wait for admin approval.",
+      request: result.rows[0] 
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Signup error:", err);
+    res.status(500).json({ message: "Server error during signup" });
   }
 });
 

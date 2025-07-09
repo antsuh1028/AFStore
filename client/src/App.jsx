@@ -89,7 +89,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AgreementGate from "./pages/AgreementGate";
-import { UserProfile } from "./pages/users/Profile";
+import UserProfile from "./pages/users/Profile";
 import {
   PackingPage,
   FAQPage,

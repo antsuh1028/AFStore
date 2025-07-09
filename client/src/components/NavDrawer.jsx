@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../hooks/useAuth"; // Changed from useAuth to useAuthContext
+import { useAuthContext } from "../hooks/useAuth";
 
 const ITEMS = [
   {

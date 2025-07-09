@@ -24,6 +24,7 @@ import NavDrawer from "../components/NavDrawer";
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -113,7 +114,12 @@ const Signup = () => {
     </Box>
   );
 
-  const CustomCheckbox = ({ checked, onChange, children, disabled = false }) => (
+  const CustomCheckbox = ({
+    checked,
+    onChange,
+    children,
+    disabled = false,
+  }) => (
     <Box
       display="flex"
       alignItems="flex-start"
@@ -188,31 +194,33 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const fullName = `${firstName} ${lastName}`.trim();
-
       const res = await fetch("http://localhost:3001/api/users/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: fullName,
+          firstName,
+          lastName,
+          companyName,
           email,
           password,
-          license_number: licenseNumber,
+          licenseNumber,
+          timestamp: new Date().toISOString(),
         }),
       });
 
       const data = await res.json();
       if (res.ok) {
         toast({
-          title: "Account created successfully!",
+          title: "Signup request submitted!",
+          description:
+            "Please wait for admin approval. You'll be contacted within 24-48 hours.",
           status: "success",
-          duration: 3000,
+          duration: 5000,
           isClosable: true,
         });
-        // Add small delay before navigation to prevent DOM errors
         setTimeout(() => {
           navigate("/login", { replace: true });
-        }, 100);
+        }, 1000);
       } else {
         toast({
           title: "Signup failed.",
@@ -305,6 +313,19 @@ const Signup = () => {
                 />
               </FormControl>
 
+              <FormControl isRequired>
+                <FormLabel fontSize="sm" fontWeight="semibold">
+                  Company/Business Name
+                </FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Your Business Name"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  {...inputStyle}
+                />
+              </FormControl>
+
               <FormControl isRequired isInvalid={emailError !== ""}>
                 <FormLabel fontSize="sm" fontWeight="semibold">
                   Email
@@ -364,7 +385,7 @@ const Signup = () => {
                 />
               </FormControl>
 
-              <CustomCheckbox 
+              <CustomCheckbox
                 checked={agreementChecked}
                 onChange={() => setAgreementChecked(!agreementChecked)}
               >
@@ -398,15 +419,8 @@ const Signup = () => {
                 />
               </FormControl>
 
-              <Box
-                bg="gray.50"
-                p={4}
-                borderRadius="md"
-              >
-                <CustomCheckbox 
-                  checked={true} 
-                  disabled={true}
-                >
+              <Box bg="gray.50" p={4} borderRadius="md">
+                <CustomCheckbox checked={true} disabled={true}>
                   Please allow 24 - 48 hours for account review and
                   verification. Accounts that do not meet our criteria may be
                   declined without notice. Providing complete and accurate
