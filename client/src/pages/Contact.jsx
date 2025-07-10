@@ -128,7 +128,7 @@ const ContactPage = () => {
     },
   };
 
-  const sendEmail = (e) => {
+  const sendEmail = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -144,36 +144,58 @@ const ContactPage = () => {
       return;
     }
 
-    emailjs
-      .sendForm(
-        "service_2caz99j",
-        "template_pk4zt2j",
-        form.current,
-        "IiK0ZkMnvgw5uDief"
-      )
-      .then(
-        () => {
-          setLoading(false);
-          toast({
-            title: "Message sent!",
-            description: "We've received your inquiry.",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-          });
+    const formData = new FormData(form.current);
+
+    const inquiryData = {
+      name: formData.get("user_name"),
+      email: formData.get("user_email"),
+      phone: formData.get("user_phone"),
+      license_number: formData.get("license_number"),
+      message: formData.get("message"),
+      cart_items: cartItems,
+      cart_total: cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      ),
+    };
+
+    try {
+      // Add inquiry to database
+      const response = await fetch("http://localhost:3001/api/inquiries", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        (error) => {
-          setLoading(false);
-          console.error("EmailJS error:", error);
-          toast({
-            title: "Error sending message.",
-            description: error?.text || "Please try again later.",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
-        }
-      );
+        body: JSON.stringify(inquiryData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Inquiry submitted!",
+          description: "We've received your inquiry and will respond soon.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+
+        // Reset form
+        form.current.reset();
+        setEmail("");
+      } else {
+        throw new Error("Failed to submit inquiry");
+      }
+    } catch (error) {
+      console.error("Error submitting inquiry:", error);
+      toast({
+        title: "Error submitting inquiry.",
+        description: "Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -283,6 +305,16 @@ const ContactPage = () => {
                       />
                     </FormControl>
 
+                    <FormControl>
+                      <FormLabel>Company:</FormLabel>
+                      <Input
+                        type="company"
+                        name="company"
+                        {...inputStyle}
+                        placeholder="Enter Company Name..."
+                      />
+                    </FormControl>
+
                     <FormControl isRequired>
                       <Flex>
                         <FormLabel>Wholesale License #:</FormLabel>
@@ -371,7 +403,7 @@ const ContactPage = () => {
                           borderColor: "blue.400",
                           boxShadow: "0 0 0 1px blue.400",
                         }}
-                        placeholder="Include product name and company you represent"
+                        placeholder="Include Message here..."
                       />
                     </FormControl>
 

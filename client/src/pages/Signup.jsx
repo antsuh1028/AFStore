@@ -219,7 +219,7 @@ const Signup = () => {
           isClosable: true,
         });
         setTimeout(() => {
-          navigate("/login", { replace: true });
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         toast({

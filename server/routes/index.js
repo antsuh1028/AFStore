@@ -8,6 +8,7 @@ import { OrderItemsRouter } from "./order_items.js";
 import { OrdersRouter } from "./orders.js";
 import { ShippingAddrsRouter } from "./shipping_addresses.js";
 import { S3Router } from "./s3.js";
+import { InquiriesRouter } from "./inquiries.js";
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.use("/order-items", OrderItemsRouter);
 router.use("/orders", OrdersRouter);
 router.use("/shipping-addresses", ShippingAddrsRouter);
 router.use("/s3", S3Router);
+router.use("/inquiries", InquiriesRouter);
 
 export { router as apiRouter };

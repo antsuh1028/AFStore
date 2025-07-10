@@ -15,6 +15,7 @@ import {
   Tr,
   Th,
   Td,
+  VStack,
   Image,
   Divider,
   Select,
@@ -22,379 +23,20 @@ import {
   Alert,
   AlertIcon,
   Center,
+  useToast,
 } from "@chakra-ui/react";
-import { BellIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { BellIcon, ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { useAuthContext } from "../hooks/useAuth";
 
-const Signups = ({ signupRequests }) => {
-  return (
-    <Box bg="white" borderRadius="2xl" p={6} boxShadow="sm" minH="500px">
-      <Heading size="lg" fontWeight="bold" mb={6}>
-        Signup Requests
-      </Heading>
-
-      {/* Stats */}
-      <Box bg="gray.50" p={4} borderRadius="lg" mb={6}>
-        <Text fontSize="sm" color="gray.600">
-          Total Requests
-        </Text>
-        <Text fontSize="2xl" fontWeight="bold">
-          {signupRequests?.length || 0}
-        </Text>
-      </Box>
-
-      {/* Requests Table */}
-      <Box overflow="auto" maxH="400px">
-        <Table variant="simple" size="sm">
-          <Thead position="sticky" top={0} bg="white" zIndex={1}>
-            <Tr>
-              <Th fontWeight="bold">Name</Th>
-              <Th>Company</Th>
-              <Th>Email</Th>
-              <Th>License #</Th>
-              <Th>Date</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {signupRequests?.length > 0 ? (
-              signupRequests.map((request) => (
-                <Tr key={request.id}>
-                  <Td fontWeight="bold">
-                    {request.first_name} {request.last_name}
-                  </Td>
-                  <Td>{request.company}</Td>
-                  <Td>{request.email}</Td>
-                  <Td>{request.license_number}</Td>
-                  <Td>
-                    {request.timestamp
-                      ? new Date(request.timestamp).toLocaleDateString()
-                      : "N/A"}
-                  </Td>
-                  <Td>
-                    <Button size="xs" colorScheme="green" mr={2}>
-                      Approve
-                    </Button>
-                    <Button size="xs" colorScheme="red">
-                      Reject
-                    </Button>
-                  </Td>
-                </Tr>
-              ))
-            ) : (
-              <Tr>
-                <Td colSpan={6} textAlign="center" py={8}>
-                  <Text color="gray.500">No signup requests found</Text>
-                </Td>
-              </Tr>
-            )}
-          </Tbody>
-        </Table>
-      </Box>
-    </Box>
-  );
-};
-
-const Orders = ({ orders, usersMap, orderItemsMap }) => {
-  const [filter, setFilter] = useState("all");
-  const [expandedRows, setExpandedRows] = useState(new Set());
-
-  const statusColor = (status) => {
-    if (status === "complete") return "green";
-    if (status === "incomplete") return "yellow";
-    if (status === "pending") return "gray";
-    return "gray";
-  };
-
-  const getUserName = (userId) => {
-    return (
-      usersMap[userId]?.name ||
-      usersMap[userId]?.username ||
-      `User #${userId}` ||
-      "Unknown User"
-    );
-  };
-
-  const toggleRow = (orderId) => {
-    const newExpandedRows = new Set(expandedRows);
-    if (newExpandedRows.has(orderId)) {
-      newExpandedRows.delete(orderId);
-    } else {
-      newExpandedRows.add(orderId);
-    }
-    setExpandedRows(newExpandedRows);
-  };
-
-  const filteredOrders =
-    orders?.filter((order) => {
-      if (filter === "all") return true;
-      return order.order_status?.toLowerCase() === filter;
-    }) || [];
-
-  return (
-    <Box bg="white" borderRadius="2xl" p={6} boxShadow="sm" minH="500px">
-      <Flex justify="space-between" align="center" mb={6}>
-        <Heading size="lg" fontWeight="bold">
-          Orders Management
-        </Heading>
-        <Select
-          size="sm"
-          width="auto"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="all">All Orders</option>
-          <option value="pending">Pending</option>
-          <option value="complete">Complete</option>
-        </Select>
-      </Flex>
-
-      {/* Stats Cards */}
-      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={6}>
-        <Box bg="gray.50" p={4} borderRadius="lg">
-          <Text fontSize="sm" color="gray.600">
-            Total Orders
-          </Text>
-          <Text fontSize="2xl" fontWeight="bold">
-            {orders?.length || 0}
-          </Text>
-        </Box>
-        <Box bg="gray.50" p={4} borderRadius="lg">
-          <Text fontSize="sm" color="gray.600">
-            Pending Orders
-          </Text>
-          <Text fontSize="2xl" fontWeight="bold">
-            {orders?.filter((o) => o.order_status?.toLowerCase() === "pending")
-              .length || 0}
-          </Text>
-        </Box>
-        <Box bg="gray.50" p={4} borderRadius="lg">
-          <Text fontSize="sm" color="gray.600">
-            Total Revenue
-          </Text>
-          <Text fontSize="2xl" fontWeight="bold">
-            $
-            {orders
-              ?.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)
-              .toLocaleString() || 0}
-          </Text>
-        </Box>
-      </SimpleGrid>
-
-      {/* Orders Table */}
-      <Box overflow="auto" maxH="400px">
-        <Table variant="simple" size="sm">
-          <Thead position="sticky" top={0} bg="white" zIndex={1}>
-            <Tr>
-              <Th fontWeight="bold">Order #</Th>
-              <Th>Customer</Th>
-              <Th>Date</Th>
-              <Th>Delivery Method</Th>
-              <Th>Status</Th>
-              <Th>Total</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {filteredOrders.length > 0 ? (
-              filteredOrders.map((order) => (
-                <React.Fragment key={order.id}>
-                  <Tr>
-                    <Td fontWeight="bold">{order.order_number}</Td>
-                    <Td>{getUserName(order.user_id)}</Td>
-                    <Td>
-                      {order.order_date
-                        ? new Date(order.order_date).toLocaleDateString()
-                        : "N/A"}
-                    </Td>
-                    <Td>
-                      <Badge
-                        colorScheme={
-                          order.delivery_method === "delivery"
-                            ? "blue"
-                            : "orange"
-                        }
-                        textTransform="capitalize"
-                      >
-                        {order.delivery_method}
-                      </Badge>
-                    </Td>
-                    <Td>
-                      <Badge colorScheme={statusColor(order.order_status)}>
-                        {order.order_status}
-                      </Badge>
-                    </Td>
-                    <Td fontWeight="bold">${order.total_amount}</Td>
-                    <Td>
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        onClick={() => toggleRow(order.id)}
-                      >
-                        {expandedRows.has(order.id) ? "Hide" : "View"}
-                      </Button>
-                    </Td>
-                  </Tr>
-                  {expandedRows.has(order.id) && (
-                    <Tr>
-                      <Td colSpan={7} bg="gray.50" p={4}>
-                        <Box>
-                          <Heading size="sm" mb={3}>
-                            Order Details
-                          </Heading>
-                          <SimpleGrid columns={2} spacing={4} mb={4}>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Order Date:
-                              </Text>
-                              <Text fontSize="sm">
-                                {order.order_date
-                                  ? new Date(
-                                      order.order_date
-                                    ).toLocaleDateString()
-                                  : "N/A"}
-                              </Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                User ID:
-                              </Text>
-                              <Text fontSize="sm">{order.user_id}</Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Address:
-                              </Text>
-                              <Text fontSize="sm">
-                                {order.shipping_address || "N/A"}
-                              </Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Phone:
-                              </Text>
-                              <Text fontSize="sm">
-                                {usersMap[order.user_id].phone_number || "N/A"}
-                              </Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Notes:
-                              </Text>
-                              <Text fontSize="sm">
-                                {order.notes || "No notes"}
-                              </Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Created:
-                              </Text>
-                              <Text fontSize="sm">
-                                {order.created_at
-                                  ? new Date(order.created_at).toLocaleString()
-                                  : "N/A"}
-                              </Text>
-                            </Box>
-                          </SimpleGrid>
-
-                          {/* Order Items Section */}
-                          <Box>
-                            <Heading size="sm" mb={3}>
-                              Order Items
-                            </Heading>
-                            {orderItemsMap[order.id] &&
-                            orderItemsMap[order.id].length > 0 ? (
-                              <Table size="sm" variant="simple">
-                                <Thead>
-                                  <Tr>
-                                    <Th fontSize="xs">Item</Th>
-                                    <Th fontSize="xs">Quantity</Th>
-                                    <Th fontSize="xs">Price</Th>
-                                    <Th fontSize="xs">Total</Th>
-                                  </Tr>
-                                </Thead>
-                                <Tbody>
-                                  {orderItemsMap[order.id].map(
-                                    (item, index) => (
-                                      <Tr key={index}>
-                                        <Td fontSize="xs">
-                                          {item.item_name ||
-                                            `Item #${item.item_id}`}
-                                        </Td>
-                                        <Td fontSize="xs">{item.quantity}</Td>
-                                        <Td fontSize="xs">
-                                          ${item.price_per_unit}
-                                        </Td>
-                                        <Td fontSize="xs" fontWeight="bold">
-                                          $
-                                          {(
-                                            item.quantity * item.price_per_unit
-                                          ).toFixed(2)}
-                                        </Td>
-                                      </Tr>
-                                    )
-                                  )}
-                                </Tbody>
-                              </Table>
-                            ) : (
-                              <Text fontSize="sm" color="gray.500">
-                                No items found for this order
-                              </Text>
-                            )}
-                          </Box>
-                        </Box>
-                      </Td>
-                    </Tr>
-                  )}
-                </React.Fragment>
-              ))
-            ) : (
-              <Tr>
-                <Td colSpan={7} textAlign="center" py={8}>
-                  <Text color="gray.500">No orders found</Text>
-                </Td>
-              </Tr>
-            )}
-          </Tbody>
-        </Table>
-      </Box>
-    </Box>
-  );
-};
-
-const InventoryStatus = () => {
-  return (
-    <Box
-      bg="white"
-      borderRadius="2xl"
-      p={6}
-      boxShadow="sm"
-      display="flex"
-      flexDirection="column"
-      alignItems="flex-start"
-      position="relative"
-    >
-      <Text fontWeight="bold" fontSize="lg" mb={1}>
-        Inventory Status
-      </Text>
-      <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
-        0
-      </Text>
-      <IconButton
-        icon={<ChevronRightIcon />}
-        aria-label="Go"
-        size="sm"
-        position="absolute"
-        top={4}
-        right={4}
-        variant="ghost"
-      />
-    </Box>
-  );
-};
+import {
+  Signups,
+  Orders,
+  InventoryStatus,
+} from "../components/admin/DashboardComponents";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const {
     userInfo,
@@ -416,11 +58,12 @@ const AdminDashboard = () => {
   const [usersMap, setUsersMap] = useState({});
   const [inventory, setInventory] = useState([]);
   const [signupRequests, setSignupRequests] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
 
   const pages = {
     1: "Dashboard",
     2: "Orders",
-    3: "Sign Ups",
+    3: "Sign Ups & Inquiries",
     4: "Inventory Status",
   };
   const [currentPage, setCurrentPage] = useState(1);
@@ -469,6 +112,32 @@ const AdminDashboard = () => {
       checkAdminStatus();
     }
   }, [isAuthenticated, userId, token, authLoading, navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin || !token) return;
+
+    const fetchInquiries = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/inquiries", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await res.json();
+        if (data.success) {
+          setInquiries(data.data);
+        } else {
+          setInquiries([]);
+        }
+      } catch (err) {
+        console.error("Error fetching inquiries:", err);
+        setInquiries([]);
+      }
+    };
+
+    fetchInquiries();
+  }, [isAuthenticated, isAdmin, token]);
 
   useEffect(() => {
     if (!isAuthenticated || !isAdmin || !token) return;
@@ -766,37 +435,55 @@ const AdminDashboard = () => {
         border="1px"
         borderColor="gray.400"
       />
-      <Flex align="center" gap={6} mb={4} justify="flex-end">
-        <Flex align="center" gap={2}>
-          <IconButton
-            icon={<BellIcon />}
-            aria-label="Notifications"
-            size="sm"
-            variant="ghost"
-          />
-          <Badge
-            colorScheme="red"
-            borderRadius="full"
-            px={2}
-            fontWeight="bold"
-            fontSize="md"
-          >
-            4
-          </Badge>
-          <Text fontWeight="semibold" fontSize="md">
-            Notifications
-          </Text>
+      <Flex align="center" gap={6} mb={4} justify="space-between">
+        <IconButton
+          icon={<ChevronLeftIcon boxSize={6} />}
+          aria-label="Back"
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            currentPage === 1
+              ? navigate(`/profile/user/${userId}`)
+              : setCurrentPage(1);
+          }}
+        />
+
+        <Flex align="center" gap={6}>
+          <Flex align="center" gap={2}>
+            <IconButton
+              icon={<BellIcon />}
+              aria-label="Notifications"
+              size="sm"
+              variant="ghost"
+            />
+            <Badge
+              colorScheme="red"
+              borderRadius="full"
+              px={2}
+              fontWeight="bold"
+              fontSize="md"
+            >
+              4
+            </Badge>
+            <Text fontWeight="semibold" fontSize="md">
+              Notifications
+            </Text>
+          </Flex>
+
+          <Divider orientation="vertical" height="24px" />
+
+          <Box>
+            <Text fontWeight="semibold" fontSize="md">
+              Date
+            </Text>
+            <Text fontSize="sm" color="gray.600">
+              {new Date(
+                Date.now() - 7 * 24 * 60 * 60 * 1000
+              ).toLocaleDateString()}{" "}
+              – {new Date().toLocaleDateString()}
+            </Text>
+          </Box>
         </Flex>
-        <Divider orientation="vertical" height="24px" />
-        <Box>
-          <Text fontWeight="semibold" fontSize="md">
-            Date
-          </Text>
-          <Text fontSize="sm" color="gray.600">
-            28 Jan – 08 May 2025
-          </Text>
-        </Box>
-        <Divider orientation="vertical" height="24px" />
       </Flex>
       <Flex align="center" justify="space-between" mb={8}>
         <Heading
@@ -813,12 +500,6 @@ const AdminDashboard = () => {
             </Text>
           )}
         </Heading>
-
-        {currentPage !== 1 && (
-          <Button bg="none" size="xs" onClick={() => setCurrentPage(1)}>
-            Back
-          </Button>
-        )}
       </Flex>
       {currentPage === 1 && (
         <>
@@ -860,7 +541,7 @@ const AdminDashboard = () => {
               </Box>
 
               <IconButton
-                icon={<ChevronRightIcon />}
+                icon={<ChevronRightIcon boxSize={6} />}
                 aria-label="Go"
                 size="sm"
                 position="absolute"
@@ -871,25 +552,37 @@ const AdminDashboard = () => {
               />
             </Flex>
 
-            <Box
+            <Flex
               bg="white"
               borderRadius="2xl"
               p={6}
               boxShadow="sm"
-              display="flex"
-              flexDirection="column"
+              flexDirection="row"
               alignItems="flex-start"
+              gap={16}
               position="relative"
               overflow="hidden"
             >
-              <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={1}>
-                Sign up requests
-              </Text>
-              <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
-                {signupRequests.length}
-              </Text>
+              <Box textAlign="left">
+                <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
+                  Sign up Requests
+                </Text>
+                <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
+                  {signupRequests.length}
+                </Text>
+              </Box>
+
+              <Box textAlign="left">
+                <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
+                  Inquiries
+                </Text>
+                <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
+                  {inquiries.length}
+                </Text>
+              </Box>
+
               <IconButton
-                icon={<ChevronRightIcon />}
+                icon={<ChevronRightIcon boxSize={6} />}
                 aria-label="Go"
                 size="sm"
                 position="absolute"
@@ -898,7 +591,7 @@ const AdminDashboard = () => {
                 variant="ghost"
                 onClick={() => setCurrentPage(3)}
               />
-            </Box>
+            </Flex>
           </SimpleGrid>
 
           <SimpleGrid columns={[1, 2]} spacing={6} mb={8}>
@@ -1027,7 +720,7 @@ const AdminDashboard = () => {
                 </Text>
                 <Button
                   size="sm"
-                  rightIcon={<ChevronRightIcon />}
+                  rightIcon={<ChevronRightIcon boxSize={6} />}
                   variant="ghost"
                   fontWeight="bold"
                   onClick={() => setCurrentPage(2)}
@@ -1121,7 +814,7 @@ const AdminDashboard = () => {
                 </Text>
                 <Button
                   size="sm"
-                  rightIcon={<ChevronRightIcon />}
+                  rightIcon={<ChevronRightIcon boxSize={6} />}
                   variant="ghost"
                   fontWeight="bold"
                   onClick={() => setCurrentPage(4)}
@@ -1204,7 +897,15 @@ const AdminDashboard = () => {
           orderItemsMap={orderItemsMap}
         />
       )}
-      {currentPage === 3 && <Signups signupRequests={signupRequests} />}
+      {currentPage === 3 && (
+        <Signups
+          signupRequests={signupRequests}
+          inquiries={inquiries}
+          token={token}
+          setSignupRequests={setSignupRequests}
+          toast={toast}
+        />
+      )}
 
       {currentPage === 4 && <InventoryStatus />}
       {/* {currentPage === 5 && <InventoryStatus />} */}

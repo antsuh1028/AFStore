@@ -53,26 +53,34 @@ const OrdersList = ({ orders, currPage }) => {
   const [filteredOrders, setFilteredOrders] = useState(orders);
 
   const getUniqueStatuses = () => {
-    const statuses = [...new Set(orders.map(order => order.order_status))];
-    return statuses.filter(status => status);
+    const statuses = [...new Set(orders.map((order) => order.order_status))];
+    return statuses.filter((status) => status);
   };
 
   useEffect(() => {
     if (filterStatus === "all") {
       setFilteredOrders(orders);
     } else {
-      setFilteredOrders(orders.filter(order => order.order_status === filterStatus));
+      setFilteredOrders(
+        orders.filter((order) => order.order_status === filterStatus)
+      );
     }
   }, [orders, filterStatus]);
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'pending': return 'yellow';
-      case 'complete': return 'green';
-      case 'processing': return 'blue';
-      case 'cancelled': return 'red';
-      case 'shipped': return 'purple';
-      default: return 'gray';
+      case "pending":
+        return "yellow";
+      case "complete":
+        return "green";
+      case "processing":
+        return "blue";
+      case "cancelled":
+        return "red";
+      case "shipped":
+        return "purple";
+      default:
+        return "gray";
     }
   };
 
@@ -134,12 +142,12 @@ const OrdersList = ({ orders, currPage }) => {
 
   return (
     <VStack align="stretch" spacing={8} py={4}>
-      {currPage === 'orders' && (
+      {currPage === "orders" && (
         <Flex alignItems="center" justifyContent="space-between" px={4}>
           <Text fontSize="sm" color="gray.600">
             {filteredOrders.length} of {orders.length} orders
           </Text>
-          
+
           <Flex alignItems="center" gap={2}>
             <Menu>
               <MenuButton
@@ -156,25 +164,37 @@ const OrdersList = ({ orders, currPage }) => {
                 {filterStatus === "all" ? "All Status" : filterStatus}
               </MenuButton>
               <MenuList>
-                <MenuItem 
+                <MenuItem
                   onClick={() => setFilterStatus("all")}
                   bg={filterStatus === "all" ? "gray.100" : "white"}
                 >
-                  <Flex alignItems="center" justifyContent="space-between" width="100%">
+                  <Flex
+                    alignItems="center"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
                     <Text>All Status</Text>
-                    <Badge colorScheme="gray" ml={2}>{orders.length}</Badge>
+                    <Badge colorScheme="gray" ml={2}>
+                      {orders.length}
+                    </Badge>
                   </Flex>
                 </MenuItem>
                 <Divider />
                 {getUniqueStatuses().map((status) => {
-                  const count = orders.filter(order => order.order_status === status).length;
+                  const count = orders.filter(
+                    (order) => order.order_status === status
+                  ).length;
                   return (
-                    <MenuItem 
-                      key={status} 
+                    <MenuItem
+                      key={status}
                       onClick={() => setFilterStatus(status)}
                       bg={filterStatus === status ? "gray.100" : "white"}
                     >
-                      <Flex alignItems="center" justifyContent="space-between" width="100%">
+                      <Flex
+                        alignItems="center"
+                        justifyContent="space-between"
+                        width="100%"
+                      >
                         <Text textTransform="capitalize">{status}</Text>
                         <Badge colorScheme={getStatusColor(status)} ml={2}>
                           {count}
@@ -205,13 +225,16 @@ const OrdersList = ({ orders, currPage }) => {
         <Center py={8}>
           <VStack spacing={2}>
             <Text color="gray.500">
-              {currPage === 'orders' && filterStatus !== "all" 
-                ? `No orders found with status "${filterStatus}"` 
-                : "No orders found."
-              }
+              {currPage === "orders" && filterStatus !== "all"
+                ? `No orders found with status "${filterStatus}"`
+                : "No orders found."}
             </Text>
-            {currPage === 'orders' && filterStatus !== "all" && (
-              <Button size="sm" variant="outline" onClick={() => setFilterStatus("all")}>
+            {currPage === "orders" && filterStatus !== "all" && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setFilterStatus("all")}
+              >
                 Show All Orders
               </Button>
             )}
@@ -244,7 +267,7 @@ const OrdersList = ({ orders, currPage }) => {
                 bg="black"
                 height="20px"
               />
-              <Badge 
+              <Badge
                 colorScheme={getStatusColor(order.order_status)}
                 fontSize="xs"
                 mb={2}
@@ -289,13 +312,28 @@ const OrdersList = ({ orders, currPage }) => {
                       mr={4}
                     />
                     <Box flex="1">
-                      <Text fontWeight="semibold" fontSize="sm" noOfLines={2} textAlign="left">
+                      <Text
+                        fontWeight="semibold"
+                        fontSize="sm"
+                        noOfLines={2}
+                        textAlign="left"
+                      >
                         {item.name || "Item"}
                       </Text>
-                      <Text fontSize="xs" color="gray.500" mt={1} textAlign="left">
+                      <Text
+                        fontSize="xs"
+                        color="gray.500"
+                        mt={1}
+                        textAlign="left"
+                      >
                         {item.spec || ""}
                       </Text>
-                      <Text fontSize="xs" color="gray.500" mt={1} textAlign="left">
+                      <Text
+                        fontSize="xs"
+                        color="gray.500"
+                        mt={1}
+                        textAlign="left"
+                      >
                         Qty: {oi.quantity}
                       </Text>
                     </Box>
@@ -593,6 +631,28 @@ const UserProfile = () => {
     return null;
   }
 
+  // Add this check for userInfo
+  if (!userInfo) {
+    return (
+      <Sidebar>
+        <Container
+          maxW={{ base: "100%", lg: "30%" }}
+          p={0}
+          bg="white"
+          border={{ base: "none", lg: "1px" }}
+          ml={{ base: 0, lg: "40%" }}
+        >
+          <Center h="100vh">
+            <VStack spacing={4}>
+              <Spinner size="xl" />
+              <Text>Loading user info...</Text>
+            </VStack>
+          </Center>
+        </Container>
+      </Sidebar>
+    );
+  }
+
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
@@ -630,68 +690,177 @@ const UserProfile = () => {
               {userName}
             </Text>
           </Heading>
-          <Tabs colorScheme="gray" align="center">
-            <TabList
-              gap={0}
-              borderBottom="none"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Tab
-                fontWeight="medium"
-                px={2}
-                py={1}
-                fontSize="md"
-                border="none"
-                _selected={{
-                  color: "black",
-                  fontWeight: "bold",
-                  border: "none",
-                }}
-                onClick={() => setCurrPage("all")}
-                color="gray.600"
+
+          {userInfo.is_admin ? (
+            <Tabs colorScheme="gray" align="center">
+              <TabList
+                gap={0}
+                borderBottom="none"
+                justifyContent="center"
+                alignItems="center"
               >
-                My Pages
-              </Tab>
-              <Text
-                mx={2}
-                color="gray.400"
-                fontWeight="normal"
-                fontSize="lg"
-                userSelect="none"
-              >
-                |
-              </Text>
-              <Tab
-                fontWeight="medium"
-                px={2}
-                py={1}
-                fontSize="md"
-                border="none"
-                _selected={{
-                  color: "black",
-                  fontWeight: "bold",
-                  border: "none",
-                }}
-                color="gray.600"
-              >
-                Cart
-              </Tab>
-            </TabList>
-            <TabPanels my={12}>
-              <TabPanel p={0}>
-                {myPages(currPage, {
-                  userInfo,
-                  userName,
-                  userEmail,
-                  handleLogout,
-                  setCurrPage,
-                  orders,
-                })}
-              </TabPanel>
-              <TabPanel p={0}>Cart</TabPanel>
-            </TabPanels>
-          </Tabs>
+                <Tab
+                  fontWeight="medium"
+                  px={2}
+                  py={1}
+                  fontSize="md"
+                  border="none"
+                  _selected={{
+                    color: "black",
+                    fontWeight: "bold",
+                    border: "none",
+                  }}
+                  onClick={() => setCurrPage("all")}
+                  color="gray.600"
+                >
+                  Profile
+                </Tab>
+                <Text
+                  mx={2}
+                  color="gray.400"
+                  fontWeight="normal"
+                  fontSize="lg"
+                  userSelect="none"
+                >
+                  |
+                </Text>
+                <Tab
+                  fontWeight="medium"
+                  px={2}
+                  py={1}
+                  fontSize="md"
+                  border="none"
+                  _selected={{
+                    color: "black",
+                    fontWeight: "bold",
+                    border: "none",
+                  }}
+                  color="gray.600"
+                  onClick={() => navigate("/admin/dashboard")}
+                >
+                  Admin Dashboard
+                </Tab>
+              </TabList>
+              <TabPanels my={12}>
+                <TabPanel p={0}>
+                  <Flex
+                    p={4}
+                    bg="#494949"
+                    borderRadius="full"
+                    align="center"
+                    justify="space-between"
+                    h="45px"
+                    mb={2}
+                  >
+                    <Text color="white" fontWeight="bold" ml={2}>
+                      Profile
+                    </Text>
+                    <Link
+                      fontSize="10px"
+                      color="white"
+                      textDecoration="underline"
+                      mx={2}
+                      _hover={{ color: "gray.200" }}
+                      minW="48px"
+                      textAlign="right"
+                    >
+                      Edit
+                    </Link>
+                  </Flex>
+                  <VStack p={2} my={4} align="stretch">
+                    <Box px={4} py={2}>
+                      <Grid templateColumns="90px 1fr" rowGap={4} columnGap={2}>
+                        <Text
+                          fontWeight="bold"
+                          textTransform="uppercase"
+                          textAlign="left"
+                          fontSize="sm"
+                          mr={2}
+                        >
+                          Name :
+                        </Text>
+                        <Text fontSize="sm" textAlign="left">
+                          {userName || "—"}
+                        </Text>
+                        <Text
+                          fontWeight="bold"
+                          textTransform="uppercase"
+                          textAlign="left"
+                          fontSize="sm"
+                          mr={2}
+                        >
+                          Email :
+                        </Text>
+                        <Text fontSize="sm" textAlign="left">
+                          {userEmail || "—"}
+                        </Text>
+                        <Text
+                          fontWeight="bold"
+                          textTransform="uppercase"
+                          textAlign="left"
+                          fontSize="sm"
+                          mr={2}
+                        >
+                          Phone :
+                        </Text>
+                        <Text fontSize="sm" textAlign="left">
+                          {userInfo?.phone_number || "—"}
+                        </Text>
+                        <Text
+                          fontWeight="bold"
+                          textTransform="uppercase"
+                          textAlign="left"
+                          fontSize="sm"
+                          mr={2}
+                        >
+                          Address :
+                        </Text>
+                        <Text
+                          fontSize="sm"
+                          textAlign="left"
+                          whiteSpace="pre-line"
+                        >
+                          {userInfo?.address || "—"}
+                        </Text>
+                      </Grid>
+                    </Box>
+                    <Flex my={10} justify="space-between" width="100%">
+                      <Button
+                        bg="none"
+                        size="xs"
+                        textDecoration="underline"
+                        color="#b8b7b7"
+                        _hover={{ bg: "none", color: "black" }}
+                      >
+                        Delete Account
+                      </Button>
+                      <Button
+                        bg="none"
+                        size="xs"
+                        textDecoration="underline"
+                        color="#b8b7b7"
+                        _hover={{ bg: "none", color: "black" }}
+                        onClick={handleLogout}
+                      >
+                        Log out
+                      </Button>
+                    </Flex>
+                  </VStack>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          ) : (
+            <Box>
+              {myPages(currPage, {
+                userInfo,
+                userName,
+                userEmail,
+                handleLogout,
+                setCurrPage,
+                orders,
+              })}
+            </Box>
+          )}
         </Box>
         <Footer />
       </Container>
