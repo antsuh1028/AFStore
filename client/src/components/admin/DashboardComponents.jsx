@@ -33,6 +33,54 @@ import {
 } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
+const InquiryResponseModal = ({ isOpen, onClose, request, onConfirmReject }) => {
+  const [rejectReason, setRejectReason] = useState("");
+
+  //TODO: Email Rejection with message
+
+  const handleConfirm = () => {
+    onConfirmReject(request, rejectReason);
+    setRejectReason("");
+    onClose();
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Reject Signup Request</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text mb={4}>
+            Are you sure you want to reject the signup request from{" "}
+            <Text as="span" fontWeight="bold">
+              {request?.first_name} {request?.last_name}
+            </Text>
+            ?
+          </Text>
+          <Text mb={2} fontSize="sm" fontWeight="bold">
+            Reason for rejection (optional):
+          </Text>
+          <Textarea
+            placeholder="Enter reason for rejection..."
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            rows={3}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="gray" mr={3} onClick={onClose}>
+            Cancel
+          </Button>
+          <Button colorScheme="red" onClick={handleConfirm}>
+            Confirm Reject
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
+
 const RejectModal = ({ isOpen, onClose, request, onConfirmReject }) => {
   const [rejectReason, setRejectReason] = useState("");
 

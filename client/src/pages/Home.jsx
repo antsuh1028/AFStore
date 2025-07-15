@@ -206,7 +206,7 @@ const HomePage = () => {
         <ImageCarousel />
 
         {/* Enhanced Search Bar */}
-        <Box px={4} mb={6} position="relative">
+        <Box px={4} mb={6} position="relative" pt={2}>
           <form onSubmit={handleSearchSubmit}>
             <InputGroup
               size="lg"
@@ -367,12 +367,12 @@ const HomePage = () => {
               image: "../../products/home/marinated.jpg",
             },
             {
-              name: "Processed",
+              name: "Prepped",
               url: "/wholesale/processed",
               image: "../../products/home/processed.jpg",
             },
             {
-              name: "Unprocessed",
+              name: "Untrimmed",
               url: "/wholesale/unprocessed",
               image: "../../products/home/unprocessed.jpg",
             },

@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import {
-  addToCart,
-  getCart,
-} from "../../../utils/cartActions";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
+import { addToCart, getCart } from "../../../utils/cartActions";
 import {
   Box,
   Container,
@@ -43,11 +46,11 @@ import Footer from "../../../components/Footer";
 // Simple product image carousel with no validation
 const ProductImageCarousel = ({ productName, productStyle }) => {
   const [imagePage, setImagePage] = useState(1);
-  
+
   // Just create the image paths without any validation
   const imagePaths = useMemo(() => {
-    if (!productName || !productStyle) return ['/gray.avif'];
-    
+    if (!productName || !productStyle) return ["/gray.avif"];
+
     const basePath = `/products/${productStyle}/${productName}`;
     return [
       `${basePath}/01.jpg`,
@@ -57,18 +60,18 @@ const ProductImageCarousel = ({ productName, productStyle }) => {
     ];
   }, [productName, productStyle]);
 
-  const currentImage = imagePaths[imagePage - 1] || '/gray.avif';
+  const currentImage = imagePaths[imagePage - 1] || "/gray.avif";
   const hasMultipleImages = imagePaths.length > 1;
 
   const nextImage = () => {
     if (imagePage < imagePaths.length) {
-      setImagePage(prev => prev + 1);
+      setImagePage((prev) => prev + 1);
     }
   };
 
   const prevImage = () => {
     if (imagePage > 1) {
-      setImagePage(prev => prev - 1);
+      setImagePage((prev) => prev - 1);
     }
   };
 
@@ -219,26 +222,28 @@ const ProductDetailPage = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const productResponse = await fetch(`http://localhost:3001/api/items/${productId}`, {
-        headers: {
-          'Accept': 'application/json',
+
+      const productResponse = await fetch(
+        `http://localhost:3001/api/items/${productId}`,
+        {
+          headers: {
+            Accept: "application/json",
+          },
         }
-      });
+      );
 
       if (!productResponse.ok) {
         const errorData = await productResponse.json();
-        throw new Error(errorData.error || 'Product not found');
+        throw new Error(errorData.error || "Product not found");
       }
 
       const productData = await productResponse.json();
-      
+
       setProduct({
         ...productData.data,
         ingredients: productData.data.ingredients || [],
-        allergens: productData.data.allergens || []
+        allergens: productData.data.allergens || [],
       });
-
     } catch (err) {
       setError(err.message);
     } finally {
@@ -280,19 +285,32 @@ const ProductDetailPage = () => {
     navigate(`/wholesale/${product.style}`);
   }, [navigate, product?.style]);
 
-  const breadcrumbs = useMemo(() => [
-    { label: "Home", url: "/" },
-    {
-      label: product?.style?.charAt(0).toUpperCase() + product?.style?.slice(1),
-      url: `/wholesale/${product?.style}`,
-    },
-    { label: (product?.name || "Product").substring(0, 30) + "..." },
-  ], [product?.style, product?.name]);
+  const breadcrumbs = useMemo(
+    () => [
+      { label: "Home", url: "/" },
+      {
+        label:
+          product?.style === "processed"
+            ? "Prepped"
+            : product?.style === "unprocessed"
+            ? "Untrimmed"
+            : product?.style?.charAt(0).toUpperCase() +
+              product?.style?.slice(1),
+        url: `/wholesale/${product?.style}`,
+      },
+      { label: (product?.name || "Product").substring(0, 30) + "..." },
+    ],
+    [product?.style, product?.name]
+  );
 
   if (loading) {
     return (
       <Sidebar>
-        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+        <NavDrawer
+          isOpen={isOpen}
+          onClose={onClose}
+          containerRef={contentRef}
+        />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -302,7 +320,12 @@ const ProductDetailPage = () => {
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
         >
-          <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minH="400px"
+          >
             <VStack spacing={4}>
               <Spinner size="xl" color="blue.500" />
               <Text>Loading product...</Text>
@@ -316,7 +339,11 @@ const ProductDetailPage = () => {
   if (error) {
     return (
       <Sidebar>
-        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+        <NavDrawer
+          isOpen={isOpen}
+          onClose={onClose}
+          containerRef={contentRef}
+        />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -346,7 +373,11 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <Sidebar>
-        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+        <NavDrawer
+          isOpen={isOpen}
+          onClose={onClose}
+          containerRef={contentRef}
+        />
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -408,9 +439,7 @@ const ProductDetailPage = () => {
               <AlertIcon />
               <Box flex="1">
                 <Text fontWeight="bold">Added to Cart!</Text>
-                <Text>
-                  {product.name} has been added to your cart.
-                </Text>
+                <Text>{product.name} has been added to your cart.</Text>
               </Box>
               <Button
                 size="sm"
@@ -466,7 +495,10 @@ const ProductDetailPage = () => {
             {product.name}
           </Heading>
 
-          <ProductImageCarousel productName={product.name} productStyle={product.style} />
+          <ProductImageCarousel
+            productName={product.name}
+            productStyle={product.style}
+          />
 
           <HStack
             w="100%"
@@ -548,19 +580,27 @@ const ProductDetailPage = () => {
           >
             <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={4}>
               <GridItem>
-                <Text fontSize="sm" color="gray.500">Brand</Text>
+                <Text fontSize="sm" color="gray.500">
+                  Brand
+                </Text>
                 <Text fontWeight="medium">{product.brand}</Text>
               </GridItem>
               <GridItem>
-                <Text fontSize="sm" color="gray.500">Grade</Text>
+                <Text fontSize="sm" color="gray.500">
+                  Grade
+                </Text>
                 <Text fontWeight="medium">{product.grade}</Text>
               </GridItem>
               <GridItem>
-                <Text fontSize="sm" color="gray.500">Origin</Text>
+                <Text fontSize="sm" color="gray.500">
+                  Origin
+                </Text>
                 <Text fontWeight="medium">{product.origin}</Text>
               </GridItem>
               <GridItem>
-                <Text fontSize="sm" color="gray.500">Weight</Text>
+                <Text fontSize="sm" color="gray.500">
+                  Weight
+                </Text>
                 <Text fontWeight="medium">{product.avg_weight} lbs</Text>
               </GridItem>
             </Grid>

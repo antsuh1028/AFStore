@@ -11,15 +11,6 @@ const ImageCarousel = () => {
     "../../Final_pic/main_banner_3.png"
   ];
 
-  // Auto-advance carousel
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       setCurrentIndex((prev) => (prev + 1) % images.length);
-//     }, 5000);
-    
-//     return () => clearInterval(timer);
-//   }, [images.length]);
-
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
@@ -29,12 +20,11 @@ const ImageCarousel = () => {
   };
 
   return (
-    <Box px={4} mb={4}>
+    <Box px={4}>
       <Box
         bg="tan.100"
         borderRadius="lg"
         overflow="hidden"
-        height="45vh"
         position="relative"
       >
         <Image
@@ -42,7 +32,7 @@ const ImageCarousel = () => {
           alt="Various Meat Cuts"
           height="80%"
           width="100%"
-          objectFit="cover"
+          objectFit="contain"
           transition="opacity 0.5s ease-in-out"
         />
         

@@ -16,7 +16,7 @@ const Sidebar = ({ children }) => {
     <Box display="flex">
       {isDesktop && (
         <Box
-          width="280px"
+          width="295px"
           bg="#f9f9f9"
           borderColor="gray.50"
           px={6}

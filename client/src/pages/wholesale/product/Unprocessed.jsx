@@ -52,7 +52,7 @@ const UnprocessedPage = () => {
         setProducts(data.data);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching unprocessed products:", err);
+        console.error("Error fetching untrimmed products:", err);
       } finally {
         setLoading(false);
       }
@@ -114,7 +114,7 @@ const UnprocessedPage = () => {
           >
             <VStack spacing={4}>
               <Spinner size="xl" color="blue.500" />
-              <Text>Loading unprocessed products...</Text>
+              <Text>Loading untrimmed products...</Text>
             </VStack>
           </Box>
         </Container>
@@ -160,7 +160,7 @@ const UnprocessedPage = () => {
         <Navbar onOpen={onOpen} />
         <VStack spacing={0}>
           <Box fontSize="2xl" fontWeight="semibold" mb={4}>
-            Unprocessed Meat
+            Untrimmed Meat
           </Box>
 
           <Tabs w="100%" variant="unstyled" isFitted={false}>
@@ -196,27 +196,27 @@ const UnprocessedPage = () => {
 
             <TabPanels minHeight="500px">
               <TabPanel p={0}>
-                {renderProductGrid(products, "No unprocessed products found")}
+                {renderProductGrid(products, "No untrimmed products found")}
               </TabPanel>
 
               <TabPanel p={0}>
                 {renderProductGrid(
                   getProductsByType("beef"),
-                  "No unprocessed beef products found"
+                  "No untrimmed beef products found"
                 )}
               </TabPanel>
 
               <TabPanel p={0}>
                 {renderProductGrid(
                   getProductsByType("pork"),
-                  "No unprocessed pork products found"
+                  "No untrimmed pork products found"
                 )}
               </TabPanel>
 
               <TabPanel p={0}>
                 {renderProductGrid(
                   getProductsByType("chicken"),
-                  "No unprocessed poultry products found"
+                  "No untrimmed poultry products found"
                 )}
               </TabPanel>
             </TabPanels>

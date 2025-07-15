@@ -81,7 +81,7 @@ const AllProductsPage = () => {
           <Text color="gray.500">{emptyMessage}</Text>
         </Box>
       ) : (
-        <SimpleGrid columns={2} spacing={4} pb={8}>
+        <SimpleGrid columns={2} >
           {filteredProducts.map((item) => (
             <ProductCard key={item.id} {...item} />
           ))}

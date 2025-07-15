@@ -52,7 +52,7 @@ const ProcessedPage = () => {
         setProducts(data.data);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching processed products:", err);
+        console.error("Error fetching prepped products:", err);
       } finally {
         setLoading(false);
       }
@@ -114,7 +114,7 @@ const ProcessedPage = () => {
           >
             <VStack spacing={4}>
               <Spinner size="xl" color="blue.500" />
-              <Text>Loading processed products...</Text>
+              <Text>Loading prepped products...</Text>
             </VStack>
           </Box>
         </Container>
@@ -161,7 +161,7 @@ const ProcessedPage = () => {
 
         <VStack spacing={0}>
           <Box fontSize="2xl" fontWeight="semibold" mb={4}>
-            Processed Meat
+            Prepped Meat
           </Box>
 
           <Tabs w="100%" variant="unstyled" isFitted={false}>
@@ -197,27 +197,27 @@ const ProcessedPage = () => {
 
             <TabPanels minHeight="500px">
               <TabPanel p={0}>
-                {renderProductGrid(products, "No processed products found")}
+                {renderProductGrid(products, "No prepped products found")}
               </TabPanel>
 
               <TabPanel p={0}>
                 {renderProductGrid(
                   getProductsByType("beef"),
-                  "No processed beef products found"
+                  "No prepped beef products found"
                 )}
               </TabPanel>
 
               <TabPanel p={0}>
                 {renderProductGrid(
                   getProductsByType("pork"),
-                  "No processed pork products found"
+                  "No prepped pork products found"
                 )}
               </TabPanel>
 
               <TabPanel p={0}>
                 {renderProductGrid(
                   getProductsByType("chicken"),
-                  "No processed poultry products found"
+                  "No prepped poultry products found"
                 )}
               </TabPanel>
             </TabPanels>

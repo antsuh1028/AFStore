@@ -1,15 +1,15 @@
 @font-face {
-  font-family: 'SUIT-Regular';
-  src: url('../fonts/SUIT-Regular.otf') format('otf');
-  font-weight: normal;
+  font-family: 'Suit';
+  src: url('../fonts/SUIT-Regular.otf') format('opentype');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'SUIT-Regular';
-  src: url('../fonts/SUIT-Regular.otf') format('otf');
-  font-weight: bold;
+  font-family: 'Suit';
+  src: url('../fonts/SUIT-Bold.otf') format('opentype'); /* Use actual bold file */
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
