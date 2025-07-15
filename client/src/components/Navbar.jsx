@@ -60,7 +60,7 @@ const Navbar = ({ onOpen }) => {
           />
           <IconButton
             aria-label="Menu"
-            icon={<Text>☰</Text>}
+            icon={<Text fontSize="2xl">☰</Text>}
             variant="ghost"
             onClick={onOpen}
             _hover={{ bg: "gray.100" }}

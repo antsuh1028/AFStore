@@ -26,43 +26,43 @@ const ITEMS = [
     label: "Marinated",
     to: "/wholesale/marinated",
     icon: "/products/home/marinated.jpg",
-    color: "white",
+    color: " #ECECEC",
   },
   {
-    label: "Processed",
+    label: "Prepped",
     to: "/wholesale/processed",
-    icon: "/products/home/processed.webp",
-    color: "white",
+    icon: "/products/home/processed.jpg",
+    color: " #ECECEC",
   },
   {
-    label: "Unprocessed",
+    label: "Untrimmed",
     to: "/wholesale/unprocessed",
     icon: "/products/home/unprocessed.jpg",
-    color: "white",
+    color: " #ECECEC",
   },
   {
     label: "Deal",
     to: "/wholesale/deal",
-    icon: "/final/deal.png",
-    color: "#484849",
+    icon: "/products/home/Deal.jpg",
+    color: " #ECECEC",
   },
   {
     label: "Order",
     to: "/wholesale/how-to-order",
-    icon: "/final/order.png",
-    color: "#484849",
+    icon: "/products/home/How to order.jpg",
+    color: " #ECECEC",
   },
   {
     label: "Contact",
     to: "/contact",
-    icon: "/final/contact us.png",
-    color: "#484849",
+    icon: "/products/home/Contact.jpg",
+    color: " #ECECEC",
   },
   {
     label: "Packing",
     to: "/wholesale/packing",
     icon: "/final/packing.png",
-    color: "#484849",
+    color: " #ECECEC",
   },
   {
     label: "B2B",
@@ -191,7 +191,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
             </VStack>
           ) : (
             <>
-              <Heading as="h2" fontSize="2xl" fontWeight="semibold">
+              <Heading as="h2" fontSize="2xl" fontWeight="semibold" mb={4}>
                 <Text as="span" color="gray.500">
                   Hello{" "}
                 </Text>
@@ -200,7 +200,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                 </Text>
               </Heading>
               
-              <Box mt={2} fontSize="sm">
+              <Box my={6} fontSize="sm">
                 {isAuthenticated ? (
                   <>
                     <Link
@@ -266,7 +266,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
         <Divider mb={4} />
 
         {/* Navigation Grid */}
-        <DrawerBody p={4}>
+        <DrawerBody p={6}>
           <Grid
             templateColumns="repeat(3, 1fr)"
             gap={6}
@@ -281,12 +281,12 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                 alignItems="center"
               >
                 <Circle
-                  size="65px"
+                  size="75px"
                   bg={color}
                   cursor="pointer"
                   onClick={() => {
                     navigate(to);
-                    onClose(); // Close drawer after navigation
+                    onClose(); 
                   }}
                   _hover={{ 
                     transform: "scale(1.05)",
@@ -296,7 +296,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                   <Image
                     src={icon}
                     fallbackSrc="/gray.avif"
-                    boxSize="50px"
+                    boxSize="70px"
                     objectFit="cover"
                     borderRadius="full"
                     alt={label}

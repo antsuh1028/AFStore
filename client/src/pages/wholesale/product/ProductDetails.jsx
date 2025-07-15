@@ -373,7 +373,7 @@ const ProductDetailPage = () => {
         maxW={{ base: "100%", lg: "30%" }}
         p={0}
         bg="white"
-        border={{ base: "none", lg: "1px" }}
+        boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
         minHeight="100vh"
       >

@@ -9,6 +9,7 @@ import {
   VStack,
   Divider,
   useDisclosure,
+  Image,
 } from "@chakra-ui/react";
 import { ChevronLeft } from "lucide-react";
 import NavDrawer from "../../components/NavDrawer";
@@ -26,11 +27,21 @@ const FAQPage = () => {
       heading: "Q. Delivery",
       textStart:
         "We offer free delivery within Los Angeles County for orders that meet our ",
-      highlight: "$4,000",
+      highlight: "$3,000",
       textEnd: " minimum.",
       noteBody:
-        "If the minimum order is not met, we kindly ask that you pick up your order directly from our facility. This policy allows us to continue offering reliable wholesale pricing.\n\n",
-      noteBold: "📍1805 Industrial St, Los Angeles, CA 90021",
+        "If the minimum order is not met, you may either pick it up from our facility or pay a delivery fee. This policy enables us to maintain reliable, high-quality service at competitive wholesale prices.\n\n",
+      noteBold: (
+        <Box display="flex" alignItems="center" gap={2}>
+          <Image
+            src="../../Final_pic/only here.png"
+            h="20px"
+            alt="Adams Logo"
+            filter="grayscale(100%)"
+          />
+          <Text>1805 Industrial St, Los Angeles, CA 90021</Text>
+        </Box>
+      ),
     },
     {
       heading: "Q. Refund",
@@ -38,24 +49,34 @@ const FAQPage = () => {
       textEnd:
         " as we are confident in the safety and quality of our products.",
       noteBody:
-        "If you have any questions or concerns about your order, feel free to reach out to us by phone or email we're happy to assist you.",
-      noteBold: "•  (323)943-9318\n•  admin@adamsfoods.us",
+        "However, exchanges are possible if there is an issue with the product. For pick-up orders, both parties will inspect the meat together before handing it over. Therefore, refunds are not possible after this point. \n\nIf you receive the meat via delivery and find a problem, please contact us within 24 hours. If you have any questions or concerns, please feel free to contact us. We are happy to assist you.",
+      noteBold: `• ${"\u00A0\u00A0"}(323)943-9318\n•  ${"\u00A0\u00A0"}admin@adamsfoods.us`,
     },
     {
       heading: "Q. Purchase",
-      highlight: "We accept cash, checks, and credit cards.\n",
-      noteBody:
-        "However, please note:\n• Cash payments receive the highest discount.\n• Credit card payments are subject to additional tax.\n\nWe appreciate your understanding and are happy to assist with any further questions.",
+      highlight: "We accept Cash, Credit Card Only. (Excluding AMEX) \n",
+      noteBody: `However, please note:\n•${"\u00A0\u00A0"}Cash payments receive the highest discount.\n•${"\u00A0\u00A0"}A sales tax will be added for card payments.\n\nWe appreciate your understanding and are happy to assist with any further questions.`,
     },
     {
       heading: "Q. Bulk Purchase",
       textStart: "For bulk purchases, please reach out to us through the",
       highlight: " 'Contact Us' page.",
+      noteBody: (
+        <Text>
+          {"\u00A0\u00A0"}•{"\u00A0\u00A0"}Discounts are available for bulk
+          orders over{" "}
+          <Text as="span" color="#CA3836" fontWeight="semibold">
+            $3,000
+          </Text>
+          . For inquiries, please contact us directly
+        </Text>
+      ),
     },
     {
       heading: "Q. Cash & Carry",
-      textStart: "Cash payments and pick-up orders get",
-      highlight: " 00% off.",
+      textStart: "Get ",
+      highlight: "extra meat",
+      textEnd: " when you pay with cash and pick up!",
     },
     {
       heading: "Q. Allergy",
@@ -71,7 +92,7 @@ const FAQPage = () => {
         maxW={{ base: "100%", lg: "30%" }}
         p={0}
         bg="white"
-        border={{ base: "none", lg: "1px" }}
+        boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
         {/* Top nav */}
@@ -99,17 +120,17 @@ const FAQPage = () => {
         </Box>
 
         {/* FAQ content */}
-        <VStack spacing={16} px={6} py={4} align="start">
+        <VStack spacing={8} px={8} py={4} align="start">
           {faqData.map((item, index) => (
             <Box key={index}>
               <Heading size="md" my={6}>
-                <Text as="span" color="tan">
+                <Text as="span" color="#CA3836">
                   {item.heading.split(" ")[0]}
                 </Text>{" "}
                 {item.heading.split(" ").slice(1).join(" ")}
               </Heading>
 
-              {/* Highlighted $4,000 if present */}
+              {/* Highlighted text if present */}
               {item.text ? (
                 <Text fontSize="sm" color="gray.700" whiteSpace="pre-line">
                   {item.text}
@@ -117,7 +138,12 @@ const FAQPage = () => {
               ) : (
                 <Text fontSize="sm" color="gray.700">
                   {item.textStart}
-                  <Text fontSize="sm" as="span" color="tan" fontWeight="black">
+                  <Text
+                    fontSize="sm"
+                    as="span"
+                    color="#CA3836"
+                    fontWeight="semibold"
+                  >
                     {item.highlight}
                   </Text>
                   {item.textEnd}
@@ -135,15 +161,20 @@ const FAQPage = () => {
                   {item.noteBody}
                 </Text>
               )}
+
               {item.noteBold && (
-                <Text
+                <Box
                   fontSize="sm"
                   mt={4}
                   fontWeight="semibold"
                   whiteSpace="pre-line"
                 >
-                  {item.noteBold}
-                </Text>
+                  {typeof item.noteBold === "string" ? (
+                    <Text>{item.noteBold}</Text>
+                  ) : (
+                    item.noteBold
+                  )}
+                </Box>
               )}
             </Box>
           ))}

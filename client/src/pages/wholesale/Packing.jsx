@@ -11,6 +11,8 @@ import {
   Stack,
   Divider,
   useDisclosure,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import { ChevronLeft } from "lucide-react";
 import NavDrawer from "../../components/NavDrawer";
@@ -27,19 +29,26 @@ const PackingPage = () => {
     {
       heading: "40°F Full Cold Chain",
       text: "From production to delivery, we strictly control the temperature to stay at or below 6°C at all times, preserving the freshness, quality, and safety of our meat products.",
+      images: [
+        "../../Final_pic/Thermometer copy.jpg",
+        "../../Final_pic/packing1.jpg",
+      ],
     },
     {
       heading: "Specialized Packaging for Safety",
       text: "We invest in advanced packaging to preserve freshness, extend shelf life, and ensure safety, while preventing contamination and maintaining quality during storage and transport.",
+      images: ["../../Final_pic/packing2.jpg", "../../Final_pic/packing3.jpg"],
     },
     {
       heading: "Meat Browning",
       text: "The browning happens because myoglobin in the meat doesn't bind with oxygen. Once exposed to air, the meat will return to a reddish color within 15 to 30 minutes.",
       note: "This is a natural process, and the meat is safe.",
+      images: [
+        "../../Final_pic/Meat Browning 1.jpg",
+        "../../Final_pic/Meat Browning 2.jpg",
+      ],
     },
   ];
-
-  const imageUrls = ["/images/packing1.jpg", "/images/packing2.jpg"];
 
   return (
     <Sidebar>
@@ -49,7 +58,7 @@ const PackingPage = () => {
         maxW={{ base: "100%", lg: "30%" }}
         p={0}
         bg="white"
-        border={{ base: "none", lg: "1px" }}
+        boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
         <Navbar onOpen={onOpen} />
@@ -74,7 +83,7 @@ const PackingPage = () => {
           <Divider mt={2} borderColor="gray.200" />
         </Box>
 
-        <VStack spacing={8} px={6} py={4} align="start">
+        <VStack spacing={8} px={8} py={4} align="start">
           {sectionData.map((section, index) => (
             <Box key={index}>
               <Heading size="md" mb={2}>
@@ -84,26 +93,83 @@ const PackingPage = () => {
                 {section.text}
               </Text>
               {section.note && (
-                <Text fontSize="sm" mt={2} color="orange.400">
+                <Text fontSize="sm" mt={2} color="#CA3836">
                   {section.note}
                 </Text>
               )}
-              <Stack direction="row" spacing={4} mt={4}>
-                {imageUrls.map((src, i) => (
-                  <Image
-                    key={i}
-                    // src={src}
-                    src="../../gray.avif"
-                    alt={`Packing image ${i + 1}`}
-                    borderRadius="md"
-                    boxSize="120px"
-                    objectFit="cover"
-                    width="50%"
-                  />
+              {/* Fixed: Consistent Grid layout for all image sections */}
+              <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={4}>
+                {section.images.map((src, i) => (
+                  <GridItem key={i}>
+                    <Image
+                      src={src}
+                      alt={`${section.heading} image ${i + 1}`}
+                      borderRadius="md"
+                      width="100%"
+                      height="120px"
+                      objectFit="cover"
+                    />
+                  </GridItem>
                 ))}
-              </Stack>
+              </Grid>
             </Box>
           ))}
+
+          {/* Why We Use 20lb and 30lb Boxes Section */}
+          <Box width="100%" mt={8}>
+            <Heading size="md" mb={4}>
+              Why We Use 20lb and 30lb Boxes
+            </Heading>
+
+            <Text fontSize="sm" color="gray.700" mb={4}>
+              At AdamsFoods, our packaging is designed with customer convenience
+              in mind.
+            </Text>
+
+            <VStack spacing={4} align="start">
+              <Text fontSize="sm" color="gray.700">
+                Marinated meats are packed in 30lb boxes, while raw or trimmed
+                cuts are offered in 20lb sizes. These optimal weights chosen to
+                make handling easier and safer.
+              </Text>
+
+              <Text fontSize="sm" color="gray.700">
+                By offering both product type and ease of transport, we help
+                reduce strain on your back and improve safety when handling our
+                products.
+              </Text>
+            </VStack>
+
+            {/* Box Images - Already using consistent Grid layout */}
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={6} mb={4}>
+              <GridItem>
+                <Box textAlign="center">
+                  <Image
+                    src="../../Final_pic/packing pg-1.jpg"
+                    alt="20lb box"
+                    borderRadius="md"
+                    width="100%"
+                    height="120px"
+                    objectFit="cover"
+                    mb={2}
+                  />
+                </Box>
+              </GridItem>
+              <GridItem>
+                <Box textAlign="center">
+                  <Image
+                    src="../../Final_pic/packing pg-2.jpg"
+                    alt="30lb box"
+                    borderRadius="md"
+                    width="100%"
+                    height="120px"
+                    objectFit="cover"
+                    mb={2}
+                  />
+                </Box>
+              </GridItem>
+            </Grid>
+          </Box>
         </VStack>
 
         <Footer />

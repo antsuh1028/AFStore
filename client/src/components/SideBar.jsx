@@ -1,4 +1,11 @@
-import { Box, VStack, Text, Link, useBreakpointValue } from "@chakra-ui/react";
+import {
+  Box,
+  VStack,
+  Text,
+  Link,
+  useBreakpointValue,
+  Image,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ children }) => {
@@ -11,7 +18,7 @@ const Sidebar = ({ children }) => {
         <Box
           width="280px"
           bg="#f9f9f9"
-          borderColor="gray.200"
+          borderColor="gray.50"
           px={6}
           py={24}
           position="fixed"
@@ -34,7 +41,14 @@ const Sidebar = ({ children }) => {
                 Foods
               </Text>
             </Box>
-            <Box h="45vh" w="100%" bg="white" border="1px" />
+            <Box h="402px" bg="white" border="1px" borderColor="gray.300" boxShadow="lg">
+              <Image
+                src="../../Final_pic/Deal pg poster.jpg"
+                alt="AdamsFoods Logo"
+                width="100%"
+                height="100%"
+              />
+            </Box>
 
             {/* Menu Sections */}
             <VStack align="flex-start" spacing={4} width="100%">
@@ -43,8 +57,9 @@ const Sidebar = ({ children }) => {
                 p={3}
                 bg="white"
                 borderRadius="md"
-                boxShadow="sm"
+                boxShadow="lg"
                 border="1px"
+                borderColor="gray.300"
               >
                 <Text fontSize="sm" color="black">
                   HOW TO{" "}
@@ -69,8 +84,9 @@ const Sidebar = ({ children }) => {
                 p={3}
                 bg="white"
                 borderRadius="md"
-                boxShadow="sm"
+                boxShadow="lg"
                 border="1px"
+                borderColor="gray.300"
               >
                 <Text fontSize="sm" color="black">
                   HOW TO{" "}

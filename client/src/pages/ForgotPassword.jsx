@@ -59,7 +59,7 @@ const ForgotPassword = () => {
         p={0}
         bg="white"
         h="100vh"
-        border={{ base: "none", lg: "1px" }}
+        boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
         <Navbar onOpen={onOpen} />

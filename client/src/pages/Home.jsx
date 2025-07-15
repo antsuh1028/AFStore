@@ -38,6 +38,7 @@ import AFCompany from "../components/home/AFCompany";
 import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
 import { useAuthContext } from "../hooks/useAuth"; // Import auth context
+import ImageCarousel from "../components/home/ImageCarousel";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -121,11 +122,11 @@ const HomePage = () => {
   const handleUserIconClick = () => {
     console.log("User icon clicked - Auth Status:", isAuthenticated);
     console.log("User ID:", userId);
-    
+
     if (loading) {
       return;
     }
-    
+
     if (isAuthenticated && userId) {
       navigate(`/profile/user/${userId}`);
     } else {
@@ -141,7 +142,7 @@ const HomePage = () => {
         maxW={{ base: "100%", lg: "30%" }}
         p={0}
         bg="white"
-        border={{ base: "none", lg: "1px" }}
+        boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
         {/* Header */}
@@ -185,7 +186,7 @@ const HomePage = () => {
         </Box>
 
         {/* Main Image */}
-        <Box px={4} mb={4}>
+        {/* <Box px={4} mb={4}>
           <Box
             bg="tan.100"
             borderRadius="lg"
@@ -194,14 +195,15 @@ const HomePage = () => {
             position="relative"
           >
             <Image
-              src="../../products/home/cover.jpg"
+              src="../../Final_pic/"
               alt="Various Meat Cuts"
               height="100%"
               width="100%"
               objectFit="cover"
             />
           </Box>
-        </Box>
+        </Box> */}
+        <ImageCarousel />
 
         {/* Enhanced Search Bar */}
         <Box px={4} mb={6} position="relative">
@@ -216,7 +218,7 @@ const HomePage = () => {
             >
               <Input
                 textAlign="center"
-                placeholder="Search for meat products..."
+                placeholder="Search for..."
                 borderRadius="full"
                 py={6}
                 bg="#f9f9f9"
@@ -367,7 +369,7 @@ const HomePage = () => {
             {
               name: "Processed",
               url: "/wholesale/processed",
-              image: "../../products/home/processed.webp",
+              image: "../../products/home/processed.jpg",
             },
             {
               name: "Unprocessed",
@@ -382,7 +384,7 @@ const HomePage = () => {
                 onClick={() => navigate(category.url)}
               >
                 <Circle
-                  size="60px"
+                  size="75px"
                   bg="white"
                   border="1px"
                   borderColor="gray.100"
@@ -391,8 +393,8 @@ const HomePage = () => {
                   <Image
                     src={category.image}
                     alt={category.name}
-                    width="60px"
-                    height="60px"
+                    width="75px"
+                    height="75px"
                     objectFit="cover"
                   />
                 </Circle>
@@ -411,11 +413,11 @@ const HomePage = () => {
               name: "Deal",
               icon: (
                 <Image
-                  src="/final/deal.png"
+                  src="/products/home/Deal.jpg"
                   alt="Order"
                   objectFit="cover"
-                  width="60%"
-                  height="60%"
+                  width="100%"
+                  height="100%"
                   borderRadius="full"
                 />
               ),
@@ -425,11 +427,11 @@ const HomePage = () => {
               name: "Order",
               icon: (
                 <Image
-                  src="/final/order.png"
+                  src="/products/home/How to order.jpg"
                   alt="Order"
                   objectFit="cover"
-                  width="60%"
-                  height="60%"
+                  width="100%"
+                  height="100%"
                   borderRadius="full"
                 />
               ),
@@ -439,11 +441,11 @@ const HomePage = () => {
               name: "Contact",
               icon: (
                 <Image
-                  src="/final/contact us.png"
+                  src="/products/home/Contact.jpg"
                   alt="Order"
                   objectFit="cover"
-                  width="60%"
-                  height="60%"
+                  width="100%"
+                  height="100%"
                   borderRadius="full"
                 />
               ),
@@ -453,8 +455,8 @@ const HomePage = () => {
             <GridItem key={idx}>
               <VStack spacing={2}>
                 <Circle
-                  size="65px"
-                  bg="#494949"
+                  size="75px"
+                  bg="#ECECEC"
                   color="white"
                   onClick={() => {
                     navigate(`${action.url}`);
@@ -474,7 +476,7 @@ const HomePage = () => {
         {/* Location */}
         <HStack px={6} mb={3} spacing={2}>
           <Image
-            src="../../final/only here.png"
+            src="../../Final_pic/only here.png"
             h="20px"
             alt="Adams Logo"
             filter="grayscale(100%)"
@@ -487,11 +489,14 @@ const HomePage = () => {
         {/* Featured Product */}
         <Box px={4} position="relative" mb={6}>
           <Flex direction="row" justify="space-between" gap={6}>
-            <Box flex="1" border="1px" height="100%" borderRadius="xl">
+            <Box flex="1" w="190px" h="190px" borderRadius="xl">
               <Image
-                src="../../products/home/Screenshot 2025-04-09 113049.jpg"
+                src="../../products/home/marinated.jpg"
                 alt="Brisket Slice"
                 borderRadius="xl"
+                objectFit="cover"
+                width="100%"
+                height="100%"
               />
             </Box>
             <VStack
@@ -507,7 +512,7 @@ const HomePage = () => {
                 marginBottom={4}
               />
               <Heading fontSize="16px" mb={4}>
-                Brisket Slice
+                Chuck Slice (Bulgogi)
               </Heading>
               <Text fontSize="12px" width="100%">
                 A cut only AdamsFoods can make, crafted with precision,
@@ -524,10 +529,10 @@ const HomePage = () => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                // onClick={() => console.log("Circle clicked")}
+                onClick={() => navigate("/wholesale/product/1")}
               >
                 <Image
-                  src="/final/button.png"
+                  src="/Final_pic/button.png"
                   alt="Order"
                   width="60%"
                   height="60%"
@@ -629,7 +634,7 @@ const HomePage = () => {
             isExternal
             _hover={{ color: "blue.500" }}
             textDecoration="underline"
-            color="#b2a796"
+            color="#CA3836"
             fontStyle="italic"
             textAlign="center"
           >

@@ -11,6 +11,7 @@ import {
   Textarea,
   Button,
   VStack,
+  HStack,
   useToast,
   FormErrorMessage,
   Divider,
@@ -60,38 +61,26 @@ const ContactPage = () => {
 
   const location = useLocation();
 
-  // useEffect(() => {
-
-  //   // console.log("location:", state);
-  // }, []);
-
-  const getUserInfo = (userId) => {
-    window.scrollTo(0, 0);
-    const state = location.state;
-
-    // console.log("Fetching user info for userId:", userId);
-    fetch(`http://localhost:3001/api/users/${userId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setUserInfo(data.user);
-        // console.log("Current user:", data.user);
-      })
-      .catch((error) => {
-        console.error("Error fetching user info:", error);
-      });
-  };
-
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       try {
         const decoded = jwtDecode(storedToken);
-        getUserInfo(decoded.userId);
-
+        
         if (decoded.exp > Date.now() / 1000) {
           setToken(storedToken);
           setCurrUser(decoded);
           setIsAuthenticated(true);
+          
+          // Fetch user info and update state
+          fetch(`http://localhost:3001/api/users/${decoded.userId}`)
+            .then((response) => response.json())
+            .then((data) => {
+              setUserInfo(data.user);
+            })
+            .catch((error) => {
+              console.error("Error fetching user info:", error);
+            });
         } else {
           localStorage.removeItem("token");
         }
@@ -99,14 +88,17 @@ const ContactPage = () => {
         localStorage.removeItem("token");
       }
     }
+    
+    window.scrollTo(0, 0);
   }, []);
 
+  // Separate useEffect to populate form when userInfo updates
   useEffect(() => {
-    if (form.current && userInfo) {
-      form.current.user_name.value = userInfo.name || "";
-      form.current.user_email.value = userInfo.email || "";
-      form.current.user_phone.value = userInfo.phone_number || "";
-      form.current.license_number.value = userInfo.license_number || "";
+    if (form.current && userInfo && Object.keys(userInfo).length > 0) {
+      if (form.current.user_name) form.current.user_name.value = userInfo.name || "";
+      if (form.current.user_email) form.current.user_email.value = userInfo.email || "";
+      if (form.current.user_phone) form.current.user_phone.value = userInfo.phone_number || "";
+      if (form.current.license_number) form.current.license_number.value = userInfo.license_number || "";
     }
   }, [userInfo]);
 
@@ -206,7 +198,7 @@ const ContactPage = () => {
         maxW={{ base: "100%", lg: "30%" }}
         p={0}
         bg="white"
-        border={{ base: "none", lg: "1px" }}
+        boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
         <Navbar onOpen={onOpen} />
@@ -229,299 +221,293 @@ const ContactPage = () => {
           </Text>
           <Divider mb={6} borderColor="gray.300" />
 
-          <Tabs variant="enclosed" colorScheme="gray">
-            <TabList justifyContent="center">
-              <Tab>Contact Form</Tab>
-              <Tab>Order Now</Tab>
-            </TabList>
+          <form ref={form} onSubmit={sendEmail}>
+            <VStack spacing={4} align="stretch">
+              <FormControl isRequired>
+                <FormLabel fontWeight="semibold" fontSize="sm">Name</FormLabel>
+                <Input
+                  type="text"
+                  name="user_name"
+                  {...inputStyle}
+                  placeholder="Name"
+                />
+              </FormControl>
 
-            <TabPanels>
-              <TabPanel p={0} pt={6}>
-                <Heading
-                  as="h4"
-                  size="sm"
-                  mb={4}
-                  fontWeight="extrabold"
-                  textAlign="left"
-                >
-                  Inquiries
-                </Heading>
+              <FormControl isRequired isInvalid={emailError !== ""}>
+                <FormLabel fontWeight="semibold" fontSize="sm">Email</FormLabel>
+                <Input
+                  type="email"
+                  name="user_email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    validateEmail(e.target.value);
+                  }}
+                  {...inputStyle}
+                />
+                {emailError && (
+                  <FormErrorMessage>{emailError}</FormErrorMessage>
+                )}
+              </FormControl>
 
-                <Text
-                  fontSize="sm"
-                  mb={2}
-                  textAlign="left"
-                  fontWeight="hairline"
-                >
-                  To ensure we can address your enquiry correctly, please
-                  provide a detailed message.
-                </Text>
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">Phone Number</FormLabel>
+                <Input
+                  type="tel"
+                  name="user_phone"
+                  {...inputStyle}
+                  placeholder="123-456-7890"
+                />
+              </FormControl>
 
-                <Text fontSize="sm" mb={4} textAlign="left" fontWeight="bold">
-                  Support hours: Mon–Fri, 8:00AM–4:30PM
-                </Text>
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">Company Address line 1</FormLabel>
+                <Input
+                  type="text"
+                  name="company_address_1"
+                  {...inputStyle}
+                  placeholder="1805 Industrial St"
+                />
+              </FormControl>
 
-                <Text fontSize="sm" mb={4} textAlign="left" fontWeight="bold">
-                  Please make sure to specify the exact title of the meat!
-                </Text>
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">Company Address line 2</FormLabel>
+                <Input
+                  type="text"
+                  name="company_address_2"
+                  {...inputStyle}
+                  placeholder="Suite 100"
+                />
+              </FormControl>
 
-                <form ref={form} onSubmit={sendEmail}>
-                  <VStack spacing={4} align="stretch">
-                    <FormControl isRequired>
-                      <FormLabel>Name:</FormLabel>
-                      <Input
-                        type="text"
-                        name="user_name"
-                        {...inputStyle}
-                        placeholder="Enter Name..."
-                      />
-                    </FormControl>
+              <HStack spacing={4}>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">Zip code</FormLabel>
+                  <Input
+                    type="text"
+                    name="zip_code"
+                    {...inputStyle}
+                    placeholder="90021"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">City</FormLabel>
+                  <Input
+                    type="text"
+                    name="city"
+                    {...inputStyle}
+                    placeholder="City"
+                  />
+                </FormControl>
+              </HStack>
 
-                    <FormControl isRequired isInvalid={emailError !== ""}>
-                      <FormLabel>Email:</FormLabel>
-                      <Input
-                        type="email"
-                        name="user_email"
-                        placeholder="Enter Email..."
-                        value={email}
-                        onChange={(e) => {
-                          setEmail(e.target.value);
-                          validateEmail(e.target.value);
-                        }}
-                        {...inputStyle}
-                      />
-                      {emailError && (
-                        <FormErrorMessage>{emailError}</FormErrorMessage>
-                      )}
-                    </FormControl>
+              <HStack spacing={4}>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">State</FormLabel>
+                  <Input
+                    type="text"
+                    name="state"
+                    {...inputStyle}
+                    placeholder="CA"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">Phone</FormLabel>
+                  <Input
+                    type="tel"
+                    name="phone_2"
+                    {...inputStyle}
+                    placeholder="(123) 456-7890"
+                  />
+                </FormControl>
+              </HStack>
 
-                    <FormControl>
-                      <FormLabel>Phone Number:</FormLabel>
-                      <Input
-                        type="tel"
-                        name="user_phone"
-                        {...inputStyle}
-                        placeholder="Enter Phone #..."
-                      />
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Company:</FormLabel>
-                      <Input
-                        type="company"
-                        name="company"
-                        {...inputStyle}
-                        placeholder="Enter Company Name..."
-                      />
-                    </FormControl>
-
-                    <FormControl isRequired>
-                      <Flex>
-                        <FormLabel>Wholesale License #:</FormLabel>
-                        <Popover>
-                          <PopoverTrigger>
-                            <IconButton
-                              icon={<Info size={16} color="gray" />}
-                              bg="none"
-                              size="xs"
-                              borderRadius="full"
-                              aria-label="License information"
-                            />
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverBody>
-                              <Text fontSize="sm">
-                                Upload your valid wholesale license document.
-                                Accepted formats: PDF, JPG, PNG. A picture is
-                                also valid
-                              </Text>
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                      </Flex>
-                      <Input
-                        type="text"
-                        name="license_number"
-                        placeholder="C-1234567"
-                        {...inputStyle}
-                        isReadOnly={false}
-                      />
-                      <Box display="flex" alignItems="center" mt={2}>
-                        <Button
-                          as="label"
-                          htmlFor="license-file-upload"
-                          fontSize="sm"
-                          color="gray.500"
-                          textDecoration="underline"
-                          cursor="pointer"
-                          bg="none"
-                          mx={2}
-                          minW="unset"
-                          p={0}
-                          h="auto"
-                          lineHeight="1"
-                        >
-                          Attached file
-                        </Button>
-                        <Input
-                          id="license-file-upload"
-                          name="license_file"
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          position="absolute"
-                          top="0"
-                          left="0"
-                          opacity="0"
-                          width="0.1px"
-                          height="0.1px"
-                          overflow="hidden"
-                          zIndex="-1"
-                          onChange={(e) => {
-                            setFileName(
-                              e.target.files[0]?.name || "No file chosen"
-                            );
-                          }}
-                        />
-                        <Text color="gray.500" fontSize="sm" ml={2}>
-                          *Please attach the wholesale license.
-                        </Text>
-                      </Box>
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Message</FormLabel>
-                      <Textarea
-                        name="message"
-                        rows={5}
-                        borderRadius="lg"
-                        bg="#f9f9f9"
-                        borderColor="gray.300"
-                        borderWidth="1px"
-                        _focus={{
-                          borderColor: "blue.400",
-                          boxShadow: "0 0 0 1px blue.400",
-                        }}
-                        placeholder="Include Message here..."
-                      />
-                    </FormControl>
-
-                    <Input
-                      type="hidden"
-                      name="cart_items"
-                      value={cartItems
-                        .map(
-                          (item) =>
-                            `${item.name} (Qty: ${item.quantity}) - $${(
-                              item.price * item.quantity
-                            ).toFixed(2)}`
-                        )
-                        .join("\n")}
-                    />
-
-                    <Input
-                      type="hidden"
-                      name="cart_total"
-                      value={cartItems
-                        .reduce(
-                          (sum, item) => sum + item.price * item.quantity,
-                          0
-                        )
-                        .toFixed(2)}
-                    />
-
-                    <Box mb={6} p={4} bg="gray.50" borderRadius="lg">
-                      <Heading as="h4" size="sm" mb={3}>
-                        Current Cart ({cartItems.length} items)
-                      </Heading>
-                      {cartItems.length === 0 ? (
-                        <Text fontSize="sm" color="gray.500">
-                          No items in cart
-                        </Text>
-                      ) : (
-                        <VStack spacing={2} align="stretch">
-                          {cartItems.map((item) => (
-                            <Flex
-                              key={item.id}
-                              justify="space-between"
-                              align="center"
-                              p={2}
-                              bg="white"
-                              borderRadius="md"
-                            >
-                              <Box>
-                                <Text fontSize="sm" fontWeight="medium">
-                                  {item.name}
-                                </Text>
-                                <Text fontSize="xs" color="gray.500">
-                                  Qty: {item.quantity}
-                                </Text>
-                              </Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                ${(item.price * item.quantity).toFixed(2)}
-                              </Text>
-                            </Flex>
-                          ))}
-                          <Divider />
-                          <Flex justify="space-between">
-                            <Text fontWeight="bold">Total:</Text>
-                            <Text fontWeight="bold" color="green.600">
-                              $
-                              {cartItems
-                                .reduce(
-                                  (sum, item) =>
-                                    sum + item.price * item.quantity,
-                                  0
-                                )
-                                .toFixed(2)}
-                            </Text>
-                          </Flex>
-                        </VStack>
-                      )}
-                    </Box>
-
-                    <Box
-                      display="flex"
-                      justifyContent="center"
-                      width="100%"
-                      pt={4}
-                    >
-                      <Button
-                        type="submit"
-                        bg="#494949"
-                        color="white"
-                        isLoading={loading}
-                        borderRadius="full"
-                        size="lg"
-                        width="100%"
-                        _hover={{ bg: "#6AAFDB" }}
-                      >
-                        SEND
-                      </Button>
-                    </Box>
-                  </VStack>
-                </form>
-              </TabPanel>
-
-              <TabPanel p={0} pt={6}>
-                <VStack spacing={6} align="center" py={12}>
-                  <Text fontSize="lg" textAlign="center">
-                    Need to place an order or have questions?
-                  </Text>
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">Business License</FormLabel>
+                <Input
+                  type="text"
+                  name="business_license"
+                  {...inputStyle}
+                  placeholder="LA-1234567 or 2025-000123"
+                />
+                <Box mt={2}>
                   <Button
-                    size="lg"
-                    bg="#494949"
-                    color="white"
-                    onClick={() => navigate("/wholesale/shop-all")}
-                    _hover={{ bg: "#6AAFDB" }}
+                    as="label"
+                    htmlFor="business-license-upload"
+                    fontSize="sm"
+                    color="blue.500"
+                    textDecoration="underline"
+                    cursor="pointer"
+                    bg="none"
+                    p={0}
+                    h="auto"
+                    minW="unset"
                   >
-                    Go to Orders
+                    Attached file
                   </Button>
-                </VStack>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+                  <Input
+                    id="business-license-upload"
+                    name="business_license_file"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    display="none"
+                  />
+                  <Text fontSize="sm" color="gray.500" mt={1}>
+                    *Please attach the Business License
+                  </Text>
+                </Box>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">California Resale Certificate</FormLabel>
+                <Input
+                  type="text"
+                  name="california_resale"
+                  {...inputStyle}
+                  placeholder="# 123-456789"
+                />
+                <Box mt={2}>
+                  <Button
+                    as="label"
+                    htmlFor="resale-cert-upload"
+                    fontSize="sm"
+                    color="blue.500"
+                    textDecoration="underline"
+                    cursor="pointer"
+                    bg="none"
+                    p={0}
+                    h="auto"
+                    minW="unset"
+                  >
+                    Attached file
+                  </Button>
+                  <Input
+                    id="resale-cert-upload"
+                    name="resale_cert_file"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    display="none"
+                  />
+                  <Text fontSize="sm" color="gray.500" mt={1}>
+                    *Please attach the California Resale Certificate
+                  </Text>
+                </Box>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">Message</FormLabel>
+                <Textarea
+                  name="message"
+                  rows={5}
+                  borderRadius="lg"
+                  bg="#f9f9f9"
+                  borderColor="gray.300"
+                  borderWidth="1px"
+                  _focus={{
+                    borderColor: "blue.400",
+                    boxShadow: "0 0 0 1px blue.400",
+                  }}
+                  placeholder="Your Message here"
+                  resize="vertical"
+                />
+              </FormControl>
+
+              <Input
+                type="hidden"
+                name="cart_items"
+                value={cartItems
+                  .map(
+                    (item) =>
+                      `${item.name} (Qty: ${item.quantity}) - $${(
+                        item.price * item.quantity
+                      ).toFixed(2)}`
+                  )
+                  .join("\n")}
+              />
+
+              <Input
+                type="hidden"
+                name="cart_total"
+                value={cartItems
+                  .reduce(
+                    (sum, item) => sum + item.price * item.quantity,
+                    0
+                  )
+                  .toFixed(2)}
+              />
+
+              {/* <Box mb={6} p={4} bg="gray.50" borderRadius="lg">
+                <Heading as="h4" size="sm" mb={3}>
+                  Current Cart ({cartItems.length} items)
+                </Heading>
+                {cartItems.length === 0 ? (
+                  <Text fontSize="sm" color="gray.500">
+                    No items in cart
+                  </Text>
+                ) : (
+                  <VStack spacing={2} align="stretch">
+                    {cartItems.map((item) => (
+                      <Flex
+                        key={item.id}
+                        justify="space-between"
+                        align="center"
+                        p={2}
+                        bg="white"
+                        borderRadius="md"
+                      >
+                        <Box>
+                          <Text fontSize="sm" fontWeight="medium">
+                            {item.name}
+                          </Text>
+                          <Text fontSize="xs" color="gray.500">
+                            Qty: {item.quantity}
+                          </Text>
+                        </Box>
+                        <Text fontSize="sm" fontWeight="bold">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </Text>
+                      </Flex>
+                    ))}
+                    <Divider />
+                    <Flex justify="space-between">
+                      <Text fontWeight="bold">Total:</Text>
+                      <Text fontWeight="bold" color="green.600">
+                        $
+                        {cartItems
+                          .reduce(
+                            (sum, item) =>
+                              sum + item.price * item.quantity,
+                            0
+                          )
+                          .toFixed(2)}
+                      </Text>
+                    </Flex>
+                  </VStack>
+                )}
+              </Box> */}
+
+              <Box
+                display="flex"
+                justifyContent="center"
+                width="100%"
+                pt={4}
+              >
+                <Button
+                  type="submit"
+                  bg="#494949"
+                  color="white"
+                  isLoading={loading}
+                  borderRadius="full"
+                  size="lg"
+                  width="100%"
+                  _hover={{ bg: "#6AAFDB" }}
+                >
+                  SEND
+                </Button>
+              </Box>
+            </VStack>
+          </form>
 
           <Footer />
         </Box>

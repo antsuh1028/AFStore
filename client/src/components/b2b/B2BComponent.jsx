@@ -33,30 +33,27 @@ const B2BContent = () => {
       <Divider />
 
       {/* B2B Introduction */}
-      <Box p={7}>
-        <Heading as="h2" size="md" mb={4} fontWeight="semibold" mt={4}>
-          B2B
-        </Heading>
+      <Box p={4}>
 
-        <Text fontSize="sm" color="gray.600" mb={4}>
+        <Text fontSize="sm" color="gray.600" p={4}>
           Partner with us for a reliable supply of fresh, good-quality meat.
         </Text>
 
-        <Text fontSize="sm" color="gray.600" mb={12}>
+        <Text fontSize="sm" color="gray.600" mb={12} px={3}>
           We offer customized meat solutions at competitive prices, fostering
           long-term relationships with many satisfied clients.
         </Text>
 
         {/* Why Choose Us Section */}
-        <Heading as="h3" size="md" mb={5} fontWeight="semibold">
+        <Heading as="h3" size="md" mb={5} ml={4} fontWeight="semibold">
           Why Choose Us?
         </Heading>
 
-        <VStack spacing={8} align="stretch" mb={6}>
+        <VStack spacing={6} align="stretch" mb={6}>
           {/* Feature 1 */}
           <Box borderRadius={16} p={4} bg="#f9f9f9">
             <HStack mb={2}>
-              <Text textColor="#b09e8c" fontWeight="semibold" fontSize="md">
+              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
                 1.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -73,7 +70,7 @@ const B2BContent = () => {
           {/* Feature 2 */}
           <Box borderRadius={16} p={4} bg="#f9f9f9">
             <HStack mb={2}>
-              <Text textColor="#b09e8c" fontWeight="semibold" fontSize="md">
+              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
                 2.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -90,7 +87,7 @@ const B2BContent = () => {
           {/* Feature 3 */}
           <Box borderRadius={16} p={4} bg="#f9f9f9">
             <HStack mb={2}>
-              <Text textColor="#b09e8c" fontWeight="semibold" fontSize="md">
+              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
                 3.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -107,7 +104,7 @@ const B2BContent = () => {
           {/* Feature 4 */}
           <Box borderRadius={16} p={4} bg="#f9f9f9">
             <HStack mb={2}>
-              <Text textColor="#b09e8c" fontWeight="semibold" fontSize="md">
+              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
                 4.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -124,7 +121,7 @@ const B2BContent = () => {
           {/* Feature 5 */}
           <Box borderRadius={16} p={4} bg="#f9f9f9">
             <HStack mb={2}>
-              <Text textColor="#b09e8c" fontWeight="semibold" fontSize="md">
+              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
                 5.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -140,7 +137,7 @@ const B2BContent = () => {
           {/* Feature 6 */}
           <Box borderRadius={16} p={4} bg="#f9f9f9">
             <HStack mb={2}>
-              <Text textColor="#b09e8c" fontWeight="semibold" fontSize="md">
+              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
                 6.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -157,7 +154,7 @@ const B2BContent = () => {
           {/* Feature 7 */}
           <Box borderRadius={16} p={4} bg="#f9f9f9">
             <HStack mb={2}>
-              <Text textColor="#b09e8c" fontWeight="semibold" fontSize="md">
+              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
                 7.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">

@@ -35,7 +35,7 @@ const TermsAndPoliciesPage = () => {
         maxW={{ base: "100%", lg: "30%" }}
         p={0}
         bg="white"
-        border={{ base: "none", lg: "1px" }}
+        boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
         <Navbar onOpen={onOpen} />
@@ -81,7 +81,7 @@ const TermsAndPoliciesPage = () => {
           <VStack spacing={5} align="stretch">
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -100,7 +100,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -120,7 +120,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -139,7 +139,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -158,7 +158,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -177,7 +177,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -217,7 +217,7 @@ const TermsAndPoliciesPage = () => {
           <VStack spacing={5} align="stretch">
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -239,7 +239,25 @@ const TermsAndPoliciesPage = () => {
                   <Box as="span" mr={2} fontSize="6px">
                     <MdCircle />
                   </Box>
-                  Wholesale License Number
+                  Business License
+                </ListItem>
+                <ListItem fontSize="sm" display="flex" alignItems="center">
+                  <Box as="span" mr={2} fontSize="6px">
+                    <MdCircle />
+                  </Box>
+                  California Resale Certificate
+                </ListItem>
+                <ListItem fontSize="sm" display="flex" alignItems="center">
+                  <Box as="span" mr={2} fontSize="6px">
+                    <MdCircle />
+                  </Box>
+                  Personal Real ID
+                </ListItem>
+                <ListItem fontSize="sm" display="flex" alignItems="center">
+                  <Box as="span" mr={2} fontSize="6px">
+                    <MdCircle />
+                  </Box>
+                  Company Address
                 </ListItem>
                 <ListItem fontSize="sm" display="flex" alignItems="center">
                   <Box as="span" mr={2} fontSize="6px">
@@ -258,7 +276,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -293,7 +311,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -332,7 +350,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -378,7 +396,7 @@ const TermsAndPoliciesPage = () => {
           <VStack spacing={5} align="stretch">
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -397,7 +415,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -416,7 +434,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#b7a495"
+                bg="#494949"
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -435,6 +453,63 @@ const TermsAndPoliciesPage = () => {
           </VStack>
         </Box>
 
+        {/* Payment Policy Section */}
+        <Heading
+          size="sm"
+          fontWeight="bold"
+          textAlign="right"
+          mb={-2}
+          mr={10}
+          mt={12}
+        >
+          Payment Policy
+        </Heading>
+        <Box
+          px={6}
+          paddingTop={4}
+          paddingBottom={10}
+          m={4}
+          borderRadius={24}
+          bg="#f9f9f9"
+        >
+          <VStack spacing={5} align="stretch">
+            <Box>
+              <Box
+                bg="#494949"
+                color="white"
+                px={4}
+                borderRadius="full"
+                display="inline-block"
+                mb={1}
+              >
+                <Text fontSize="sm" fontWeight="semibold">
+                  Payment Notice
+                </Text>
+              </Box>
+              <Text fontSize="sm" color="gray.700" ml={2} mb={2}>
+                Please note that a credit card processing fee may apply, which
+                is the responsibility of the buyer.
+              </Text>
+              <Text fontSize="sm" color="gray.700" ml={2} mb={2}>
+                Cash payments offer the best available discount.
+              </Text>
+              <Text fontSize="sm" color="gray.700" ml={2}>
+                If a delivery address is incorrect and redelivery is required,
+                additional charges may apply.
+              </Text>
+            </Box>
+
+            <Box>
+              <Text fontSize="sm" color="gray.700" ml={2}>
+                Orders are not finalized until payment is received. Payment
+                terms differ depending on order type and may change without
+                notice. Please refer to the 'How to Order' section, which forms
+                part of our Terms of Sale.
+              </Text>
+            </Box>
+          </VStack>
+        </Box>
+
         {/* Disclaimer Section */}
         <Heading
           size="sm"
@@ -447,7 +522,59 @@ const TermsAndPoliciesPage = () => {
           Disclaimer
         </Heading>
         <Box
-          px={4}
+          px={6}
+          paddingTop={4}
+          paddingBottom={10}
+          m={4}
+          borderRadius={24}
+          bg="#f9f9f9"
+        >
+          <VStack spacing={5} align="stretch">
+            <Box>
+              <Box
+                bg="#494949"
+                color="white"
+                px={4}
+                borderRadius="full"
+                display="inline-block"
+                mb={1}
+              >
+                <Text fontSize="sm" fontWeight="semibold">
+                  Product Liability Notice
+                </Text>
+              </Box>
+              <Text fontSize="sm" color="gray.700" ml={2} mb={2}>
+                AdamsFoods takes all reasonable precautions to ensure food
+                safety during storage, packaging, and transport. However, once
+                products are picked up or delivered, the responsibility for
+                proper handling, storage, and cooking transfers to the customer.
+              </Text>
+              <Text fontSize="sm" color="gray.700" ml={2} mb={2}>
+                Our liability is limited to issues that arise from verified
+                handling or processing faults before customer receipt.
+              </Text>
+              <Text fontSize="sm" color="gray.700" ml={2}>
+                AdamsFoods maintains commercial product liability insurance in
+                compliance with food safety regulations. However, this does not
+                cover misuse, neglect, or improper storage by the customer.
+              </Text>
+            </Box>
+          </VStack>
+        </Box>
+
+        {/* Security & Privacy Section */}
+        <Heading
+          size="sm"
+          fontWeight="bold"
+          textAlign="right"
+          mb={-2}
+          mr={10}
+          mt={12}
+        >
+          Security & Privacy
+        </Heading>
+        <Box
+          px={6}
           paddingTop={4}
           paddingBottom={10}
           m={4}
@@ -456,11 +583,10 @@ const TermsAndPoliciesPage = () => {
         >
           <Box>
             <Text fontSize="sm" color="gray.700">
-              Adams Foods provides meat products intended for commercial use. We
-              do not guarantee product outcomes once items are outside of our
-              handling, including storage and cooking methods. Customers are
-              responsible for the proper use and storage of all products
-              received.
+              AdamsFoods uses industry-standard secure payment systems such as
+              Stripe and Square. Your personal and payment information is never
+              shared with third parties, and is handled in strict compliance
+              with privacy regulations.
             </Text>
           </Box>
         </Box>

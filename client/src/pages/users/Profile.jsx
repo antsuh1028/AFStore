@@ -661,7 +661,7 @@ const UserProfile = () => {
         maxW={{ base: "100%", lg: "30%" }}
         p={0}
         bg="white"
-        border={{ base: "none", lg: "1px" }}
+        boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
         <Flex p={4} justify="space-between" align="center">
