@@ -82,18 +82,12 @@ OrdersRouter.post("/", async (req, res) => {
 });
 
 //Update order status by id
-OrdersRouter.put("/:id/:status", async (req, res) => {
+OrdersRouter.put("/:id/status", async (req, res) => {
   try {
     const orderId = parseInt(req.params.id);
-    const newStatus = req.params.status.toLowerCase();
+    const newStatus = req.body.status;
 
-    const allowedStatuses = [
-      "pending",
-      "processing",
-      "shipped",
-      "delivered",
-      "cancelled",
-    ];
+    const allowedStatuses = ["pending", "complete", "incomplete"];
 
     if (isNaN(orderId)) {
       return res.status(400).json({ error: "Invalid order ID" });
@@ -104,7 +98,7 @@ OrdersRouter.put("/:id/:status", async (req, res) => {
     }
 
     const result = await db.query(
-      `UPDATE orders SET status = $1 WHERE id = $2 RETURNING *`,
+      `UPDATE orders SET order_status = $1 WHERE id = $2 RETURNING *`,
       [newStatus, orderId]
     );
 

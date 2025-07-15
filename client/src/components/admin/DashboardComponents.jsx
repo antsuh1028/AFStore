@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Flex,
@@ -17,10 +17,79 @@ import {
   VStack,
   Divider,
   Select,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalContent,
+  ModalCloseButton,
+  ModalFooter,
+  ModalOverlay,
+  useDisclosure,
+  Textarea,
 } from "@chakra-ui/react";
-import {ChevronRightIcon } from "@chakra-ui/icons";
+import { ChevronRightIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
-export const Orders = ({ orders, usersMap, orderItemsMap }) => {
+const RejectModal = ({ isOpen, onClose, request, onConfirmReject }) => {
+  const [rejectReason, setRejectReason] = useState("");
+
+  //TODO: Email Rejection with message
+
+  const handleConfirm = () => {
+    onConfirmReject(request, rejectReason);
+    setRejectReason("");
+    onClose();
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Reject Signup Request</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text mb={4}>
+            Are you sure you want to reject the signup request from{" "}
+            <Text as="span" fontWeight="bold">
+              {request?.first_name} {request?.last_name}
+            </Text>
+            ?
+          </Text>
+          <Text mb={2} fontSize="sm" fontWeight="bold">
+            Reason for rejection (optional):
+          </Text>
+          <Textarea
+            placeholder="Enter reason for rejection..."
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            rows={3}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="gray" mr={3} onClick={onClose}>
+            Cancel
+          </Button>
+          <Button colorScheme="red" onClick={handleConfirm}>
+            Confirm Reject
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+export const Orders = ({
+  orders,
+  usersMap,
+  orderItemsMap,
+  itemsMap,
+  token,
+  setOrders,
+  toast,
+}) => {
   const [filter, setFilter] = useState("all");
   const [expandedRows, setExpandedRows] = useState(new Set());
 
@@ -29,6 +98,47 @@ export const Orders = ({ orders, usersMap, orderItemsMap }) => {
     if (status === "incomplete") return "yellow";
     if (status === "pending") return "gray";
     return "gray";
+  };
+
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3001/api/orders/${orderId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (res.ok) {
+        setOrders((prev) =>
+          prev.map((order) =>
+            order.id === orderId ? { ...order, order_status: newStatus } : order
+          )
+        );
+
+        toast({
+          title: "Status Updated",
+          description: `Order status changed to ${newStatus}`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update order status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const getUserName = (userId) => {
@@ -51,10 +161,12 @@ export const Orders = ({ orders, usersMap, orderItemsMap }) => {
   };
 
   const filteredOrders =
-    orders?.filter((order) => {
-      if (filter === "all") return true;
-      return order.order_status?.toLowerCase() === filter;
-    }) || [];
+    orders
+      ?.filter((order) => {
+        if (filter === "all") return true;
+        return order.order_status?.toLowerCase() === filter;
+      })
+      .sort((a, b) => new Date(b.order_date) - new Date(a.order_date)) || [];
 
   return (
     <Box bg="white" borderRadius="2xl" p={6} boxShadow="sm" minH="500px">
@@ -114,7 +226,7 @@ export const Orders = ({ orders, usersMap, orderItemsMap }) => {
               <Th fontWeight="bold">Order #</Th>
               <Th>Customer</Th>
               <Th>Date</Th>
-              <Th>Delivery Method</Th>
+              <Th>Company</Th>
               <Th>Status</Th>
               <Th>Total</Th>
               <Th>Actions</Th>
@@ -132,22 +244,53 @@ export const Orders = ({ orders, usersMap, orderItemsMap }) => {
                         ? new Date(order.order_date).toLocaleDateString()
                         : "N/A"}
                     </Td>
+                    <Td>{usersMap[order.user_id]?.company || `Not Listed`}</Td>
                     <Td>
-                      <Badge
-                        colorScheme={
-                          order.delivery_method === "delivery"
-                            ? "blue"
-                            : "orange"
-                        }
-                        textTransform="capitalize"
-                      >
-                        {order.delivery_method}
-                      </Badge>
-                    </Td>
-                    <Td>
-                      <Badge colorScheme={statusColor(order.order_status)}>
-                        {order.order_status}
-                      </Badge>
+                      <Menu>
+                        <MenuButton
+                          as={Button}
+                          rightIcon={<ChevronDownIcon />}
+                          size="xs"
+                          variant="outline"
+                          bg="white"
+                          borderColor="gray.300"
+                          _hover={{ bg: "gray.50" }}
+                          _active={{ bg: "gray.100" }}
+                        >
+                          <Badge colorScheme={statusColor(order.order_status)}>
+                            {order.order_status}
+                          </Badge>
+                        </MenuButton>
+                        <MenuList>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "pending")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("pending")}>
+                              pending
+                            </Badge>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "complete")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("complete")}>
+                              complete
+                            </Badge>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "incomplete")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("incomplete")}>
+                              incomplete
+                            </Badge>
+                          </MenuItem>
+                        </MenuList>
+                      </Menu>
                     </Td>
                     <Td fontWeight="bold">${order.total_amount}</Td>
                     <Td>
@@ -243,18 +386,19 @@ export const Orders = ({ orders, usersMap, orderItemsMap }) => {
                                     (item, index) => (
                                       <Tr key={index}>
                                         <Td fontSize="xs">
-                                          {item.item_name ||
+                                          {itemsMap[item.item_id].name ||
                                             `Item #${item.item_id}`}
                                         </Td>
                                         <Td fontSize="xs">{item.quantity}</Td>
                                         <Td fontSize="xs">
-                                          ${item.price_per_unit}
+                                          ${itemsMap[item.item_id].price}
                                         </Td>
                                         <Td fontSize="xs" fontWeight="bold">
                                           $
                                           {(
-                                            item.quantity * item.price_per_unit
-                                          ).toFixed(2)}
+                                            item.quantity *
+                                            itemsMap[item.item_id].price
+                                          ).toFixed(2) || 0}
                                         </Td>
                                       </Tr>
                                     )
@@ -295,93 +439,10 @@ export const Signups = ({
   toast,
 }) => {
   const [expandedInquiries, setExpandedInquiries] = useState(new Set());
-
-  const inquiriesDummyData = [
-    {
-      id: 1,
-      name: "Anthony Suh",
-      email: "ant.suh1028@gmail.com",
-      phone: "3109059326",
-      licenseNumber: "C-1234567",
-      message:
-        "Interested in bulk pricing for marinated beef chuck slice for my restaurant chain. Need weekly deliveries.",
-      cartItems: [
-        { name: "Marinated Beef Chuck Slice", quantity: 2, price: 15.99 },
-      ],
-      cartTotal: 31.98,
-      timestamp: "2024-01-15T10:30:00Z",
-      status: "pending",
-    },
-    {
-      id: 2,
-      name: "Maria Rodriguez",
-      email: "maria.r@koreatown-market.com",
-      phone: "2135551234",
-      licenseNumber: "C-2345678",
-      message:
-        "Looking for wholesale prices on galbi and bulgogi for Korea Town Market. Need consistent quality.",
-      cartItems: [
-        { name: "Premium Galbi", quantity: 5, price: 28.5 },
-        { name: "Bulgogi Beef", quantity: 3, price: 22.75 },
-      ],
-      cartTotal: 210.75,
-      timestamp: "2024-01-14T14:15:00Z",
-      status: "responded",
-    },
-    {
-      id: 3,
-      name: "David Kim",
-      email: "dkim@bbqhaven.net",
-      phone: "7145559876",
-      licenseNumber: "C-3456789",
-      message:
-        "BBQ restaurant needs regular supply of various cuts. Can you accommodate weekly orders of 200+ lbs?",
-      cartItems: [
-        { name: "Short Ribs", quantity: 8, price: 32.0 },
-        { name: "Beef Brisket", quantity: 4, price: 18.99 },
-        { name: "Pork Belly", quantity: 6, price: 16.5 },
-      ],
-      cartTotal: 431.92,
-      timestamp: "2024-01-13T09:45:00Z",
-      status: "pending",
-    },
-    {
-      id: 4,
-      name: "Jennifer Lee",
-      email: "jennifer@freshmeatco.com",
-      phone: "3234447890",
-      licenseNumber: "C-4567890",
-      message:
-        "Small grocery store looking for competitive wholesale pricing. Interested in marinated options.",
-      cartItems: [
-        { name: "Marinated Chicken", quantity: 3, price: 12.99 },
-        { name: "Spicy Pork", quantity: 2, price: 14.5 },
-      ],
-      cartTotal: 67.97,
-      timestamp: "2024-01-12T16:20:00Z",
-      status: "quote_sent",
-    },
-    {
-      id: 5,
-      name: "Robert Johnson",
-      email: "rob.johnson@meatdistributors.com",
-      phone: "8185552468",
-      licenseNumber: "C-5678901",
-      message:
-        "Large distributor seeking partnership for Korean-style cuts. Volume pricing needed.",
-      cartItems: [
-        { name: "LA Galbi", quantity: 10, price: 35.0 },
-        { name: "Beef Chuck Eye", quantity: 12, price: 19.99 },
-        { name: "Pork Shoulder", quantity: 8, price: 13.75 },
-      ],
-      cartTotal: 699.88,
-      timestamp: "2024-01-11T11:00:00Z",
-      status: "in_negotiation",
-    },
-  ];
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAccept = async (request) => {
-    //TODO: Send Confirmation Email
     try {
       const res = await fetch(
         `http://localhost:3001/api/users/approve-signup/${request.id}`,
@@ -418,9 +479,13 @@ export const Signups = ({
     }
   };
 
-  const handleReject = async (request) => {
+  const handleReject = (request) => {
+    setSelectedRequest(request);
+    onOpen();
+  };
+
+  const handleConfirmReject = async (request, reason) => {
     try {
-      //TODO: Send Confirmation Email
       const res = await fetch(
         `http://localhost:3001/api/users/signup-requests/${request.id}`,
         {
@@ -429,6 +494,7 @@ export const Signups = ({
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ reason }),
         }
       );
 
@@ -486,8 +552,22 @@ export const Signups = ({
     setExpandedInquiries(newExpanded);
   };
 
+  const handleRespondInquiry = (inquiry) => {
+    // Implement respond to inquiry logic
+    console.log("Responding to inquiry:", inquiry);
+  };
+
+//   console.log(inquiries);
+
   return (
     <Box>
+      <RejectModal
+        isOpen={isOpen}
+        onClose={onClose}
+        request={selectedRequest}
+        onConfirmReject={handleConfirmReject}
+      />
+
       <Box bg="white" borderRadius="2xl" p={6} boxShadow="sm" minH="500px">
         <Heading size="lg" fontWeight="bold" mb={6}>
           Signup Requests
@@ -561,6 +641,7 @@ export const Signups = ({
           </Table>
         </Box>
       </Box>
+
       <Box
         bg="white"
         borderRadius="2xl"
@@ -570,7 +651,7 @@ export const Signups = ({
         mt={8}
       >
         <Heading size="lg" fontWeight="bold" mb={6}>
-          Inquiries
+          Inquiries - {inquiries.length}
         </Heading>
         <Box overflow="auto" maxH="400px">
           <Table variant="simple" size="sm">
@@ -592,8 +673,8 @@ export const Signups = ({
                     <Tr>
                       <Td fontWeight="bold">{inquiry.name}</Td>
                       <Td>{inquiry.email}</Td>
-                      <Td>{inquiry.licenseNumber}</Td>
-                      <Td>${inquiry.cartTotal}</Td>
+                      <Td>{inquiry.license_number}</Td>
+                      <Td>${inquiry.cart_total}</Td>
                       <Td>
                         {inquiry.timestamp
                           ? new Date(inquiry.timestamp).toLocaleDateString()
@@ -651,7 +732,7 @@ export const Signups = ({
                                   License:
                                 </Text>
                                 <Text fontSize="sm">
-                                  {inquiry.licenseNumber}
+                                  {inquiry.license_number}
                                 </Text>
                               </Box>
                             </SimpleGrid>
@@ -695,7 +776,7 @@ export const Signups = ({
                                 <Flex justify="space-between" fontWeight="bold">
                                   <Text fontSize="sm">Total:</Text>
                                   <Text fontSize="sm">
-                                    ${inquiry.cartTotal}
+                                    ${inquiry.cart_total}
                                   </Text>
                                 </Flex>
                               </VStack>

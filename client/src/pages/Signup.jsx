@@ -203,6 +203,7 @@ const Signup = () => {
           companyName,
           email,
           password,
+          phone_number,
           licenseNumber,
           timestamp: new Date().toISOString(),
         }),

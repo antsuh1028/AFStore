@@ -68,6 +68,24 @@ const AdminDashboard = () => {
   };
   const [currentPage, setCurrentPage] = useState(1);
 
+  const getDateFilteredOrders = () => {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    return orders.filter((order) => {
+      const orderDate = new Date(order.order_date);
+      return orderDate >= weekAgo && orderDate <= now;
+    });
+  };
+
+  const filteredOrders = getDateFilteredOrders();
+  const totalRevenue = filteredOrders.reduce(
+    (sum, o) => sum + (Number(o.total_amount) || 0),
+    0
+  );
+  const avgOrderValue =
+    filteredOrders.length > 0 ? totalRevenue / filteredOrders.length : 0;
+
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!isAuthenticated || !userId || !token) {
@@ -517,26 +535,19 @@ const AdminDashboard = () => {
             >
               <Box textAlign="left">
                 <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
-                  New Orders (Pick Up)
+                  Total Revenue (7 days)
                 </Text>
                 <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
-                  {
-                    orders.filter((order) => order.delivery_method === "pickup")
-                      .length
-                  }
+                  ${totalRevenue.toLocaleString()}
                 </Text>
               </Box>
 
               <Box textAlign="left">
                 <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
-                  New Orders (Delivery)
+                  Average Order Value
                 </Text>
                 <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
-                  {
-                    orders.filter(
-                      (order) => order.delivery_method === "delivery"
-                    ).length
-                  }
+                  ${avgOrderValue.toFixed(0)}
                 </Text>
               </Box>
 
@@ -894,7 +905,11 @@ const AdminDashboard = () => {
         <Orders
           orders={orders}
           usersMap={usersMap}
+          itemsMap={itemsMap}
           orderItemsMap={orderItemsMap}
+          token={token}
+          setOrders={setOrders}
+          toast={toast}
         />
       )}
       {currentPage === 3 && (

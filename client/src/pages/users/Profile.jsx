@@ -682,7 +682,7 @@ const UserProfile = () => {
         </Flex>
 
         <Box textAlign="center" mb={6} px={4}>
-          <Heading as="h1" size="lg" mb={2}>
+          <Heading as="h1" size="lg" mb={8}>
             <Text as="span" color="gray.500" fontWeight="normal">
               Hello,{" "}
             </Text>
