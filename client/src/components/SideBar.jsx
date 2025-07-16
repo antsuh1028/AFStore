@@ -34,14 +34,24 @@ const Sidebar = ({ children }) => {
               _hover={{ opacity: 0.8 }}
               transition="opacity 0.2s"
             >
-              <Text fontSize="2xl" fontWeight="normal">
-                <Box as="span" fontWeight="bold">
+              <Text
+                fontSize="2xl"
+                fontWeight="normal"
+                fontFamily="Arial, sans-serif"
+              >
+                <Box as="span" fontWeight="900">
                   Adams
                 </Box>
                 Foods
               </Text>
             </Box>
-            <Box h="402px" bg="white" border="1px" borderColor="gray.300" boxShadow="lg">
+            <Box
+              h="402px"
+              bg="white"
+              border="1px"
+              borderColor="gray.300"
+              boxShadow="lg"
+            >
               <Image
                 src="../../Final_pic/Deal pg poster.jpg"
                 alt="AdamsFoods Logo"

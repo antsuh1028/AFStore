@@ -72,59 +72,60 @@ const AFCompany = () => {
 
           {/* Brands Section */}
           <Flex
-            w="full"
-            alignItems="center"
-            justifyContent="space-between"
-            mb={1}
-            p={3}
-            gap={2}
-            borderColor="gray.300"
-          >
-            <VStack textAlign="center" borderColor="gray.300" w="30%" h="100%">
-              <Box h="7vh" w="100%" position="relative">
-                <Image
-                  src="/MeatPapa.png"
-                  alt="Meat Papa Logo"
-                  objectFit="contain"
-                  w="100%"
-                  h="100%"
-                />
-              </Box>
-              <Text fontWeight="semibold" fontSize="11px" whiteSpace="nowrap">
-                MEAT PAPA
-              </Text>
-            </VStack>
+ w="full"
+ alignItems="center"
+ justifyContent="space-between"
+ mb={1}
+ p={3}
+ gap={2}
+ borderColor="gray.300"
+ position="relative"
+>
+ <VStack textAlign="center" borderColor="gray.300" w="30%" h="100%">
+   <Box h="7vh" w="100%" position="relative">
+     <Image
+       src="/MeatPapa.png"
+       alt="Meat Papa Logo"
+       objectFit="contain"
+       w="100%"
+       h="100%"
+     />
+   </Box>
+   <Text fontWeight="semibold" fontSize="11px" whiteSpace="nowrap">
+     MEAT PAPA
+   </Text>
+ </VStack>
+ <VStack textAlign="center" borderColor="gray.300" w="40%" h="100%">
+   <Box h="7vh" w="100%" position="relative">
+     <Image
+       src="/final/adams gour.png"
+       alt="Adams Gourmet Beef Logo"
+       objectFit="contain"
+       w="100%"
+       h="100%"
+     />
+   </Box>
+   <Text fontWeight="semibold" fontSize="11px" whiteSpace="nowrap">
+     ADAMS GOURMET BEEF
+   </Text>
+ </VStack>
+ <VStack textAlign="center" borderColor="gray.300" w="30%" h="100%">
+   <Box h="7vh" w="100%" position="relative">
+     <Image
+       src="/Yukbul.png"
+       alt="Yuk Bul Logo"
+       objectFit="contain"
+       w="100%"
+       h="100%"
+     />
+   </Box>
+   <Text fontWeight="semibold" fontSize="11px" whiteSpace="nowrap">
+     YUK BUL
+   </Text>
+ </VStack>
 
-            <VStack textAlign="center" borderColor="gray.300" w="40%" h="100%">
-              <Box h="7vh" w="100%" position="relative">
-                <Image
-                  src="/final/adams gour.png"
-                  alt="Adams Gourmet Beef Logo"
-                  objectFit="contain"
-                  w="100%"
-                  h="100%"
-                />
-              </Box>
-              <Text fontWeight="semibold" fontSize="11px" whiteSpace="nowrap">
-                ADAMS GOURMET BEEF
-              </Text>
-            </VStack>
 
-            <VStack textAlign="center" borderColor="gray.300" w="30%" h="100%">
-              <Box h="7vh" w="100%" position="relative">
-                <Image
-                  src="/Yukbul.png"
-                  alt="Yuk Bul Logo"
-                  objectFit="contain"
-                  w="100%"
-                  h="100%"
-                />
-              </Box>
-              <Text fontWeight="semibold" fontSize="11px" whiteSpace="nowrap">
-                YUK BUL
-              </Text>
-            </VStack>
-          </Flex>
+</Flex>
 
           {/* Brands Description */}
           <Text fontSize="sm" color="gray.600" lineHeight="tall" mt={2} px={2}>

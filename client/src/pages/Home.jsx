@@ -168,7 +168,7 @@ const HomePage = () => {
             />
             <IconButton
               aria-label="Menu"
-              icon={<Text>☰</Text>}
+              icon={<Text fontSize={24}>☰</Text>}
               variant="ghost"
               onClick={onOpen}
             />
@@ -186,23 +186,6 @@ const HomePage = () => {
         </Box>
 
         {/* Main Image */}
-        {/* <Box px={4} mb={4}>
-          <Box
-            bg="tan.100"
-            borderRadius="lg"
-            overflow="hidden"
-            height="100%"
-            position="relative"
-          >
-            <Image
-              src="../../Final_pic/"
-              alt="Various Meat Cuts"
-              height="100%"
-              width="100%"
-              objectFit="cover"
-            />
-          </Box>
-        </Box> */}
         <ImageCarousel />
 
         {/* Enhanced Search Bar */}
@@ -424,7 +407,7 @@ const HomePage = () => {
               url: "/wholesale/deal",
             },
             {
-              name: "Order",
+              name: "How to Order",
               icon: (
                 <Image
                   src="/products/home/How to order.jpg"
@@ -474,14 +457,14 @@ const HomePage = () => {
         </Grid>
 
         {/* Location */}
-        <HStack px={6} mb={3} spacing={2}>
+        <HStack px={6} mb={3} spacing={2}ml={2}>
           <Image
             src="../../Final_pic/only here.png"
             h="20px"
             alt="Adams Logo"
             filter="grayscale(100%)"
           />
-          <Text fontSize="19px" fontWeight="bold">
+          <Text fontSize="19px" fontWeight="extrabold">
             Only Here
           </Text>
         </HStack>
@@ -529,6 +512,7 @@ const HomePage = () => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
+                mt={4}
                 onClick={() => navigate("/wholesale/product/1")}
               >
                 <Image
@@ -552,22 +536,20 @@ const HomePage = () => {
 
         {/*Why AdamsFoods*/}
         <Box px={4} mb={6} py={4} borderRadius="lg">
-          <Heading size="md" mb={8}>
+          <Heading size="md" mb={8} fontWeight="extrabold" ml={2}>
             Why AdamsFoods?
           </Heading>
-          <Flex mb={4} gap={4} align="center">
+          <Flex mb={4} gap={4} align="center"> 
             <Image
               src="/final/why adamsfoods.png"
               alt="Why AdamsFoods"
               objectFit="contain"
-              maxWidth="100%"
-              maxHeight="100%"
               width="50%"
               borderRadius="full"
             />
             <VStack w="50%" justify="center" spacing={2}>
               <Divider borderColor="#626262" borderWidth="1px" />
-              <Text fontSize="sm" color="gray.600" fontWeight="medium">
+              <Text fontSize="sm" color="gray.600" fontWeight="bold">
                 SINCE 2012
               </Text>
               <Divider borderColor="#626262" borderWidth="1px" />
@@ -578,7 +560,7 @@ const HomePage = () => {
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
                   <Image
-                    src="../../final/why adamsfoods-1.png"
+                    src="../../Final_pic/why adamsfoods-1.png"
                     alt="Korean-style cutting"
                     width="80%"
                   />
@@ -592,7 +574,7 @@ const HomePage = () => {
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
                   <Image
-                    src="../../final/why adamsfoods-2.png"
+                    src="../../Final_pic/why adamsfoods-2.png"
                     alt="Trusted partner"
                     width="80%"
                   />
@@ -603,7 +585,7 @@ const HomePage = () => {
               </VStack>
             </GridItem>
           </Grid>
-          <VStack align="flex-start" spacing={4}>
+          <VStack align="flex-start" spacing={4} p={2}>
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
               Founded in 2012, Adams Foods produces safe, tailored products in
               USDA-inspected facilities.
@@ -619,7 +601,7 @@ const HomePage = () => {
           </VStack>
         </Box>
         {/* Company Website Link */}
-        <VStack align="center" spacing={0} py={8} width="100%">
+        <VStack align="center" spacing={0} mb={10} width="100%">
           <Text
             fontWeight="extrabold"
             fontStyle="italic"

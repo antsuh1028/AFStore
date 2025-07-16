@@ -61,20 +61,20 @@ const ITEMS = [
   {
     label: "Packing",
     to: "/wholesale/packing",
-    icon: "/final/packing.png",
+    icon: "/products/home/packing.png",
     color: " #ECECEC",
   },
   {
     label: "B2B",
     to: "/wholesale/b2b",
-    icon: "/final/b2b.png",
-    color: "#484849",
+    icon: "/products/home/b2b.png",
+    color: "#ECECEC",
   },
   {
     label: "FAQ",
     to: "/wholesale/faq",
-    icon: "/final/FAQ.png",
-    color: "#484849",
+    icon: "/products/home/faq.png",
+    color: "#ECECEC",
   },
 ];
 
@@ -91,7 +91,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
     userId, 
     loading,
     error 
-  } = useAuthContext(); // This is the key change!
+  } = useAuthContext(); 
 
   useEffect(() => {
     const updateWidth = () => {
