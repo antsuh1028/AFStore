@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Box,
   Container,
@@ -26,8 +27,6 @@ import {
   TabPanel,
   TabList,
   Icon,
-  Collapse,
-  Select,
   Menu,
   MenuButton,
   MenuList,
@@ -41,8 +40,14 @@ import { ChevronLeft, Filter } from "lucide-react";
 import { useAuthContext } from "../../hooks/useAuth";
 import { CheckCircleIcon } from "lucide-react";
 import Footer from "../../components/Footer";
-import { ExternalLinkIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { SimpleGrid } from "@chakra-ui/react";
+import {
+  getCart,
+  addToCart,
+  removeFromCart,
+  subtractFromCart,
+} from "../../utils/cartActions";
 
 const OrdersList = ({ orders, currPage }) => {
   const navigate = useNavigate();
@@ -241,108 +246,110 @@ const OrdersList = ({ orders, currPage }) => {
           </VStack>
         </Center>
       ) : (
-        filteredOrders.map((order) => (
-          <Box key={order.id}>
-            <Flex
-              gap={4}
-              alignItems="center"
-              justifyContent="center"
-              alignSelf="center"
-              height="24px"
-            >
-              <Text
-                fontSize="sm"
-                color="gray.500"
-                mb={2}
-                textAlign="left"
-                textDecoration="underline"
+        filteredOrders
+          .sort((b, a) => new Date(a.order_date) - new Date(b.order_date))
+          .map((order) => (
+            <Box key={order.id}>
+              <Flex
+                gap={4}
+                alignItems="left"
+                justifyContent="left"
+                alignSelf="center"
+                height="24px"
+                ml={4}
               >
-                {order.order_date
-                  ? new Date(order.order_date).toLocaleDateString()
-                  : ""}
-              </Text>
-              <Divider
-                orientation="vertical"
-                borderColor="black"
-                bg="black"
-                height="20px"
-              />
-              <Badge
-                colorScheme={getStatusColor(order.order_status)}
-                fontSize="xs"
-                mb={2}
-                textTransform="capitalize"
-              >
-                {order.order_status}
-              </Badge>
-            </Flex>
-            <SimpleGrid columns={1} spacing={4}>
-              {(orderItemsMap[order.id] || []).map((oi) => {
-                const item = itemDetailsMap[oi.item_id] || {};
-                const safeStyle = item.style
-                  ? item.style.replace(/[^a-zA-Z0-9-_]/g, " ")
-                  : "";
-                const safeName = item.name
-                  ? item.name.replace(/[^a-zA-Z0-9-_]/g, " ")
-                  : "";
-                const imgSrc =
-                  safeStyle && safeName
-                    ? `/products/${safeStyle}/${safeName}/01.jpg`
-                    : "/gray.avif";
-                return (
-                  <Flex
-                    key={oi.id}
-                    bg="white"
-                    borderRadius="xl"
-                    boxShadow="md"
-                    p={3}
-                    alignItems="center"
-                    _hover={{ cursor: "pointer" }}
-                    onClick={() => {
-                      navigate(`/wholesale/product/${item.id}`);
-                    }}
-                  >
-                    <Image
-                      src={imgSrc}
-                      alt={item.name || ""}
-                      boxSize="80px"
-                      objectFit="cover"
-                      borderRadius="md"
-                      fallbackSrc="/gray.avif"
-                      mr={4}
-                    />
-                    <Box flex="1">
-                      <Text
-                        fontWeight="semibold"
-                        fontSize="sm"
-                        noOfLines={2}
-                        textAlign="left"
-                      >
-                        {item.name || "Item"}
-                      </Text>
-                      <Text
-                        fontSize="xs"
-                        color="gray.500"
-                        mt={1}
-                        textAlign="left"
-                      >
-                        {item.spec || ""}
-                      </Text>
-                      <Text
-                        fontSize="xs"
-                        color="gray.500"
-                        mt={1}
-                        textAlign="left"
-                      >
-                        Qty: {oi.quantity}
-                      </Text>
-                    </Box>
-                  </Flex>
-                );
-              })}
-            </SimpleGrid>
-          </Box>
-        ))
+                <Text
+                  fontSize="sm"
+                  color="gray.500"
+                  mb={2}
+                  textAlign="left"
+                  textDecoration="underline"
+                >
+                  {order.order_date
+                    ? new Date(order.order_date).toLocaleDateString()
+                    : ""}
+                </Text>
+                <Divider
+                  orientation="vertical"
+                  borderColor="black"
+                  bg="black"
+                  height="20px"
+                />
+                <Badge
+                  colorScheme={getStatusColor(order.order_status)}
+                  fontSize="xs"
+                  mb={2}
+                  textTransform="capitalize"
+                >
+                  {order.order_status}
+                </Badge>
+              </Flex>
+              <SimpleGrid columns={2} spacing={4}>
+                {(orderItemsMap[order.id] || []).map((oi) => {
+                  const item = itemDetailsMap[oi.item_id] || {};
+                  const safeStyle = item.style
+                    ? item.style.replace(/[^a-zA-Z0-9-_]/g, " ")
+                    : "";
+                  const safeName = item.name
+                    ? item.name.replace(/[^a-zA-Z0-9-_]/g, " ")
+                    : "";
+                  const imgSrc =
+                    safeStyle && safeName
+                      ? `/products/${safeStyle}/${safeName}/01.jpg`
+                      : "/gray.avif";
+                  return (
+                    <VStack
+                      key={oi.id}
+                      bg="white"
+                      borderRadius="xl"
+                      p={2}
+                      alignItems="center"
+                      _hover={{ cursor: "pointer", boxShadow: "sm" }}
+                      onClick={() => {
+                        navigate(`/wholesale/product/${item.id}`);
+                      }}
+                    >
+                      <Image
+                        src={imgSrc}
+                        alt={item.name || ""}
+                        boxSize="175px"
+                        objectFit="cover"
+                        borderRadius="md"
+                        fallbackSrc="/gray.avif"
+                      />
+                      <Box flex="1">
+                        <Text
+                          fontWeight="semibold"
+                          fontSize="sm"
+                          noOfLines={2}
+                          textAlign="left"
+                        >
+                          {item.name || "Item"}
+                        </Text>
+                        <Text
+                          fontSize="xs"
+                          color="gray.500"
+                          mt={1}
+                          textAlign="left"
+                        >
+                          {item.spec || ""}
+                        </Text>
+                        <Text
+                          fontSize="xs"
+                          color="gray.500"
+                          mt={1}
+                          textAlign="left"
+                        >
+                          Qty: {oi.quantity}
+                        </Text>
+                      </Box>
+                    </VStack>
+                  );
+                })}
+              </SimpleGrid>
+              <Divider borderColor="gray.200" my={2} />
+            </Box>
+          ))
       )}
     </VStack>
   );
@@ -350,7 +357,7 @@ const OrdersList = ({ orders, currPage }) => {
 
 const myPages = (
   currPage,
-  { userInfo, userName, userEmail, handleLogout, setCurrPage, orders }
+  { userInfo, userName, userEmail, handleLogout, setCurrPage, orders, address }
 ) => {
   if (currPage === "all") {
     return (
@@ -428,7 +435,7 @@ const myPages = (
                 Address :
               </Text>
               <Text fontSize="sm" textAlign="left" whiteSpace="pre-line">
-                {userInfo?.address || "—"}
+                {address}
               </Text>
             </Grid>
           </Box>
@@ -533,6 +540,8 @@ const UserProfile = () => {
   const contentRef = useRef(null);
   const toast = useToast();
   const [currPage, setCurrPage] = useState("all");
+  const location = useLocation();
+  const defaultTabIndex = location.state?.activeTab || 0;
 
   const {
     userInfo,
@@ -546,6 +555,54 @@ const UserProfile = () => {
   } = useAuthContext();
 
   const [orders, setOrders] = useState([]);
+  const [cartItems, setCartItems] = useState(() => getCart());
+  const [userAddress, setUserAddress] = useState([]);
+
+  const handleAdd = (product) => {
+    addToCart(product);
+    setCartItems(getCart());
+  };
+
+  const handleRemove = (product_id) => {
+    removeFromCart(product_id);
+    setCartItems(getCart());
+  };
+
+  const handleSubtract = (product_id) => {
+    subtractFromCart(product_id);
+    setCartItems(getCart());
+  };
+
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const getImagePath = (name, style) => {
+    if (style && name) {
+      const safeName = name.replace(/[^a-zA-Z0-9-_]/g, " ");
+      const safeStyle = style.replace(/[^a-zA-Z0-9-_]/g, " ");
+      return `/products/${safeStyle}/${safeName}/01.jpg`;
+    }
+    return "/gray.avif";
+  };
+
+const formatAddress = (addressData) => {
+  if (!addressData || addressData.length === 0) return "—";
+  
+  const addr = Array.isArray(addressData) ? addressData[0] : addressData;
+  
+  if (!addr) return "—";
+  
+  const parts = [
+    addr.address_line_1,
+    addr.address_line_2,
+    `${addr.city}, ${addr.state} ${addr.zip_code}`,
+  ].filter(Boolean);
+
+  return parts.join(",");
+};
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -564,6 +621,28 @@ const UserProfile = () => {
 
     if (userId) {
       fetchOrders();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      try {
+        const addressResponse = await fetch(
+          `http://localhost:3001/api/shipping-addresses/user/${userId}`
+        );
+
+        const address = await addressResponse.json();
+        if (address.success) {
+          setUserAddress(address.data[0]);
+          console.log("done")
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      }
+    };
+
+    if (userId) {
+      fetchAddress();
     }
   }, [userId]);
 
@@ -614,6 +693,7 @@ const UserProfile = () => {
           bg="white"
           border={{ base: "none", lg: "1px" }}
           ml={{ base: 0, lg: "40%" }}
+          minH="100vh"
         >
           <Box p={6}>
             <Alert status="error" mb={4}>
@@ -631,7 +711,6 @@ const UserProfile = () => {
     return null;
   }
 
-  // Add this check for userInfo
   if (!userInfo) {
     return (
       <Sidebar>
@@ -641,6 +720,7 @@ const UserProfile = () => {
           bg="white"
           border={{ base: "none", lg: "1px" }}
           ml={{ base: 0, lg: "40%" }}
+          minH="100vh"
         >
           <Center h="100vh">
             <VStack spacing={4}>
@@ -663,6 +743,7 @@ const UserProfile = () => {
         bg="white"
         boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
+        minH="100vh"
       >
         <Flex p={4} justify="space-between" align="center">
           <IconButton
@@ -681,7 +762,7 @@ const UserProfile = () => {
           />
         </Flex>
 
-        <Box textAlign="center" mb={6} px={4}>
+        <Box textAlign="center" mb={6}>
           <Heading as="h1" size="lg" mb={8}>
             <Text as="span" color="gray.500" fontWeight="normal">
               Hello,{" "}
@@ -742,7 +823,7 @@ const UserProfile = () => {
                 </Tab>
               </TabList>
               <TabPanels my={12}>
-                <TabPanel p={0}>
+                <TabPanel p={4}>
                   <Flex
                     p={4}
                     bg="#494949"
@@ -820,7 +901,7 @@ const UserProfile = () => {
                           textAlign="left"
                           whiteSpace="pre-line"
                         >
-                          {userInfo?.address || "—"}
+                          {formatAddress(userAddress) || "—"}
                         </Text>
                       </Grid>
                     </Box>
@@ -850,16 +931,222 @@ const UserProfile = () => {
               </TabPanels>
             </Tabs>
           ) : (
-            <Box>
-              {myPages(currPage, {
-                userInfo,
-                userName,
-                userEmail,
-                handleLogout,
-                setCurrPage,
-                orders,
-              })}
-            </Box>
+            <Tabs
+              colorScheme="gray"
+              align="center"
+              defaultIndex={defaultTabIndex}
+            >
+              <TabList
+                gap={0}
+                borderBottom="none"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Tab
+                  fontWeight="medium"
+                  px={2}
+                  py={1}
+                  fontSize="md"
+                  border="none"
+                  _selected={{
+                    color: "black",
+                    fontWeight: "bold",
+                    border: "none",
+                  }}
+                  onClick={() => setCurrPage("all")}
+                  color="gray.600"
+                >
+                  My Pages
+                </Tab>
+                <Text
+                  mx={2}
+                  color="gray.400"
+                  fontWeight="normal"
+                  fontSize="lg"
+                  userSelect="none"
+                >
+                  |
+                </Text>
+                <Tab
+                  fontWeight="medium"
+                  px={2}
+                  py={1}
+                  fontSize="md"
+                  border="none"
+                  _selected={{
+                    color: "black",
+                    fontWeight: "bold",
+                    border: "none",
+                  }}
+                  color="gray.600"
+                >
+                  Cart
+                </Tab>
+              </TabList>
+              <TabPanels my={8}>
+                <TabPanel>
+                  {myPages(currPage, {
+  userInfo,
+  userName,
+  userEmail,
+  handleLogout,
+  setCurrPage,
+  orders,
+  address: formatAddress(userAddress) 
+})}
+                </TabPanel>
+                <TabPanel>
+                  <Flex
+                    p={4}
+                    bg="#494949"
+                    borderRadius="full"
+                    align="center"
+                    justify="space-between"
+                    h="45px"
+                    mb={8}
+                  >
+                    <Text color="white" fontWeight="bold" ml={2}>
+                      Cart
+                    </Text>
+                    <Text color="white" fontWeight="normal" fontSize="14px">
+                      {totalItems} item(s)
+                    </Text>
+                  </Flex>
+
+                  {cartItems.length === 0 ? (
+                    <VStack py={8} spacing={4}>
+                      <Text color="gray.500">Your cart is empty</Text>
+                      <Button
+                        size="sm"
+                        bg="#ECECEC"
+                        onClick={() => navigate("/wholesale/shop-all")}
+                      >
+                        Browse Products
+                      </Button>
+                    </VStack>
+                  ) : (
+                    <VStack align="stretch">
+                      {cartItems.map((item) => (
+                        <Box
+                          key={item.id}
+                          borderRadius="lg"
+                          p={2}
+                          pb={4}
+                          bg="white"
+                        >
+                          <Flex gap={3} align="center">
+                            <Image
+                              src={getImagePath(item.name, item.style)}
+                              alt={item.name}
+                              w="130px"
+                              h="130px"
+                              objectFit="cover"
+                              borderRadius="md"
+                              fallbackSrc="/gray.avif"
+                            />
+                            <VStack>
+                              <Flex
+                                gap={8}
+                                justifyContent="space-between"
+                                width="100%"
+                                mb={1}
+                              >
+                                <Text
+                                  fontWeight="thin"
+                                  fontSize="13px"
+                                  color="gray"
+                                  noOfLines={1}
+                                >
+                                  {item.style === "marinated"
+                                    ? "Marinated Meat"
+                                    : item.style === "processed"
+                                    ? "Prepped Meat"
+                                    : item.style === "unprocessed"
+                                    ? "Untrimmed Meat"
+                                    : item.style}{" "}
+                                </Text>
+                                <Text
+                                  textDecor="underline"
+                                  onClick={() => handleRemove(item.id)}
+                                  textColor="gray.400"
+                                  fontWeight="light"
+                                  fontSize="13px"
+                                  cursor="pointer"
+                                >
+                                  Remove
+                                </Text>
+                              </Flex>
+
+                              <VStack align="start" width="100%" spacing={1}>
+                                <Text
+                                  fontSize="15px"
+                                  pr={6}
+                                  textAlign="left"
+                                  whiteSpace="pre-line"
+                                  lineHeight="1.2"
+                                >
+                                  {item.name} {"\n"} {item.spec}
+                                </Text>
+                              </VStack>
+
+                              <Flex
+                                justifyContent="space-between"
+                                width="100%"
+                                align="center"
+                              >
+                                <Text
+                                  fontSize="16px"
+                                  color="black"
+                                  fontWeight="bold"
+                                >
+                                  ${item.price * item.quantity}
+                                </Text>
+                                <HStack spacing={2}>
+                                  <Button
+                                    size="xs"
+                                    onClick={() => handleSubtract(item.id)}
+                                    variant="outline"
+                                    border="none"
+                                  >
+                                    -
+                                  </Button>
+                                  <Text>{item.quantity}</Text>
+                                  <Button
+                                    size="xs"
+                                    onClick={() => handleAdd(item)}
+                                    variant="outline"
+                                    border="none"
+                                  >
+                                    +
+                                  </Button>
+                                </HStack>
+                              </Flex>
+                            </VStack>
+                          </Flex>
+                          <Divider
+                            mt={6}
+                            borderColor="#ECECEC"
+                            borderWidth="1px"
+                          />
+                        </Box>
+                      ))}
+
+                      <Button
+                        size="sm"
+                        bg="#ECECEC"
+                        color="#494949"
+                        _hover={{ bg: "#6AAFDB" }}
+                        onClick={() => navigate("/contact")}
+                        borderRadius="full"
+                        h="45px"
+                      >
+                        CHECK OUT ${totalPrice.toFixed(2)}
+                      </Button>
+                    </VStack>
+                  )}
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           )}
         </Box>
         <Footer />

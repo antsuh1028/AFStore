@@ -58,6 +58,7 @@ const ContactPage = () => {
   const [token, setToken] = useState("");
   const [currUser, setCurrUser] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userAddress, setUserAddress] = useState(null);
 
   const location = useLocation();
 
@@ -66,16 +67,16 @@ const ContactPage = () => {
     if (storedToken) {
       try {
         const decoded = jwtDecode(storedToken);
-        
+
         if (decoded.exp > Date.now() / 1000) {
           setToken(storedToken);
           setCurrUser(decoded);
           setIsAuthenticated(true);
-          
-          // Fetch user info and update state
+
           fetch(`http://localhost:3001/api/users/${decoded.userId}`)
             .then((response) => response.json())
             .then((data) => {
+              console.log(data);
               setUserInfo(data.user);
             })
             .catch((error) => {
@@ -88,19 +89,58 @@ const ContactPage = () => {
         localStorage.removeItem("token");
       }
     }
-    
+
     window.scrollTo(0, 0);
   }, []);
 
-  // Separate useEffect to populate form when userInfo updates
   useEffect(() => {
+    const fetchUserAddress = async () => {
+      if (isAuthenticated && currUser.userId) {
+        try {
+          const response = await fetch(
+            `http://localhost:3001/api/shipping-addresses/user/${currUser.userId}`
+          );
+
+          const data = await response.json();
+          if (data.success && data.data.length > 0) {
+            setUserAddress(data.data[0]);
+          }
+        } catch (error) {
+          console.error("Error fetching address:", error);
+        }
+      }
+    };
+
+    fetchUserAddress();
+  }, [isAuthenticated, currUser.userId]);
+
+  useEffect(() => {
+    console.log(userInfo);
     if (form.current && userInfo && Object.keys(userInfo).length > 0) {
-      if (form.current.user_name) form.current.user_name.value = userInfo.name || "";
-      if (form.current.user_email) form.current.user_email.value = userInfo.email || "";
-      if (form.current.user_phone) form.current.user_phone.value = userInfo.phone_number || "";
-      if (form.current.license_number) form.current.license_number.value = userInfo.license_number || "";
+      if (form.current.user_name)
+        form.current.user_name.value = userInfo.name || "";
+      if (form.current.user_email)
+        form.current.user_email.value = userInfo.email || "";
+      if (form.current.user_phone)
+        form.current.user_phone.value = userInfo.phone_number || "";
+      if (form.current.business_license)
+        form.current.business_license.value = userInfo.license_number || "";
+
+      if (userAddress) {
+        if (form.current.company_address_1)
+          form.current.company_address_1.value =
+            userAddress.address_line_1 || "";
+        if (form.current.company_address_2)
+          form.current.company_address_2.value =
+            userAddress.address_line_2 || "";
+        if (form.current.zip_code)
+          form.current.zip_code.value = userAddress.zip_code || "";
+        if (form.current.city) form.current.city.value = userAddress.city || "";
+        if (form.current.state)
+          form.current.state.value = userAddress.state || "";
+      }
     }
-  }, [userInfo]);
+  }, [userInfo, userAddress]);
 
   const validateEmail = (value) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -142,17 +182,23 @@ const ContactPage = () => {
       name: formData.get("user_name"),
       email: formData.get("user_email"),
       phone: formData.get("user_phone"),
-      license_number: formData.get("license_number"),
+      license_number: formData.get("business_license"),
       message: formData.get("message"),
       cart_items: cartItems,
       cart_total: cartItems.reduce(
         (sum, item) => sum + item.price * item.quantity,
         0
       ),
+      company_address_1: formData.get("company_address_1"),
+      company_address_2: formData.get("company_address_2"),
+      city: formData.get("city"),
+      state: formData.get("state"),
+      zip_code: formData.get("zip_code"),
+      business_license: formData.get("business_license"),
+      california_resale: formData.get("california_resale"),
     };
 
     try {
-      // Add inquiry to database
       const response = await fetch("http://localhost:3001/api/inquiries", {
         method: "POST",
         headers: {
@@ -213,7 +259,7 @@ const ContactPage = () => {
         </Box>
 
         <Box px={6} py={4}>
-          <Heading mb={3} fontWeight="medium" fontSize="3xl" textAlign="center">
+          <Heading mb={3} fontWeight="bold" fontSize="3xl" textAlign="center">
             Contact Us
           </Heading>
           <Text mb={4} color="gray.500" fontSize="md" textAlign="center">
@@ -224,7 +270,9 @@ const ContactPage = () => {
           <form ref={form} onSubmit={sendEmail}>
             <VStack spacing={4} align="stretch">
               <FormControl isRequired>
-                <FormLabel fontWeight="semibold" fontSize="sm">Name</FormLabel>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Name
+                </FormLabel>
                 <Input
                   type="text"
                   name="user_name"
@@ -234,7 +282,9 @@ const ContactPage = () => {
               </FormControl>
 
               <FormControl isRequired isInvalid={emailError !== ""}>
-                <FormLabel fontWeight="semibold" fontSize="sm">Email</FormLabel>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Email
+                </FormLabel>
                 <Input
                   type="email"
                   name="user_email"
@@ -252,7 +302,9 @@ const ContactPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">Phone Number</FormLabel>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Phone Number
+                </FormLabel>
                 <Input
                   type="tel"
                   name="user_phone"
@@ -262,7 +314,9 @@ const ContactPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">Company Address line 1</FormLabel>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Company Address line 1
+                </FormLabel>
                 <Input
                   type="text"
                   name="company_address_1"
@@ -272,7 +326,9 @@ const ContactPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">Company Address line 2</FormLabel>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Company Address line 2
+                </FormLabel>
                 <Input
                   type="text"
                   name="company_address_2"
@@ -283,16 +339,9 @@ const ContactPage = () => {
 
               <HStack spacing={4}>
                 <FormControl>
-                  <FormLabel fontWeight="semibold" fontSize="sm">Zip code</FormLabel>
-                  <Input
-                    type="text"
-                    name="zip_code"
-                    {...inputStyle}
-                    placeholder="90021"
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel fontWeight="semibold" fontSize="sm">City</FormLabel>
+                  <FormLabel fontWeight="semibold" fontSize="sm">
+                    City
+                  </FormLabel>
                   <Input
                     type="text"
                     name="city"
@@ -304,7 +353,20 @@ const ContactPage = () => {
 
               <HStack spacing={4}>
                 <FormControl>
-                  <FormLabel fontWeight="semibold" fontSize="sm">State</FormLabel>
+                  <FormLabel fontWeight="semibold" fontSize="sm">
+                    Zip code
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    name="zip_code"
+                    {...inputStyle}
+                    placeholder="90021"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">
+                    State
+                  </FormLabel>
                   <Input
                     type="text"
                     name="state"
@@ -312,19 +374,23 @@ const ContactPage = () => {
                     placeholder="CA"
                   />
                 </FormControl>
-                <FormControl>
-                  <FormLabel fontWeight="semibold" fontSize="sm">Phone</FormLabel>
+                {/* <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">
+                    Phone
+                  </FormLabel>
                   <Input
                     type="tel"
                     name="phone_2"
                     {...inputStyle}
                     placeholder="(123) 456-7890"
                   />
-                </FormControl>
+                </FormControl> */}
               </HStack>
 
               <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">Business License</FormLabel>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Business License
+                </FormLabel>
                 <Input
                   type="text"
                   name="business_license"
@@ -360,7 +426,9 @@ const ContactPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">California Resale Certificate</FormLabel>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  California Resale Certificate
+                </FormLabel>
                 <Input
                   type="text"
                   name="california_resale"
@@ -396,7 +464,9 @@ const ContactPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">Message</FormLabel>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Message
+                </FormLabel>
                 <Textarea
                   name="message"
                   rows={5}
@@ -430,69 +500,11 @@ const ContactPage = () => {
                 type="hidden"
                 name="cart_total"
                 value={cartItems
-                  .reduce(
-                    (sum, item) => sum + item.price * item.quantity,
-                    0
-                  )
+                  .reduce((sum, item) => sum + item.price * item.quantity, 0)
                   .toFixed(2)}
               />
 
-              {/* <Box mb={6} p={4} bg="gray.50" borderRadius="lg">
-                <Heading as="h4" size="sm" mb={3}>
-                  Current Cart ({cartItems.length} items)
-                </Heading>
-                {cartItems.length === 0 ? (
-                  <Text fontSize="sm" color="gray.500">
-                    No items in cart
-                  </Text>
-                ) : (
-                  <VStack spacing={2} align="stretch">
-                    {cartItems.map((item) => (
-                      <Flex
-                        key={item.id}
-                        justify="space-between"
-                        align="center"
-                        p={2}
-                        bg="white"
-                        borderRadius="md"
-                      >
-                        <Box>
-                          <Text fontSize="sm" fontWeight="medium">
-                            {item.name}
-                          </Text>
-                          <Text fontSize="xs" color="gray.500">
-                            Qty: {item.quantity}
-                          </Text>
-                        </Box>
-                        <Text fontSize="sm" fontWeight="bold">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </Text>
-                      </Flex>
-                    ))}
-                    <Divider />
-                    <Flex justify="space-between">
-                      <Text fontWeight="bold">Total:</Text>
-                      <Text fontWeight="bold" color="green.600">
-                        $
-                        {cartItems
-                          .reduce(
-                            (sum, item) =>
-                              sum + item.price * item.quantity,
-                            0
-                          )
-                          .toFixed(2)}
-                      </Text>
-                    </Flex>
-                  </VStack>
-                )}
-              </Box> */}
-
-              <Box
-                display="flex"
-                justifyContent="center"
-                width="100%"
-                pt={4}
-              >
+              <Box display="flex" justifyContent="center" width="100%" pt={4}>
                 <Button
                   type="submit"
                   bg="#494949"

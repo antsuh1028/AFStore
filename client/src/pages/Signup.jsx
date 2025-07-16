@@ -14,12 +14,16 @@ import {
   useToast,
   useDisclosure,
   Flex,
+  Divider,
 } from "@chakra-ui/react";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
+import Navbar from "../components/Navbar";
+import Breadcrumbs from "../components/BreadCrumbs.";
+import Footer from "../components/Footer";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -92,7 +96,7 @@ const Signup = () => {
           htmlFor={id}
           variant="link"
           fontSize="sm"
-          color="gray.700"
+          color="blue.500"
           textDecoration="underline"
           cursor="pointer"
           p={0}
@@ -170,6 +174,8 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData(e.target);
+
     if (emailError || licenseError) {
       toast({
         title: "Please fix form errors.",
@@ -203,8 +209,14 @@ const Signup = () => {
           companyName,
           email,
           password,
-          phone_number,
           licenseNumber,
+          companyAddress1: formData.get("company_address_1"),
+          companyAddress2: formData.get("company_address_2"),
+          zipCode: formData.get("zip_code"),
+          city: formData.get("city"),
+          state: formData.get("state"),
+          phone: formData.get("phone"),
+          californiaResale: formData.get("california_resale"),
           timestamp: new Date().toISOString(),
         }),
       });
@@ -214,7 +226,7 @@ const Signup = () => {
         toast({
           title: "Signup request submitted!",
           description:
-            "Please wait for admin approval. You'll be contacted within 24-48 hours.",
+            "Please wait for admin approval. You'll be contacted within 1-2 business days.",
           status: "success",
           duration: 5000,
           isClosable: true,
@@ -255,41 +267,31 @@ const Signup = () => {
         bg="white"
         boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
-        pt={8}
       >
-        {/* Header */}
-        <Box>
-          <Flex p={4} justify="space-between" align="center">
-            <IconButton
-              aria-label="Back"
-              icon={<ChevronLeft size={24} />}
-              variant="ghost"
-              size="lg"
-              onClick={() => navigate(-1)}
-            />
-            <IconButton
-              aria-label="Menu"
-              icon={<Text>☰</Text>}
-              variant="ghost"
-              onClick={onOpen}
-            />
-          </Flex>
+        <Navbar onOpen={onOpen} />
+
+        <Box py={3} px={4} display="flex" justifyContent="center">
+          <Breadcrumbs
+            listOfBreadCrumbs={[
+              { label: "Home", url: "/" },
+              { label: "Create Account", url: "/signup" },
+            ]}
+          />
         </Box>
 
         <Box px={6} py={4}>
-          <Heading
-            mb={8}
-            fontWeight="semibold"
-            fontSize="3xl"
-            textAlign="center"
-          >
+          <Heading mb={3} fontWeight="medium" fontSize="3xl" textAlign="center">
             Create Account
           </Heading>
+          <Text mb={4} color="gray.500" fontSize="md" textAlign="center">
+            Join our wholesale platform
+          </Text>
+          <Divider mb={6} borderColor="gray.300" />
 
           <form onSubmit={handleSignup}>
-            <VStack spacing={5} align="stretch">
+            <VStack spacing={4} align="stretch">
               <FormControl isRequired>
-                <FormLabel fontSize="sm" fontWeight="semibold">
+                <FormLabel fontWeight="semibold" fontSize="sm">
                   First Name
                 </FormLabel>
                 <Input
@@ -302,7 +304,7 @@ const Signup = () => {
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel fontSize="sm" fontWeight="semibold">
+                <FormLabel fontWeight="semibold" fontSize="sm">
                   Last Name
                 </FormLabel>
                 <Input
@@ -315,7 +317,7 @@ const Signup = () => {
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel fontSize="sm" fontWeight="semibold">
+                <FormLabel fontWeight="semibold" fontSize="sm">
                   Company/Business Name
                 </FormLabel>
                 <Input
@@ -328,7 +330,7 @@ const Signup = () => {
               </FormControl>
 
               <FormControl isRequired isInvalid={emailError !== ""}>
-                <FormLabel fontSize="sm" fontWeight="semibold">
+                <FormLabel fontWeight="semibold" fontSize="sm">
                   Email
                 </FormLabel>
                 <Input
@@ -341,13 +343,13 @@ const Signup = () => {
                   }}
                   {...inputStyle}
                 />
-                {emailError ? (
+                {emailError && (
                   <FormErrorMessage>{emailError}</FormErrorMessage>
-                ) : null}
+                )}
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel fontSize="sm" fontWeight="semibold">
+                <FormLabel fontWeight="semibold" fontSize="sm">
                   Password
                 </FormLabel>
                 <Input
@@ -359,13 +361,87 @@ const Signup = () => {
                 />
               </FormControl>
 
-              <FormControl isRequired isInvalid={licenseError !== ""}>
-                <FormLabel fontSize="sm" fontWeight="semibold">
-                  Wholesale license numbers
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Company Address line 1
                 </FormLabel>
                 <Input
                   type="text"
-                  placeholder="C-1234567"
+                  name="company_address_1"
+                  placeholder="1805 Industrial St"
+                  {...inputStyle}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Company Address line 2
+                </FormLabel>
+                <Input
+                  type="text"
+                  name="company_address_2"
+                  placeholder="Suite 100"
+                  {...inputStyle}
+                />
+              </FormControl>
+
+              <Flex gap={4}>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">
+                    Zip code
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    name="zip_code"
+                    placeholder="90021"
+                    {...inputStyle}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">
+                    City
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    name="city"
+                    placeholder="City"
+                    {...inputStyle}
+                  />
+                </FormControl>
+              </Flex>
+
+              <Flex gap={4}>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">
+                    State
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    name="state"
+                    placeholder="CA"
+                    {...inputStyle}
+                  />{" "}
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="semibold" fontSize="sm">
+                    Phone
+                  </FormLabel>
+                  <Input
+                    type="tel"
+                    name="phone"
+                    placeholder="(123) 456-7890"
+                    {...inputStyle}
+                  />
+                </FormControl>
+              </Flex>
+
+              <FormControl isRequired isInvalid={licenseError !== ""}>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Business License
+                </FormLabel>
+                <Input
+                  type="text"
+                  placeholder="LA-1234567 or 2025-000123"
                   value={licenseNumber}
                   onChange={(e) => {
                     setLicenseNumber(e.target.value);
@@ -373,17 +449,40 @@ const Signup = () => {
                   }}
                   {...inputStyle}
                 />
-                {licenseError ? (
+                {licenseError && (
                   <FormErrorMessage>{licenseError}</FormErrorMessage>
-                ) : null}
+                )}
 
-                <FileUploadField
-                  id="license-file-upload"
-                  name="license_file"
-                  fileName={licenseFileName}
-                  setFileName={setLicenseFileName}
-                  helpText="*Please attach the wholesale license."
-                />
+                <Box mt={2}>
+                  <FileUploadField
+                    id="license-file-upload"
+                    name="license_file"
+                    fileName={licenseFileName}
+                    setFileName={setLicenseFileName}
+                    helpText="*Please attach the Business License"
+                  />
+                </Box>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  California Resale Certificate
+                </FormLabel>
+                <Input
+                  type="text"
+                  name="california_resale"
+                  placeholder="# 123-456789"
+                  {...inputStyle}
+                />{" "}
+                <Box mt={2}>
+                  <FileUploadField
+                    id="resale-cert-upload"
+                    name="resale_cert_file"
+                    fileName={businessFileName}
+                    setFileName={setBusinessFileName}
+                    helpText="*Please attach the California Resale Certificate"
+                  />
+                </Box>
               </FormControl>
 
               <CustomCheckbox
@@ -395,7 +494,7 @@ const Signup = () => {
               </CustomCheckbox>
 
               <FormControl>
-                <FormLabel fontSize="sm" fontWeight="semibold">
+                <FormLabel fontWeight="semibold" fontSize="sm">
                   Government issued ID (e.g., Driver's License)
                 </FormLabel>
                 <FileUploadField
@@ -408,7 +507,7 @@ const Signup = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontSize="sm" fontWeight="semibold">
+                <FormLabel fontWeight="semibold" fontSize="sm">
                   Business License or Reseller Permit
                 </FormLabel>
                 <FileUploadField
@@ -429,21 +528,22 @@ const Signup = () => {
                 </CustomCheckbox>
               </Box>
 
-              <Button
-                type="submit"
-                bg="#494949"
-                color="white"
-                isLoading={loading}
-                loadingText="Creating Account..."
-                borderRadius="full"
-                size="lg"
-                width="100%"
-                _hover={{ bg: "#6AAFDB" }}
-                _disabled={{ bg: "gray.400" }}
-                mt={4}
-              >
-                CREATE ACCOUNT
-              </Button>
+              <Box display="flex" justifyContent="center" width="100%" pt={4}>
+                <Button
+                  type="submit"
+                  bg="#494949"
+                  color="white"
+                  isLoading={loading}
+                  loadingText="Creating Account..."
+                  borderRadius="full"
+                  size="lg"
+                  width="100%"
+                  _hover={{ bg: "#6AAFDB" }}
+                  _disabled={{ bg: "gray.400" }}
+                >
+                  CREATE ACCOUNT
+                </Button>
+              </Box>
 
               <Box textAlign="center" pt={4}>
                 <Button
@@ -458,7 +558,48 @@ const Signup = () => {
                 </Button>
               </Box>
             </VStack>
+            <Button
+              onClick={() => {
+                setFirstName("John");
+                setLastName("Doe");
+                setCompanyName("Acme Restaurant Corp");
+                setEmail("john.doe@acmerestaurant.com");
+                setPassword("password123");
+                setAgreementChecked(true);
+
+                // Fill form inputs directly
+                const form = document.querySelector("form");
+                if (form) {
+                  form.querySelector(
+                    'input[placeholder="1805 Industrial St"]'
+                  ).value = "1805 Industrial St";
+                  form.querySelector('input[placeholder="Suite 100"]').value =
+                    "Suite 100";
+                  form.querySelector('input[placeholder="90021"]').value =
+                    "90021";
+                  form.querySelector('input[placeholder="City"]').value =
+                    "Los Angeles";
+                  form.querySelector('input[placeholder="CA"]').value = "CA";
+                  form.querySelector(
+                    'input[placeholder="(123) 456-7890"]'
+                  ).value = "(323) 943-9318";
+                  form.querySelector(
+                    'input[placeholder="LA-1234567 or 2025-000123"]'
+                  ).value = "LA-1234567";
+                  form.querySelector(
+                    'input[placeholder="# 123-456789"]'
+                  ).value = "# 123-456789";
+                }
+              }}
+              size="sm"
+              colorScheme="orange"
+              mb={4}
+            >
+              Fill Test Data
+            </Button>
           </form>
+
+          <Footer />
         </Box>
       </Container>
     </Sidebar>

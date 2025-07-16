@@ -95,67 +95,58 @@ UsersRouter.post("/login", async (req, res) => {
 });
 
 UsersRouter.post("/signup", async (req, res) => {
-  const { firstName, lastName, companyName, email, password, licenseNumber } =
-    req.body;
+  const { 
+    firstName, 
+    lastName, 
+    companyName, 
+    email, 
+    password, 
+    licenseNumber,
+    companyAddress1,
+    companyAddress2,
+    zipCode,
+    city,
+    state,
+    phone,
+    californiaResale
+  } = req.body;
+  console.log(req.body)
 
-  // Validation
-  if (
-    !firstName ||
-    !lastName ||
-    !companyName ||
-    !email ||
-    !password ||
-    !licenseNumber
-  ) {
+  if (!firstName || !lastName || !companyName || !email || !password || !licenseNumber) {
     return res.status(400).json({
-      message:
-        "All fields are required: firstName, lastName, companyName, email, password, licenseNumber",
+      message: "Required fields: firstName, lastName, companyName, email, password, licenseNumber",
     });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const licenseRegex = /^C-\d{7}$/;
-
   if (!emailRegex.test(email)) {
     return res.status(400).json({ message: "Invalid email format" });
   }
 
-  if (!licenseRegex.test(licenseNumber)) {
-    return res.status(400).json({
-      message: "License number must match C-1234567 format",
-    });
-  }
-
   try {
-    // Check if email already exists
-    const existing = await db.query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
+    const existing = await db.query("SELECT * FROM users WHERE email = $1", [email]);
     if (existing.rows.length > 0) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Insert into signup_requests table
     const result = await db.query(
-      `INSERT INTO signup_requests (first_name, last_name, email, password, license_number, company, timestamp)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, first_name, last_name, email, company`,
+      `INSERT INTO signup_requests (
+        first_name, last_name, email, password, license_number, company, 
+        company_address_1, company_address_2, zip_code, city, state, phone, 
+        california_resale, timestamp
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
+      RETURNING id, first_name, last_name, email, company`,
       [
-        firstName,
-        lastName,
-        email,
-        hashedPassword,
-        licenseNumber,
-        companyName,
-        new Date(),
+        firstName, lastName, email, hashedPassword, licenseNumber, companyName,
+        companyAddress1, companyAddress2, zipCode, city, state, phone,
+        californiaResale, new Date()
       ]
     );
 
     res.status(201).json({
-      message:
-        "Signup request submitted successfully. Please wait for admin approval.",
+      message: "Signup request submitted successfully. Please wait for admin approval.",
       request: result.rows[0],
     });
   } catch (err) {
@@ -260,60 +251,75 @@ UsersRouter.get("/:id", async (req, res) => {
 
 // POST /api/users/approve-signup/:request_id - approve signup and create user
 UsersRouter.post("/approve-signup/:request_id", async (req, res) => {
-  try {
-    const request_id = parseInt(req.params.request_id);
+ try {
+   const request_id = parseInt(req.params.request_id);
 
-    if (isNaN(request_id)) {
-      return res.status(400).json({ error: "Invalid request ID" });
-    }
+   if (isNaN(request_id)) {
+     return res.status(400).json({ error: "Invalid request ID" });
+   }
 
-    const requestResult = await db.query(
-      "SELECT * FROM signup_requests WHERE id = $1",
-      [request_id]
-    );
+   const requestResult = await db.query(
+     "SELECT * FROM signup_requests WHERE id = $1",
+     [request_id]
+   );
 
-    if (requestResult.rows.length === 0) {
-      return res.status(404).json({ error: "Signup request not found" });
-    }
+   if (requestResult.rows.length === 0) {
+     return res.status(404).json({ error: "Signup request not found" });
+   }
 
-    const request = requestResult.rows[0];
+   const request = requestResult.rows[0];
 
-    const existingUser = await db.query(
-      "SELECT * FROM users WHERE email = $1",
-      [request.email]
-    );
+   const existingUser = await db.query(
+     "SELECT * FROM users WHERE email = $1",
+     [request.email]
+   );
 
-    if (existingUser.rows.length > 0) {
-      return res.status(400).json({ error: "Email already exists in users" });
-    }
+   if (existingUser.rows.length > 0) {
+     return res.status(400).json({ error: "Email already exists in users" });
+   }
 
-    const userResult = await db.query(
-      `INSERT INTO users (name, email, password, license_number, phone_number, is_admin, company) 
-   VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, license_number, phone_number, is_admin, company`,
-      [
-        `${request.first_name} ${request.last_name}`,
-        request.email,
-        request.password,
-        request.license_number,
-        request.phone_number,
-        false,
-        request.company,
-      ]
-    );
+   // Create user
+   const userResult = await db.query(
+     `INSERT INTO users (name, email, password, license_number, phone_number, is_admin, company) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, license_number, phone_number, is_admin, company`,
+     [
+       `${request.first_name} ${request.last_name}`,
+       request.email,
+       request.password,
+       request.license_number,
+       request.phone,
+       false,
+       request.company,
+     ]
+   );
+   const userId = userResult.rows[0].id;
 
-    await db.query("DELETE FROM signup_requests WHERE id = $1", [request_id]);
+   // Create address entry
+   await db.query(
+     `INSERT INTO addresses (user_id, address_type, address_line_1, address_line_2, city, state, zip_code) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+     [
+       userId,
+       'company',
+       request.company_address_1,
+       request.company_address_2,
+       request.city,
+       request.state,
+       request.zip_code
+     ]
+   );
 
-    res.json({
-      success: true,
-      message: "User approved and created successfully",
-      user: userResult.rows[0],
-    });
-  } catch (err) {
-    console.error("Database error:", err);
-    res
-      .status(500)
-      .json({ error: "Internal server error", message: err.message });
-  }
+   await db.query("DELETE FROM signup_requests WHERE id = $1", [request_id]);
+
+   res.json({
+     success: true,
+     message: "User approved and created successfully",
+     user: userResult.rows[0],
+   });
+ } catch (err) {
+   console.error("Database error:", err);
+   res.status(500).json({ error: "Internal server error", message: err.message });
+ }
 });
 
 // DELETE /api/users/signup-requests/:request_id - reject signup request

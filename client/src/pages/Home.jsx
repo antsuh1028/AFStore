@@ -157,15 +157,19 @@ const HomePage = () => {
               isLoading={loading}
               _hover={{ bg: "gray.100" }}
             />
-            <IconButton
-              aria-label="Cart"
-              icon={<ShoppingCart size={24} />}
-              variant="ghost"
-              onClick={() => {
-                navigate("/cart");
-              }}
-              _hover={{ bg: "gray.100" }}
-            />
+            {isAuthenticated && (
+              <IconButton
+                aria-label="Cart"
+                icon={<ShoppingCart size={24} />}
+                variant="ghost"
+                onClick={() => {
+                  navigate(`/profile/user/${userId}`, {
+                    state: { activeTab: 1 },
+                  });
+                }}
+                _hover={{ bg: "gray.100" }}
+              />
+            )}
             <IconButton
               aria-label="Menu"
               icon={<Text fontSize={24}>☰</Text>}
@@ -457,7 +461,7 @@ const HomePage = () => {
         </Grid>
 
         {/* Location */}
-        <HStack px={6} mb={3} spacing={2}ml={2}>
+        <HStack px={6} mb={3} spacing={2} ml={2}>
           <Image
             src="../../Final_pic/only here.png"
             h="20px"
@@ -539,7 +543,7 @@ const HomePage = () => {
           <Heading size="md" mb={8} fontWeight="extrabold" ml={2}>
             Why AdamsFoods?
           </Heading>
-          <Flex mb={4} gap={4} align="center"> 
+          <Flex mb={4} gap={4} align="center">
             <Image
               src="/final/why adamsfoods.png"
               alt="Why AdamsFoods"

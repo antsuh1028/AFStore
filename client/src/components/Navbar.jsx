@@ -5,20 +5,18 @@ import { useAuthContext } from "../hooks/useAuth"; // Import auth context
 
 const Navbar = ({ onOpen }) => {
   const navigate = useNavigate();
-  
-  // Get auth state
+
   const { isAuthenticated, userId, loading } = useAuthContext();
 
-  // Handle user icon click based on authentication
   const handleUserIconClick = () => {
     console.log("Navbar User icon clicked - Auth Status:", isAuthenticated);
     console.log("User ID:", userId);
-    
+
     if (loading) {
       // Still loading auth state, don't do anything
       return;
     }
-    
+
     if (isAuthenticated && userId) {
       navigate(`/profile/user/${userId}`);
     } else {
@@ -49,15 +47,19 @@ const Navbar = ({ onOpen }) => {
             isLoading={loading}
             _hover={{ bg: "gray.100" }}
           />
-          <IconButton
-            aria-label="Cart"
-            icon={<ShoppingCart size={24} />}
-            variant="ghost"
-            onClick={() => {
-              navigate("/cart");
-            }}
-            _hover={{ bg: "gray.100" }}
-          />
+          {isAuthenticated && (
+            <IconButton
+              aria-label="Cart"
+              icon={<ShoppingCart size={24} />}
+              variant="ghost"
+              onClick={() => {
+                navigate(`/profile/user/${userId}`, {
+                  state: { activeTab: 1 },
+                });
+              }}
+              _hover={{ bg: "gray.100" }}
+            />
+          )}
           <IconButton
             aria-label="Menu"
             icon={<Text fontSize="2xl">☰</Text>}

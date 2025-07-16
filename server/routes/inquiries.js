@@ -31,19 +31,43 @@ InquiriesRouter.get("/:id", async (req, res) => {
 
 // POST /api/inquiries - Create new inquiry
 InquiriesRouter.post("/", async (req, res) => {
-  try {
-    const { name, email, phone, license_number, message, cart_items, cart_total } = req.body;
-    
-    const result = await db.query(
-      `INSERT INTO inquiries (name, email, phone, license_number, message, cart_items, cart_total)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [name, email, phone, license_number, message, JSON.stringify(cart_items), cart_total]
-    );
-    
-    res.status(201).json({ success: true, data: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+ try {
+   const { 
+     name, 
+     email, 
+     phone, 
+     license_number, 
+     message, 
+     cart_items, 
+     cart_total,
+     company_address_1,
+     company_address_2,
+     city,
+     state,
+     zip_code,
+     business_license,
+     california_resale
+   } = req.body;
+   
+   const result = await db.query(
+     `INSERT INTO inquiries (
+       name, email, phone, license_number, message, cart_items, cart_total,
+       company_address_1, company_address_2, city, state, zip_code,
+       business_license, california_resale
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
+     RETURNING *`,
+     [
+       name, email, phone, license_number, message, 
+       JSON.stringify(cart_items), cart_total,
+       company_address_1, company_address_2, city, state, zip_code,
+       business_license, california_resale
+     ]
+   );
+   
+   res.status(201).json({ success: true, data: result.rows[0] });
+ } catch (err) {
+   res.status(500).json({ error: err.message });
+ }
 });
 
 // PUT /api/inquiries/:id/status - Update inquiry status

@@ -81,17 +81,17 @@ const ITEMS = [
 export default function NavDrawer({ isOpen, onClose, containerRef }) {
   const [drawerWidth, setDrawerWidth] = useState("100%");
   const navigate = useNavigate();
-  
+
   // Use the shared auth context instead of individual hook
-  const { 
-    userInfo, 
-    isAuthenticated, 
-    logout, 
-    userName, 
-    userId, 
+  const {
+    userInfo,
+    isAuthenticated,
+    logout,
+    userName,
+    userId,
     loading,
-    error 
-  } = useAuthContext(); 
+    error,
+  } = useAuthContext();
 
   useEffect(() => {
     const updateWidth = () => {
@@ -111,12 +111,11 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
 
   const handleLogout = () => {
     logout();
-    onClose(); 
+    onClose();
     navigate("/");
   };
 
   const handleProfileClick = () => {
-    
     if (isAuthenticated && userId) {
       navigate(`/profile/user/${userId}`);
       onClose();
@@ -157,27 +156,29 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
               variant="ghost"
               _hover={{ bg: "gray.100" }}
             />
-            <IconButton
-              aria-label="Cart"
-              icon={<ShoppingCart size={24} />}
-              variant="ghost"
-              onClick={() => {
-                navigate("/cart");
-                onClose();
-              }}
-              _hover={{ bg: "gray.100" }}
-            />
+            {isAuthenticated && (
+              <IconButton
+                aria-label="Cart"
+                icon={<ShoppingCart size={24} />}
+                variant="ghost"
+                onClick={() => {
+                  navigate(`/profile/user/${userId}`, {
+                    state: { activeTab: 1 },
+                  });
+                }}
+                _hover={{ bg: "gray.100" }}
+              />
+            )}
             <IconButton
               aria-label="Close menu"
               icon={
-                <Text fontSize="2xl" color="#8f8e8e">
-                  ☰
-                </Text>
+                <Text fontSize="2xl">☰</Text>
               }
               variant="ghost"
               onClick={onClose}
               size="xs"
-              p={5}
+              py={5}
+              px={2}
             />
           </Flex>
         </Flex>
@@ -187,7 +188,9 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
           {loading ? (
             <VStack spacing={2}>
               <Spinner size="sm" />
-              <Text fontSize="sm" color="gray.500">Loading...</Text>
+              <Text fontSize="sm" color="gray.500">
+                Loading...
+              </Text>
             </VStack>
           ) : (
             <>
@@ -199,7 +202,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                   {isAuthenticated ? userName : "Guest"}
                 </Text>
               </Heading>
-              
+
               <Box my={6} fontSize="sm">
                 {isAuthenticated ? (
                   <>
@@ -237,7 +240,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                       Login
                     </Link>
                     |{" "}
-                    <Link 
+                    <Link
                       onClick={() => {
                         navigate("/signup");
                         onClose();
@@ -258,7 +261,6 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                   {error}
                 </Text>
               )}
-
             </>
           )}
         </Box>
@@ -286,11 +288,11 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                   cursor="pointer"
                   onClick={() => {
                     navigate(to);
-                    onClose(); 
+                    onClose();
                   }}
-                  _hover={{ 
+                  _hover={{
                     transform: "scale(1.05)",
-                    transition: "transform 0.2s"
+                    transition: "transform 0.2s",
                   }}
                 >
                   <Image
