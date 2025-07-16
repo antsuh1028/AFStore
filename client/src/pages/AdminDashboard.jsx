@@ -406,8 +406,33 @@ const AdminDashboard = () => {
     );
   }
 
+  const getTrendingItems = () => {
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const weeklyOrders = orders.filter(
+      (o) => new Date(o.order_date) >= weekAgo
+    );
+
+    const itemCounts = {};
+    weeklyOrders.forEach((order) => {
+      const orderItems = orderItemsMap[order.id] || [];
+      orderItems.forEach((item) => {
+        const product = itemsMap[item.item_id];
+        if (product) {
+          const name = product.name || product.item_name;
+          itemCounts[name] = (itemCounts[name] || 0) + item.quantity;
+        }
+      });
+    });
+
+    return Object.entries(itemCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5);
+  };
+
+  const trendingItems = getTrendingItems();
+
   return (
-    <Box bg="gray.50" minH="100vh" px={[2, 4, 12]} py={4}>
+    <Box bg="white" minH="100vh" px={[2, 4, 12]} py={4}>
       <Flex align="center" justify="space-between" mb={4}>
         <Flex align="center" gap={[2, 4]}>
           <Image boxSize={["24px", "32px"]} src="/MainLogo.png" alt="Logo" />
@@ -521,7 +546,7 @@ const AdminDashboard = () => {
       </Flex>
       {currentPage === 1 && (
         <>
-          <SimpleGrid columns={[1, 2]} spacing={6} mb={8}>
+          {/* <SimpleGrid columns={[1, 2]} spacing={6} mb={8}>
             <Flex
               bg="white"
               borderRadius="2xl"
@@ -532,6 +557,7 @@ const AdminDashboard = () => {
               gap={16}
               position="relative"
               overflow="hidden"
+              border="1px"
             >
               <Box textAlign="left">
                 <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
@@ -573,6 +599,7 @@ const AdminDashboard = () => {
               gap={16}
               position="relative"
               overflow="hidden"
+              border="1px"
             >
               <Box textAlign="left">
                 <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
@@ -603,114 +630,219 @@ const AdminDashboard = () => {
                 onClick={() => setCurrentPage(3)}
               />
             </Flex>
+          </SimpleGrid> */}
+          <SimpleGrid columns={[1, 3]} spacing={6} mb={8}>
+            <Box
+              bg="white"
+              borderRadius="3xl"
+              p={8}
+              boxShadow="lg"
+              border="2px solid"
+              borderColor="gray.200"
+              position="relative"
+            >
+              <Text fontWeight="bold" fontSize="lg" mb={4} color="gray.700">
+                New Orders (Pick Up)
+              </Text>
+              <Flex align="baseline" gap={2}>
+                <Text fontWeight="black" fontSize="6xl" lineHeight="1">
+                  {
+                    filteredOrders.filter((o) => o.delivery_type === "pickup")
+                      .length
+                  }
+                </Text>
+              </Flex>
+              <IconButton
+                icon={<ChevronRightIcon boxSize={6} />}
+                aria-label="Go"
+                size="md"
+                position="absolute"
+                top={6}
+                right={6}
+                variant="ghost"
+                bg="gray.100"
+                borderRadius="full"
+                onClick={() => setCurrentPage(2)}
+              />
+            </Box>
+
+            <Box
+              bg="white"
+              borderRadius="3xl"
+              p={8}
+              boxShadow="lg"
+              border="2px solid"
+              borderColor="gray.200"
+              position="relative"
+            >
+              <Text fontWeight="bold" fontSize="lg" mb={4} color="gray.700">
+                New Orders (Delivery)
+              </Text>
+              <Text fontWeight="black" fontSize="6xl" lineHeight="1">
+                {
+                  filteredOrders.filter((o) => o.delivery_type === "delivery")
+                    .length
+                }
+              </Text>
+              <IconButton
+                icon={<ChevronRightIcon boxSize={6} />}
+                aria-label="Go"
+                size="md"
+                position="absolute"
+                top={6}
+                right={6}
+                variant="ghost"
+                bg="gray.100"
+                borderRadius="full"
+                onClick={() => setCurrentPage(2)}
+              />
+            </Box>
+
+            <Box
+              bg="white"
+              borderRadius="3xl"
+              p={8}
+              boxShadow="lg"
+              border="2px solid"
+              borderColor="gray.200"
+              position="relative"
+            >
+              <Text fontWeight="bold" fontSize="lg" mb={4} color="gray.700">
+                New Inquiries
+              </Text>
+              <Text fontWeight="black" fontSize="6xl" lineHeight="1">
+                {inquiries.length}
+              </Text>
+              <IconButton
+                icon={<ChevronRightIcon boxSize={6} />}
+                aria-label="Go"
+                size="md"
+                position="absolute"
+                top={6}
+                right={6}
+                variant="ghost"
+                bg="gray.100"
+                borderRadius="full"
+                onClick={() => setCurrentPage(3)}
+              />
+            </Box>
           </SimpleGrid>
 
           <SimpleGrid columns={[1, 2]} spacing={6} mb={8}>
             <Box
               bg="white"
-              borderRadius="2xl"
-              p={6}
-              boxShadow="sm"
-              minH="320px"
-              overflow="hidden"
+              borderRadius="3xl"
+              p={8}
+              boxShadow="lg"
+              border="2px solid"
+              borderColor="gray.200"
+              minH="400px"
             >
-              <Flex justify="space-between" align="center" mb={2}>
-                <Text fontWeight="extrabold" fontSize="xl" noOfLines={1}>
+              <Flex justify="space-between" align="center" mb={6}>
+                <Text fontWeight="black" fontSize="xl">
                   Trending Orders
                 </Text>
-                <Select size="sm" width="auto" defaultValue="Monthly">
-                  <option>Monthly</option>
-                  <option>Weekly</option>
-                </Select>
-              </Flex>
-              <Box overflow="auto" maxH="260px">
-                <Flex align="end" gap={4} h="180px" mt={8} mb={2}>
-                  {orders.slice(0, 5).map((order, idx) => (
-                    <Box key={order.id} textAlign="center" flex="1">
-                      <Box
-                        bg={idx === 3 ? "gray.300" : "gray.100"}
-                        borderRadius="md"
-                        height={`${Math.min(
-                          (orderItemsMap[order.id]?.length || 1) * 30,
-                          120
-                        )}px`}
-                        minW="32px"
-                        mx="auto"
-                        position="relative"
-                        display="flex"
-                        alignItems="flex-end"
-                        justifyContent="center"
-                      >
-                        {idx === 3 && (
-                          <Badge
-                            position="absolute"
-                            top="-24px"
-                            left="50%"
-                            transform="translateX(-50%)"
-                            colorScheme="gray"
-                            fontWeight="bold"
-                            fontSize="sm"
-                            borderRadius="md"
-                            px={2}
-                          >
-                            {orderItemsMap[order.id]?.length || 1} qty
-                          </Badge>
-                        )}
-                      </Box>
-                      <Text fontSize="sm" mt={2} noOfLines={1}>
-                        Order #{order.order_number}
-                      </Text>
-                    </Box>
-                  ))}
+                <Flex align="center" gap={2}>
+                  <Text fontSize="sm" color="gray.600">
+                    Monthly
+                  </Text>
+                  <IconButton
+                    icon={<ChevronRightIcon boxSize={4} />}
+                    aria-label="Dropdown"
+                    size="sm"
+                    variant="ghost"
+                    bg="gray.100"
+                    borderRadius="full"
+                  />
                 </Flex>
-              </Box>
+              </Flex>
+
+              {/* Chart bars */}
+              <Flex align="end" gap={6} h="200px" mb={6}>
+                {trendingItems.map(([itemName, quantity], idx) => (
+                  <Box key={itemName} textAlign="center" flex="1">
+                    <Box
+                      bg={idx === 0 ? "red.300" : "gray.200"}
+                      borderRadius="lg"
+                      height={`${Math.max(quantity * 5, 30)}px`} // Minimum 30px height
+                      minW="40px"
+                      mx="auto"
+                      position="relative"
+                    >
+                      {idx === 0 && (
+                        <Badge
+                          position="absolute"
+                          top="-30px"
+                          left="50%"
+                          transform="translateX(-50%)"
+                          bg="gray.600"
+                          color="white"
+                          fontWeight="bold"
+                          fontSize="sm"
+                          borderRadius="md"
+                          px={3}
+                          py={1}
+                        >
+                          {quantity} qty
+                        </Badge>
+                      )}
+                    </Box>
+                    <Text
+                      fontSize="sm"
+                      mt={3}
+                      fontWeight="medium"
+                      noOfLines={2}
+                    >
+                      {itemName}
+                    </Text>
+                  </Box>
+                ))}
+              </Flex>
             </Box>
 
             <Box
               bg="white"
-              borderRadius="2xl"
-              p={6}
-              boxShadow="sm"
-              minH="320px"
-              display="flex"
-              flexDirection="column"
-              justifyContent="space-between"
-              overflow="hidden"
+              borderRadius="3xl"
+              p={8}
+              boxShadow="lg"
+              border="2px solid"
+              borderColor="gray.200"
+              minH="400px"
             >
-              <Flex justify="space-between" align="center" mb={2}>
-                <Text fontWeight="extrabold" fontSize="xl" noOfLines={1}>
+              <Flex justify="space-between" align="center" mb={6}>
+                <Text fontWeight="black" fontSize="xl">
                   Predicted Total Price
                 </Text>
-                <Select size="sm" width="auto" defaultValue="Monthly">
-                  <option>Monthly</option>
-                  <option>Weekly</option>
-                </Select>
+                <Flex align="center" gap={2}>
+                  <Text fontSize="sm" color="gray.600">
+                    Monthly
+                  </Text>
+                  <IconButton
+                    icon={<ChevronRightIcon boxSize={4} />}
+                    aria-label="Dropdown"
+                    size="sm"
+                    variant="ghost"
+                    bg="gray.100"
+                    borderRadius="full"
+                  />
+                </Flex>
               </Flex>
-              <Box mt={8} overflow="hidden">
-                <Text fontWeight="bold" fontSize="6xl" mb={2} noOfLines={1}>
-                  $
-                  {orders
-                    .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)
-                    .toLocaleString()}
+
+              <Box textAlign="center" mt={12}>
+                <Text fontWeight="black" fontSize="7xl" lineHeight="1">
+                  $50,000.00
                 </Text>
                 <Text
                   fontWeight="bold"
-                  fontSize="2xl"
+                  fontSize="xl"
                   color="gray.600"
-                  noOfLines={1}
+                  mt={8}
+                  mb={2}
                 >
                   Today Total Price
                 </Text>
-                <Text fontWeight="bold" fontSize="4xl" noOfLines={1}>
-                  $
-                  {orders
-                    .filter(
-                      (o) =>
-                        new Date(o.order_date).toDateString() ===
-                        new Date().toDateString()
-                    )
-                    .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)
-                    .toLocaleString()}
+                <Text fontWeight="black" fontSize="4xl">
+                  $2,000.00
                 </Text>
               </Box>
             </Box>
@@ -719,184 +851,181 @@ const AdminDashboard = () => {
           <SimpleGrid columns={[1, 2]} spacing={6}>
             <Box
               bg="white"
-              borderRadius="2xl"
-              p={6}
-              boxShadow="sm"
-              minH="320px"
-              overflow="hidden"
+              borderRadius="3xl"
+              p={8}
+              boxShadow="lg"
+              border="2px solid"
+              borderColor="gray.200"
+              minH="400px"
             >
-              <Flex justify="space-between" align="center" mb={2}>
-                <Text fontWeight="extrabold" fontSize="xl" noOfLines={1}>
+              <Flex justify="space-between" align="center" mb={6}>
+                <Text fontWeight="black" fontSize="xl">
                   Order History
                 </Text>
-                <Button
-                  size="sm"
-                  rightIcon={<ChevronRightIcon boxSize={6} />}
-                  variant="ghost"
-                  fontWeight="bold"
-                  onClick={() => setCurrentPage(2)}
-                >
-                  View all
-                </Button>
+                <Flex align="center" gap={2}>
+                  <Text fontSize="sm" color="gray.600">
+                    View all
+                  </Text>
+                  <IconButton
+                    icon={<ChevronRightIcon boxSize={4} />}
+                    aria-label="View all"
+                    size="sm"
+                    variant="ghost"
+                    bg="gray.100"
+                    borderRadius="full"
+                    onClick={() => setCurrentPage(2)}
+                  />
+                </Flex>
               </Flex>
 
-              <Box overflow="auto" maxH="250px">
-                <Table variant="simple" size="sm" mt={4}>
-                  <Thead position="sticky" top={0} bg="white" zIndex={1}>
-                    <Tr>
-                      <Th fontWeight="bold" minW="80px">
-                        Order #
-                      </Th>
-                      <Th minW="100px">Customer</Th>
-                      <Th minW="80px">Date</Th>
-                      <Th minW="80px">Status</Th>
-                      <Th minW="70px">Total</Th>
+              <Table variant="simple" size="sm">
+                <Thead>
+                  <Tr>
+                    <Th fontWeight="bold" color="gray.600">
+                      Company
+                    </Th>
+                    <Th fontWeight="bold" color="gray.600">
+                      Contact
+                    </Th>
+                    <Th fontWeight="bold" color="gray.600">
+                      Date
+                    </Th>
+                    <Th fontWeight="bold" color="gray.600">
+                      Status
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {orders.slice(0, 5).map((order) => (
+                    <Tr key={order.id}>
+                      <Td fontWeight="medium">{getUserName(order.user_id)}</Td>
+                      <Td color="blue.500" fontWeight="medium">
+                        {getUserName(order.user_id)}
+                      </Td>
+                      <Td>
+                        {order.order_date
+                          ? new Date(order.order_date).toLocaleDateString()
+                          : ""}
+                      </Td>
+                      <Td>
+                        <Badge
+                          colorScheme={statusColor(order.order_status)}
+                          borderRadius="full"
+                          px={3}
+                        >
+                          {order.order_status}
+                        </Badge>
+                      </Td>
                     </Tr>
-                  </Thead>
-                  <Tbody>
-                    {orders.slice(0, 10).map((order) => (
-                      <Tr key={order.id}>
-                        <Td
-                          fontWeight="bold"
-                          overflow="hidden"
-                          textOverflow="ellipsis"
-                          whiteSpace="nowrap"
-                          maxW="80px"
-                        >
-                          {order.order_number}
-                        </Td>
-                        <Td
-                          overflow="hidden"
-                          textOverflow="ellipsis"
-                          whiteSpace="nowrap"
-                          maxW="100px"
-                          title={getUserName(order.user_id)}
-                        >
-                          {getUserName(order.user_id)}
-                        </Td>
-                        <Td
-                          overflow="hidden"
-                          textOverflow="ellipsis"
-                          whiteSpace="nowrap"
-                          maxW="80px"
-                        >
-                          {order.order_date
-                            ? new Date(order.order_date).toLocaleDateString()
-                            : ""}
-                        </Td>
-                        <Td maxW="80px">
-                          <Badge
-                            colorScheme={statusColor(order.order_status)}
-                            fontSize="xs"
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                            whiteSpace="nowrap"
-                            maxW="70px"
-                          >
-                            {order.order_status}
-                          </Badge>
-                        </Td>
-                        <Td
-                          overflow="hidden"
-                          textOverflow="ellipsis"
-                          whiteSpace="nowrap"
-                          maxW="70px"
-                        >
-                          ${order.total_amount}
-                        </Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </Box>
+                  ))}
+                </Tbody>
+              </Table>
             </Box>
 
             <Box
               bg="white"
-              borderRadius="2xl"
-              p={6}
-              boxShadow="sm"
-              minH="320px"
-              overflow="hidden"
+              borderRadius="3xl"
+              p={8}
+              boxShadow="lg"
+              border="2px solid"
+              borderColor="gray.200"
+              minH="400px"
             >
-              <Flex justify="space-between" align="center" mb={2}>
-                <Text fontWeight="extrabold" fontSize="xl" noOfLines={1}>
+              <Flex justify="space-between" align="center" mb={6}>
+                <Text fontWeight="black" fontSize="xl">
                   Inventory Status
                 </Text>
-                <Button
-                  size="sm"
-                  rightIcon={<ChevronRightIcon boxSize={6} />}
-                  variant="ghost"
-                  fontWeight="bold"
-                  onClick={() => setCurrentPage(4)}
-                >
-                  View all
-                </Button>
+                <Flex align="center" gap={2}>
+                  <Text fontSize="sm" color="gray.600">
+                    View all
+                  </Text>
+                  <IconButton
+                    icon={<ChevronRightIcon boxSize={4} />}
+                    aria-label="View all"
+                    size="sm"
+                    variant="ghost"
+                    bg="gray.100"
+                    borderRadius="full"
+                    onClick={() => setCurrentPage(4)}
+                  />
+                </Flex>
               </Flex>
 
-              <Box overflow="auto" maxH="250px">
-                <Table variant="simple" size="sm" mt={4}>
-                  <Thead position="sticky" top={0} bg="white" zIndex={1}>
-                    <Tr>
-                      <Th fontWeight="bold" minW="120px">
-                        Product
-                      </Th>
-                      <Th minW="70px">Category</Th>
-                      <Th minW="80px">In Stock</Th>
-                      <Th minW="80px">Status</Th>
+              <Table variant="simple" size="sm">
+                <Thead>
+                  <Tr>
+                    <Th fontWeight="bold" color="gray.600">
+                      Product
+                    </Th>
+                    <Th fontWeight="bold" color="gray.600">
+                      In Stock
+                    </Th>
+                    <Th fontWeight="bold" color="gray.600">
+                      Status
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {[
+                    {
+                      product: "Beef Brisket",
+                      stock: "450kg",
+                      status: "Good",
+                      color: "green",
+                    },
+                    {
+                      product: "Sliced Pork Belly",
+                      stock: "120kg",
+                      status: "Low",
+                      color: "yellow",
+                    },
+                    {
+                      product: "Marinated Galbi",
+                      stock: "380kg",
+                      status: "Good",
+                      color: "green",
+                    },
+                    {
+                      product: "Prime Ribeye",
+                      stock: "90kg",
+                      status: "Critical",
+                      color: "red",
+                    },
+                    {
+                      product: "Wagyu",
+                      stock: "400kg",
+                      status: "Good",
+                      color: "green",
+                    },
+                    {
+                      product: "Wagyu bone",
+                      stock: "230kg",
+                      status: "Good",
+                      color: "green",
+                    },
+                    {
+                      product: "Beef Bulgogi",
+                      stock: "50kg",
+                      status: "Critical",
+                      color: "red",
+                    },
+                  ].map((row, idx) => (
+                    <Tr key={idx}>
+                      <Td fontWeight="medium">{row.product}</Td>
+                      <Td>{row.stock}</Td>
+                      <Td>
+                        <Badge
+                          colorScheme={row.color}
+                          borderRadius="full"
+                          px={3}
+                        >
+                          {row.status}
+                        </Badge>
+                      </Td>
                     </Tr>
-                  </Thead>
-                  <Tbody>
-                    {Object.values(itemsMap)
-                      .slice(0, 10)
-                      .map((item, idx) => (
-                        <Tr key={idx}>
-                          <Td
-                            fontWeight="bold"
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                            whiteSpace="nowrap"
-                            maxW="120px"
-                            title={item.item_name}
-                          >
-                            {item.item_name}
-                          </Td>
-                          <Td
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                            whiteSpace="nowrap"
-                            maxW="70px"
-                            fontSize="xs"
-                            color="gray.600"
-                            title={item.category || "Meat"}
-                          >
-                            {item.category || "Meat"}
-                          </Td>
-                          <Td
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                            whiteSpace="nowrap"
-                            maxW="80px"
-                          >
-                            -
-                          </Td>
-                          <Td maxW="80px">
-                            <Badge
-                              colorScheme="green"
-                              fontSize="xs"
-                              overflow="hidden"
-                              textOverflow="ellipsis"
-                              whiteSpace="nowrap"
-                              maxW="70px"
-                            >
-                              In Stock
-                            </Badge>
-                          </Td>
-                        </Tr>
-                      ))}
-                  </Tbody>
-                </Table>
-              </Box>
+                  ))}
+                </Tbody>
+              </Table>
             </Box>
           </SimpleGrid>
         </>
