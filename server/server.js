@@ -12,13 +12,7 @@ const PORT =
     : process.env.PROD_SERVER_PORT;
 
 // Middleware
-app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://af-store-qajq96wcr-antsuh1028s-projects.vercel.app'
-  ],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
