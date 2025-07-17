@@ -349,26 +349,6 @@ ItemsRouter.delete("/:id", async (req, res) => {
   }
 });
 
-//Get featured Item (optional for now)
-ItemsRouter.get("/featured", async (req, res) => {
-  // try {
-  //   // Assuming you have a 'featured' boolean column, or using LIMIT for demo
-  //   const result = await db.query(
-  //     'SELECT * FROM items ORDER BY created_at DESC LIMIT 3'
-  //   );
-  //   res.json({
-  //     success: true,
-  //     data: result.rows,
-  //     count: result.rows.length,
-  //     message: 'Featured items for homepage'
-  //   });
-  // } catch (err) {
-  //   console.error('Database error:', err);
-  //   res.status(500).json({
-  //     error: 'Internal server error',
-  //     message: err.message
-  //   });
-  // }
-});
+
 
 export { ItemsRouter };

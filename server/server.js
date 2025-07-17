@@ -12,7 +12,13 @@ const PORT =
     : process.env.PROD_SERVER_PORT;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173', 
+    'https://af-store-lilac.vercel.app' // your frontend URL
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 app.get("/", (req, res) => {
