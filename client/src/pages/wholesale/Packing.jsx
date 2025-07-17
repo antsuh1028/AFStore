@@ -145,7 +145,7 @@ const PackingPage = () => {
               <GridItem>
                 <Box textAlign="center">
                   <Image
-                    src="../../Final_pic/packing pg-1.jpg"
+                    src="/Final_pic/packing pg-1.jpg"
                     alt="20lb box"
                     borderRadius="md"
                     width="100%"
@@ -158,7 +158,7 @@ const PackingPage = () => {
               <GridItem>
                 <Box textAlign="center">
                   <Image
-                    src="../../Final_pic/packing pg-2.jpg"
+                    src="/Final_pic/packing pg-2.jpg"
                     alt="30lb box"
                     borderRadius="md"
                     width="100%"
