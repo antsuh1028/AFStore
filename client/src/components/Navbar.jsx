@@ -1,7 +1,7 @@
 import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
 import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../hooks/useAuth"; // Import auth context
+import { useAuthContext } from "../hooks/useAuth";
 
 const Navbar = ({ onOpen }) => {
   const navigate = useNavigate();
@@ -9,11 +9,8 @@ const Navbar = ({ onOpen }) => {
   const { isAuthenticated, userId, loading } = useAuthContext();
 
   const handleUserIconClick = () => {
-    console.log("Navbar User icon clicked - Auth Status:", isAuthenticated);
-    console.log("User ID:", userId);
 
     if (loading) {
-      // Still loading auth state, don't do anything
       return;
     }
 

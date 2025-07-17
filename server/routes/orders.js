@@ -44,14 +44,10 @@ OrdersRouter.get("/user/:user_id", async (req, res) => {
 //Add order
 OrdersRouter.post("/", async (req, res) => {
   try {
-    const {
-      user_id,
-      total_amount,
-      shipping_address = null,
-      billing_address = null,
-    } = req.body;
+    const { user_id, total_amount } = req.body;
+    console.log(req.body);
 
-    if (!user_id || !total_amount) {
+    if (!user_id) {
       return res.status(400).json({
         error: "Missing required fields",
         required: ["user_id", "total_amount"],
@@ -61,10 +57,10 @@ OrdersRouter.post("/", async (req, res) => {
     const orderNumber = "AF" + Date.now();
 
     const result = await db.query(
-      `INSERT INTO orders (user_id, order_date, status, total_amount, shipping_address, billing_address, order_number)
-  VALUES ($1, CURRENT_TIMESTAMP, 'pending', $2, $3, $4, $5)
+      `INSERT INTO orders (user_id, order_date, order_status, total_amount, order_number, created_at)
+  VALUES ($1, CURRENT_TIMESTAMP, 'pending', $2, $3, CURRENT_TIMESTAMP)
   RETURNING *`,
-      [user_id, total_amount, shipping_address, billing_address, orderNumber]
+      [user_id, total_amount, orderNumber]
     );
 
     res.status(201).json({
@@ -132,12 +128,11 @@ OrdersRouter.put("/:id", async (req, res) => {
 
     const result = await db.query(
       `UPDATE orders
-       SET shipping_address = COALESCE($1, shipping_address),
-           billing_address = COALESCE($2, billing_address),
-           total_amount = COALESCE($3, total_amount)
-       WHERE id = $4
+       SET 
+           total_amount = COALESCE($1, total_amount)
+       WHERE id = $1
        RETURNING *`,
-      [shipping_address, billing_address, total_amount, orderId]
+      [total_amount, orderId]
     );
 
     if (result.rowCount === 0) {

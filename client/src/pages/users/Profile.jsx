@@ -48,6 +48,7 @@ import {
   removeFromCart,
   subtractFromCart,
 } from "../../utils/cartActions";
+import { ShowCart } from "../../components/shop/ShowCart";
 
 const OrdersList = ({ orders, currPage }) => {
   const navigate = useNavigate();
@@ -257,6 +258,7 @@ const OrdersList = ({ orders, currPage }) => {
                 alignSelf="center"
                 height="24px"
                 ml={4}
+                mb={4}
               >
                 <Text
                   fontSize="sm"
@@ -283,6 +285,15 @@ const OrdersList = ({ orders, currPage }) => {
                 >
                   {order.order_status}
                 </Badge>
+                <Divider
+                  orientation="vertical"
+                  borderColor="black"
+                  bg="black"
+                  height="20px"
+                />
+                <Text fontSize="xs" color="gray.500" mb={2} textAlign="left">
+                  {order.order_number}
+                </Text>
               </Flex>
               <SimpleGrid columns={2} spacing={4}>
                 {(orderItemsMap[order.id] || []).map((oi) => {
@@ -557,52 +568,28 @@ const UserProfile = () => {
   const [orders, setOrders] = useState([]);
   const [cartItems, setCartItems] = useState(() => getCart());
   const [userAddress, setUserAddress] = useState([]);
-
-  const handleAdd = (product) => {
-    addToCart(product);
-    setCartItems(getCart());
-  };
-
-  const handleRemove = (product_id) => {
-    removeFromCart(product_id);
-    setCartItems(getCart());
-  };
-
-  const handleSubtract = (product_id) => {
-    subtractFromCart(product_id);
-    setCartItems(getCart());
-  };
-
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
-  const getImagePath = (name, style) => {
-    if (style && name) {
-      const safeName = name.replace(/[^a-zA-Z0-9-_]/g, " ");
-      const safeStyle = style.replace(/[^a-zA-Z0-9-_]/g, " ");
-      return `/products/${safeStyle}/${safeName}/01.jpg`;
-    }
-    return "/gray.avif";
+  const formatAddress = (addressData) => {
+    if (!addressData || addressData.length === 0) return "—";
+
+    const addr = Array.isArray(addressData) ? addressData[0] : addressData;
+
+    if (!addr) return "—";
+
+    const parts = [
+      addr.address_line_1,
+      addr.address_line_2,
+      `${addr.city}, ${addr.state} ${addr.zip_code}`,
+    ].filter(Boolean);
+
+    return parts.join(",");
   };
-
-const formatAddress = (addressData) => {
-  if (!addressData || addressData.length === 0) return "—";
-  
-  const addr = Array.isArray(addressData) ? addressData[0] : addressData;
-  
-  if (!addr) return "—";
-  
-  const parts = [
-    addr.address_line_1,
-    addr.address_line_2,
-    `${addr.city}, ${addr.state} ${addr.zip_code}`,
-  ].filter(Boolean);
-
-  return parts.join(",");
-};
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -634,7 +621,7 @@ const formatAddress = (addressData) => {
         const address = await addressResponse.json();
         if (address.success) {
           setUserAddress(address.data[0]);
-          console.log("done")
+          console.log("done");
         }
       } catch (err) {
         console.error("Error fetching orders:", err);
@@ -986,14 +973,14 @@ const formatAddress = (addressData) => {
               <TabPanels my={8}>
                 <TabPanel>
                   {myPages(currPage, {
-  userInfo,
-  userName,
-  userEmail,
-  handleLogout,
-  setCurrPage,
-  orders,
-  address: formatAddress(userAddress) 
-})}
+                    userInfo,
+                    userName,
+                    userEmail,
+                    handleLogout,
+                    setCurrPage,
+                    orders,
+                    address: formatAddress(userAddress),
+                  })}
                 </TabPanel>
                 <TabPanel>
                   <Flex
@@ -1012,138 +999,24 @@ const formatAddress = (addressData) => {
                       {totalItems} item(s)
                     </Text>
                   </Flex>
-
-                  {cartItems.length === 0 ? (
-                    <VStack py={8} spacing={4}>
-                      <Text color="gray.500">Your cart is empty</Text>
-                      <Button
-                        size="sm"
-                        bg="#ECECEC"
-                        onClick={() => navigate("/wholesale/shop-all")}
-                      >
-                        Browse Products
-                      </Button>
-                    </VStack>
-                  ) : (
-                    <VStack align="stretch">
-                      {cartItems.map((item) => (
-                        <Box
-                          key={item.id}
-                          borderRadius="lg"
-                          p={2}
-                          pb={4}
-                          bg="white"
-                        >
-                          <Flex gap={3} align="center">
-                            <Image
-                              src={getImagePath(item.name, item.style)}
-                              alt={item.name}
-                              w="130px"
-                              h="130px"
-                              objectFit="cover"
-                              borderRadius="md"
-                              fallbackSrc="/gray.avif"
-                            />
-                            <VStack>
-                              <Flex
-                                gap={8}
-                                justifyContent="space-between"
-                                width="100%"
-                                mb={1}
-                              >
-                                <Text
-                                  fontWeight="thin"
-                                  fontSize="13px"
-                                  color="gray"
-                                  noOfLines={1}
-                                >
-                                  {item.style === "marinated"
-                                    ? "Marinated Meat"
-                                    : item.style === "processed"
-                                    ? "Prepped Meat"
-                                    : item.style === "unprocessed"
-                                    ? "Untrimmed Meat"
-                                    : item.style}{" "}
-                                </Text>
-                                <Text
-                                  textDecor="underline"
-                                  onClick={() => handleRemove(item.id)}
-                                  textColor="gray.400"
-                                  fontWeight="light"
-                                  fontSize="13px"
-                                  cursor="pointer"
-                                >
-                                  Remove
-                                </Text>
-                              </Flex>
-
-                              <VStack align="start" width="100%" spacing={1}>
-                                <Text
-                                  fontSize="15px"
-                                  pr={6}
-                                  textAlign="left"
-                                  whiteSpace="pre-line"
-                                  lineHeight="1.2"
-                                >
-                                  {item.name} {"\n"} {item.spec}
-                                </Text>
-                              </VStack>
-
-                              <Flex
-                                justifyContent="space-between"
-                                width="100%"
-                                align="center"
-                              >
-                                <Text
-                                  fontSize="16px"
-                                  color="black"
-                                  fontWeight="bold"
-                                >
-                                  ${item.price * item.quantity}
-                                </Text>
-                                <HStack spacing={2}>
-                                  <Button
-                                    size="xs"
-                                    onClick={() => handleSubtract(item.id)}
-                                    variant="outline"
-                                    border="none"
-                                  >
-                                    -
-                                  </Button>
-                                  <Text>{item.quantity}</Text>
-                                  <Button
-                                    size="xs"
-                                    onClick={() => handleAdd(item)}
-                                    variant="outline"
-                                    border="none"
-                                  >
-                                    +
-                                  </Button>
-                                </HStack>
-                              </Flex>
-                            </VStack>
-                          </Flex>
-                          <Divider
-                            mt={6}
-                            borderColor="#ECECEC"
-                            borderWidth="1px"
-                          />
-                        </Box>
-                      ))}
-
-                      <Button
-                        size="sm"
-                        bg="#ECECEC"
-                        color="#494949"
-                        _hover={{ bg: "#6AAFDB" }}
-                        onClick={() => navigate("/contact")}
-                        borderRadius="full"
-                        h="45px"
-                      >
-                        CHECK OUT ${totalPrice.toFixed(2)}
-                      </Button>
-                    </VStack>
-                  )}
+                  <ShowCart
+                    cartItems={cartItems}
+                    setCartItems={setCartItems}
+                    totalPrice={totalPrice}
+                  />
+                  
+                  {cartItems.length !== 0 && <Button
+                    size="sm"
+                    bg="#ECECEC"
+                    color="#494949"
+                    _hover={{ bg: "#6AAFDB" }}
+                    onClick={() => navigate("/order-summary")}
+                    borderRadius="full"
+                    h="45px"
+                    w="100%"
+                  >
+                    CHECK OUT ${totalPrice.toFixed(2)}
+                  </Button>}
                 </TabPanel>
               </TabPanels>
             </Tabs>

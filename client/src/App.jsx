@@ -156,7 +156,7 @@ function App() {
                   path="/wholesale/shop-all"
                   element={<AllProductsPage />}
                 />
-                <Route path="/cart" element={<CartPage />} />
+                {/* <Route path="/cart" element={<CartPage />} /> */}
                 <Route path="/order-summary" element={<OrderSummaryPage />} />
                 <Route path="/profile/user/:userId" element={<UserProfile />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />

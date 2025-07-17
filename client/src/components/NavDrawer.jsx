@@ -162,6 +162,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                 icon={<ShoppingCart size={24} />}
                 variant="ghost"
                 onClick={() => {
+                  console.log(userId)
                   navigate(`/profile/user/${userId}`, {
                     state: { activeTab: 1 },
                   });

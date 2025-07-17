@@ -88,7 +88,7 @@ OrderItemsRouter.post("/", async (req, res) => {
   try {
     const { order_id, item_id, quantity, unit_price } = req.body;
 
-    if (!order_id || !item_id || !quantity || !unit_price) {
+    if (!order_id || !item_id || !quantity ) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 

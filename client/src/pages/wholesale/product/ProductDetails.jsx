@@ -43,11 +43,11 @@ import Sidebar from "../../../components/SideBar";
 import Breadcrumbs from "../../../components/BreadCrumbs.";
 import Footer from "../../../components/Footer";
 
-// Simple product image carousel with no validation
+import { useAuthContext } from "../../../hooks/useAuth";
+
 const ProductImageCarousel = ({ productName, productStyle }) => {
   const [imagePage, setImagePage] = useState(1);
 
-  // Just create the image paths without any validation
   const imagePaths = useMemo(() => {
     if (!productName || !productStyle) return ["/gray.avif"];
 
@@ -180,7 +180,6 @@ const ProductImageCarousel = ({ productName, productStyle }) => {
   );
 };
 
-// Simple collapsible section
 const CollapsibleSection = ({ title, isOpen, onToggle, children }) => (
   <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
     <Button
@@ -217,6 +216,15 @@ const ProductDetailPage = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isIngredientsOpen, setIsIngredientsOpen] = useState(false);
+
+  const {
+      userInfo,
+      isAuthenticated,
+      logout,
+      userName,
+      userId,
+      userEmail,
+    } = useAuthContext();
 
   const fetchProduct = useCallback(async () => {
     try {
@@ -519,7 +527,7 @@ const ProductDetailPage = () => {
               >
                 CONTACT US
               </Button>
-              <IconButton
+              {isAuthenticated && <IconButton
                 icon={<ShoppingCart size={20} />}
                 aria-label="Add to cart"
                 colorScheme="gray"
@@ -527,7 +535,7 @@ const ProductDetailPage = () => {
                 bg="white"
                 borderRadius="full"
                 onClick={handleAddToCart}
-              />
+              />}
             </HStack>
             <Text fontSize="xl" fontWeight="bold" color="black">
               ${product.price}/lb

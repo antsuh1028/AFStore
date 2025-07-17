@@ -647,7 +647,7 @@ const AdminDashboard = () => {
               <Flex align="baseline" gap={2}>
                 <Text fontWeight="black" fontSize="6xl" lineHeight="1">
                   {
-                    filteredOrders.filter((o) => o.delivery_type === "pickup")
+                    filteredOrders
                       .length
                   }
                 </Text>
