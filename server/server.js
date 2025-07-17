@@ -11,13 +11,16 @@ const PORT =
     ? process.env.DEV_SERVER_PORT
     : process.env.PROD_SERVER_PORT;
 
-// Middleware
 app.use(cors({
-  origin: /vercel\.app$/,
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    /vercel\.app$/
+  ],
   credentials: true
 }));
 app.use(express.json());
-
 app.get("/", (req, res) => {
   // console.log("Root route hit!");
   res.json({ message: "Server is working!" });

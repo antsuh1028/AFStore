@@ -23,6 +23,10 @@ import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
 import { useAuthContext } from "../hooks/useAuth"; // Import the auth context
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,7 +71,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("https://af-store-back.vercel.app/api/users/login", {
+      const res = await fetch(`${API_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
