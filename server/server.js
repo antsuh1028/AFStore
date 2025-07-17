@@ -14,8 +14,8 @@ const PORT =
 // Middleware
 app.use(cors({
   origin: [
-    'http://localhost:5173', 
-    'https://af-store-lilac.vercel.app' // your frontend URL
+    'http://localhost:5173',
+    'https://af-store-qajq96wcr-antsuh1028s-projects.vercel.app'
   ],
   credentials: true
 }));
