@@ -40,7 +40,7 @@ import { FiPackage, FiThermometer, FiTruck } from "react-icons/fi";
 
 import NavDrawer from "../../../components/NavDrawer";
 import Sidebar from "../../../components/SideBar";
-import Breadcrumbs from "../../../components/BreadCrumbs.";
+import Breadcrumbs from "../../../components/Breadcrumbs";
 import Footer from "../../../components/Footer";
 
 import { useAuthContext } from "../../../hooks/useAuth";

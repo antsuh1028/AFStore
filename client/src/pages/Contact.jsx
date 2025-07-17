@@ -38,7 +38,7 @@ import { getCart } from "../utils/cartActions";
 
 import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
-import Breadcrumbs from "../components/BreadCrumbs.";
+import Breadcrumbs from "../components/Breadcrumbs";
 import NavDrawer from "../components/NavDrawer";
 import Navbar from "../components/Navbar";
 

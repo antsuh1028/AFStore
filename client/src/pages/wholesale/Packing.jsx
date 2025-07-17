@@ -17,7 +17,7 @@ import {
 import { ChevronLeft } from "lucide-react";
 import NavDrawer from "../../components/NavDrawer";
 import Sidebar from "../../components/SideBar";
-import Breadcrumbs from "../../components/BreadCrumbs.";
+import Breadcrumbs from "../../components/Breadcrumbs";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 

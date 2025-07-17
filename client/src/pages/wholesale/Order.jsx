@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import NavDrawer from "../../components/NavDrawer";
 import Sidebar from "../../components/SideBar";
 import { ChevronLeft } from "lucide-react";
-import Breadcrumbs from "../../components/BreadCrumbs.";
+import Breadcrumbs from "../../components/Breadcrumbs";
 import OrderContent from "../../components/order/OrderComponent";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";

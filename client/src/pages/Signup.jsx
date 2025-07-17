@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
 import Navbar from "../components/Navbar";
-import Breadcrumbs from "../components/BreadCrumbs.";
+import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
 
 const Signup = () => {
