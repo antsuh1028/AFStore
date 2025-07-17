@@ -11,6 +11,10 @@ import {
 } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
@@ -21,7 +25,7 @@ const ResetPassword = () => {
   const handleSubmit = async () => {
     try {
       const res = await fetch(
-        "http://localhost:3001/api/users/reset-password",
+        `${API_URL}/api/users/reset-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

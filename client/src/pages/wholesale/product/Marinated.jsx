@@ -26,6 +26,10 @@ import Footer from "../../../components/Footer";
 import { ProductCard } from "../../../components/shop/ProductCard";
 import Navbar from "../../../components/Navbar";
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const MarinatedPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
@@ -41,7 +45,7 @@ const MarinatedPage = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://localhost:3001/api/items/style/marinated`
+          `${API_URL}/api/items/style/marinated`
         );
         const data = await response.json();
 

@@ -18,18 +18,6 @@ import {
   Container,
   IconButton,
   useDisclosure,
-  Flex,
-  Tabs,
-  Tab,
-  TabList,
-  TabPanels,
-  TabPanel,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
 } from "@chakra-ui/react";
 import { Info } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -41,6 +29,10 @@ import Sidebar from "../components/SideBar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import NavDrawer from "../components/NavDrawer";
 import Navbar from "../components/Navbar";
+
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
 
 const ContactPage = () => {
   const form = useRef();
@@ -73,7 +65,7 @@ const ContactPage = () => {
           setCurrUser(decoded);
           setIsAuthenticated(true);
 
-          fetch(`http://localhost:3001/api/users/${decoded.userId}`)
+          fetch(`${API_URL}/api/users/${decoded.userId}`)
             .then((response) => response.json())
             .then((data) => {
               console.log(data);
@@ -98,7 +90,7 @@ const ContactPage = () => {
       if (isAuthenticated && currUser.userId) {
         try {
           const response = await fetch(
-            `http://localhost:3001/api/shipping-addresses/user/${currUser.userId}`
+            `${API_URL}/api/shipping-addresses/user/${currUser.userId}`
           );
 
           const data = await response.json();
@@ -199,7 +191,7 @@ const ContactPage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/api/inquiries", {
+      const response = await fetch(`${API_URL}/api/inquiries`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

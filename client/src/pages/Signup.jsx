@@ -25,6 +25,10 @@ import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -200,7 +204,7 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/api/users/signup", {
+      const res = await fetch(`${API_URL}/api/users/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

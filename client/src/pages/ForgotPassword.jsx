@@ -18,6 +18,10 @@ import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
 import Navbar from "../components/Navbar";
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const toast = useToast();
@@ -28,7 +32,7 @@ const ForgotPassword = () => {
   const handleRequest = async () => {
     try {
       const res = await fetch(
-        "http://localhost:3001/api/users/forgot-password",
+        `${API_URL}/api/users/forgot-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

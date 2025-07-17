@@ -67,7 +67,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/api/users/login", {
+      const res = await fetch("https://af-store-back.vercel.app/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

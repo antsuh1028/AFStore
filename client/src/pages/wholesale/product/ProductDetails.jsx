@@ -45,6 +45,10 @@ import Footer from "../../../components/Footer";
 
 import { useAuthContext } from "../../../hooks/useAuth";
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const ProductImageCarousel = ({ productName, productStyle }) => {
   const [imagePage, setImagePage] = useState(1);
 
@@ -232,7 +236,7 @@ const ProductDetailPage = () => {
       setError(null);
 
       const productResponse = await fetch(
-        `http://localhost:3001/api/items/${productId}`,
+        `${API_URL}/api/items/${productId}`,
         {
           headers: {
             Accept: "application/json",

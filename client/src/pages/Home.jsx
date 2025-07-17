@@ -40,6 +40,10 @@ import Sidebar from "../components/SideBar";
 import { useAuthContext } from "../hooks/useAuth"; // Import auth context
 import ImageCarousel from "../components/home/ImageCarousel";
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -73,7 +77,7 @@ const HomePage = () => {
   const searchItems = async () => {
     setIsLoading(true);
     try {
-      const url = "http://localhost:3001/api/items";
+      const url = `${API_URL}/api/items`;
       const response = await fetch(url);
 
       if (response.ok) {

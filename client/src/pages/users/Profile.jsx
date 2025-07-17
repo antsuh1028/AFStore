@@ -44,11 +44,12 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import { SimpleGrid } from "@chakra-ui/react";
 import {
   getCart,
-  addToCart,
-  removeFromCart,
-  subtractFromCart,
 } from "../../utils/cartActions";
 import { ShowCart } from "../../components/shop/ShowCart";
+
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
 
 const OrdersList = ({ orders, currPage }) => {
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ const OrdersList = ({ orders, currPage }) => {
       await Promise.all(
         filteredOrders.map(async (order) => {
           const res = await fetch(
-            `http://localhost:3001/api/order-items/orders/${order.id}`
+            `${API_URL}/api/order-items/orders/${order.id}`
           );
           const data = await res.json();
           if (data.success) {
@@ -115,7 +116,7 @@ const OrdersList = ({ orders, currPage }) => {
       const detailsMap = {};
       await Promise.all(
         Array.from(itemIds).map(async (itemId) => {
-          const res = await fetch(`http://localhost:3001/api/items/${itemId}`);
+          const res = await fetch(`${API_URL}/api/items/${itemId}`);
           const data = await res.json();
           if (data.data) {
             detailsMap[itemId] = data.data;
@@ -595,7 +596,7 @@ const UserProfile = () => {
     const fetchOrders = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/orders/user/${userId}`
+          `${API_URL}/api/orders/user/${userId}`
         );
         const data = await response.json();
         if (data.success) {
@@ -615,7 +616,7 @@ const UserProfile = () => {
     const fetchAddress = async () => {
       try {
         const addressResponse = await fetch(
-          `http://localhost:3001/api/shipping-addresses/user/${userId}`
+          `${API_URL}/api/shipping-addresses/user/${userId}`
         );
 
         const address = await addressResponse.json();

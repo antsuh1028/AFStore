@@ -34,6 +34,10 @@ import {
   InventoryStatus,
 } from "../components/admin/DashboardComponents";
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const toast = useToast();
@@ -95,7 +99,7 @@ const AdminDashboard = () => {
       }
 
       try {
-        const res = await fetch(`http://localhost:3001/api/users/${userId}`, {
+        const res = await fetch(`${API_URL}/api/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -136,7 +140,7 @@ const AdminDashboard = () => {
 
     const fetchInquiries = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/inquiries", {
+        const res = await fetch(`${API_URL}/api/inquiries`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -162,7 +166,7 @@ const AdminDashboard = () => {
 
     const fetchOrders = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/orders", {
+        const res = await fetch(`${API_URL}/api/orders`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -189,7 +193,7 @@ const AdminDashboard = () => {
 
     const fetchOrderItems = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/order-items", {
+        const res = await fetch(`${API_URL}/api/order-items`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -219,7 +223,7 @@ const AdminDashboard = () => {
 
     const fetchItems = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/items", {
+        const res = await fetch(`${API_URL}/api/items`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -248,7 +252,7 @@ const AdminDashboard = () => {
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/users", {
+        const res = await fetch(`${API_URL}/api/users`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -301,7 +305,7 @@ const AdminDashboard = () => {
     const fetchSignupRequests = async () => {
       try {
         const res = await fetch(
-          "http://localhost:3001/api/users/signup-requests",
+          "https://af-store-back.vercel.app/api/users/signup-requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -764,7 +768,7 @@ const AdminDashboard = () => {
                     <Box
                       bg={idx === 0 ? "red.300" : "gray.200"}
                       borderRadius="lg"
-                      height={`${Math.max(quantity * 5, 30)}px`} // Minimum 30px height
+                      height={`${Math.max(quantity * 5, 30)}px`}
                       minW="40px"
                       mx="auto"
                       position="relative"

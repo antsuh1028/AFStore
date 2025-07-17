@@ -24,6 +24,10 @@ import { useAuthContext } from "../hooks/useAuth";
 
 import { getCart, removeFromCart } from "../utils/cartActions";
 
+const API_URL = import.meta.env.MODE === 'production' 
+  ? import.meta.env.VITE_API_URL 
+  : import.meta.env.VITE_API_URL_DEV;
+
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
   return (
     <HStack spacing={3} align="flex-start">
@@ -214,7 +218,7 @@ const OrderSummaryPage = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:3001/api/shipping-addresses/user/${userId}`
+          `${API_URL}/api/shipping-addresses/user/${userId}`
         );
         const data = await response.json();
         if (data.success && data.data[0]) {
@@ -249,7 +253,7 @@ const OrderSummaryPage = () => {
       };
 
       // Create the order
-      const orderResponse = await fetch("http://localhost:3001/api/orders", {
+      const orderResponse = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -273,7 +277,7 @@ const OrderSummaryPage = () => {
           };
 
           const itemResponse = await fetch(
-            "http://localhost:3001/api/order-items",
+            `${API_URL}/api/order-items`,
             {
               method: "POST",
               headers: {
