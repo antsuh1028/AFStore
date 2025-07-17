@@ -13,10 +13,7 @@ const PORT =
 
 // Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://af-store-git-main-antsuh1028s-projects.vercel.app'
-  ],
+  origin: /vercel\.app$/,
   credentials: true
 }));
 app.use(express.json());
