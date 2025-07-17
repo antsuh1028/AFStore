@@ -37,7 +37,7 @@ const AFCompany = () => {
             bg="gray.100"
           >
             <Image
-              src="../../final/Adams_enterance.png"
+              src="/final/Adams_enterance.png"
               alt="AdamsFoods Company"
               w="full"
               h="full"

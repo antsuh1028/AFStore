@@ -147,7 +147,7 @@ const HomePage = () => {
       >
         {/* Header */}
         <Flex p={4} justify="space-between" align="center">
-          <Image src="../../grayAdams.png" alt="AdamsFoods Logo" width="40%" />
+          <Image src="/grayAdams.png" alt="AdamsFoods Logo" width="40%" />
           <Flex>
             <IconButton
               aria-label="Profile"
@@ -351,17 +351,17 @@ const HomePage = () => {
             {
               name: "Marinated",
               url: "/wholesale/marinated",
-              image: "../../products/home/marinated.jpg",
+              image: "/products/home/marinated.jpg",
             },
             {
               name: "Prepped",
               url: "/wholesale/processed",
-              image: "../../products/home/processed.jpg",
+              image: "/products/home/processed.jpg",
             },
             {
               name: "Untrimmed",
               url: "/wholesale/unprocessed",
-              image: "../../products/home/unprocessed.jpg",
+              image: "/products/home/unprocessed.jpg",
             },
           ].map((category, idx) => (
             <GridItem key={idx}>
@@ -463,7 +463,7 @@ const HomePage = () => {
         {/* Location */}
         <HStack px={6} mb={3} spacing={2} ml={2}>
           <Image
-            src="../../Final_pic/only here.png"
+            src="/Final_pic/only here.png"
             h="20px"
             alt="Adams Logo"
             filter="grayscale(100%)"
@@ -478,7 +478,7 @@ const HomePage = () => {
           <Flex direction="row" justify="space-between" gap={6}>
             <Box flex="1" w="190px" h="190px" borderRadius="xl">
               <Image
-                src="../../products/home/marinated.jpg"
+                src="/products/home/marinated.jpg"
                 alt="Brisket Slice"
                 borderRadius="xl"
                 objectFit="cover"
@@ -564,7 +564,7 @@ const HomePage = () => {
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
                   <Image
-                    src="../../Final_pic/why adamsfoods-1.png"
+                    src="/Final_pic/why adamsfoods-1.png"
                     alt="Korean-style cutting"
                     width="80%"
                   />
@@ -578,7 +578,7 @@ const HomePage = () => {
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
                   <Image
-                    src="../../Final_pic/why adamsfoods-2.png"
+                    src="/Final_pic/why adamsfoods-2.png"
                     alt="Trusted partner"
                     width="80%"
                   />

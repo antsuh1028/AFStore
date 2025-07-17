@@ -6,9 +6,9 @@ const ImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   
   const images = [
-    "../../Final_pic/main_banner_1.jpg",
-    "../../Final_pic/main_banner_2.png", 
-    "../../Final_pic/main_banner_3.png"
+    "/Final_pic/main_banner_1.jpg",
+    "/Final_pic/main_banner_2.png", 
+    "/Final_pic/main_banner_3.png"
   ];
 
   const goToPrevious = () => {
