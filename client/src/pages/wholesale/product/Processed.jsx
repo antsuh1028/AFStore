@@ -2,29 +2,20 @@ import React, { useRef, useState, useEffect } from "react";
 import {
   Box,
   Container,
-  Flex,
-  IconButton,
   useDisclosure,
   Text,
   VStack,
-  Tabs,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  SimpleGrid,
   Spinner,
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
 
 import NavDrawer from "../../../components/NavDrawer";
 import Sidebar from "../../../components/SideBar";
 import Footer from "../../../components/Footer";
-import { ProductCard } from "../../../components/shop/ProductCard";
 import Navbar from "../../../components/Navbar";
+import { ProductTabs } from "../../../components/shop/ProductGrid";
 
 const API_URL = import.meta.env.MODE === 'production' 
   ? import.meta.env.VITE_API_URL 
@@ -72,32 +63,6 @@ const ProcessedPage = () => {
       (product) => product.species?.toLowerCase() === type.toLowerCase()
     );
   };
-
-  // Render product grid with consistent height
-  const renderProductGrid = (filteredProducts, emptyMessage) => (
-    <Box minHeight="400px">
-      {filteredProducts.length === 0 ? (
-        <Box
-          textAlign="center"
-          py={8}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          minHeight="300px"
-        >
-          <Text color="gray.500">{emptyMessage}</Text>
-        </Box>
-      ) : (
-        <SimpleGrid columns={2} spacing={4} pb={8}>
-          {filteredProducts
-            .filter((item) => item.show)
-            .map((item) => (
-              <ProductCard key={item.id} {...item} />
-            ))}
-        </SimpleGrid>
-      )}
-    </Box>
-  );
 
   if (loading) {
     return (
@@ -168,64 +133,8 @@ const ProcessedPage = () => {
             Prepped Meat
           </Box>
 
-          <Tabs w="100%" variant="unstyled" isFitted={false}>
-            <TabList justifyContent="center" gap={4} mb={6}>
-              {["all", "beef", "pork", "poultry"].map((label) => (
-                <Tab
-                  key={label}
-                  _selected={{
-                    fontWeight: "bold",
-                    textDecoration: "underline",
-                    bg: "transparent",
-                  }}
-                  _focus={{ boxShadow: "none" }}
-                  p={0}
-                  transition="none"
-                >
-                  <Box
-                    border="1px"
-                    borderColor="gray.300"
-                    borderRadius="full"
-                    px={4}
-                    py={1}
-                    bg="#fafafa"
-                    color="gray.600"
-                    fontSize="small"
-                    transition="none"
-                  >
-                    {label.charAt(0).toUpperCase() + label.slice(1)}
-                  </Box>
-                </Tab>
-              ))}
-            </TabList>
+          <ProductTabs products={products} getProductsByType={getProductsByType} productType="prepped"/>
 
-            <TabPanels minHeight="500px">
-              <TabPanel p={0}>
-                {renderProductGrid(products, "No prepped products found")}
-              </TabPanel>
-
-              <TabPanel p={0}>
-                {renderProductGrid(
-                  getProductsByType("beef"),
-                  "No prepped beef products found"
-                )}
-              </TabPanel>
-
-              <TabPanel p={0}>
-                {renderProductGrid(
-                  getProductsByType("pork"),
-                  "No prepped pork products found"
-                )}
-              </TabPanel>
-
-              <TabPanel p={0}>
-                {renderProductGrid(
-                  getProductsByType("chicken"),
-                  "No prepped poultry products found"
-                )}
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
         </VStack>
 
         <Footer />

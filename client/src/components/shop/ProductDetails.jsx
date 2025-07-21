@@ -50,20 +50,22 @@ const API_URL =
     ? import.meta.env.VITE_API_URL
     : import.meta.env.VITE_API_URL_DEV;
 
-const ProductImageCarousel = ({ productName, productStyle }) => {
+const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
 
   const imagePaths = useMemo(() => {
-    if (!productName || !productStyle) return ["/gray.avif"];
+    if (!productName || !productStyle || !productImages) return ["/gray.avif"];
 
     const basePath = `/products/${productStyle}/${productName}`;
-    return [
-      `${basePath}/01.jpg`,
-      `${basePath}/02.jpg`,
-      `${basePath}/03.jpg`,
-      `${basePath}/04.jpg`,
-    ];
-  }, [productName, productStyle]);
+    const paths = [];
+    
+    // Generate image paths based on productImages count
+    for (let i = 1; i <= productImages; i++) {
+      paths.push(`${basePath}/${i.toString().padStart(2, '0')}.jpg`);
+    }
+    
+    return paths.length > 0 ? paths : ["/gray.avif"];
+  }, [productName, productStyle, productImages]);
 
   const currentImage = imagePaths[imagePage - 1] || "/gray.avif";
   const hasMultipleImages = imagePaths.length > 1;
@@ -514,6 +516,7 @@ const ProductDetailPage = () => {
           <ProductImageCarousel
             productName={product.name}
             productStyle={product.style}
+            productImages={product.images}
           />
 
           <HStack
