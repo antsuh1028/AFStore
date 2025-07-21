@@ -162,7 +162,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                 icon={<ShoppingCart size={24} />}
                 variant="ghost"
                 onClick={() => {
-                  console.log(userId)
+                  // console.log(userId)
                   navigate(`/profile/user/${userId}`, {
                     state: { activeTab: 1 },
                   });
@@ -269,10 +269,10 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
         <Divider mb={4} />
 
         {/* Navigation Grid */}
-        <DrawerBody p={6}>
+        <DrawerBody p={4} overflow="auto">
           <Grid
             templateColumns="repeat(3, 1fr)"
-            gap={6}
+            gap={4}
             justifyItems="center"
             alignItems="center"
           >
@@ -311,10 +311,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
               </GridItem>
             ))}
           </Grid>
-        </DrawerBody>
-
-        {/* Footer Link */}
-        <Box position="absolute" bottom="4" left="4" p={4}>
+          <Box pt={12}>
           <Link
             onClick={() => {
               navigate("/terms-and-policies");
@@ -328,6 +325,10 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
             Terms & Policies
           </Link>
         </Box>
+        </DrawerBody>
+
+        {/* Footer Link */}
+        
       </DrawerContent>
     </Drawer>
   );

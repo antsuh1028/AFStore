@@ -25,9 +25,12 @@ import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
 
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
+import emailjs from "emailjs-com";
+
+const API_URL =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_API_URL
+    : import.meta.env.VITE_API_URL_DEV;
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -52,6 +55,8 @@ const Signup = () => {
   const contentRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const form = useRef();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -62,14 +67,17 @@ const Signup = () => {
   };
 
   const validateLicense = (value) => {
-    const regex = /^C-\d{7}$/;
+    const regex = /^[A-Z]{2}-?\d{6,7}$/i;
     setLicenseError(
-      value && !regex.test(value) ? "License must be in format C-1234567" : ""
+      value && !regex.test(value)
+        ? "License must be in format LA-1234567 or CA1234567"
+        : ""
     );
   };
+  
 
   const inputStyle = {
-    borderRadius: "999px",
+    borderRadius: "full",
     bg: "#f9f9f9",
     border: "1px solid",
     borderColor: "gray.300",
@@ -208,12 +216,12 @@ const Signup = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName,
-          lastName,
-          companyName,
-          email,
+          firstName: formData.get("first_name"),
+          lastName: formData.get("last_name"),
+          companyName: formData.get("company"),
+          email: formData.get("email"),
           password,
-          licenseNumber,
+          licenseNumber: formData.get("business_license"),
           companyAddress1: formData.get("company_address_1"),
           companyAddress2: formData.get("company_address_2"),
           zipCode: formData.get("zip_code"),
@@ -227,6 +235,16 @@ const Signup = () => {
 
       const data = await res.json();
       if (res.ok) {
+        await emailjs.send(
+          import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
+          import.meta.env.VITE_EMAIL_JS_TEMPLATE_SIGNUP,
+          {
+            ...Object.fromEntries(new FormData(form.current)),
+            time: new Date().toISOString(),
+          },
+          import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
+        );
+
         toast({
           title: "Signup request submitted!",
           description:
@@ -235,6 +253,7 @@ const Signup = () => {
           duration: 5000,
           isClosable: true,
         });
+
         setTimeout(() => {
           navigate("/", { replace: true });
         }, 1000);
@@ -288,11 +307,11 @@ const Signup = () => {
             Create Account
           </Heading>
           <Text mb={4} color="gray.500" fontSize="md" textAlign="center">
-            Join our wholesale platform
+            Join our wholesale platform. We look forward to working with you!
           </Text>
           <Divider mb={6} borderColor="gray.300" />
 
-          <form onSubmit={handleSignup}>
+          <form ref={form} onSubmit={handleSignup}>
             <VStack spacing={4} align="stretch">
               <FormControl isRequired>
                 <FormLabel fontWeight="semibold" fontSize="sm">
@@ -300,6 +319,7 @@ const Signup = () => {
                 </FormLabel>
                 <Input
                   type="text"
+                  name="first_name"
                   placeholder="First Name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
@@ -313,6 +333,7 @@ const Signup = () => {
                 </FormLabel>
                 <Input
                   type="text"
+                  name="last_name"
                   placeholder="Last Name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
@@ -327,6 +348,7 @@ const Signup = () => {
                 <Input
                   type="text"
                   placeholder="Your Business Name"
+                  name="company"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   {...inputStyle}
@@ -341,6 +363,7 @@ const Signup = () => {
                   type="email"
                   placeholder="Email"
                   value={email}
+                  name="email"
                   onChange={(e) => {
                     setEmail(e.target.value);
                     validateEmail(e.target.value);
@@ -445,6 +468,7 @@ const Signup = () => {
                 </FormLabel>
                 <Input
                   type="text"
+                  name="business_license"
                   placeholder="LA-1234567 or 2025-000123"
                   value={licenseNumber}
                   onChange={(e) => {
@@ -490,7 +514,8 @@ const Signup = () => {
               </FormControl>
 
               <CustomCheckbox
-                checked={agreementChecked}
+                checked={true}
+                disabled={true}
                 onChange={() => setAgreementChecked(!agreementChecked)}
               >
                 To ensure wholesale eligibility, please provide your license
@@ -525,7 +550,7 @@ const Signup = () => {
 
               <Box bg="gray.50" p={4} borderRadius="md">
                 <CustomCheckbox checked={true} disabled={true}>
-                  Please allow 24 - 48 hours for account review and
+                  Please allow 1-2 business days for account review and
                   verification. Accounts that do not meet our criteria may be
                   declined without notice. Providing complete and accurate
                   documentation helps speed up the approval process.
@@ -562,7 +587,7 @@ const Signup = () => {
                 </Button>
               </Box>
             </VStack>
-            <Button
+            {/* <Button
               onClick={() => {
                 setFirstName("John");
                 setLastName("Doe");
@@ -600,7 +625,7 @@ const Signup = () => {
               mb={4}
             >
               Fill Test Data
-            </Button>
+            </Button> */}
           </form>
 
           <Footer />

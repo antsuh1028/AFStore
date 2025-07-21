@@ -90,8 +90,8 @@ const OrderPayment = ({
             Order & Payment Policy
           </Text>
           <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            After placing your order, you'll get a confirmation email and pickup
-            time notification once confirmed.
+            After placing your order, you will recieve a confirmation email and pickup
+            time once confirmed.
           </Text>
         </Box>
 
@@ -186,7 +186,7 @@ const OrderSummaryPage = () => {
   const { userInfo, isAuthenticated, userName, userId, userEmail } =
     useAuthContext();
 
-  console.log({ userInfo, isAuthenticated, userName, userId, userEmail });
+  // console.log({ userInfo, isAuthenticated, userName, userId, userEmail });
 
   const [userAddress, setUserAddress] = useState(null);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -265,7 +265,7 @@ const OrderSummaryPage = () => {
 
       if (orderResponse.ok && orderResult.success) {
         const orderId = orderResult.data.id;
-        console.log("Order created successfully:", orderResult.data);
+        // console.log("Order created successfully:", orderResult.data);
 
         // Create order items for each cart item
         const orderItemPromises = cartItems.map(async (item) => {
@@ -541,12 +541,12 @@ const OrderSummaryPage = () => {
                     <CircleCheck />
                     <VStack align="flex-start" spacing={2}>
                       <Text fontSize="sm" color="gray.700" lineHeight="1.4">
-                        Until you receive the confirmation email, the order is
+                        Until you receive a confirmation email, your order is
                         not considered confirmed.
                       </Text>
-                      <Text fontSize="sm" color="gray.700" lineHeight="1.4">
+                      {/* <Text fontSize="sm" color="gray.700" lineHeight="1.4">
                         Please check the confirmation email.
-                      </Text>
+                      </Text> */}
                     </VStack>
                   </HStack>
                 </Box>

@@ -84,6 +84,7 @@ const AgreementGate = () => {
             </Heading>
 
             <VStack spacing={5} align="stretch">
+              <Text textAlign='center' p={4} color="gray" fontSize="sm">Please check all statements before continuing </Text>
               {checkboxItems.map((item) => (
                 <Box
                   key={item.key}

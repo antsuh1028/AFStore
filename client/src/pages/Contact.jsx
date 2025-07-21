@@ -30,9 +30,10 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import NavDrawer from "../components/NavDrawer";
 import Navbar from "../components/Navbar";
 
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
+const API_URL =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_API_URL
+    : import.meta.env.VITE_API_URL_DEV;
 
 const ContactPage = () => {
   const form = useRef();
@@ -115,8 +116,12 @@ const ContactPage = () => {
         form.current.user_email.value = userInfo.email || "";
       if (form.current.user_phone)
         form.current.user_phone.value = userInfo.phone_number || "";
+      if (form.current.company)
+        form.current.company.value = userInfo.company || ""; 
       if (form.current.business_license)
         form.current.business_license.value = userInfo.license_number || "";
+      if (form.current.california_resale)
+        form.current.california_resale.value = userInfo.california_resale || "";
 
       if (userAddress) {
         if (form.current.company_address_1)
@@ -174,6 +179,7 @@ const ContactPage = () => {
       name: formData.get("user_name"),
       email: formData.get("user_email"),
       phone: formData.get("user_phone"),
+      company: formData.get("company"),
       license_number: formData.get("business_license"),
       message: formData.get("message"),
       cart_items: cartItems,
@@ -199,21 +205,31 @@ const ContactPage = () => {
         body: JSON.stringify(inquiryData),
       });
 
-      if (response.ok) {
-        toast({
-          title: "Inquiry submitted!",
-          description: "We've received your inquiry and will respond soon.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-
-        // Reset form
-        form.current.reset();
-        setEmail("");
-      } else {
+      if (!response.ok) {
         throw new Error("Failed to submit inquiry");
       }
+
+      await emailjs.send(
+        import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
+        import.meta.env.VITE_EMAIL_JS_TEMPLATE_CONTACT,
+        {
+          ...Object.fromEntries(new FormData(form.current)),
+          time: new Date().toISOString(),
+        },
+        import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
+      );
+
+      toast({
+        title: "Inquiry submitted!",
+        description: "We've received your inquiry and will respond soon.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+
+      // Reset form
+      form.current.reset();
+      setEmail("");
     } catch (error) {
       console.error("Error submitting inquiry:", error);
       toast({
@@ -259,6 +275,35 @@ const ContactPage = () => {
           </Text>
           <Divider mb={6} borderColor="gray.300" />
 
+          {/* Test Data Button
+          <Button
+            onClick={() => {
+              if (form.current) {
+                form.current.user_name.value = "John Doe";
+                form.current.user_email.value = "john.doe@acmerestaurant.com";
+                form.current.user_phone.value = "(323) 943-9318";
+                form.current.company.value = "Acme Restaurant Corp";
+                form.current.company_address_1.value = "1805 Industrial St";
+                form.current.company_address_2.value = "Suite 100";
+                form.current.city.value = "Los Angeles";
+                form.current.zip_code.value = "90021";
+                form.current.state.value = "CA";
+                form.current.business_license.value = "LA-1234567";
+                form.current.california_resale.value = "# 123-456789";
+                form.current.message.value =
+                  "Test inquiry for wholesale meat products";
+
+                setEmail("john.doe@acmerestaurant.com");
+              }
+            }}
+            size="sm"
+            colorScheme="orange"
+            mb={4}
+            width="100%"
+          >
+            Fill Test Data
+          </Button> */}
+
           <form ref={form} onSubmit={sendEmail}>
             <VStack spacing={4} align="stretch">
               <FormControl isRequired>
@@ -302,6 +347,18 @@ const ContactPage = () => {
                   name="user_phone"
                   {...inputStyle}
                   placeholder="123-456-7890"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontWeight="semibold" fontSize="sm">
+                  Company Name
+                </FormLabel>
+                <Input
+                  type="text"
+                  name="company"
+                  {...inputStyle}
+                  placeholder="AdamsFoods"
                 />
               </FormControl>
 

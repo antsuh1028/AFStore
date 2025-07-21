@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { addToCart, getCart } from "../../../utils/cartActions";
+import { addToCart, getCart } from "../../utils/cartActions";
 import {
   Box,
   Container,
@@ -38,16 +38,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
 import { FiPackage, FiThermometer, FiTruck } from "react-icons/fi";
 
-import NavDrawer from "../../../components/NavDrawer";
-import Sidebar from "../../../components/SideBar";
-import Breadcrumbs from "../../../components/Breadcrumbs";
-import Footer from "../../../components/Footer";
+import NavDrawer from "../NavDrawer";
+import Sidebar from "../SideBar";
+import Breadcrumbs from "../Breadcrumbs";
+import Footer from "../Footer";
 
-import { useAuthContext } from "../../../hooks/useAuth";
+import { useAuthContext } from "../../hooks/useAuth";
 
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
+const API_URL =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_API_URL
+    : import.meta.env.VITE_API_URL_DEV;
 
 const ProductImageCarousel = ({ productName, productStyle }) => {
   const [imagePage, setImagePage] = useState(1);
@@ -221,28 +222,19 @@ const ProductDetailPage = () => {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isIngredientsOpen, setIsIngredientsOpen] = useState(false);
 
-  const {
-      userInfo,
-      isAuthenticated,
-      logout,
-      userName,
-      userId,
-      userEmail,
-    } = useAuthContext();
+  const { userInfo, isAuthenticated, logout, userName, userId, userEmail } =
+    useAuthContext();
 
   const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const productResponse = await fetch(
-        `${API_URL}/api/items/${productId}`,
-        {
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
+      const productResponse = await fetch(`${API_URL}/api/items/${productId}`, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
 
       if (!productResponse.ok) {
         const errorData = await productResponse.json();
@@ -452,6 +444,18 @@ const ProductDetailPage = () => {
               <Box flex="1">
                 <Text fontWeight="bold">Added to Cart!</Text>
                 <Text>{product.name} has been added to your cart.</Text>
+                <Text
+                  textDecor="underline"
+                  _hover={{ cursor: "pointer" }}
+                  onClick={() => {
+                    navigate(`/profile/user/${userId}`, {
+                      state: { activeTab: 1 },
+                    });
+                    setShowCartAlert(false);
+                  }}
+                >
+                  View in Cart.
+                </Text>
               </Box>
               <Button
                 size="sm"
@@ -519,7 +523,7 @@ const ProductDetailPage = () => {
             align="center"
             justify="space-between"
           >
-            <HStack>
+            <HStack overflow="auto">
               <Button
                 bg="#494949"
                 color="white"
@@ -528,18 +532,21 @@ const ProductDetailPage = () => {
                 _hover={{ bg: "#6AAFDB" }}
                 borderRadius="full"
                 px={8}
+                
               >
                 CONTACT US
               </Button>
-              {isAuthenticated && <IconButton
-                icon={<ShoppingCart size={20} />}
-                aria-label="Add to cart"
-                colorScheme="gray"
-                size="md"
-                bg="white"
-                borderRadius="full"
-                onClick={handleAddToCart}
-              />}
+              {isAuthenticated && (
+                <IconButton
+                  icon={<ShoppingCart size={20} />}
+                  aria-label="Add to cart"
+                  colorScheme="gray"
+                  size="md"
+                  bg="white"
+                  borderRadius="full"
+                  onClick={handleAddToCart}
+                />
+              )}
             </HStack>
             <Text fontSize="xl" fontWeight="bold" color="black">
               ${product.price}/lb

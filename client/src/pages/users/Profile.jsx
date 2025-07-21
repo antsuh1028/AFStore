@@ -622,7 +622,7 @@ const UserProfile = () => {
         const address = await addressResponse.json();
         if (address.success) {
           setUserAddress(address.data[0]);
-          console.log("done");
+          // console.log("done");
         }
       } catch (err) {
         console.error("Error fetching orders:", err);

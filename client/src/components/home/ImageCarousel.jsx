@@ -4,12 +4,16 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 
 const ImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
   
   const images = [
-    "/Final_pic/main_banner_1.jpg",
     "/Final_pic/main_banner_2.png", 
-    "/Final_pic/main_banner_3.png"
+    "/Final_pic/main_banner_3.png",
+    "/Final_pic/main_banner_1.jpg",
   ];
+
+  const minSwipeDistance = 50;
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -19,6 +23,29 @@ const ImageCarousel = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
   };
 
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      goToNext();
+    } else if (isRightSwipe) {
+      goToPrevious();
+    }
+  };
+
   return (
     <Box px={4}>
       <Box
@@ -26,6 +53,9 @@ const ImageCarousel = () => {
         borderRadius="lg"
         overflow="hidden"
         position="relative"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         <Image
           src={images[currentIndex]}

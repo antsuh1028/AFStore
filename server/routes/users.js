@@ -110,7 +110,7 @@ UsersRouter.post("/signup", async (req, res) => {
     phone,
     californiaResale
   } = req.body;
-  console.log(req.body)
+  // console.log(req.body)
 
   if (!firstName || !lastName || !companyName || !email || !password || !licenseNumber) {
     return res.status(400).json({
@@ -219,7 +219,7 @@ UsersRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const result = await db.query(
-      "SELECT id, name, email, license_number, phone_number, is_admin FROM users WHERE id = $1",
+      "SELECT id, name, email, license_number, phone_number, company, california_resale, is_admin FROM users WHERE id = $1",
       [id]
     );
     // console.log("Query result:", result.rows);

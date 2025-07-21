@@ -124,8 +124,8 @@ const HomePage = () => {
   };
 
   const handleUserIconClick = () => {
-    console.log("User icon clicked - Auth Status:", isAuthenticated);
-    console.log("User ID:", userId);
+    // console.log("User icon clicked - Auth Status:", isAuthenticated);
+    // console.log("User ID:", userId);
 
     if (loading) {
       return;
@@ -350,7 +350,7 @@ const HomePage = () => {
         </Modal>
 
         {/* Categories */}
-        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={8}>
+        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={8} overflowX="auto">
           {[
             {
               name: "Marinated",
@@ -398,7 +398,7 @@ const HomePage = () => {
         </Grid>
 
         {/* Action Buttons */}
-        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={12}>
+        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={12} overflowX="auto">
           {[
             {
               name: "Deal",

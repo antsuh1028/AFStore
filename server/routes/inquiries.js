@@ -46,23 +46,24 @@ InquiriesRouter.post("/", async (req, res) => {
      state,
      zip_code,
      business_license,
-     california_resale
+     california_resale,
+     company
    } = req.body;
    
    const result = await db.query(
-     `INSERT INTO inquiries (
-       name, email, phone, license_number, message, cart_items, cart_total,
-       company_address_1, company_address_2, city, state, zip_code,
-       business_license, california_resale
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
-     RETURNING *`,
-     [
-       name, email, phone, license_number, message, 
-       JSON.stringify(cart_items), cart_total,
-       company_address_1, company_address_2, city, state, zip_code,
-       business_license, california_resale
-     ]
-   );
+  `INSERT INTO inquiries (
+    name, email, phone, license_number, message, cart_items, cart_total,
+    company_address_1, company_address_2, city, state, zip_code,
+    california_resale, company
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
+  RETURNING *`,
+  [
+    name, email, phone, business_license, message, 
+    JSON.stringify(cart_items), cart_total,
+    company_address_1, company_address_2, city, state, zip_code,
+    california_resale, company
+  ]
+);
    
    res.status(201).json({ success: true, data: result.rows[0] });
  } catch (err) {
