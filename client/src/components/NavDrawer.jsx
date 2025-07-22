@@ -25,55 +25,64 @@ const ITEMS = [
   {
     label: "Marinated",
     to: "/wholesale/marinated",
-    icon: "/products/home/marinated.jpg",
+    icon: "/products/home/marinated.avif",
+    fallback: "/products/home/marinated.jpg",
     color: " #ECECEC",
   },
   {
     label: "Prepped",
     to: "/wholesale/processed",
-    icon: "/products/home/processed.jpg",
+    icon: "/products/home/processed.avif",
+    fallback: "/products/home/processed.jpg",
     color: " #ECECEC",
   },
   {
     label: "Untrimmed",
     to: "/wholesale/unprocessed",
-    icon: "/products/home/unprocessed.jpg",
+    icon: "/products/home/unprocessed.avif",
+    fallback: "/products/home/unprocessed.jpg",
     color: " #ECECEC",
   },
   {
     label: "Deal",
     to: "/wholesale/deal",
-    icon: "/products/home/Deal.jpg",
+    icon: "/products/home/Deal.avif",
+    fallback: "/products/home/Deal.jpg",
     color: " #ECECEC",
   },
   {
     label: "Order",
     to: "/wholesale/how-to-order",
-    icon: "/products/home/How to order.jpg",
+    icon: "/products/home/How to order.avif",
+    fallback: "/products/home/How to order.jpg",
     color: " #ECECEC",
   },
   {
     label: "Contact",
     to: "/contact",
-    icon: "/products/home/Contact.jpg",
+    icon: "/products/home/Contact.avif",
+    fallback: "/products/home/Contact.jpg",
     color: " #ECECEC",
   },
   {
     label: "Packing",
     to: "/wholesale/packing",
-    icon: "/products/home/packing.png",
+    icon: "/products/home/packing.avif",
+    fallback: "/products/home/packing.png",
     color: " #ECECEC",
   },
   {
     label: "B2B",
     to: "/wholesale/b2b",
-    icon: "/products/home/b2b.png",
+    icon: "/products/home/b2b.avif",
+    fallback: "/products/home/b2b.png",
     color: "#ECECEC",
   },
   {
     label: "FAQ",
     to: "/wholesale/faq",
-    icon: "/products/home/faq.png",
+    icon: "/products/home/faq.avif",
+    fallback: "/products/home/faq.png",
     color: "#ECECEC",
   },
 ];
@@ -172,9 +181,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
             )}
             <IconButton
               aria-label="Close menu"
-              icon={
-                <Text fontSize="2xl">☰</Text>
-              }
+              icon={<Text fontSize="2xl">☰</Text>}
               variant="ghost"
               onClick={onClose}
               size="xs"
@@ -276,7 +283,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
             justifyItems="center"
             alignItems="center"
           >
-            {ITEMS.map(({ label, to, icon, color }) => (
+            {ITEMS.map(({ label, to, icon, fallback, color }) => (
               <GridItem
                 key={label}
                 display="flex"
@@ -298,7 +305,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                 >
                   <Image
                     src={icon}
-                    fallbackSrc="/gray.avif"
+                    fallbackSrc={fallback}
                     boxSize="70px"
                     objectFit="cover"
                     borderRadius="full"
@@ -312,23 +319,22 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
             ))}
           </Grid>
           <Box pt={12}>
-          <Link
-            onClick={() => {
-              navigate("/terms-and-policies");
-              onClose(); // Close drawer after navigation
-            }}
-            fontSize="xs"
-            textDecoration="underline"
-            cursor="pointer"
-            _hover={{ color: "blue.500" }}
-          >
-            Terms & Policies
-          </Link>
-        </Box>
+            <Link
+              onClick={() => {
+                navigate("/terms-and-policies");
+                onClose(); // Close drawer after navigation
+              }}
+              fontSize="xs"
+              textDecoration="underline"
+              cursor="pointer"
+              _hover={{ color: "blue.500" }}
+            >
+              Terms & Policies
+            </Link>
+          </Box>
         </DrawerBody>
 
         {/* Footer Link */}
-        
       </DrawerContent>
     </Drawer>
   );

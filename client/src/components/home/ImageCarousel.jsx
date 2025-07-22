@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Image, IconButton } from '@chakra-ui/react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import React, { useState, useEffect } from "react";
+import { Box, Image, IconButton } from "@chakra-ui/react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 const ImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  
+
   const images = [
-    "/Final_pic/main_banner_2.png", 
-    "/Final_pic/main_banner_3.png",
-    "/Final_pic/main_banner_1.jpg",
+    { avif: "/Final_pic/main_banner_2.avif", fallback: "/Final_pic/main_banner_2.png" },
+    { avif: "/Final_pic/main_banner_3.avif", fallback: "/Final_pic/main_banner_3.jpg" },
+    { avif: "/Final_pic/main_banner_1.avif", fallback: "/Final_pic/main_banner_1.jpg" },
   ];
 
   const minSwipeDistance = 50;
@@ -34,7 +34,7 @@ const ImageCarousel = () => {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -58,14 +58,15 @@ const ImageCarousel = () => {
         onTouchEnd={onTouchEnd}
       >
         <Image
-          src={images[currentIndex]}
+          src={images[currentIndex].avif}
           alt="Various Meat Cuts"
           height="80%"
           width="100%"
           objectFit="contain"
           transition="opacity 0.5s ease-in-out"
+          fallbackSrc={images[currentIndex].fallback}
         />
-        
+
         {/* Navigation Arrows */}
         <IconButton
           icon={<ChevronLeftIcon />}
@@ -81,7 +82,7 @@ const ImageCarousel = () => {
           onClick={goToPrevious}
           aria-label="Previous image"
         />
-        
+
         <IconButton
           icon={<ChevronRightIcon />}
           position="absolute"
@@ -96,7 +97,7 @@ const ImageCarousel = () => {
           onClick={goToNext}
           aria-label="Next image"
         />
-        
+
         {/* Dots Indicator */}
         <Box
           position="absolute"

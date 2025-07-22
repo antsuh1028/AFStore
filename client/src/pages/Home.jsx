@@ -124,8 +124,6 @@ const HomePage = () => {
   };
 
   const handleUserIconClick = () => {
-    // console.log("User icon clicked - Auth Status:", isAuthenticated);
-    // console.log("User ID:", userId);
 
     if (loading) {
       return;
@@ -355,17 +353,20 @@ const HomePage = () => {
             {
               name: "Marinated",
               url: "/wholesale/marinated",
-              image: "/products/home/marinated.jpg",
+              image: "/products/home/marinated.avif",
+              fallback: "/products/home/marinated.jpg",
             },
             {
               name: "Prepped",
               url: "/wholesale/processed",
-              image: "/products/home/processed.jpg",
+              image: "/products/home/processed.avif",
+              fallback: "/products/home/processed.jpg",
             },
             {
               name: "Untrimmed",
               url: "/wholesale/unprocessed",
-              image: "/products/home/unprocessed.jpg",
+              image: "/products/home/unprocessed.avif",
+              fallback: "/products/home/unprocessed.jpg",
             },
           ].map((category, idx) => (
             <GridItem key={idx}>
@@ -383,6 +384,7 @@ const HomePage = () => {
                 >
                   <Image
                     src={category.image}
+                    fallbackSrc={category.fallback}
                     alt={category.name}
                     width="75px"
                     height="75px"
@@ -404,7 +406,8 @@ const HomePage = () => {
               name: "Deal",
               icon: (
                 <Image
-                  src="/products/home/Deal.jpg"
+                  src="/products/home/Deal.avif"
+                  fallbackSrc="/products/home/Deal.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -418,7 +421,8 @@ const HomePage = () => {
               name: "How to Order",
               icon: (
                 <Image
-                  src="/products/home/How to order.jpg"
+                  src="/products/home/How to order.avif"
+                  fallbackSrc="/products/home/How to order.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -432,7 +436,8 @@ const HomePage = () => {
               name: "Contact",
               icon: (
                 <Image
-                  src="/products/home/Contact.jpg"
+                  src="/products/home/Contact.avif"
+                  fallbackSrc="/products/home/Contact.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -482,7 +487,8 @@ const HomePage = () => {
           <Flex direction="row" justify="space-between" gap={6}>
             <Box flex="1" w="190px" h="190px" borderRadius="xl">
               <Image
-                src="/products/home/marinated.jpg"
+                src="/products/home/marinated.avif"
+                fallbackSrc="/products/home/marinated.jpg"
                 alt="Brisket Slice"
                 borderRadius="xl"
                 objectFit="cover"
@@ -493,7 +499,7 @@ const HomePage = () => {
             <VStack
               align="flex-start"
               flex="1"
-              spacing={1}
+              spacing={1} 
               position="relative"
               pb="4"
             >
