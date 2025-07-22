@@ -28,6 +28,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { SearchIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { ShoppingCart, UserRound } from "lucide-react";
@@ -60,6 +62,15 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [apiStatus, setApiStatus] = useState("unknown");
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
@@ -124,7 +135,6 @@ const HomePage = () => {
   };
 
   const handleUserIconClick = () => {
-
     if (loading) {
       return;
     }
@@ -135,6 +145,24 @@ const HomePage = () => {
       navigate("/login");
     }
   };
+
+  // Loading screen
+  if (pageLoading) {
+    return (
+      <Center h="100vh" bg="white">
+        <VStack spacing={4}>
+          <Image 
+            src="/grayAdams.png" 
+            alt="AdamsFoods Logo" 
+            width="150px"
+            opacity={0.8}
+          />
+          <Spinner size="lg" color="gray.500" thickness="3px" />
+          <Text fontSize="sm" color="gray.500">Loading...</Text>
+        </VStack>
+      </Center>
+    );
+  }
 
   return (
     <Sidebar>
