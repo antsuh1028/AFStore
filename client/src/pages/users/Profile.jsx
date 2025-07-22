@@ -32,6 +32,8 @@ import {
   MenuList,
   MenuItem,
   Badge,
+  Input,
+  Toast,
 } from "@chakra-ui/react";
 import Sidebar from "../../components/SideBar";
 import NavDrawer from "../../components/NavDrawer";
@@ -42,509 +44,14 @@ import { CheckCircleIcon } from "lucide-react";
 import Footer from "../../components/Footer";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { SimpleGrid } from "@chakra-ui/react";
-import {
-  getCart,
-} from "../../utils/cartActions";
+import { getCart } from "../../utils/cartActions";
 import { ShowCart } from "../../components/shop/ShowCart";
+import { myPages } from "../../components/profile/ProfileComponents.";
 
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
-
-const OrdersList = ({ orders, currPage }) => {
-  const navigate = useNavigate();
-  const [orderItemsMap, setOrderItemsMap] = useState({});
-  const [itemDetailsMap, setItemDetailsMap] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [filteredOrders, setFilteredOrders] = useState(orders);
-
-  const getUniqueStatuses = () => {
-    const statuses = [...new Set(orders.map((order) => order.order_status))];
-    return statuses.filter((status) => status);
-  };
-
-  useEffect(() => {
-    if (filterStatus === "all") {
-      setFilteredOrders(orders);
-    } else {
-      setFilteredOrders(
-        orders.filter((order) => order.order_status === filterStatus)
-      );
-    }
-  }, [orders, filterStatus]);
-
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return "yellow";
-      case "complete":
-        return "green";
-      case "processing":
-        return "blue";
-      case "cancelled":
-        return "red";
-      case "shipped":
-        return "purple";
-      default:
-        return "gray";
-    }
-  };
-
-  useEffect(() => {
-    if (!filteredOrders || filteredOrders.length === 0) return;
-    setLoading(true);
-
-    const fetchOrderItemsAndDetails = async () => {
-      const itemsMap = {};
-      const itemIds = new Set();
-
-      await Promise.all(
-        filteredOrders.map(async (order) => {
-          const res = await fetch(
-            `${API_URL}/api/order-items/orders/${order.id}`
-          );
-          const data = await res.json();
-          if (data.success) {
-            itemsMap[order.id] = data.data;
-            data.data.forEach((oi) => itemIds.add(oi.item_id));
-          }
-        })
-      );
-      setOrderItemsMap(itemsMap);
-
-      const detailsMap = {};
-      await Promise.all(
-        Array.from(itemIds).map(async (itemId) => {
-          const res = await fetch(`${API_URL}/api/items/${itemId}`);
-          const data = await res.json();
-          if (data.data) {
-            detailsMap[itemId] = data.data;
-          }
-        })
-      );
-      setItemDetailsMap(detailsMap);
-      setLoading(false);
-    };
-
-    fetchOrderItemsAndDetails();
-  }, [filteredOrders]);
-
-  if (loading) {
-    return (
-      <Center py={6}>
-        <Spinner size="md" />
-        <Text ml={2}>Loading order details...</Text>
-      </Center>
-    );
-  }
-
-  if (!orders || orders.length === 0) {
-    return (
-      <Text color="gray.500" py={4}>
-        No orders found.
-      </Text>
-    );
-  }
-
-  return (
-    <VStack align="stretch" spacing={8} py={4}>
-      {currPage === "orders" && (
-        <Flex alignItems="center" justifyContent="space-between" px={4}>
-          <Text fontSize="sm" color="gray.600">
-            {filteredOrders.length} of {orders.length} orders
-          </Text>
-
-          <Flex alignItems="center" gap={2}>
-            <Menu>
-              <MenuButton
-                as={Button}
-                rightIcon={<ChevronDownIcon />}
-                size="xs"
-                variant="outline"
-                leftIcon={<Filter size={16} />}
-                bg="white"
-                borderColor="gray.300"
-                _hover={{ bg: "gray.50" }}
-                _active={{ bg: "gray.100" }}
-              >
-                {filterStatus === "all" ? "All Status" : filterStatus}
-              </MenuButton>
-              <MenuList>
-                <MenuItem
-                  onClick={() => setFilterStatus("all")}
-                  bg={filterStatus === "all" ? "gray.100" : "white"}
-                >
-                  <Flex
-                    alignItems="center"
-                    justifyContent="space-between"
-                    width="100%"
-                  >
-                    <Text>All Status</Text>
-                    <Badge colorScheme="gray" ml={2}>
-                      {orders.length}
-                    </Badge>
-                  </Flex>
-                </MenuItem>
-                <Divider />
-                {getUniqueStatuses().map((status) => {
-                  const count = orders.filter(
-                    (order) => order.order_status === status
-                  ).length;
-                  return (
-                    <MenuItem
-                      key={status}
-                      onClick={() => setFilterStatus(status)}
-                      bg={filterStatus === status ? "gray.100" : "white"}
-                    >
-                      <Flex
-                        alignItems="center"
-                        justifyContent="space-between"
-                        width="100%"
-                      >
-                        <Text textTransform="capitalize">{status}</Text>
-                        <Badge colorScheme={getStatusColor(status)} ml={2}>
-                          {count}
-                        </Badge>
-                      </Flex>
-                    </MenuItem>
-                  );
-                })}
-              </MenuList>
-            </Menu>
-
-            {filterStatus !== "all" && (
-              <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => setFilterStatus("all")}
-                color="blue.500"
-                _hover={{ bg: "blue.50" }}
-              >
-                Clear
-              </Button>
-            )}
-          </Flex>
-        </Flex>
-      )}
-
-      {filteredOrders.length === 0 ? (
-        <Center py={8}>
-          <VStack spacing={2}>
-            <Text color="gray.500">
-              {currPage === "orders" && filterStatus !== "all"
-                ? `No orders found with status "${filterStatus}"`
-                : "No orders found."}
-            </Text>
-            {currPage === "orders" && filterStatus !== "all" && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setFilterStatus("all")}
-              >
-                Show All Orders
-              </Button>
-            )}
-          </VStack>
-        </Center>
-      ) : (
-        filteredOrders
-          .sort((b, a) => new Date(a.order_date) - new Date(b.order_date))
-          .map((order) => (
-            <Box key={order.id}>
-              <Flex
-                gap={4}
-                alignItems="left"
-                justifyContent="left"
-                alignSelf="center"
-                height="24px"
-                ml={4}
-                mb={4}
-              >
-                <Text
-                  fontSize="sm"
-                  color="gray.500"
-                  mb={2}
-                  textAlign="left"
-                  textDecoration="underline"
-                >
-                  {order.order_date
-                    ? new Date(order.order_date).toLocaleDateString()
-                    : ""}
-                </Text>
-                <Divider
-                  orientation="vertical"
-                  borderColor="black"
-                  bg="black"
-                  height="20px"
-                />
-                <Badge
-                  colorScheme={getStatusColor(order.order_status)}
-                  fontSize="xs"
-                  mb={2}
-                  textTransform="capitalize"
-                >
-                  {order.order_status}
-                </Badge>
-                <Divider
-                  orientation="vertical"
-                  borderColor="black"
-                  bg="black"
-                  height="20px"
-                />
-                <Text fontSize="xs" color="gray.500" mb={2} textAlign="left">
-                  {order.order_number}
-                </Text>
-              </Flex>
-              <SimpleGrid columns={2} spacing={4}>
-                {(orderItemsMap[order.id] || []).map((oi) => {
-                  const item = itemDetailsMap[oi.item_id] || {};
-                  const safeStyle = item.style
-                    ? item.style.replace(/[^a-zA-Z0-9-_]/g, " ")
-                    : "";
-                  const safeName = item.name
-                    ? item.name.replace(/[^a-zA-Z0-9-_]/g, " ")
-                    : "";
-                  const imgSrc =
-                    safeStyle && safeName
-                      ? `/products/${safeStyle}/${safeName}/01.jpg`
-                      : "/gray.avif";
-                  return (
-                    <VStack
-                      key={oi.id}
-                      bg="white"
-                      borderRadius="xl"
-                      p={2}
-                      alignItems="center"
-                      _hover={{ cursor: "pointer", boxShadow: "sm" }}
-                      onClick={() => {
-                        navigate(`/wholesale/product/${item.id}`);
-                      }}
-                    >
-                      <Image
-                        src={imgSrc}
-                        alt={item.name || ""}
-                        boxSize="175px"
-                        objectFit="cover"
-                        borderRadius="md"
-                        fallbackSrc="/gray.avif"
-                      />
-                      <Box flex="1">
-                        <Text
-                          fontWeight="semibold"
-                          fontSize="sm"
-                          noOfLines={2}
-                          textAlign="left"
-                        >
-                          {item.name || "Item"}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          color="gray.500"
-                          mt={1}
-                          textAlign="left"
-                        >
-                          {item.spec || ""}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          color="gray.500"
-                          mt={1}
-                          textAlign="left"
-                        >
-                          Qty: {oi.quantity}
-                        </Text>
-                      </Box>
-                    </VStack>
-                  );
-                })}
-              </SimpleGrid>
-              <Divider borderColor="gray.200" my={2} />
-            </Box>
-          ))
-      )}
-    </VStack>
-  );
-};
-
-const myPages = (
-  currPage,
-  { userInfo, userName, userEmail, handleLogout, setCurrPage, orders, address }
-) => {
-  if (currPage === "all") {
-    return (
-      <>
-        <Flex
-          p={4}
-          bg="#494949"
-          borderRadius="full"
-          align="center"
-          justify="space-between"
-          h="45px"
-          mb={2}
-        >
-          <Text color="white" fontWeight="bold" ml={2}>
-            Profile
-          </Text>
-          <Link
-            fontSize="10px"
-            color="white"
-            textDecoration="underline"
-            mx={2}
-            _hover={{ color: "gray.200" }}
-            minW="48px"
-            textAlign="right"
-          >
-            Edit
-          </Link>
-        </Flex>
-        <VStack p={2} my={4} align="stretch">
-          <Box px={4} py={2}>
-            <Grid templateColumns="90px 1fr" rowGap={4} columnGap={2}>
-              <Text
-                fontWeight="bold"
-                textTransform="uppercase"
-                textAlign="left"
-                fontSize="sm"
-                mr={2}
-              >
-                Name :
-              </Text>
-              <Text fontSize="sm" textAlign="left">
-                {userName || "—"}
-              </Text>
-              <Text
-                fontWeight="bold"
-                textTransform="uppercase"
-                textAlign="left"
-                fontSize="sm"
-                mr={2}
-              >
-                Email :
-              </Text>
-              <Text fontSize="sm" textAlign="left">
-                {userEmail || "—"}
-              </Text>
-              <Text
-                fontWeight="bold"
-                textTransform="uppercase"
-                textAlign="left"
-                fontSize="sm"
-                mr={2}
-              >
-                Phone :
-              </Text>
-              <Text fontSize="sm" textAlign="left">
-                {userInfo?.phone_number || "—"}
-              </Text>
-              <Text
-                fontWeight="bold"
-                textTransform="uppercase"
-                textAlign="left"
-                fontSize="sm"
-                mr={2}
-              >
-                Address :
-              </Text>
-              <Text fontSize="sm" textAlign="left" whiteSpace="pre-line">
-                {address}
-              </Text>
-            </Grid>
-          </Box>
-          <Flex my={10} justify="space-between" width="100%">
-            <Button
-              bg="none"
-              size="xs"
-              textDecoration="underline"
-              color="#b8b7b7"
-              _hover={{ bg: "none", color: "black" }}
-            >
-              Delete Account
-            </Button>
-            <Button
-              bg="none"
-              size="xs"
-              textDecoration="underline"
-              color="#b8b7b7"
-              _hover={{ bg: "none", color: "black" }}
-              onClick={handleLogout}
-            >
-              Log out
-            </Button>
-          </Flex>
-        </VStack>
-
-        <Flex
-          p={4}
-          bg="#494949"
-          borderRadius="full"
-          align="center"
-          justify="space-between"
-          h="45px"
-          mb={2}
-        >
-          <Text color="white" fontWeight="bold" ml={2}>
-            My Orders
-          </Text>
-          <Link
-            fontSize="10px"
-            color="white"
-            textDecoration="underline"
-            mx={2}
-            _hover={{ color: "gray.200" }}
-            minW="48px"
-            textAlign="right"
-            onClick={() => {
-              setCurrPage("orders");
-            }}
-          >
-            View all
-          </Link>
-        </Flex>
-        <OrdersList orders={orders.slice(0, 2)} currPage={currPage} />
-      </>
-    );
-  }
-  if (currPage === "orders") {
-    return (
-      <>
-        <Flex
-          p={4}
-          bg="#494949"
-          borderRadius="full"
-          align="center"
-          justify="space-between"
-          h="45px"
-          mb={2}
-        >
-          <Text color="white" fontWeight="bold" ml={2}>
-            My Orders
-          </Text>
-        </Flex>
-        <OrdersList orders={orders} currPage={currPage} />
-        <VStack bg="#f9f9f9" p={2} my={4}>
-          <Flex>
-            <Icon as={CheckCircleIcon} color="black" m={2} />
-            <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
-              For order changes or mistakes, please contact us via the "Contact
-              Us" page.
-            </Text>
-          </Flex>
-          <Flex>
-            <Icon as={CheckCircleIcon} color="black" m={2} />
-            <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
-              Returns are not accepted once meat processing has begun.
-            </Text>
-          </Flex>
-        </VStack>
-      </>
-    );
-  }
-  if (currPage === "history") {
-    return <Text>History Content</Text>;
-  }
-  return null;
-};
+const API_URL =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_API_URL
+    : import.meta.env.VITE_API_URL_DEV;
 
 const UserProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -564,12 +71,15 @@ const UserProfile = () => {
     loading,
     error,
     userEmail,
+    updateUserInfo,
+    refreshUserInfo,
   } = useAuthContext();
 
   const [orders, setOrders] = useState([]);
   const [cartItems, setCartItems] = useState(() => getCart());
   const [userAddress, setUserAddress] = useState([]);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const [userInformation, setUserInformation] = useState({});
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -595,9 +105,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch(
-          `${API_URL}/api/orders/user/${userId}`
-        );
+        const response = await fetch(`${API_URL}/api/orders/user/${userId}`);
         const data = await response.json();
         if (data.success) {
           setOrders(data.data);
@@ -613,6 +121,18 @@ const UserProfile = () => {
   }, [userId]);
 
   useEffect(() => {
+    if (userInfo) {
+      setUserInformation({
+        name: userInfo.name || "",
+        email: userInfo.email || "",
+        phone_number: userInfo.phone_number || "",
+        california_resale: userInfo.california_resale || false,
+        license_number: userInfo.license_number || "",
+      });
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
     const fetchAddress = async () => {
       try {
         const addressResponse = await fetch(
@@ -622,7 +142,6 @@ const UserProfile = () => {
         const address = await addressResponse.json();
         if (address.success) {
           setUserAddress(address.data[0]);
-          // console.log("done");
         }
       } catch (err) {
         console.error("Error fetching orders:", err);
@@ -832,6 +351,7 @@ const UserProfile = () => {
                       _hover={{ color: "gray.200" }}
                       minW="48px"
                       textAlign="right"
+                      onClick={() => setCurrPage("edit")}
                     >
                       Edit
                     </Link>
@@ -974,13 +494,15 @@ const UserProfile = () => {
               <TabPanels my={8}>
                 <TabPanel>
                   {myPages(currPage, {
-                    userInfo,
-                    userName,
-                    userEmail,
+                    userInformation,
+                    setUserInformation,
+                    updateUserInfo,
                     handleLogout,
                     setCurrPage,
                     orders,
                     address: formatAddress(userAddress),
+                    refreshUserInfo,
+                    toast,
                   })}
                 </TabPanel>
                 <TabPanel>
@@ -1005,19 +527,21 @@ const UserProfile = () => {
                     setCartItems={setCartItems}
                     totalPrice={totalPrice}
                   />
-                  
-                  {cartItems.length !== 0 && <Button
-                    size="sm"
-                    bg="#ECECEC"
-                    color="#494949"
-                    _hover={{ bg: "#6AAFDB" }}
-                    onClick={() => navigate("/order-summary")}
-                    borderRadius="full"
-                    h="45px"
-                    w="100%"
-                  >
-                    CHECK OUT ${totalPrice.toFixed(2)}
-                  </Button>}
+
+                  {cartItems.length !== 0 && (
+                    <Button
+                      size="sm"
+                      bg="#ECECEC"
+                      color="#494949"
+                      _hover={{ bg: "#6AAFDB" }}
+                      onClick={() => navigate("/order-summary")}
+                      borderRadius="full"
+                      h="45px"
+                      w="100%"
+                    >
+                      CHECK OUT ${totalPrice.toFixed(2)}
+                    </Button>
+                  )}
                 </TabPanel>
               </TabPanels>
             </Tabs>

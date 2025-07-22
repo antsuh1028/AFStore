@@ -215,6 +215,35 @@ UsersRouter.post("/reset-password", async (req, res) => {
   }
 });
 
+// PUT /api/users/:id - update user information
+UsersRouter.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone_number } = req.body;
+
+  try {
+    const result = await db.query(
+      `UPDATE users 
+       SET name = $1, email = $2, phone_number = $3 
+       WHERE id = $4 
+       RETURNING id, name, email, phone_number, license_number, company, california_resale, is_admin`,
+      [name, email, phone_number, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ 
+      success: true, 
+      message: "User updated successfully",
+      user: result.rows[0] 
+    });
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 UsersRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
