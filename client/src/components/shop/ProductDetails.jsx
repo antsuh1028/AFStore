@@ -59,15 +59,19 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
     const basePath = `/products/${productStyle}/${productName}`;
     const paths = [];
     
-    // Generate image paths based on productImages count
+    // Generate image paths for both formats
     for (let i = 1; i <= productImages; i++) {
-      paths.push(`${basePath}/${i.toString().padStart(2, '0')}.jpg`);
+      const imageNumber = i.toString().padStart(2, '0');
+      paths.push({
+        avif: `${basePath}/${imageNumber}.avif`,
+        jpg: `${basePath}/${imageNumber}.jpg`
+      });
     }
     
-    return paths.length > 0 ? paths : ["/gray.avif"];
+    return paths.length > 0 ? paths : [{ avif: "/gray.avif", jpg: "/gray.avif" }];
   }, [productName, productStyle, productImages]);
 
-  const currentImage = imagePaths[imagePage - 1] || "/gray.avif";
+  const currentImageSet = imagePaths[imagePage - 1] || { avif: "/gray.avif", jpg: "/gray.avif" };
   const hasMultipleImages = imagePaths.length > 1;
 
   const nextImage = () => {
@@ -89,13 +93,18 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   return (
     <Box position="relative" w="100%">
       <Image
-        src={currentImage}
+        src={currentImageSet.avif}
         alt={productName}
         w="100%"
         h="280px"
         objectFit="cover"
         borderRadius="lg"
-        fallbackSrc="/gray.avif"
+        fallbackSrc={currentImageSet.jpg}
+        onError={(e) => {
+          if (e.target.src !== "/gray.avif") {
+            e.target.src = "/gray.avif";
+          }
+        }}
       />
 
       {hasMultipleImages && (
