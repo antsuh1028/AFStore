@@ -29,6 +29,35 @@ const ProcessedPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
+  // Preload thumbnail images
+  const preloadImages = (products) => {
+    return new Promise((resolve) => {
+      const imageUrls = products.map(product => 
+        `/products/processed/${product.name}/01.avif`
+      );
+      
+      let loadedCount = 0;
+      const totalImages = imageUrls.length;
+
+      if (totalImages === 0) {
+        resolve();
+        return;
+      }
+
+      imageUrls.forEach(url => {
+        const img = new Image();
+        img.onload = img.onerror = () => {
+          loadedCount++;
+          if (loadedCount === totalImages) {
+            resolve();
+          }
+        };
+        img.src = url;
+      });
+    });
+  };
 
   // Fetch processed products
   useEffect(() => {
@@ -45,6 +74,11 @@ const ProcessedPage = () => {
         }
 
         setProducts(data.data);
+        
+        // Preload thumbnail images
+        await preloadImages(data.data);
+        setImagesLoaded(true);
+        
       } catch (err) {
         setError(err.message);
         console.error("Error fetching prepped products:", err);
@@ -64,7 +98,7 @@ const ProcessedPage = () => {
     );
   };
 
-  if (loading) {
+  if (loading || !imagesLoaded) {
     return (
       <Sidebar>
         <Container
@@ -83,7 +117,12 @@ const ProcessedPage = () => {
           >
             <VStack spacing={4}>
               <Spinner size="xl" color="blue.500" />
-              <Text>Loading prepped products...</Text>
+              <Text>
+                {!products.length 
+                  ? "Loading prepped products..." 
+                  : "Preparing images..."
+                }
+              </Text>
             </VStack>
           </Box>
         </Container>

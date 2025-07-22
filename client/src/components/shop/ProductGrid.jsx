@@ -8,6 +8,7 @@ import {
   Tab,
   TabPanel,
 } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 import { ProductCard } from "./ProductCard";
 
 const renderProductGrid = (filteredProducts, emptyMessage) => (
@@ -36,8 +37,35 @@ const renderProductGrid = (filteredProducts, emptyMessage) => (
 );
 
 export const ProductTabs = ({ products, getProductsByType, productType }) => {
+  const [preloadedTabs, setPreloadedTabs] = useState(new Set([0])); // All tab is preloaded initially
+
+  const preloadTabImages = (tabProducts) => {
+    const imageUrls = tabProducts
+      .filter(item => item.show)
+      .map(product => `/products/${productType}/${product.name}/01.avif`);
+    
+    imageUrls.forEach(url => {
+      const img = new Image();
+      img.src = url;
+    });
+  };
+
+  const handleTabChange = (index) => {
+    if (!preloadedTabs.has(index)) {
+      const tabData = [
+        products,
+        getProductsByType("beef"),
+        getProductsByType("pork"),
+        getProductsByType("chicken")
+      ];
+      
+      preloadTabImages(tabData[index]);
+      setPreloadedTabs(prev => new Set([...prev, index]));
+    }
+  };
+
   return (
-    <Tabs w="100%" variant="unstyled" isFitted={false}>
+    <Tabs w="100%" variant="unstyled" isFitted={false} onChange={handleTabChange}>
       <TabList justifyContent="center" gap={4} mb={6} overflowX="auto">
         {["all", "beef", "pork", "poultry"].map((label) => (
           <Tab

@@ -30,6 +30,35 @@ const MarinatedPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
+  // Preload thumbnail images
+  const preloadImages = (products) => {
+    return new Promise((resolve) => {
+      const imageUrls = products.map(product => 
+        `/products/marinated/${product.name}/01.avif`
+      );
+      
+      let loadedCount = 0;
+      const totalImages = imageUrls.length;
+
+      if (totalImages === 0) {
+        resolve();
+        return;
+      }
+
+      imageUrls.forEach(url => {
+        const img = new Image();
+        img.onload = img.onerror = () => {
+          loadedCount++;
+          if (loadedCount === totalImages) {
+            resolve();
+          }
+        };
+        img.src = url;
+      });
+    });
+  };
 
   // Fetch marinated products
   useEffect(() => {
@@ -44,6 +73,11 @@ const MarinatedPage = () => {
         }
 
         setProducts(data.data);
+        
+        // Preload thumbnail images
+        await preloadImages(data.data);
+        setImagesLoaded(true);
+        
       } catch (err) {
         setError(err.message);
         console.error("Error fetching marinated products:", err);
@@ -63,8 +97,7 @@ const MarinatedPage = () => {
     );
   };
 
-
-  if (loading) {
+  if (loading || !imagesLoaded) {
     return (
       <Sidebar>
         <Container
@@ -83,7 +116,12 @@ const MarinatedPage = () => {
           >
             <VStack spacing={4}>
               <Spinner size="xl" color="blue.500" />
-              <Text>Loading marinated products...</Text>
+              <Text>
+                {!products.length 
+                  ? "Loading marinated products..." 
+                  : "Preparing images..."
+                }
+              </Text>
             </VStack>
           </Box>
         </Container>
