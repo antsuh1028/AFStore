@@ -117,7 +117,7 @@ const ContactPage = () => {
       if (form.current.user_phone)
         form.current.user_phone.value = userInfo.phone_number || "";
       if (form.current.company)
-        form.current.company.value = userInfo.company || ""; 
+        form.current.company.value = userInfo.company || "";
       if (form.current.business_license)
         form.current.business_license.value = userInfo.license_number || "";
       if (form.current.california_resale)
@@ -362,68 +362,67 @@ const ContactPage = () => {
                 />
               </FormControl>
 
-              <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">
-                  Company Address line 1
-                </FormLabel>
-                <Input
-                  type="text"
-                  name="company_address_1"
-                  {...inputStyle}
-                  placeholder="1805 Industrial St"
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">
-                  Company Address line 2
-                </FormLabel>
-                <Input
-                  type="text"
-                  name="company_address_2"
-                  {...inputStyle}
-                  placeholder="Suite 100"
-                />
-              </FormControl>
-
-              <HStack spacing={4}>
-                <FormControl>
-                  <FormLabel fontWeight="semibold" fontSize="sm">
-                    City
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    name="city"
-                    {...inputStyle}
-                    placeholder="City"
-                  />
-                </FormControl>
-              </HStack>
-
-              <HStack spacing={4}>
-                <FormControl>
-                  <FormLabel fontWeight="semibold" fontSize="sm">
-                    Zip code
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    name="zip_code"
-                    {...inputStyle}
-                    placeholder="90021"
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel fontWeight="semibold" fontSize="sm">
-                    State
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    name="state"
-                    {...inputStyle}
-                    placeholder="CA"
-                  />
-                </FormControl>
-                {/* <FormControl>
+              {!isAuthenticated && (
+                <>
+                  <FormControl>
+                    <FormLabel fontWeight="semibold" fontSize="sm">
+                      Company Address line 1
+                    </FormLabel>
+                    <Input
+                      type="text"
+                      name="company_address_1"
+                      {...inputStyle}
+                      placeholder="1805 Industrial St"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel fontWeight="semibold" fontSize="sm">
+                      Company Address line 2
+                    </FormLabel>
+                    <Input
+                      type="text"
+                      name="company_address_2"
+                      {...inputStyle}
+                      placeholder="Suite 100"
+                    />
+                  </FormControl>
+                  <HStack spacing={4}>
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" fontSize="sm">
+                        City
+                      </FormLabel>
+                      <Input
+                        type="text"
+                        name="city"
+                        {...inputStyle}
+                        placeholder="City"
+                      />
+                    </FormControl>
+                  </HStack>
+                  <HStack spacing={4}>
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" fontSize="sm">
+                        Zip code
+                      </FormLabel>
+                      <Input
+                        type="text"
+                        name="zip_code"
+                        {...inputStyle}
+                        placeholder="90021"
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" fontSize="sm">
+                        State
+                      </FormLabel>
+                      <Input
+                        type="text"
+                        name="state"
+                        {...inputStyle}
+                        placeholder="CA"
+                      />
+                    </FormControl>
+                    {/* <FormControl>
                   <FormLabel fontWeight="semibold" fontSize="sm">
                     Phone
                   </FormLabel>
@@ -434,83 +433,83 @@ const ContactPage = () => {
                     placeholder="(123) 456-7890"
                   />
                 </FormControl> */}
-              </HStack>
-
-              <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">
-                  Business License
-                </FormLabel>
-                <Input
-                  type="text"
-                  name="business_license"
-                  {...inputStyle}
-                  placeholder="LA-1234567 or 2025-000123"
-                />
-                <Box mt={2}>
-                  <Button
-                    as="label"
-                    htmlFor="business-license-upload"
-                    fontSize="sm"
-                    color="blue.500"
-                    textDecoration="underline"
-                    cursor="pointer"
-                    bg="none"
-                    p={0}
-                    h="auto"
-                    minW="unset"
-                  >
-                    Attached file
-                  </Button>
-                  <Input
-                    id="business-license-upload"
-                    name="business_license_file"
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    display="none"
-                  />
-                  <Text fontSize="sm" color="gray.500" mt={1}>
-                    *Please attach the Business License
-                  </Text>
-                </Box>
-              </FormControl>
-
-              <FormControl>
-                <FormLabel fontWeight="semibold" fontSize="sm">
-                  California Resale Certificate
-                </FormLabel>
-                <Input
-                  type="text"
-                  name="california_resale"
-                  {...inputStyle}
-                  placeholder="# 123-456789"
-                />
-                <Box mt={2}>
-                  <Button
-                    as="label"
-                    htmlFor="resale-cert-upload"
-                    fontSize="sm"
-                    color="blue.500"
-                    textDecoration="underline"
-                    cursor="pointer"
-                    bg="none"
-                    p={0}
-                    h="auto"
-                    minW="unset"
-                  >
-                    Attached file
-                  </Button>
-                  <Input
-                    id="resale-cert-upload"
-                    name="resale_cert_file"
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    display="none"
-                  />
-                  <Text fontSize="sm" color="gray.500" mt={1}>
-                    *Please attach the California Resale Certificate
-                  </Text>
-                </Box>
-              </FormControl>
+                  </HStack>
+                  <FormControl>
+                    <FormLabel fontWeight="semibold" fontSize="sm">
+                      Business License
+                    </FormLabel>
+                    <Input
+                      type="text"
+                      name="business_license"
+                      {...inputStyle}
+                      placeholder="LA-1234567 or 2025-000123"
+                    />
+                    <Box mt={2}>
+                      <Button
+                        as="label"
+                        htmlFor="business-license-upload"
+                        fontSize="sm"
+                        color="blue.500"
+                        textDecoration="underline"
+                        cursor="pointer"
+                        bg="none"
+                        p={0}
+                        h="auto"
+                        minW="unset"
+                      >
+                        Attached file
+                      </Button>
+                      <Input
+                        id="business-license-upload"
+                        name="business_license_file"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        display="none"
+                      />
+                      <Text fontSize="sm" color="gray.500" mt={1}>
+                        *Please attach the Business License
+                      </Text>
+                    </Box>
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel fontWeight="semibold" fontSize="sm">
+                      California Resale Certificate
+                    </FormLabel>
+                    <Input
+                      type="text"
+                      name="california_resale"
+                      {...inputStyle}
+                      placeholder="# 123-456789"
+                    />
+                    <Box mt={2}>
+                      <Button
+                        as="label"
+                        htmlFor="resale-cert-upload"
+                        fontSize="sm"
+                        color="blue.500"
+                        textDecoration="underline"
+                        cursor="pointer"
+                        bg="none"
+                        p={0}
+                        h="auto"
+                        minW="unset"
+                      >
+                        Attached file
+                      </Button>
+                      <Input
+                        id="resale-cert-upload"
+                        name="resale_cert_file"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        display="none"
+                      />
+                      <Text fontSize="sm" color="gray.500" mt={1}>
+                        *Please attach the California Resale Certificate
+                      </Text>
+                    </Box>
+                  </FormControl>{" "}
+                </>
+              )}
 
               <FormControl>
                 <FormLabel fontWeight="semibold" fontSize="sm">

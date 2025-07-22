@@ -61,6 +61,7 @@ const UserProfile = () => {
   const [currPage, setCurrPage] = useState("all");
   const location = useLocation();
   const defaultTabIndex = location.state?.activeTab || 0;
+  const deleteModalDisclosure = useDisclosure();
 
   const {
     userInfo,
@@ -274,7 +275,7 @@ const UserProfile = () => {
             <Text as="span" color="gray.500" fontWeight="normal">
               Hello,{" "}
             </Text>
-            <Text as="span" color="black" fontWeight="medium">
+            <Text as="span" color="black" fontWeight="medium">  
               {userName}
             </Text>
           </Heading>
@@ -343,18 +344,6 @@ const UserProfile = () => {
                     <Text color="white" fontWeight="bold" ml={2}>
                       Profile
                     </Text>
-                    <Link
-                      fontSize="10px"
-                      color="white"
-                      textDecoration="underline"
-                      mx={2}
-                      _hover={{ color: "gray.200" }}
-                      minW="48px"
-                      textAlign="right"
-                      onClick={() => setCurrPage("edit")}
-                    >
-                      Edit
-                    </Link>
                   </Flex>
                   <VStack p={2} my={4} align="stretch">
                     <Box px={4} py={2}>
@@ -413,16 +402,7 @@ const UserProfile = () => {
                         </Text>
                       </Grid>
                     </Box>
-                    <Flex my={10} justify="space-between" width="100%">
-                      <Button
-                        bg="none"
-                        size="xs"
-                        textDecoration="underline"
-                        color="#b8b7b7"
-                        _hover={{ bg: "none", color: "black" }}
-                      >
-                        Delete Account
-                      </Button>
+                    <Flex my={4} justify="center" width="100%">
                       <Button
                         bg="none"
                         size="xs"
@@ -503,6 +483,7 @@ const UserProfile = () => {
                     address: formatAddress(userAddress),
                     refreshUserInfo,
                     toast,
+                    deleteModalDisclosure,
                   })}
                 </TabPanel>
                 <TabPanel>

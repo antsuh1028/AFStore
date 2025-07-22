@@ -1,18 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import {
   Box,
-  Container,
-  useDisclosure,
   Flex,
-  IconButton,
   Text,
-  Heading,
   Link,
   VStack,
-  useToast,
-  Alert,
-  AlertIcon,
   Spinner,
   Center,
   Button,
@@ -20,12 +12,6 @@ import {
   HStack,
   Image,
   Grid,
-  GridItem,
-  Tabs,
-  Tab,
-  TabPanels,
-  TabPanel,
-  TabList,
   Icon,
   Menu,
   MenuButton,
@@ -35,17 +21,21 @@ import {
   Input,
   Toast,
 } from "@chakra-ui/react";
-import Sidebar from "../../components/SideBar";
-import NavDrawer from "../../components/NavDrawer";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/react";
+
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Filter } from "lucide-react";
-import { useAuthContext } from "../../hooks/useAuth";
 import { CheckCircleIcon } from "lucide-react";
-import Footer from "../../components/Footer";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { SimpleGrid } from "@chakra-ui/react";
-import { getCart } from "../../utils/cartActions";
-import { ShowCart } from "../../components/shop/ShowCart";
 
 const API_URL =
   import.meta.env.MODE === "production"
@@ -149,7 +139,21 @@ const OrdersList = ({ orders, currPage }) => {
   }
 
   return (
-    <VStack align="stretch" spacing={8} py={4}>
+    <VStack
+      align="stretch"
+      spacing={8}
+      py={4}
+      maxH="80vh"
+      overflowY="auto"
+      css={{
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
+        "-ms-overflow-style": "none",
+        "scrollbar-width": "none",
+      }}
+    >
+      {" "}
       {currPage === "orders" && (
         <Flex alignItems="center" justifyContent="space-between" px={4}>
           <Text fontSize="sm" color="gray.600">
@@ -228,7 +232,6 @@ const OrdersList = ({ orders, currPage }) => {
           </Flex>
         </Flex>
       )}
-
       {filteredOrders.length === 0 ? (
         <Center py={8}>
           <VStack spacing={2}>
@@ -380,6 +383,7 @@ export const myPages = (
     updateUserInfo,
     refreshUserInfo,
     toast,
+    deleteModalDisclosure,
   }
 ) => {
   const handleInputChange = (e) => {
@@ -536,15 +540,16 @@ export const myPages = (
             </Grid>
           </Box>
           <Flex my={10} justify="space-between" width="100%">
-            <Button
+            {/* <Button
               bg="none"
               size="xs"
               textDecoration="underline"
               color="#b8b7b7"
               _hover={{ bg: "none", color: "black" }}
+              onClick={deleteModalDisclosure.onOpen}
             >
               Delete Account
-            </Button>
+            </Button> */}
             <Button
               bg="none"
               size="xs"
@@ -586,6 +591,38 @@ export const myPages = (
           </Link>
         </Flex>
         <OrdersList orders={orders.slice(0, 2)} currPage={currPage} />
+        <Modal
+          isOpen={deleteModalDisclosure.isOpen}
+          onClose={deleteModalDisclosure.onClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Delete Account</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              Are you sure you want to delete your account? This action cannot
+              be undone.
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                variant="ghost"
+                mr={3}
+                onClick={deleteModalDisclosure.onClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  // Add delete logic here
+                  deleteModalDisclosure.onClose();
+                }}
+              >
+                Delete
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </>
     );
   }
