@@ -64,10 +64,11 @@ const HomePage = () => {
   const [apiStatus, setApiStatus] = useState("unknown");
   const [pageLoading, setPageLoading] = useState(true);
 
+  // Simulate page loading
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 500);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -290,9 +291,19 @@ const HomePage = () => {
                     borderColor="gray.100"
                   >
                     <Flex align="center" gap={3}>
-                      {item.images && (
+                      {item.images > 0 && (
                         <Image
-                          src={item.images}
+                          src={`/products/${item.style}/${item.name}/01.avif`}
+                          fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
+                          alt={item.name}
+                          boxSize="40px"
+                          objectFit="cover"
+                          borderRadius="md"
+                        />
+                      )}
+                      {item.images === 0 && (
+                        <Image
+                          src="gray.avif"
                           alt={item.name}
                           boxSize="40px"
                           objectFit="cover"
@@ -323,7 +334,12 @@ const HomePage = () => {
             <ModalCloseButton />
             <ModalBody pb={6}>
               {searchResults.length > 0 ? (
-                <Grid templateColumns="repeat(1, 1fr)" gap={4}>
+                <Grid
+                  templateColumns="repeat(1, 1fr)"
+                  gap={4}
+                  overflowY="auto"
+                  maxH="80vh"
+                >
                   {searchResults.map((item) => (
                     <GridItem key={item.id}>
                       <Flex
@@ -338,16 +354,23 @@ const HomePage = () => {
                           onSearchClose();
                         }}
                       >
-                        {item.images && (
-                          <Image
-                            src={item.images}
-                            alt={item.name}
-                            boxSize="60px"
-                            objectFit="cover"
-                            borderRadius="md"
-                            mr={4}
-                          />
-                        )}
+                        <Image
+                          src={
+                            item.images > 0
+                              ? `/products/${item.style}/${item.name}/01.avif`
+                              : "/gray.avif"
+                          }
+                          fallbackSrc={
+                            item.images > 0
+                              ? `/products/${item.style}/${item.name}/01.jpg`
+                              : "/gray.avif"
+                          }
+                          alt={item.name}
+                          w="25%"
+                          objectFit="cover"
+                          borderRadius="md"
+                          mr={4}
+                        />
                         <VStack align="start" spacing={2} flex={1}>
                           <Text fontWeight="bold">{item.name}</Text>
                           <Text fontSize="sm" color="gray.600">
