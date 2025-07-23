@@ -37,10 +37,8 @@ import { CheckCircleIcon } from "lucide-react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { SimpleGrid } from "@chakra-ui/react";
 
-const API_URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_API_URL
-    : import.meta.env.VITE_API_URL_DEV;
+import { COLORS, API_CONFIG } from "../../constants";
+
 
 const OrdersList = ({ orders, currPage }) => {
   const navigate = useNavigate();
@@ -93,7 +91,7 @@ const OrdersList = ({ orders, currPage }) => {
       await Promise.all(
         filteredOrders.map(async (order) => {
           const res = await fetch(
-            `${API_URL}/api/order-items/orders/${order.id}`
+            `${API_CONFIG.BASE_URL}/api/order-items/orders/${order.id}`
           );
           const data = await res.json();
           if (data.success) {
@@ -107,7 +105,7 @@ const OrdersList = ({ orders, currPage }) => {
       const detailsMap = {};
       await Promise.all(
         Array.from(itemIds).map(async (itemId) => {
-          const res = await fetch(`${API_URL}/api/items/${itemId}`);
+          const res = await fetch(`${API_CONFIG.BASE_URL}/api/items/${itemId}`);
           const data = await res.json();
           if (data.data) {
             detailsMap[itemId] = data.data;
@@ -437,7 +435,7 @@ export const myPages = (
       <>
         <Flex
           p={4}
-          bg="#494949"
+          bg={COLORS.PRIMARY}
           borderRadius="full"
           align="center"
           justify="space-between"
@@ -563,7 +561,7 @@ export const myPages = (
 
         <Flex
           p={4}
-          bg="#494949"
+          bg={COLORS.PRIMARY}
           borderRadius="full"
           align="center"
           justify="space-between"
@@ -629,7 +627,7 @@ export const myPages = (
       <>
         <Flex
           p={4}
-          bg="#494949"
+          bg={COLORS.PRIMARY}
           borderRadius="full"
           align="center"
           justify="space-between"
@@ -641,7 +639,7 @@ export const myPages = (
           </Text>
         </Flex>
         <OrdersList orders={orders} currPage={currPage} />
-        <VStack bg="#f9f9f9" p={2} my={4}>
+        <VStack bg={COLORS.GRAY_LIGHT} p={2} my={4}>
           <Flex>
             <Icon as={CheckCircleIcon} color="black" m={2} />
             <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
@@ -664,7 +662,7 @@ export const myPages = (
       <>
         <Flex
           p={4}
-          bg="#494949"
+          bg={COLORS.PRIMARY}
           borderRadius="full"
           align="center"
           justify="space-between"

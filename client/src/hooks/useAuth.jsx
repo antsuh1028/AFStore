@@ -1,16 +1,11 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
+import { API_CONFIG } from "../constants";
 
-// API configuration
-const API_URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_API_URL
-    : import.meta.env.VITE_API_URL_DEV;
 
-// Helper function to fetch user info
 const fetchUserInfo = async (userId) => {
   try {
-    const response = await fetch(`${API_URL}/api/users/${userId}`);
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/users/${userId}`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -23,11 +18,8 @@ const fetchUserInfo = async (userId) => {
     throw error;
   }
 };
-
-// Create Auth Context
 const AuthContext = createContext();
 
-// Custom hook for auth logic (internal use)
 const useAuth = () => {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
@@ -36,12 +28,10 @@ const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Validate token helper
   const validateToken = async (storedToken) => {
     try {
       const decoded = jwtDecode(storedToken);
 
-      // Check if token is expired
       if (decoded.exp <= Date.now() / 1000) {
         localStorage.removeItem("token");
         return null;
@@ -55,7 +45,6 @@ const useAuth = () => {
     }
   };
 
-  // Initialize auth on mount
   useEffect(() => {
     const initAuth = async () => {
       setLoading(true);
@@ -94,7 +83,6 @@ const useAuth = () => {
     initAuth();
   }, []);
 
-  // Login function
   const login = async (newToken) => {
     try {
       setLoading(true);
@@ -121,7 +109,6 @@ const useAuth = () => {
     }
   };
 
-  // Logout function
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
@@ -131,7 +118,6 @@ const useAuth = () => {
     setError(null);
   };
 
-  // Refresh user info
   const refreshUserInfo = async () => {
     if (!user?.userId) return;
 
@@ -145,7 +131,6 @@ const useAuth = () => {
     }
   };
 
-  // Check if token is valid
   const isTokenValid = () => {
     if (!token || !user) return false;
     return user.exp > Date.now() / 1000;
@@ -153,7 +138,7 @@ const useAuth = () => {
 
   const updateUserInfo = async (updates) => {
     try {
-      const response = await fetch(`${API_URL}/api/users/${user.userId}`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/users/${user.userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -173,7 +158,6 @@ const useAuth = () => {
   };
 
   return {
-    // State
     token,
     user,
     userInfo,
@@ -181,14 +165,12 @@ const useAuth = () => {
     loading,
     error,
 
-    // Actions
     login,
     logout,
     refreshUserInfo,
     updateUserInfo,
     isTokenValid,
 
-    // Computed values
     userName: userInfo?.name?.split(" ")[0] || "User",
     userEmail: userInfo?.email,
     userId: user?.userId,
@@ -210,7 +192,6 @@ export const useAuthContext = () => {
   return context;
 };
 
-// HOC for protected routes
 export const withAuth = (Component) => {
   return function AuthenticatedComponent(props) {
     const { isAuthenticated, loading } = useAuthContext();
@@ -249,5 +230,4 @@ export const withAuth = (Component) => {
   };
 };
 
-// Export the internal hook for backward compatibility (but prefer useAuthContext)
 export { useAuth };

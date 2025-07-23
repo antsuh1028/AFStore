@@ -16,11 +16,8 @@ import Sidebar from "../../../components/SideBar";
 import Footer from "../../../components/Footer";
 import Navbar from "../../../components/Navbar";
 import { ProductTabs } from "../../../components/shop/ProductGrid";
+import { API_CONFIG } from "../../../constants";
 
-const API_URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_API_URL
-    : import.meta.env.VITE_API_URL_DEV;
 
 const MarinatedPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -65,7 +62,7 @@ const MarinatedPage = () => {
     const fetchMarinatedProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_URL}/api/items/style/marinated`);
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/items/style/marinated`);
         const data = await response.json();
 
         if (!response.ok) {

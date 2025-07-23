@@ -45,11 +45,7 @@ import Breadcrumbs from "../Breadcrumbs";
 import Footer from "../Footer";
 
 import { useAuthContext } from "../../hooks/useAuth";
-
-const API_URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_API_URL
-    : import.meta.env.VITE_API_URL_DEV;
+import { COLORS, API_CONFIG } from "../../constants";
 
 const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
@@ -337,7 +333,7 @@ const ProductDetailPage = () => {
       setLoading(true);
       setError(null);
 
-      const productResponse = await fetch(`${API_URL}/api/items/${productId}`, {
+      const productResponse = await fetch(`${API_CONFIG.BASE_URL}/api/items/${productId}`, {
         headers: {
           Accept: "application/json",
         },
@@ -633,11 +629,11 @@ const ProductDetailPage = () => {
           >
             <HStack overflow="auto">
               <Button
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 size="md"
                 onClick={handleContactForOrder}
-                _hover={{ bg: "#6AAFDB" }}
+                _hover={{ bg: COLORS.SECONDARY }}
                 borderRadius="full"
                 px={8}
                 
@@ -662,7 +658,7 @@ const ProductDetailPage = () => {
           </HStack>
 
           <VStack spacing={2} align="stretch" w="100%">
-            <Box bg="#f9f9f9" p={4} borderRadius="md">
+            <Box bg={COLORS.GRAY_LIGHT} p={4} borderRadius="md">
               <HStack spacing={2}>
                 <CheckCircleIcon color="green.500" />
                 <VStack align="flex-start" spacing={0}>

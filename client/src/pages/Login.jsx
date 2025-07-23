@@ -22,7 +22,8 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
 import { useAuthContext } from "../hooks/useAuth";
-import { API_CONFIG } from "../constants";
+import { API_CONFIG, COLORS } from "../constants";
+
 
 
 const Login = () => {
@@ -35,14 +36,12 @@ const Login = () => {
   const contentRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Get auth functions from context
   const { login, isAuthenticated, userId } = useAuthContext();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && userId) {
       navigate(`/profile/user/${userId}`);
@@ -78,7 +77,6 @@ const Login = () => {
       const data = await res.json();
       
       if (res.ok) {
-        // Use the auth context login function instead of manual localStorage
         const result = await login(data.token);
         
         if (result.success) {
@@ -90,7 +88,6 @@ const Login = () => {
             isClosable: true,
           });
           
-          // Navigate to profile or home
           navigate(result.user.id ? `/profile/user/${result.user.id}` : "/");
         } else {
           toast({
@@ -126,7 +123,7 @@ const Login = () => {
 
   const inputStyle = {
     borderRadius: "999px",
-    bg: "#f9f9f9",
+    bg: COLORS.GRAY_LIGHT,
     border: "1px solid",
     borderColor: "gray.300",
     px: 4,
@@ -220,7 +217,7 @@ const Login = () => {
                 color="gray.600"
                 textDecoration="underline"
                 cursor="pointer"
-                _hover={{ color: "#6AAFDB" }}
+                _hover={{ color: COLORS.SECONDARY }}
                 onClick={() => navigate("/forgot-password")}
               >
                 Forgot your password?
@@ -235,13 +232,13 @@ const Login = () => {
               >
                 <Button
                   type="submit"
-                  bg="#494949"
+                  bg={COLORS.PRIMARY}
                   color="white"
                   isLoading={loading}
                   borderRadius="full"
                   size="lg"
                   width="100%"
-                  _hover={{ bg: "#6AAFDB" }}
+                  _hover={{ bg: COLORS.SECONDARY }}
                   loadingText="Logging in..."
                 >
                   LOG IN
@@ -250,11 +247,11 @@ const Login = () => {
               <Box pt={4} textAlign="center">
                 <Text
                   fontSize="sm"
-                  color="#494949"
+                  color={COLORS.PRIMARY}
                   fontWeight="bold"
                   textDecoration="underline"
                   cursor="pointer"
-                  _hover={{ color: "#6AAFDB" }}
+                  _hover={{ color: COLORS.SECONDARY }}
                   onClick={() => navigate("/signup/agreements")}
                 >
                   Create Account

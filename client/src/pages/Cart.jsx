@@ -23,6 +23,8 @@ import Navbar from "../components/Navbar";
 import { useDisclosure } from "@chakra-ui/react";
 import NavDrawer from "../components/NavDrawer";
 
+import { COLORS } from "../constants";
+
 const CartItem = ({
   id,
   name,
@@ -247,12 +249,12 @@ const CartPage = () => {
                     </Text>
                   </Flex>
                   <Button
-                    bg="#494949"
+                    bg={COLORS.PRIMARY}
                     color="white"
                     size="lg"
                     w="100%"
                     borderRadius="full"
-                    _hover={{ bg: "#6AAFDB" }}
+                    _hover={{ bg: COLORS.SECONDARY }}
                     onClick={() => {
                       navigate("/contact");
                     }}

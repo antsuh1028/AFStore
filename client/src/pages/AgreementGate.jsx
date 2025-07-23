@@ -13,6 +13,7 @@ import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
+import { COLORS } from "../constants";
 
 const AgreementGate = () => {
   const [checked, setChecked] = useState({
@@ -45,7 +46,7 @@ const AgreementGate = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Box minH="100vh" display="flex" justifyContent="center" bg="#f9f9f9">
+      <Box minH="100vh" display="flex" justifyContent="center" bg={COLORS.GRAY_LIGHT}>
         <Container
           ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
@@ -119,7 +120,7 @@ const AgreementGate = () => {
                         width="12px"
                         height="12px"
                         borderRadius="50%"
-                        bg="#494949"
+                        bg={COLORS.PRIMARY}
                         transition="background-color 0.2s ease-in-out"
                       />
                     )}
@@ -134,13 +135,13 @@ const AgreementGate = () => {
               <Box textAlign="center" pt={2}>
                 <Box
                   as="span"
-                  color="#494949"
+                  color={COLORS.PRIMARY}
                   textDecoration="underline"
                   fontWeight="bold"
                   fontSize="sm"
                   cursor="pointer"
                   onClick={() => navigate("/terms-and-policies")}
-                  _hover={{ color: "#6AAFDB" }}
+                  _hover={{ color: COLORS.SECONDARY }}
                 >
                   View Terms & Policies
                 </Box>
@@ -149,9 +150,9 @@ const AgreementGate = () => {
               <Button
                 mt={3}
                 color="white"
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 borderRadius="full"
-                _hover={{ bg: "#6AAFDB" }}
+                _hover={{ bg: COLORS.SECONDARY }}
                 isDisabled={!allChecked}
                 onClick={() => navigate("/signup")}
               >

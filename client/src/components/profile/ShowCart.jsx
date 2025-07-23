@@ -17,6 +17,8 @@ import {
   subtractFromCart,
 } from "../../utils/cartActions";
 
+import { COLORS } from '../../constants';
+
 export const ShowCart = ({ cartItems, setCartItems, totalPrice}) => {
  const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice}) => {
      <Text color="gray.500">Your cart is empty</Text>
      <Button
        size="sm"
-       bg="#ECECEC"
+       bg={COLORS.GRAY_MEDIUM}
        onClick={() => navigate("/wholesale/shop-all")}
      >
        Browse Products
@@ -135,7 +137,7 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice}) => {
              </Flex>
            </VStack>
          </Flex>
-         <Divider mt={6} borderColor="#ECECEC" borderWidth="1px" />
+         <Divider mt={6} borderColor={COLORS.GRAY_MEDIUM} borderWidth="1px" />
        </Box>
      ))}
 

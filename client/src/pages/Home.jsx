@@ -41,7 +41,7 @@ import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
 import { useAuthContext } from "../hooks/useAuth";
 import ImageCarousel from "../components/home/ImageCarousel";
-import { API_CONFIG } from "../constants";
+import { API_CONFIG, COLORS } from "../constants";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -337,7 +337,7 @@ const HomePage = () => {
                 placeholder="Search for..."
                 borderRadius="full"
                 py={6}
-                bg="#f9f9f9"
+                bg={COLORS.GRAY_LIGHT}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => searchQuery.length > 2 && setShowDropdown(true)}
@@ -598,7 +598,7 @@ const HomePage = () => {
               <VStack spacing={2} my={4}>
                 <Circle
                   size="75px"
-                  bg="#ECECEC"
+                  bg={COLORS.GRAY_MEDIUM}
                   color="white"
                   onClick={() => {
                     navigate(`${action.url}`);
@@ -776,7 +776,7 @@ const HomePage = () => {
             isExternal
             _hover={{ color: "blue.500" }}
             textDecoration="underline"
-            color="#CA3836"
+            color={COLORS.ACCENT}
             fontStyle="italic"
             textAlign="center"
           >

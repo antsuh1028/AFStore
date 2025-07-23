@@ -29,11 +29,7 @@ import Sidebar from "../components/SideBar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import NavDrawer from "../components/NavDrawer";
 import Navbar from "../components/Navbar";
-
-const API_URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_API_URL
-    : import.meta.env.VITE_API_URL_DEV;
+import { COLORS, API_CONFIG } from "../constants";
 
 const ContactPage = () => {
   const form = useRef();
@@ -66,7 +62,7 @@ const ContactPage = () => {
           setCurrUser(decoded);
           setIsAuthenticated(true);
 
-          fetch(`${API_URL}/api/users/${decoded.userId}`)
+          fetch(`${API_CONFIG.BASE_URL}/api/users/${decoded.userId}`)
             .then((response) => response.json())
             .then((data) => {
               setUserInfo(data.user);
@@ -90,7 +86,7 @@ const ContactPage = () => {
       if (isAuthenticated && currUser.userId) {
         try {
           const response = await fetch(
-            `${API_URL}/api/shipping-addresses/user/${currUser.userId}`
+            `${API_CONFIG.BASE_URL}/api/shipping-addresses/user/${currUser.userId}`
           );
 
           const data = await response.json();
@@ -144,7 +140,7 @@ const ContactPage = () => {
 
   const inputStyle = {
     borderRadius: "999px",
-    bg: "#f9f9f9",
+    bg: COLORS.GRAY_LIGHT,
     border: "1px solid",
     borderColor: "gray.300",
     px: 4,
@@ -195,7 +191,7 @@ const ContactPage = () => {
     };
 
     try {
-      const response = await fetch(`${API_URL}/api/inquiries`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/inquiries`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -517,7 +513,7 @@ const ContactPage = () => {
                   name="message"
                   rows={5}
                   borderRadius="lg"
-                  bg="#f9f9f9"
+                  bg={COLORS.GRAY_LIGHT}
                   borderColor="gray.300"
                   borderWidth="1px"
                   _focus={{
@@ -553,13 +549,13 @@ const ContactPage = () => {
               <Box display="flex" justifyContent="center" width="100%" pt={4}>
                 <Button
                   type="submit"
-                  bg="#494949"
+                  bg={COLORS.PRIMARY}
                   color="white"
                   isLoading={loading}
                   borderRadius="full"
                   size="lg"
                   width="100%"
-                  _hover={{ bg: "#6AAFDB" }}
+                  _hover={{ bg: COLORS.SECONDARY }}
                 >
                   SEND
                 </Button>

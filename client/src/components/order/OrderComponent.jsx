@@ -13,12 +13,9 @@ import {
   ListItem,
   Badge,
 } from "@chakra-ui/react";
-import { CheckIcon } from "@chakra-ui/icons";
+import { COLORS } from "../../constants";
 
 const OrderContent = () => {
-  const accentColor = useColorModeValue("#b09e8c", "#d6c8bc");
-  const textColor = useColorModeValue("gray.700", "gray.200");
-  const lightTextColor = useColorModeValue("gray.600", "gray.400");
 
   return (
     <Box width="100%" py={6} px={6}>
@@ -43,8 +40,8 @@ const OrderContent = () => {
       </Flex>
 
       {/* Requirements Section */}
-      <Box mb={12} p={4} pb={8} borderRadius="xl" bg="#ECECEC">
-        <Text fontSize="sm" fontWeight="extrabold" color="#CA3836">
+      <Box mb={12} p={4} pb={8} borderRadius="xl" bg={COLORS.GRAY_MEDIUM}>
+        <Text fontSize="sm" fontWeight="extrabold" color={COLORS.ACCENT}>
           Requirements:
         </Text>
         <List spacing={1} fontSize="xs">
@@ -89,15 +86,15 @@ const OrderContent = () => {
       </Flex>
 
       {/* Pick-up Section */}
-      <Box mb={2} p={4} pb={8} borderRadius="xl" bg="#ECECEC">
-        <Text fontSize="sm" fontWeight="bold" color="#CA3836" mb={2}>
+      <Box mb={2} p={4} pb={8} borderRadius="xl" bg={COLORS.GRAY_MEDIUM}>
+        <Text fontSize="sm" fontWeight="bold" color={COLORS.ACCENT} mb={2}>
           PICK-UP
         </Text>
         <List spacing={1} fontSize="xs" ml={4}>
           <ListItem>• {"\u00A0\u00A0"}Pay half the balance upfront.</ListItem>
           <ListItem>• {"\u00A0\u00A0"}Pay the remaining balance at pick-up.</ListItem>
         </List>
-        <Text fontSize="sm" fontWeight="bold" color="#CA3836" mt={4}>
+        <Text fontSize="sm" fontWeight="bold" color={COLORS.ACCENT} mt={4}>
           DELIVERY
         </Text>
         <List spacing={1} fontSize="xs" ml={4}mb={4}>

@@ -20,6 +20,7 @@ import {
 import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuth";
+import { COLORS } from "../constants";
 
 const ITEMS = [
   {
@@ -27,63 +28,63 @@ const ITEMS = [
     to: "/wholesale/marinated",
     icon: "/images/marinated_button.avif",
     fallback: "/images/marinated_button.png",
-    color: " #ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
   {
     label: "Prepped",
     to: "/wholesale/processed",
     icon: "/images/processed_button.avif",
     fallback: "/images/processed_button.png",
-    color: " #ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
   {
     label: "Untrimmed",
     to: "/wholesale/unprocessed",
     icon: "/images/wholesale_button.avif",
     fallback: "/images/wholesale_button.png",
-    color: " #ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
   {
     label: "Deal",
     to: "/wholesale/deal",
     icon: "/images/home_icons/deal.avif",
     fallback: "/images/home_icons/deal.jpg",
-    color: " #ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
   {
     label: "Order",
     to: "/wholesale/how-to-order",
     icon: "/images/home_icons/how_to_order.avif",
     fallback: "/images/home_icons/how_to_order.jpg",
-    color: " #ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
   {
     label: "Contact",
     to: "/contact",
     icon: "/images/home_icons/contact.avif",
     fallback: "/images/home_icons/contact.jpg",
-    color: " #ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
   {
     label: "Packing",
     to: "/wholesale/packing",
     icon: "/images/home_icons/packing.avif",
     fallback: "/images/home_icons/packing.png",
-    color: " #ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
   {
     label: "B2B",
     to: "/wholesale/b2b",
     icon: "/images/home_icons/b2b.avif",
     fallback: "/images/home_icons/b2b.png",
-    color: "#ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
   {
     label: "FAQ",
     to: "/wholesale/faq",
     icon: "/images/home_icons/faq.avif",
     fallback: "/images/home_icons/faq.png",
-    color: "#ECECEC",
+    color: COLORS.GRAY_MEDIUM,
   },
 ];
 
@@ -91,7 +92,6 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
   const [drawerWidth, setDrawerWidth] = useState("100%");
   const navigate = useNavigate();
 
-  // Use the shared auth context instead of individual hook
   const {
     userInfo,
     isAuthenticated,
@@ -321,7 +321,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
             <Link
               onClick={() => {
                 navigate("/terms-and-policies");
-                onClose(); // Close drawer after navigation
+                onClose(); 
               }}
               fontSize="xs"
               textDecoration="underline"

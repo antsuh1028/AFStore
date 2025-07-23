@@ -17,6 +17,7 @@ import Sidebar from "../../components/SideBar";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import { COLORS } from "../../constants";
 
 const FAQPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -65,7 +66,7 @@ const FAQPage = () => {
         <Text>
           {"\u00A0\u00A0"}•{"\u00A0\u00A0"}Discounts are available for bulk
           orders over{" "}
-          <Text as="span" color="#CA3836" fontWeight="semibold">
+          <Text as="span" color={COLORS.ACCENT} fontWeight="semibold">
             $3,000
           </Text>
           . For inquiries, please contact us directly
@@ -124,7 +125,7 @@ const FAQPage = () => {
           {faqData.map((item, index) => (
             <Box key={index}>
               <Heading size="md" my={6}>
-                <Text as="span" color="#CA3836">
+                <Text as="span" color={COLORS.ACCENT}>
                   {item.heading.split(" ")[0]}
                 </Text>{" "}
                 {item.heading.split(" ").slice(1).join(" ")}
@@ -141,7 +142,7 @@ const FAQPage = () => {
                   <Text
                     fontSize="sm"
                     as="span"
-                    color="#CA3836"
+                    color={COLORS.ACCENT}
                     fontWeight="semibold"
                   >
                     {item.highlight}

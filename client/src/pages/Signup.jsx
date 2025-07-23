@@ -26,11 +26,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
 
 import emailjs from "emailjs-com";
-
-const API_URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_API_URL
-    : import.meta.env.VITE_API_URL_DEV;
+import { API_CONFIG, COLORS } from "../constants";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -78,7 +74,7 @@ const Signup = () => {
 
   const inputStyle = {
     borderRadius: "full",
-    bg: "#f9f9f9",
+    bg: COLORS.GRAY_LIGHT,
     border: "1px solid",
     borderColor: "gray.300",
     px: 4,
@@ -153,8 +149,8 @@ const Signup = () => {
         height="18px"
         minWidth="18px"
         border="2px solid"
-        borderColor="#494949"
-        bg={checked ? "#494949" : "white"}
+        borderColor={COLORS.PRIMARY}
+        bg={checked ? COLORS.PRIMARY : "white"}
         mr={3}
         mt={1}
         transition="all 0.2s"
@@ -212,7 +208,7 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/users/signup`, {
+      const res = await fetch(`${API_CONFIG.BASE_URL}/api/users/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -560,14 +556,14 @@ const Signup = () => {
               <Box display="flex" justifyContent="center" width="100%" pt={4}>
                 <Button
                   type="submit"
-                  bg="#494949"
+                  bg={COLORS.PRIMARY}
                   color="white"
                   isLoading={loading}
                   loadingText="Creating Account..."
                   borderRadius="full"
                   size="lg"
                   width="100%"
-                  _hover={{ bg: "#6AAFDB" }}
+                  _hover={{ bg: COLORS.SECONDARY}}
                   _disabled={{ bg: "gray.400" }}
                 >
                   CREATE ACCOUNT
@@ -577,11 +573,11 @@ const Signup = () => {
               <Box textAlign="center" pt={4}>
                 <Button
                   variant="link"
-                  color="#494949"
+                  color={COLORS.PRIMARY}
                   fontWeight="bold"
                   textDecoration="underline"
                   onClick={() => navigate("/login")}
-                  _hover={{ color: "#6AAFDB" }}
+                  _hover={{ color: COLORS.SECONDARY }}
                 >
                   Already have an account? Login
                 </Button>

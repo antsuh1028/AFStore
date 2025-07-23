@@ -24,7 +24,7 @@ import { ShowCart } from "../components/profile/ShowCart";
 import { CircleCheck } from "lucide-react";
 import { useAuthContext } from "../hooks/useAuth";
 
-import { API_CONFIG } from "../constants";
+import { API_CONFIG, COLORS } from "../constants";
 import { getCart, removeFromCart } from "../utils/cartActions";
 
 
@@ -436,7 +436,7 @@ const OrderSummaryPage = () => {
                 </HStack>
               </VStack>
               <VStack spacing={4}>
-                <Flex bg="#f8f8f8" py={2} px={6} align="flex-start" gap={4}>
+                <Flex bg={COLORS.GRAY_LIGHT} py={2} px={6} align="flex-start" gap={4}>
                   <CircleCheck />
                   {/* <Text fontSize="12px" color="gray.500" lineHeight="1.2">
                     If you provide your desired delivery address, We will email
@@ -449,9 +449,9 @@ const OrderSummaryPage = () => {
                 </Flex>
                 <Button
                   size="sm"
-                  bg="#ECECEC"
-                  color="#494949"
-                  _hover={{ bg: "#6AAFDB" }}
+                  bg={COLORS.GRAY_MEDIUM}
+                  color={COLORS.PRIMARY}
+                  _hover={{ bg: COLORS.SECONDARY }}
                   onClick={() => setCurrentStep(currentStep + 1)}
                   borderRadius="full"
                   h="45px"
@@ -474,7 +474,7 @@ const OrderSummaryPage = () => {
                 setIsAgreed3={setIsAgreed3}
               />
               <Button
-                bg="#ECECEC"
+                bg={COLORS.GRAY_MEDIUM}
                 textColor="black"
                 borderRadius="full"
                 mt={4}
@@ -553,7 +553,7 @@ const OrderSummaryPage = () => {
               <Button
                 justifySelf="end"
                 mt={4}
-                bg="#ececec"
+                bg={COLORS.GRAY_MEDIUM}
                 borderRadius="full"
                 w="100%"
                 onClick={() => {navigate("/")}}

@@ -16,9 +16,6 @@ import {
   Spinner,
   Center,
   Button,
-  Divider,
-  HStack,
-  Image,
   Grid,
   GridItem,
   Tabs,
@@ -26,32 +23,18 @@ import {
   TabPanels,
   TabPanel,
   TabList,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Badge,
-  Input,
-  Toast,
 } from "@chakra-ui/react";
 import Sidebar from "../../components/SideBar";
 import NavDrawer from "../../components/NavDrawer";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Filter } from "lucide-react";
 import { useAuthContext } from "../../hooks/useAuth";
-import { CheckCircleIcon } from "lucide-react";
 import Footer from "../../components/Footer";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import { SimpleGrid } from "@chakra-ui/react";
 import { getCart } from "../../utils/cartActions";
 import { ShowCart } from "../../components/profile/ShowCart";
 import { myPages } from "../../components/profile/ProfileComponents.";
 
-const API_URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_API_URL
-    : import.meta.env.VITE_API_URL_DEV;
+import { API_CONFIG, COLORS } from "../../constants";
 
 const UserProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -106,7 +89,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/orders/user/${userId}`);
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/orders/user/${userId}`);
         const data = await response.json();
         if (data.success) {
           setOrders(data.data);
@@ -137,7 +120,7 @@ const UserProfile = () => {
     const fetchAddress = async () => {
       try {
         const addressResponse = await fetch(
-          `${API_URL}/api/shipping-addresses/user/${userId}`
+          `${API_CONFIG.BASE_URL}/api/shipping-addresses/user/${userId}`
         );
 
         const address = await addressResponse.json();
@@ -334,7 +317,7 @@ const UserProfile = () => {
                 <TabPanel p={4}>
                   <Flex
                     p={4}
-                    bg="#494949"
+                    bg={COLORS.PRIMARY}
                     borderRadius="full"
                     align="center"
                     justify="space-between"
@@ -489,7 +472,7 @@ const UserProfile = () => {
                 <TabPanel>
                   <Flex
                     p={4}
-                    bg="#494949"
+                    bg={COLORS.PRIMARY}
                     borderRadius="full"
                     align="center"
                     justify="space-between"
@@ -512,9 +495,9 @@ const UserProfile = () => {
                   {cartItems.length !== 0 && (
                     <Button
                       size="sm"
-                      bg="#ECECEC"
-                      color="#494949"
-                      _hover={{ bg: "#6AAFDB" }}
+                      bg={COLORS.GRAY_MEDIUM}
+                      color={COLORS.PRIMARY}
+                      _hover={{ bg: COLORS.SECONDARY }}
                       onClick={() => navigate("/order-summary")}
                       borderRadius="full"
                       h="45px"

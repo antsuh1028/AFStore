@@ -20,6 +20,7 @@ import NavDrawer from "../components/NavDrawer";
 import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
 import Navbar from "../components/Navbar";
+import { COLORS } from "../constants";
 
 const TermsAndPoliciesPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -66,12 +67,12 @@ const TermsAndPoliciesPage = () => {
           paddingBottom={10}
           m={4}
           borderRadius={24}
-          bg="#f9f9f9"
+          bg={COLORS.GRAY_LIGHT}
         >
           <VStack spacing={5} align="stretch">
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -90,7 +91,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -110,7 +111,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -129,7 +130,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -148,7 +149,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -167,7 +168,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -202,12 +203,12 @@ const TermsAndPoliciesPage = () => {
           paddingBottom={10}
           m={4}
           borderRadius={24}
-          bg="#f9f9f9"
+          bg={COLORS.GRAY_LIGHT}
         >
           <VStack spacing={5} align="stretch">
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -266,7 +267,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -301,7 +302,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -340,7 +341,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -381,12 +382,12 @@ const TermsAndPoliciesPage = () => {
           paddingBottom={10}
           m={4}
           borderRadius={24}
-          bg="#f9f9f9"
+          bg={COLORS.GRAY_LIGHT}
         >
           <VStack spacing={5} align="stretch">
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -405,7 +406,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -424,7 +425,7 @@ const TermsAndPoliciesPage = () => {
 
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -460,12 +461,12 @@ const TermsAndPoliciesPage = () => {
           paddingBottom={10}
           m={4}
           borderRadius={24}
-          bg="#f9f9f9"
+          bg={COLORS.GRAY_LIGHT}
         >
           <VStack spacing={5} align="stretch">
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -517,12 +518,12 @@ const TermsAndPoliciesPage = () => {
           paddingBottom={10}
           m={4}
           borderRadius={24}
-          bg="#f9f9f9"
+          bg={COLORS.GRAY_LIGHT}
         >
           <VStack spacing={5} align="stretch">
             <Box>
               <Box
-                bg="#494949"
+                bg={COLORS.PRIMARY}
                 color="white"
                 px={4}
                 borderRadius="full"
@@ -569,7 +570,7 @@ const TermsAndPoliciesPage = () => {
           paddingBottom={10}
           m={4}
           borderRadius={24}
-          bg="#f9f9f9"
+          bg={COLORS.GRAY_LIGHT}
         >
           <Box>
             <Text fontSize="sm" color="gray.700">

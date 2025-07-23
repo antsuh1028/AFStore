@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import { COLORS } from "../../constants";
 
 const B2BContent = () => {
   const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -51,9 +52,9 @@ const B2BContent = () => {
 
         <VStack spacing={6} align="stretch" mb={6}>
           {/* Feature 1 */}
-          <Box borderRadius={16} p={4} bg="#f9f9f9">
+          <Box borderRadius={16} p={4} bg={COLORS.GRAY_LIGHT}>
             <HStack mb={2}>
-              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
+              <Text textColor={COLORS.ACCENT} fontWeight="semibold" fontSize="md">
                 1.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -68,9 +69,9 @@ const B2BContent = () => {
           </Box>
 
           {/* Feature 2 */}
-          <Box borderRadius={16} p={4} bg="#f9f9f9">
+          <Box borderRadius={16} p={4} bg={COLORS.GRAY_LIGHT}>
             <HStack mb={2}>
-              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
+              <Text textColor={COLORS.ACCENT} fontWeight="semibold" fontSize="md">
                 2.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -85,9 +86,9 @@ const B2BContent = () => {
           </Box>
 
           {/* Feature 3 */}
-          <Box borderRadius={16} p={4} bg="#f9f9f9">
+          <Box borderRadius={16} p={4} bg={COLORS.GRAY_LIGHT}>
             <HStack mb={2}>
-              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
+              <Text textColor={COLORS.ACCENT} fontWeight="semibold" fontSize="md">
                 3.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -102,9 +103,9 @@ const B2BContent = () => {
           </Box>
 
           {/* Feature 4 */}
-          <Box borderRadius={16} p={4} bg="#f9f9f9">
+          <Box borderRadius={16} p={4} bg={COLORS.GRAY_LIGHT}>
             <HStack mb={2}>
-              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
+              <Text textColor={COLORS.ACCENT} fontWeight="semibold" fontSize="md">
                 4.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -119,9 +120,9 @@ const B2BContent = () => {
           </Box>
 
           {/* Feature 5 */}
-          <Box borderRadius={16} p={4} bg="#f9f9f9">
+          <Box borderRadius={16} p={4} bg={COLORS.GRAY_LIGHT}>
             <HStack mb={2}>
-              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
+              <Text textColor={COLORS.ACCENT} fontWeight="semibold" fontSize="md">
                 5.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -135,9 +136,9 @@ const B2BContent = () => {
           </Box>
 
           {/* Feature 6 */}
-          <Box borderRadius={16} p={4} bg="#f9f9f9">
+          <Box borderRadius={16} p={4} bg={COLORS.GRAY_LIGHT}>
             <HStack mb={2}>
-              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
+              <Text textColor={COLORS.ACCENT} fontWeight="semibold" fontSize="md">
                 6.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -152,9 +153,9 @@ const B2BContent = () => {
           </Box>
 
           {/* Feature 7 */}
-          <Box borderRadius={16} p={4} bg="#f9f9f9">
+          <Box borderRadius={16} p={4} bg={COLORS.GRAY_LIGHT}>
             <HStack mb={2}>
-              <Text textColor=" #CA3836" fontWeight="semibold" fontSize="md">
+              <Text textColor={COLORS.ACCENT} fontWeight="semibold" fontSize="md">
                 7.
               </Text>
               <Heading as="h4" size="xs" fontWeight="semibold">
@@ -173,7 +174,7 @@ const B2BContent = () => {
         <Box display="flex" justifyContent="center" mt={8} mb={6}>
           <Button
             as="button"
-            bg="#494949"
+            bg={COLORS.PRIMARY}
             color="white"
             py={3}
             px={6}
