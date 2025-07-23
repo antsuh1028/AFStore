@@ -8,9 +8,9 @@ const ImageCarousel = () => {
   const [touchEnd, setTouchEnd] = useState(null);
 
   const images = [
-    { avif: "/Final_pic/main_banner_2.avif", fallback: "/Final_pic/main_banner_2.png" },
-    { avif: "/Final_pic/main_banner_3.avif", fallback: "/Final_pic/main_banner_3.jpg" },
-    { avif: "/Final_pic/main_banner_1.avif", fallback: "/Final_pic/main_banner_1.jpg" },
+    { avif: "/images/main_banner_2.avif", fallback: "/images/main_banner_2.png" },
+    { avif: "/images/main_banner_3.avif", fallback: "/images/main_banner_3.jpg" },
+    { avif: "/images/main_banner_1.avif", fallback: "/images/main_banner_1.jpg" },
   ];
 
   const minSwipeDistance = 50;

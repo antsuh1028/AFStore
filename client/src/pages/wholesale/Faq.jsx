@@ -34,7 +34,7 @@ const FAQPage = () => {
       noteBold: (
         <Box display="flex" alignItems="center" gap={2}>
           <Image
-            src="/Final_pic/only here.png"
+            src="/images/only here.png"
             h="20px"
             alt="Adams Logo"
             filter="grayscale(100%)"

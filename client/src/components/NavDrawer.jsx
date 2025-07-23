@@ -25,15 +25,15 @@ const ITEMS = [
   {
     label: "Marinated",
     to: "/wholesale/marinated",
-    icon: "/products/home/marinated.avif",
-    fallback: "/products/home/marinated.jpg",
+    icon: "/images/marinade button.avif",
+    fallback: "/images/marinade button.png",
     color: " #ECECEC",
   },
   {
     label: "Prepped",
     to: "/wholesale/processed",
-    icon: "/products/home/processed.avif",
-    fallback: "/products/home/processed.jpg",
+    icon: "/images/processed button.avif",
+    fallback: "/images/processed button.png",
     color: " #ECECEC",
   },
   {

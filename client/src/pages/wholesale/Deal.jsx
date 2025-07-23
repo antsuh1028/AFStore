@@ -50,7 +50,7 @@ const DealPage = () => {
           </Heading>
 
           <Image
-            src="/Final_pic/Deal pg poster.jpg"
+            src="/images/Deal pg poster.jpg"
             fallbackSrc="/gray.avif"
             boxSize="100%"
             objectFit="cover"

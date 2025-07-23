@@ -404,14 +404,14 @@ const HomePage = () => {
             {
               name: "Marinated",
               url: "/wholesale/marinated",
-              image: "/products/home/marinated.avif",
-              fallback: "/products/home/marinated.jpg",
+              image: "/images/marinade button.avif",
+              fallback: "images/marinade button.png",
             },
             {
               name: "Prepped",
               url: "/wholesale/processed",
-              image: "/products/home/processed.avif",
-              fallback: "/products/home/processed.jpg",
+              image: "/images/processed button.avif",
+              fallback: "images/processed button.png",
             },
             {
               name: "Untrimmed",
@@ -448,10 +448,7 @@ const HomePage = () => {
               </VStack>
             </GridItem>
           ))}
-        </Grid>
 
-        {/* Action Buttons */}
-        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={12} overflowX="auto">
           {[
             {
               name: "Deal",
@@ -500,7 +497,7 @@ const HomePage = () => {
             },
           ].map((action, idx) => (
             <GridItem key={idx}>
-              <VStack spacing={2}>
+              <VStack spacing={2} my={4}>
                 <Circle
                   size="75px"
                   bg="#ECECEC"
@@ -523,7 +520,7 @@ const HomePage = () => {
         {/* Location */}
         <HStack px={6} mb={3} spacing={2} ml={2}>
           <Image
-            src="/Final_pic/only here.png"
+            src="/images/only here.png"
             h="20px"
             alt="Adams Logo"
             filter="grayscale(100%)"
@@ -581,7 +578,7 @@ const HomePage = () => {
                 onClick={() => navigate("/wholesale/product/1")}
               >
                 <Image
-                  src="/Final_pic/button.png"
+                  src="/images/button.png"
                   alt="Order"
                   width="60%"
                   height="60%"
@@ -606,7 +603,7 @@ const HomePage = () => {
           </Heading>
           <Flex mb={4} gap={4} align="center">
             <Image
-              src="/final/why adamsfoods.png"
+              src="/images/why adamsfoods.png"
               alt="Why AdamsFoods"
               objectFit="contain"
               width="50%"
@@ -625,7 +622,7 @@ const HomePage = () => {
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
                   <Image
-                    src="/Final_pic/why adamsfoods-1.png"
+                    src="/images/why adamsfoods-1.png"
                     alt="Korean-style cutting"
                     width="80%"
                   />
@@ -639,7 +636,7 @@ const HomePage = () => {
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
                   <Image
-                    src="/Final_pic/why adamsfoods-2.png"
+                    src="/images/why adamsfoods-2.png"
                     alt="Trusted partner"
                     width="80%"
                   />

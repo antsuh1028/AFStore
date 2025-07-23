@@ -30,22 +30,22 @@ const PackingPage = () => {
       heading: "40°F Full Cold Chain",
       text: "From production to delivery, we strictly control the temperature to stay at or below 6°C at all times, preserving the freshness, quality, and safety of our meat products.",
       images: [
-        "../../Final_pic/Thermometer copy.jpg",
-        "../../Final_pic/packing1.jpg",
+        "../../images/Thermometer copy.jpg",
+        "../../images/packing1.jpg",
       ],
     },
     {
       heading: "Specialized Packaging for Safety",
       text: "We invest in advanced packaging to preserve freshness, extend shelf life, and ensure safety, while preventing contamination and maintaining quality during storage and transport.",
-      images: ["../../Final_pic/packing2.jpg", "../../Final_pic/packing3.jpg"],
+      images: ["../../images/packing2.jpg", "../../images/packing3.jpg"],
     },
     {
       heading: "Meat Browning",
       text: "The browning happens because myoglobin in the meat doesn't bind with oxygen. Once exposed to air, the meat will return to a reddish color within 15 to 30 minutes.",
       note: "This is a natural process, and the meat is safe.",
       images: [
-        "../../Final_pic/Meat Browning 1.jpg",
-        "../../Final_pic/Meat Browning 2.jpg",
+        "../../images/Meat Browning 1.jpg",
+        "../../images/Meat Browning 2.jpg",
       ],
     },
   ];
@@ -145,7 +145,7 @@ const PackingPage = () => {
               <GridItem>
                 <Box textAlign="center">
                   <Image
-                    src="/Final_pic/packing pg-1.jpg"
+                    src="/images/packing pg-1.jpg"
                     alt="20lb box"
                     borderRadius="md"
                     width="100%"
@@ -158,7 +158,7 @@ const PackingPage = () => {
               <GridItem>
                 <Box textAlign="center">
                   <Image
-                    src="/Final_pic/packing pg-2.jpg"
+                    src="/images/packing pg-2.jpg"
                     alt="30lb box"
                     borderRadius="md"
                     width="100%"
