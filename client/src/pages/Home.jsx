@@ -404,20 +404,20 @@ const HomePage = () => {
             {
               name: "Marinated",
               url: "/wholesale/marinated",
-              image: "/images/marinade button.avif",
-              fallback: "images/marinade button.png",
+              image: "/images/marinated_button.avif",
+              fallback: "images/marinated_button.png",
             },
             {
               name: "Prepped",
               url: "/wholesale/processed",
-              image: "/images/processed button.avif",
-              fallback: "images/processed button.png",
+              image: "/images/processed_button.avif",
+              fallback: "images/processed_button.png",
             },
             {
               name: "Untrimmed",
               url: "/wholesale/unprocessed",
-              image: "/products/home/unprocessed.avif",
-              fallback: "/products/home/unprocessed.jpg",
+              image: "/images/wholesale_button.avif",
+              fallback: "/images/wholesale_button.png",
             },
           ].map((category, idx) => (
             <GridItem key={idx}>
@@ -454,8 +454,8 @@ const HomePage = () => {
               name: "Deal",
               icon: (
                 <Image
-                  src="/products/home/Deal.avif"
-                  fallbackSrc="/products/home/Deal.jpg"
+                  src="/products/home/deal.avif"
+                  fallbackSrc="/products/home/deal.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -469,8 +469,8 @@ const HomePage = () => {
               name: "How to Order",
               icon: (
                 <Image
-                  src="/products/home/How to order.avif"
-                  fallbackSrc="/products/home/How to order.jpg"
+                  src="/products/home/how_to_order.avif"
+                  fallbackSrc="/products/home/how_to_order.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -484,8 +484,8 @@ const HomePage = () => {
               name: "Contact",
               icon: (
                 <Image
-                  src="/products/home/Contact.avif"
-                  fallbackSrc="/products/home/Contact.jpg"
+                  src="/products/home/contact.avif"
+                  fallbackSrc="/products/home/contact.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -520,7 +520,7 @@ const HomePage = () => {
         {/* Location */}
         <HStack px={6} mb={3} spacing={2} ml={2}>
           <Image
-            src="/images/only here.png"
+            src="/images/only_here.png"
             h="20px"
             alt="Adams Logo"
             filter="grayscale(100%)"
@@ -603,7 +603,7 @@ const HomePage = () => {
           </Heading>
           <Flex mb={4} gap={4} align="center">
             <Image
-              src="/images/why adamsfoods.png"
+              src="/images/why_adamsfoods.png"
               alt="Why AdamsFoods"
               objectFit="contain"
               width="50%"
@@ -622,7 +622,7 @@ const HomePage = () => {
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
                   <Image
-                    src="/images/why adamsfoods-1.png"
+                    src="/images/why_adamsfoods-1.png"
                     alt="Korean-style cutting"
                     width="80%"
                   />
@@ -636,7 +636,7 @@ const HomePage = () => {
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
                   <Image
-                    src="/images/why adamsfoods-2.png"
+                    src="/images/why_adamsfoods-2.png"
                     alt="Trusted partner"
                     width="80%"
                   />

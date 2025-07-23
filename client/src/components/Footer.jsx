@@ -19,29 +19,32 @@ const Footer = () => {
 
         {/* Social Media Icons */}
         <Flex justifyContent="center" mb={12}>
-          <HStack width="50%">
+          <HStack spacing={6} alignItems="center">
             <Link href="#" aria-label="Instagram">
               <Image
-                src="images/IG.png"
+                src="/images/IG.png"
                 alt="Instagram Icon"
-                width="45%"
-                height="45%"
+                width="20px"
+                height="20px"
+                objectFit="contain"
               />
             </Link>
             <Link href="#" aria-label="TikTok">
               <Image
-                src="images/Tiktok.png"
+                src="/images/Tiktok.png"
                 alt="TikTok Icon"
-                width="45%"
-                height="45%"
+                width="20px"
+                height="20px"
+                objectFit="contain"
               />
             </Link>
             <Link href="https://www.youtube.com/" aria-label="YouTube">
               <Image
-                src="images/Youtube.png"
+                src="/images/Youtube.png"
                 alt="YouTube Icon"
-                width="45%"
-                height="45%"
+                width="20px"
+                height="20px"
+                objectFit="contain"
               />
             </Link>
           </HStack>

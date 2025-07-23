@@ -30,7 +30,7 @@ const PackingPage = () => {
       heading: "40°F Full Cold Chain",
       text: "From production to delivery, we strictly control the temperature to stay at or below 6°C at all times, preserving the freshness, quality, and safety of our meat products.",
       images: [
-        "../../images/Thermometer copy.jpg",
+        "../../images/thermometer.jpg",
         "../../images/packing1.jpg",
       ],
     },
@@ -44,8 +44,8 @@ const PackingPage = () => {
       text: "The browning happens because myoglobin in the meat doesn't bind with oxygen. Once exposed to air, the meat will return to a reddish color within 15 to 30 minutes.",
       note: "This is a natural process, and the meat is safe.",
       images: [
-        "../../images/Meat Browning 1.jpg",
-        "../../images/Meat Browning 2.jpg",
+        "../../images/meat_browning_1.jpg",
+        "../../images/meat_browning_2.jpg",
       ],
     },
   ];
@@ -145,7 +145,7 @@ const PackingPage = () => {
               <GridItem>
                 <Box textAlign="center">
                   <Image
-                    src="/images/packing pg-1.jpg"
+                    src="/images/packing_pg_1.jpg"
                     alt="20lb box"
                     borderRadius="md"
                     width="100%"
@@ -158,7 +158,7 @@ const PackingPage = () => {
               <GridItem>
                 <Box textAlign="center">
                   <Image
-                    src="/images/packing pg-2.jpg"
+                    src="/images/packing_pg_2.jpg"
                     alt="30lb box"
                     borderRadius="md"
                     width="100%"
