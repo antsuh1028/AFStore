@@ -39,16 +39,6 @@ const TermsAndPoliciesPage = () => {
         ml={{ base: 0, lg: "40%" }}
       >
         <Navbar onOpen={onOpen} />
-        {/* Header */}
-        {/* <Flex p={4} justify="space-between" align="center">
-          <Image src="/images/gray_adams.png" alt="AdamsFoods Logo" width="40%" />
-          <IconButton
-            aria-label="Menu"
-            icon={<Text>☰</Text>}
-            variant="ghost"
-            onClick={onOpen}
-          />
-        </Flex> */}
 
         {/* Terms & Policies Header */}
         <Box px={4} py={8} textAlign="center">

@@ -575,7 +575,7 @@ export const Orders = ({
 //       const safeStyle = style.replace(/[^a-zA-Z0-9-_]/g, " ");
 //       return `/products/${safeStyle}/${safeName}/01.jpg`;
 //     }
-//     return "/gray.avif";
+//     return "/images/gray.avif";
 //   };
 
 //   return (
@@ -758,7 +758,7 @@ export const Orders = ({
 //                         h="130px"
 //                         objectFit="cover"
 //                         borderRadius="md"
-//                         fallbackSrc="/gray.avif"
+//                         fallbackSrc="/images/gray.avif"
 //                       />
 //                       <VStack align="start" flex="1" spacing={1}>
 //                         <Text fontSize="13px" mb={2}>

@@ -43,7 +43,7 @@ const CartItem = ({
       const safeStyle = style.replace(/[^a-zA-Z0-9-_]/g, " ");
       return `/products/${safeStyle}/${safeName}/01.jpg`;
     }
-    return images?.[0] || "/gray.avif";
+    return images?.[0] || "/images/gray.avif";
   };
 
   return (
@@ -64,7 +64,7 @@ const CartItem = ({
           h="60px"
           objectFit="cover"
           borderRadius="md"
-          fallbackSrc="/gray.avif"
+          fallbackSrc="/images/gray.avif"
         />
 
         <Box flex="1">
@@ -155,7 +155,7 @@ const CartPage = () => {
     name: "Premium Beef Ribeye",
     species: "BEEF",
     description: "Premium ribeye steak, dry-aged for 21 days",
-    images: ["/gray.avif"],
+    images: ["/images/gray.avif"],
     price: 85,
     brand: "Prime Cuts",
     grade: "Prime",
@@ -170,7 +170,7 @@ const CartPage = () => {
     name: "Premium Pork Belly",
     species: "PORK",
     description: "Premium pork belly, perfect for Korean BBQ",
-    images: ["/gray.avif"],
+    images: ["/images/gray.avif"],
     price: 65,
     brand: "Pork King",
     grade: "Choice",

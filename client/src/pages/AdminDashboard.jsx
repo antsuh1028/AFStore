@@ -439,7 +439,7 @@ const AdminDashboard = () => {
     <Box bg="white" minH="100vh" px={[2, 4, 12]} py={4}>
       <Flex align="center" justify="space-between" mb={4}>
         <Flex align="center" gap={[2, 4]}>
-          <Image boxSize={["24px", "32px"]} src="/MainLogo.png" alt="Logo" />
+          <Image boxSize={["24px", "32px"]} src="/images/main_logo.png" alt="Logo" />
           <Text
             fontWeight="bold"
             fontSize={["md", "lg"]}

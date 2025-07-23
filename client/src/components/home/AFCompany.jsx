@@ -83,7 +83,7 @@ const AFCompany = () => {
             <VStack textAlign="center" borderColor="gray.300" w="30%" h="100%">
               <Box h="7vh" w="100%" position="relative">
                 <Image
-                  src="/MeatPapa.png"
+                  src="/images/MeatPapa.png"
                   alt="Meat Papa Logo"
                   objectFit="contain"
                   w="100%"

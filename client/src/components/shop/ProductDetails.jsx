@@ -54,7 +54,7 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
 
   const imagePaths = useMemo(() => {
-    if (!productName || !productStyle || !productImages) return ["/gray.avif"];
+    if (!productName || !productStyle || !productImages) return ["/images/gray.avif"];
 
     const basePath = `/products/${productStyle}/${productName}`;
     const paths = [];
@@ -68,10 +68,10 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
       });
     }
     
-    return paths.length > 0 ? paths : [{ avif: "/gray.avif", jpg: "/gray.avif" }];
+    return paths.length > 0 ? paths : [{ avif: "/images/gray.avif", jpg: "/images/gray.avif" }];
   }, [productName, productStyle, productImages]);
 
-  const currentImageSet = imagePaths[imagePage - 1] || { avif: "/gray.avif", jpg: "/gray.avif" };
+  const currentImageSet = imagePaths[imagePage - 1] || { avif: "/images/gray.avif", jpg: "/images/gray.avif" };
   const hasMultipleImages = imagePaths.length > 1;
 
   const nextImage = () => {
@@ -101,8 +101,8 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
         borderRadius="lg"
         fallbackSrc={currentImageSet.jpg}
         onError={(e) => {
-          if (e.target.src !== "/gray.avif") {
-            e.target.src = "/gray.avif";
+          if (e.target.src !== "/images/gray.avif") {
+            e.target.src = "/images/gray.avif";
           }
         }}
       />

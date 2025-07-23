@@ -22,7 +22,7 @@ const Footer = () => {
           <HStack width="50%">
             <Link href="#" aria-label="Instagram">
               <Image
-                src="/IG.png"
+                src="images/IG.png"
                 alt="Instagram Icon"
                 width="45%"
                 height="45%"
@@ -30,7 +30,7 @@ const Footer = () => {
             </Link>
             <Link href="#" aria-label="TikTok">
               <Image
-                src="/Tiktok.png"
+                src="images/Tiktok.png"
                 alt="TikTok Icon"
                 width="45%"
                 height="45%"
@@ -38,7 +38,7 @@ const Footer = () => {
             </Link>
             <Link href="https://www.youtube.com/" aria-label="YouTube">
               <Image
-                src="/Youtube.png"
+                src="images/Youtube.png"
                 alt="YouTube Icon"
                 width="45%"
                 height="45%"

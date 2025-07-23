@@ -29,7 +29,7 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice}) => {
       const safeStyle = style.replace(/[^a-zA-Z0-9-_]/g, " ");
       return `/products/${safeStyle}/${safeName}/01.jpg`;
     }
-    return "/gray.avif";
+    return "/images/gray.avif";
   };
 
     const handleAdd = (product) => {
@@ -70,7 +70,7 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice}) => {
              h="130px"
              objectFit="cover"
              borderRadius="md"
-             fallbackSrc="/gray.avif"
+             fallbackSrc="/images/gray.avif"
            />
            <VStack>
              <Flex gap={8} justifyContent="space-between" width="100%" mb={1}>

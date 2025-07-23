@@ -303,7 +303,7 @@ const HomePage = () => {
                       )}
                       {item.images === 0 && (
                         <Image
-                          src="gray.avif"
+                          src="images/gray.avif"
                           alt={item.name}
                           boxSize="40px"
                           objectFit="cover"
@@ -358,12 +358,12 @@ const HomePage = () => {
                           src={
                             item.images > 0
                               ? `/products/${item.style}/${item.name}/01.avif`
-                              : "/gray.avif"
+                              : "/images/gray.avif"
                           }
                           fallbackSrc={
                             item.images > 0
                               ? `/products/${item.style}/${item.name}/01.jpg`
-                              : "/gray.avif"
+                              : "/images/gray.avif"
                           }
                           alt={item.name}
                           w="25%"

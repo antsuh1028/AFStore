@@ -312,7 +312,7 @@ const OrdersList = ({ orders, currPage }) => {
                   const imgSrc =
                     safeStyle && safeName
                       ? `/products/${safeStyle}/${safeName}/01.jpg`
-                      : "/gray.avif";
+                      : "/images/gray.avif";
                   return (
                     <VStack
                       key={oi.id}
@@ -331,7 +331,7 @@ const OrdersList = ({ orders, currPage }) => {
                         boxSize="175px"
                         objectFit="cover"
                         borderRadius="md"
-                        fallbackSrc="/gray.avif"
+                        fallbackSrc="/images/gray.avif"
                       />
                       <Box flex="1">
                         <Text

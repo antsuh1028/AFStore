@@ -51,7 +51,7 @@ const DealPage = () => {
 
           <Image
             src="/images/Deal pg poster.jpg"
-            fallbackSrc="/gray.avif"
+            fallbackSrc="/images/gray.avif"
             boxSize="100%"
             objectFit="cover"
             mb={6}

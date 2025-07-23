@@ -5,7 +5,7 @@ import { useState } from "react";
 // Function to get all images for a product based on exact folder name match
 const getProductImages = (productName, productStyle, maxImages = 10) => {
   if (!productName || !productStyle) {
-    return ["/gray.avif"];
+    return ["/images/gray.avif"];
   }
 
   const images = [];
@@ -18,13 +18,13 @@ const getProductImages = (productName, productStyle, maxImages = 10) => {
     images.push(imagePath);
   }
 
-  return images.length > 0 ? images : ["/gray.avif"];
+  return images.length > 0 ? images : ["/images/gray.avif"];
 };
 
 // Function to get the primary (first) image for a product
 const getPrimaryProductImage = (productName, productStyle) => {
   if (!productName || !productStyle) {
-    return "/gray.avif";
+    return "/images/gray.avif";
   }
 
   const basePath = `/products/${productStyle}/${productName}`;
@@ -50,7 +50,7 @@ export const ProductCard = ({
 
   // Get all possible images for this product
   const productImages = getProductImages(name, style, 5); // Try up to 5 images
-  const currentImage = productImages[currentImageIndex] || "/gray.avif";
+  const currentImage = productImages[currentImageIndex] || "/images/gray.avif";
 
   const handleCardClick = () => {
     navigate(`/wholesale/product/${id}`);
@@ -90,13 +90,13 @@ export const ProductCard = ({
       {/* Product Image */}
       <Box position="relative" height="180px">
         <Image
-          src={imageError ? "/gray.avif" : currentImage}
+          src={imageError ? "/images/gray.avif" : currentImage}
           alt={name}
           borderRadius="md"
           boxSize="180px"
           objectFit="cover"
           loading="lazy"
-          fallbackSrc="/gray.avif"
+          fallbackSrc="/images/gray.avif"
           onError={handleImageError}
         />
       </Box>
