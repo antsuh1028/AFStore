@@ -1,35 +1,6 @@
-import { Box, Image, Text } from "@chakra-ui/react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Box, Image, Text, Skeleton } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-
-// Function to get all images for a product based on exact folder name match
-const getProductImages = (productName, productStyle, maxImages = 10) => {
-  if (!productName || !productStyle) {
-    return ["/images/gray.avif"];
-  }
-
-  const images = [];
-  const basePath = `/products/${productStyle}/${productName}`;
-
-  // Try numbered images starting from 01, 02, 03, etc. (only .jpg)
-  for (let i = 1; i <= maxImages; i++) {
-    const imageNumber = String(i).padStart(2, "0"); // 01, 02, 03, etc.
-    const imagePath = `${basePath}/${imageNumber}.jpg`;
-    images.push(imagePath);
-  }
-
-  return images.length > 0 ? images : ["/images/gray.avif"];
-};
-
-// Function to get the primary (first) image for a product
-const getPrimaryProductImage = (productName, productStyle) => {
-  if (!productName || !productStyle) {
-    return "/images/gray.avif";
-  }
-
-  const basePath = `/products/${productStyle}/${productName}`;
-  return `${basePath}/01.jpg`;
-};
 
 export const ProductCard = ({
   id,
@@ -45,24 +16,70 @@ export const ProductCard = ({
   style,
 }) => {
   const navigate = useNavigate();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageSrc, setImageSrc] = useState("/images/gray.avif");
   const [imageError, setImageError] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Get all possible images for this product
-  const productImages = getProductImages(name, style, 5); // Try up to 5 images
-  const currentImage = productImages[currentImageIndex] || "/images/gray.avif";
+  // Generate image paths for this product
+  const imagePaths = useMemo(() => {
+    if (!name || !style) {
+      return { avif: "/images/gray.avif", jpg: "/images/gray.avif" };
+    }
+    
+    const basePath = `/products/${style}/${name}`;
+    return {
+      avif: `${basePath}/01.avif`,
+      jpg: `${basePath}/01.jpg`
+    };
+  }, [name, style]);
+
+  // Smart image loading with fallback
+  useEffect(() => {
+    if (!name || !style) {
+      setImageSrc("/images/gray.avif");
+      setImageLoaded(true);
+      return;
+    }
+
+    setImageLoaded(false);
+    setImageError(false);
+    
+    const loadImage = () => {
+      // Try AVIF first
+      const avifImg = document.createElement('img');
+      
+      avifImg.onload = () => {
+        setImageSrc(imagePaths.avif);
+        setImageLoaded(true);
+      };
+      
+      avifImg.onerror = () => {
+        // AVIF failed, try JPG
+        const jpgImg = document.createElement('img');
+        
+        jpgImg.onload = () => {
+          setImageSrc(imagePaths.jpg);
+          setImageLoaded(true);
+        };
+        
+        jpgImg.onerror = () => {
+          // Both failed, use gray placeholder
+          setImageSrc("/images/gray.avif");
+          setImageError(true);
+          setImageLoaded(true);
+        };
+        
+        jpgImg.src = imagePaths.jpg;
+      };
+      
+      avifImg.src = imagePaths.avif;
+    };
+
+    loadImage();
+  }, [imagePaths]);
 
   const handleCardClick = () => {
     navigate(`/wholesale/product/${id}`);
-  };
-
-  const handleImageError = () => {
-    // Try the next image in the list
-    if (currentImageIndex < productImages.length - 1) {
-      setCurrentImageIndex((prev) => prev + 1);
-    } else {
-      setImageError(true);
-    }
   };
 
   return (
@@ -88,18 +105,49 @@ export const ProductCard = ({
       mx="auto"
     >
       {/* Product Image */}
-      <Box position="relative" height="180px">
+      <Box position="relative" height="180px" bg="gray.100" borderRadius="md">
+        {!imageLoaded && (
+          <Skeleton
+            position="absolute"
+            top="0"
+            left="0"
+            right="0"
+            bottom="0"
+            borderRadius="md"
+          />
+        )}
+        
         <Image
-          src={imageError ? "/images/gray.avif" : currentImage}
+          src={imageSrc}
           alt={name}
           borderRadius="md"
           boxSize="180px"
           objectFit="cover"
           loading="lazy"
+          opacity={imageLoaded ? 1 : 0}
+          transition="opacity 0.3s ease"
           fallbackSrc="/images/gray.avif"
-          onError={handleImageError}
+          onLoad={() => setImageLoaded(true)}
         />
+        
+        {/* Image status indicator */}
+        {imageError && imageLoaded && (
+          <Box
+            position="absolute"
+            top="2"
+            right="2"
+            bg="blackAlpha.600"
+            color="white"
+            px={2}
+            py={1}
+            borderRadius="md"
+            fontSize="xs"
+          >
+            📷
+          </Box>
+        )}
       </Box>
+      
       <Box
         p={2}
         display="flex"

@@ -1,57 +1,139 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import {
   Box,
   Container,
   Flex,
   Heading,
-  IconButton,
-  Text,
-  VStack,
   Image,
-  Stack,
+  Text,
+  IconButton,
+  VStack,
   Divider,
-  useDisclosure,
   Grid,
   GridItem,
+  useDisclosure,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import NavDrawer from "../../components/NavDrawer";
 import Sidebar from "../../components/SideBar";
-import Breadcrumbs from "../../components/Breadcrumbs";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const PackingPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
   const contentRef = useRef(null);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [imagesPreloaded, setImagesPreloaded] = useState(false);
+
+  const criticalImages = useMemo(() => [
+    "/images/packing1.jpg",
+    "/images/packing2.jpg",
+    "/images/packing3.jpg",
+    "/images/packing_pg_1.jpg",
+    "/images/packing_pg_2.jpg",
+    "/images/meat_browning_1.jpg",
+    "/images/meat_browning_2.jpg"
+  ], []);
+
+  const preloadImages = async (imageUrls) => {
+    const preloadPromises = imageUrls.map((url) => {
+      return new Promise((resolve) => {
+        const img = document.createElement('img');
+        img.onload = () => resolve({ url, success: true });
+        img.onerror = () => resolve({ url, success: false });
+        img.src = url;
+      });
+    });
+
+    return Promise.allSettled(preloadPromises);
+  };
+
+  useEffect(() => {
+    const initializePage = async () => {
+      const imagePreloading = preloadImages(criticalImages);
+      
+      const [, imageResults] = await Promise.all([
+        new Promise(resolve => setTimeout(resolve, 200)),
+        imagePreloading
+      ]);
+
+      setImagesPreloaded(true);
+      setPageLoading(false);
+    };
+
+    initializePage();
+  }, [criticalImages]);
+
+  const OptimizedImage = ({ src, alt, ...props }) => {
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [imageSrc, setImageSrc] = useState(src);
+
+    useEffect(() => {
+      if (imagesPreloaded && criticalImages.includes(src)) {
+        setImageLoaded(true);
+        return;
+      }
+
+      const img = document.createElement('img');
+      img.onload = () => {
+        setImageSrc(src);
+        setImageLoaded(true);
+      };
+      img.onerror = () => {
+        setImageLoaded(true);
+      };
+      img.src = src;
+    }, [src, imagesPreloaded]);
+
+    return (
+      <Image
+        {...props}
+        src={imageSrc}
+        alt={alt}
+        opacity={imageLoaded ? 1 : 0.7}
+        transition="opacity 0.3s ease"
+        onLoad={() => setImageLoaded(true)}
+      />
+    );
+  };
 
   const sectionData = [
     {
-      heading: "40°F Full Cold Chain",
-      text: "From production to delivery, we strictly control the temperature to stay at or below 6°C at all times, preserving the freshness, quality, and safety of our meat products.",
-      images: [
-        { avif: "../../images/thermometer.avif", jpg: "../../images/thermometer.jpg" },
-        { avif: "../../images/packing1.avif", jpg: "../../images/packing1.jpg" },
-      ],
+      heading: "Vacuum Packaging",
+      text: "Our vacuum packaging removes air to prevent oxidation, extending freshness and shelf life while maintaining flavor and texture.",
+      images: ["/images/packing1.jpg", "/images/packing2.jpg"],
     },
     {
       heading: "Specialized Packaging for Safety",
       text: "We invest in advanced packaging to preserve freshness, extend shelf life, and ensure safety, while preventing contamination and maintaining quality during storage and transport.",
-      images: [
-        { avif: "../../images/packing2.avif", jpg: "../../images/packing2.jpg" },
-        { avif: "../../images/packing3.avif", jpg: "../../images/packing3.jpg" },
-      ],
+      images: ["/images/packing2.jpg", "/images/packing3.jpg"],
     },
     {
       heading: "Meat Browning",
       text: "The browning happens because myoglobin in the meat doesn't bind with oxygen. Once exposed to air, the meat will return to a reddish color within 15 to 30 minutes.",
       note: "This is a natural process, and the meat is safe.",
-      images: [
-        { avif: "../../images/meat_browning_1.avif", jpg: "../../images/meat_browning_1.jpg" },
-        { avif: "../../images/meat_browning_2.avif", jpg: "../../images/meat_browning_2.jpg" },
-      ],
+      images: ["/images/meat_browning_1.jpg", "/images/meat_browning_2.jpg"],
     },
   ];
+
+  if (pageLoading) {
+    return (
+      <Center h="100vh" bg="white">
+        <VStack spacing={4}>
+          <Spinner size="lg" color="gray.500" thickness="3px" />
+          <Text fontSize="sm" color="gray.500">
+            {imagesPreloaded ? "Almost ready..." : "Loading..."}
+          </Text>
+        </VStack>
+      </Center>
+    );
+  }
 
   return (
     <Sidebar>
@@ -101,11 +183,10 @@ const PackingPage = () => {
                 </Text>
               )}
               <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={4}>
-                {section.images.map((imageSet, i) => (
+                {section.images.map((src, i) => (
                   <GridItem key={i}>
-                    <Image
-                      src={imageSet.avif}
-                      fallbackSrc={imageSet.jpg}
+                    <OptimizedImage
+                      src={src}
                       alt={`${section.heading} image ${i + 1}`}
                       borderRadius="md"
                       width="100%"
@@ -146,9 +227,8 @@ const PackingPage = () => {
             <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={6} mb={4}>
               <GridItem>
                 <Box textAlign="center">
-                  <Image
-                    src="/images/packing_pg_1.avif"
-                    fallbackSrc="/images/packing_pg_1.jpg"
+                  <OptimizedImage
+                    src="/images/packing_pg_1.jpg"
                     alt="20lb box"
                     borderRadius="md"
                     width="100%"
@@ -160,9 +240,8 @@ const PackingPage = () => {
               </GridItem>
               <GridItem>
                 <Box textAlign="center">
-                  <Image
-                    src="/images/packing_pg_2.avif"
-                    fallbackSrc="/images/packing_pg_2.jpg"
+                  <OptimizedImage
+                    src="/images/packing_pg_2.jpg"
                     alt="30lb box"
                     borderRadius="md"
                     width="100%"

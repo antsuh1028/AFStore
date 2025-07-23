@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
   Text,
@@ -8,7 +9,6 @@ import {
   Tab,
   TabPanel,
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
 import { ProductCard } from "./ProductCard";
 
 const renderProductGrid = (filteredProducts, emptyMessage) => (
@@ -38,36 +38,104 @@ const renderProductGrid = (filteredProducts, emptyMessage) => (
 
 export const ProductTabs = ({ products, getProductsByType, productType }) => {
   const [preloadedTabs, setPreloadedTabs] = useState(new Set([0])); // All tab is preloaded initially
+  const [imagePreloadCache, setImagePreloadCache] = useState(new Set());
 
-  const preloadTabImages = (tabProducts) => {
+  // Memoize tab data to avoid recalculation
+  const tabData = useMemo(() => [
+    { key: "all", products: products, label: "All" },
+    { key: "beef", products: getProductsByType("beef"), label: "Beef" },
+    { key: "pork", products: getProductsByType("pork"), label: "Pork" },
+    { key: "chicken", products: getProductsByType("chicken"), label: "Poultry" }
+  ], [products, getProductsByType]);
+
+  // Smart image preloading function
+  const preloadTabImages = useCallback((tabProducts, tabIndex) => {
+    if (preloadedTabs.has(tabIndex)) return;
+
     const imageUrls = tabProducts
-      .filter(item => item.show)
-      .map(product => `/products/${productType}/${product.name}/01.avif`);
+      .filter(item => item.show && item.name && item.style)
+      .slice(0, 8) // Only preload first 8 images per tab
+      .map(product => ({
+        avif: `/products/${product.style}/${product.name}/01.avif`,
+        jpg: `/products/${product.style}/${product.name}/01.jpg`,
+        id: `${product.style}-${product.name}`
+      }));
     
-    imageUrls.forEach(url => {
-      const img = new Image();
-      img.src = url;
-    });
-  };
+    // Preload images asynchronously
+    imageUrls.forEach(({ avif, jpg, id }) => {
+      if (imagePreloadCache.has(id)) return;
 
-  const handleTabChange = (index) => {
-    if (!preloadedTabs.has(index)) {
-      const tabData = [
-        products,
-        getProductsByType("beef"),
-        getProductsByType("pork"),
-        getProductsByType("chicken")
-      ];
-      
-      preloadTabImages(tabData[index]);
-      setPreloadedTabs(prev => new Set([...prev, index]));
+      const preloadImage = () => {
+        const img = document.createElement('img');
+        
+        img.onload = () => {
+          setImagePreloadCache(prev => new Set([...prev, id]));
+        };
+        
+        img.onerror = () => {
+          // Try JPG fallback
+          const fallbackImg = document.createElement('img');
+          fallbackImg.onload = () => {
+            setImagePreloadCache(prev => new Set([...prev, id]));
+          };
+          fallbackImg.onerror = () => {
+            // Mark as failed but still cache to avoid retries
+            setImagePreloadCache(prev => new Set([...prev, id + '-failed']));
+          };
+          fallbackImg.src = jpg;
+        };
+        
+        img.src = avif;
+      };
+
+      // Delay preloading slightly to not block main thread
+      setTimeout(preloadImage, 100);
+    });
+
+    setPreloadedTabs(prev => new Set([...prev, tabIndex]));
+  }, [preloadedTabs, imagePreloadCache]);
+
+  // Preload visible tab images on mount
+  useEffect(() => {
+    if (tabData[0]?.products.length > 0) {
+      preloadTabImages(tabData[0].products, 0);
     }
-  };
+  }, [tabData, preloadTabImages]);
+
+  const handleTabChange = useCallback((index) => {
+    const selectedTabData = tabData[index];
+    if (selectedTabData && !preloadedTabs.has(index)) {
+      preloadTabImages(selectedTabData.products, index);
+    }
+  }, [tabData, preloadTabImages, preloadedTabs]);
+
+  // Intersection Observer for lazy loading when tabs come into view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const tabIndex = parseInt(entry.target.dataset.tabIndex);
+            if (!isNaN(tabIndex) && !preloadedTabs.has(tabIndex)) {
+              preloadTabImages(tabData[tabIndex]?.products || [], tabIndex);
+            }
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    // Observe tab panels
+    const tabPanels = document.querySelectorAll('[data-tab-index]');
+    tabPanels.forEach(panel => observer.observe(panel));
+
+    return () => observer.disconnect();
+  }, [tabData, preloadTabImages, preloadedTabs]);
 
   return (
     <Tabs w="100%" variant="unstyled" isFitted={false} onChange={handleTabChange}>
       <TabList justifyContent="center" gap={4} mb={6} overflowX="auto">
-        {["all", "beef", "pork", "poultry"].map((label) => (
+        {tabData.map(({ label }, index) => (
           <Tab
             key={label}
             _selected={{
@@ -89,38 +157,23 @@ export const ProductTabs = ({ products, getProductsByType, productType }) => {
               color="gray.600"
               fontSize="small"
               transition="none"
+              position="relative"
             >
-              {label.charAt(0).toUpperCase() + label.slice(1)}
+              {label}
             </Box>
           </Tab>
         ))}
       </TabList>
 
       <TabPanels minHeight="500px">
-        <TabPanel p={2}>
-          {renderProductGrid(products, `No ${productType} products found`)}
-        </TabPanel>
-
-        <TabPanel p={2}>
-          {renderProductGrid(
-            getProductsByType("beef"),
-            `No ${productType} beef products found`
-          )}
-        </TabPanel>
-
-        <TabPanel p={2}>
-          {renderProductGrid(
-            getProductsByType("pork"),
-            `No ${productType} pork products found`
-          )}
-        </TabPanel>
-
-        <TabPanel p={2}>
-          {renderProductGrid(
-            getProductsByType("chicken"),
-            `No ${productType} poultry products found`
-          )}
-        </TabPanel>
+        {tabData.map(({ key, products: tabProducts, label }, index) => (
+          <TabPanel key={key} p={2} data-tab-index={index}>
+            {renderProductGrid(
+              tabProducts,
+              `No ${productType} ${key === 'all' ? '' : key} products found`
+            )}
+          </TabPanel>
+        ))}
       </TabPanels>
     </Tabs>
   );

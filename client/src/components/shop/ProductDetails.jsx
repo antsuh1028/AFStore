@@ -26,6 +26,7 @@ import {
   Collapse,
   List,
   ListItem,
+  Center,
 } from "@chakra-ui/react";
 import {
   ChevronLeft,
@@ -52,61 +53,152 @@ const API_URL =
 
 const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
+  const [loadedImages, setLoadedImages] = useState(new Set());
+  const [failedImages, setFailedImages] = useState(new Set());
+  const [isCurrentImageLoading, setIsCurrentImageLoading] = useState(true);
 
   const imagePaths = useMemo(() => {
-    if (!productName || !productStyle || !productImages) return ["/images/gray.avif"];
+    if (!productName || !productStyle || !productImages) {
+      return [{ primary: "/images/gray.avif", fallback: "/images/gray.avif" }];
+    }
 
     const basePath = `/products/${productStyle}/${productName}`;
     const paths = [];
     
-    // Generate image paths for both formats
     for (let i = 1; i <= productImages; i++) {
       const imageNumber = i.toString().padStart(2, '0');
       paths.push({
-        avif: `${basePath}/${imageNumber}.avif`,
-        jpg: `${basePath}/${imageNumber}.jpg`
+        primary: `${basePath}/${imageNumber}.avif`,
+        fallback: `${basePath}/${imageNumber}.jpg`,
+        id: `${productName}-${i}`
       });
     }
     
-    return paths.length > 0 ? paths : [{ avif: "/images/gray.avif", jpg: "/images/gray.avif" }];
+    return paths.length > 0 ? paths : [{ primary: "/images/gray.avif", fallback: "/images/gray.avif" }];
   }, [productName, productStyle, productImages]);
 
-  const currentImageSet = imagePaths[imagePage - 1] || { avif: "/images/gray.avif", jpg: "/images/gray.avif" };
+  useEffect(() => {
+    const preloadImage = (imagePath, imageId) => {
+      return new Promise((resolve) => {
+        const img = document.createElement('img');
+        
+        img.onload = () => {
+          setLoadedImages(prev => new Set([...prev, imageId + '-primary']));
+          resolve({ success: true, type: 'primary' });
+        };
+        
+        img.onerror = () => {
+          const fallbackImg = document.createElement('img');
+          fallbackImg.onload = () => {
+            setLoadedImages(prev => new Set([...prev, imageId + '-fallback']));
+            resolve({ success: true, type: 'fallback' });
+          };
+          fallbackImg.onerror = () => {
+            setFailedImages(prev => new Set([...prev, imageId]));
+            resolve({ success: false });
+          };
+          fallbackImg.src = imagePath.fallback;
+        };
+        
+        img.src = imagePath.primary;
+      });
+    };
+
+    const currentImagePath = imagePaths[imagePage - 1];
+    if (currentImagePath) {
+      preloadImage(currentImagePath, currentImagePath.id).then(() => {
+        setIsCurrentImageLoading(false);
+      });
+
+      const adjacentIndices = [
+        imagePage - 2,
+        imagePage,    
+      ].filter(index => index >= 0 && index < imagePaths.length);
+
+      adjacentIndices.forEach(index => {
+        const imagePath = imagePaths[index];
+        if (imagePath) {
+          preloadImage(imagePath, imagePath.id);
+        }
+      });
+    }
+  }, [imagePaths, imagePage]);
+
+  const getCurrentImageSrc = useCallback(() => {
+    const currentImagePath = imagePaths[imagePage - 1];
+    if (!currentImagePath) return "/images/gray.avif";
+
+    const { id, primary, fallback } = currentImagePath;
+    
+    if (loadedImages.has(id + '-primary')) {
+      return primary;
+    } else if (loadedImages.has(id + '-fallback')) {
+      return fallback;
+    } else if (failedImages.has(id)) {
+      return "/images/gray.avif";
+    }
+    
+    return primary;
+  }, [imagePaths, imagePage, loadedImages, failedImages]);
+
   const hasMultipleImages = imagePaths.length > 1;
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     if (imagePage < imagePaths.length) {
-      setImagePage((prev) => prev + 1);
+      setImagePage(prev => prev + 1);
+      setIsCurrentImageLoading(true);
     }
-  };
+  }, [imagePage, imagePaths.length]);
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     if (imagePage > 1) {
-      setImagePage((prev) => prev - 1);
+      setImagePage(prev => prev - 1);
+      setIsCurrentImageLoading(true);
     }
-  };
+  }, [imagePage]);
 
-  const goToImage = (index) => {
+  const goToImage = useCallback((index) => {
     setImagePage(index + 1);
-  };
+    setIsCurrentImageLoading(true);
+  }, []);
+
+  const currentImagePath = imagePaths[imagePage - 1];
+  const isCurrentImageReady = currentImagePath && 
+    (loadedImages.has(currentImagePath.id + '-primary') || 
+     loadedImages.has(currentImagePath.id + '-fallback') ||
+     failedImages.has(currentImagePath.id));
 
   return (
-    <Box position="relative" w="100%">
+    <Box position="relative" w="100%" bg="gray.50" borderRadius="lg" overflow="hidden">
+      {/* Loading overlay */}
+      {isCurrentImageLoading && !isCurrentImageReady && (
+        <Center
+          position="absolute"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="gray.100"
+          zIndex={2}
+        >
+          <Spinner size="lg" color="gray.500" />
+        </Center>
+      )}
+
       <Image
-        src={currentImageSet.avif}
+        src={getCurrentImageSrc()}
         alt={productName}
         w="100%"
         h="280px"
         objectFit="cover"
-        borderRadius="lg"
-        fallbackSrc={currentImageSet.jpg}
-        onError={(e) => {
-          if (e.target.src !== "/images/gray.avif") {
-            e.target.src = "/images/gray.avif";
-          }
-        }}
+        opacity={isCurrentImageReady ? 1 : 0}
+        transition="opacity 0.3s ease"
+        onLoad={() => setIsCurrentImageLoading(false)}
+        onError={() => setIsCurrentImageLoading(false)}
+        fallbackSrc="/images/gray.avif"
       />
 
+      {/* Navigation controls */}
       {hasMultipleImages && (
         <>
           <IconButton
@@ -155,6 +247,7 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
             }}
           />
 
+          {/* Dot indicators */}
           <HStack
             position="absolute"
             bottom="4"
@@ -173,12 +266,14 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
                 onClick={() => goToImage(index)}
                 transition="all 0.2s"
                 _hover={{ bg: "white" }}
+                boxShadow={imagePage === index + 1 ? "0 0 0 2px rgba(255,255,255,0.8)" : "none"}
               />
             ))}
           </HStack>
         </>
       )}
 
+      {/* Image counter */}
       <Box
         position="absolute"
         top="4"
@@ -189,6 +284,7 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
         py={1}
         borderRadius="md"
         fontSize="xs"
+        fontWeight="medium"
       >
         {imagePage}/{imagePaths.length}
       </Box>

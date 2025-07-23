@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import {
   Box,
   Button,
@@ -39,7 +39,7 @@ import NavDrawer from "../components/NavDrawer";
 import AFCompany from "../components/home/AFCompany";
 import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
-import { useAuthContext } from "../hooks/useAuth"; // Import auth context
+import { useAuthContext } from "../hooks/useAuth";
 import ImageCarousel from "../components/home/ImageCarousel";
 
 const API_URL = import.meta.env.MODE === 'production' 
@@ -63,15 +63,74 @@ const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [apiStatus, setApiStatus] = useState("unknown");
   const [pageLoading, setPageLoading] = useState(true);
+  const [imagesPreloaded, setImagesPreloaded] = useState(false);
 
-  // Simulate page loading
+  const criticalImages = useMemo(() => [
+    "/images/gray_adams.png",
+    "/images/marinated_button.avif",
+    "/images/processed_button.avif", 
+    "/images/wholesale_button.avif",
+    "/images/home_icons/marinated.avif",
+    "/images/why_adamsfoods.png",
+    "/images/only_here.png"
+  ], []);
+
+  const secondaryImages = useMemo(() => [
+    "/images/home_icons/deal.avif",
+    "/images/home_icons/how_to_order.avif",
+    "/images/home_icons/contact.avif",
+    "/images/why_adamsfoods-1.png",
+    "/images/why_adamsfoods-2.png",
+    "/images/button.png"
+  ], []);
+
+  const preloadImages = async (imageUrls, priority = 'high') => {
+    const preloadPromises = imageUrls.map((url, index) => {
+      return new Promise((resolve) => {
+        const img = document.createElement('img');
+        
+        img.onload = () => resolve({ url, success: true });
+        img.onerror = () => {
+          if (url.includes('.avif')) {
+            const fallbackUrl = url.replace('.avif', '.jpg').replace('.avif', '.png');
+            const fallbackImg = document.createElement('img');
+            fallbackImg.onload = () => resolve({ url: fallbackUrl, success: true });
+            fallbackImg.onerror = () => resolve({ url, success: false });
+            fallbackImg.src = fallbackUrl;
+          } else {
+            resolve({ url, success: false });
+          }
+        };
+        
+        if (priority === 'low') {
+          setTimeout(() => { img.src = url; }, index * 50);
+        } else {
+          img.src = url;
+        }
+      });
+    });
+
+    return Promise.allSettled(preloadPromises);
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 1500);
+    const initializePage = async () => {
+      const criticalPreloading = preloadImages(criticalImages, 'high');
+      
+      const [, criticalResults] = await Promise.all([
+        new Promise(resolve => setTimeout(resolve, 300)),
+        criticalPreloading
+      ]);
 
-    return () => clearTimeout(timer);
-  }, []);
+      setImagesPreloaded(true);
+      
+      preloadImages(secondaryImages, 'low');
+      
+      setPageLoading(false);
+    };
+
+    initializePage();
+  }, [criticalImages, secondaryImages]);
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
@@ -147,19 +206,57 @@ const HomePage = () => {
     }
   };
 
-  // Loading screen
+  const OptimizedImage = ({ src, fallbackSrc, alt, ...props }) => {
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [imageSrc, setImageSrc] = useState(src);
+
+    useEffect(() => {
+      if (imagesPreloaded && criticalImages.includes(src)) {
+        setImageLoaded(true);
+        return;
+      }
+
+      const img = document.createElement('img');
+      img.onload = () => {
+        setImageSrc(src);
+        setImageLoaded(true);
+      };
+      img.onerror = () => {
+        if (fallbackSrc) {
+          setImageSrc(fallbackSrc);
+        }
+        setImageLoaded(true);
+      };
+      img.src = src;
+    }, [src, fallbackSrc, imagesPreloaded]);
+
+    return (
+      <Image
+        {...props}
+        src={imageSrc}
+        alt={alt}
+        opacity={imageLoaded ? 1 : 0.7}
+        transition="opacity 0.3s ease"
+        fallbackSrc={fallbackSrc}
+        onLoad={() => setImageLoaded(true)}
+      />
+    );
+  };
+
   if (pageLoading) {
     return (
       <Center h="100vh" bg="white">
         <VStack spacing={4}>
-          <Image 
+          <OptimizedImage 
             src="/images/gray_adams.png" 
             alt="AdamsFoods Logo" 
             width="150px"
             opacity={0.8}
           />
           <Spinner size="lg" color="gray.500" thickness="3px" />
-          <Text fontSize="sm" color="gray.500">Loading...</Text>
+          <Text fontSize="sm" color="gray.500">
+            {imagesPreloaded ? "Almost ready..." : "Loading..."}
+          </Text>
         </VStack>
       </Center>
     );
@@ -178,7 +275,11 @@ const HomePage = () => {
       >
         {/* Header */}
         <Flex p={4} justify="space-between" align="center">
-          <Image src="/images/gray_adams.png" alt="AdamsFoods Logo" width="40%" />
+          <OptimizedImage 
+            src="/images/gray_adams.png" 
+            alt="AdamsFoods Logo" 
+            width="40%" 
+          />
           <Flex>
             <IconButton
               aria-label="Profile"
@@ -292,7 +393,7 @@ const HomePage = () => {
                   >
                     <Flex align="center" gap={3}>
                       {item.images > 0 && (
-                        <Image
+                        <OptimizedImage
                           src={`/products/${item.style}/${item.name}/01.avif`}
                           fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
                           alt={item.name}
@@ -302,7 +403,7 @@ const HomePage = () => {
                         />
                       )}
                       {item.images === 0 && (
-                        <Image
+                        <OptimizedImage
                           src="images/gray.avif"
                           alt={item.name}
                           boxSize="40px"
@@ -354,7 +455,7 @@ const HomePage = () => {
                           onSearchClose();
                         }}
                       >
-                        <Image
+                        <OptimizedImage
                           src={
                             item.images > 0
                               ? `/products/${item.style}/${item.name}/01.avif`
@@ -433,7 +534,7 @@ const HomePage = () => {
                   borderColor="gray.100"
                   overflow="hidden"
                 >
-                  <Image
+                  <OptimizedImage
                     src={category.image}
                     fallbackSrc={category.fallback}
                     alt={category.name}
@@ -453,7 +554,7 @@ const HomePage = () => {
             {
               name: "Deal",
               icon: (
-                <Image
+                <OptimizedImage
                   src="/images/home_icons/deal.avif"
                   fallbackSrc="/images/home_icons/deal.jpg"
                   alt="Order"
@@ -468,7 +569,7 @@ const HomePage = () => {
             {
               name: "How to Order",
               icon: (
-                <Image
+                <OptimizedImage
                   src="/images/home_icons/how_to_order.avif"
                   fallbackSrc="/images/home_icons/how_to_order.jpg"
                   alt="Order"
@@ -483,7 +584,7 @@ const HomePage = () => {
             {
               name: "Contact",
               icon: (
-                <Image
+                <OptimizedImage
                   src="/images/home_icons/contact.avif"
                   fallbackSrc="/images/home_icons/contact.jpg"
                   alt="Order"
@@ -519,7 +620,7 @@ const HomePage = () => {
 
         {/* Location */}
         <HStack px={6} mb={3} spacing={2} ml={2}>
-          <Image
+          <OptimizedImage
             src="/images/only_here.png"
             h="20px"
             alt="Adams Logo"
@@ -534,7 +635,7 @@ const HomePage = () => {
         <Box px={4} position="relative" mb={6}>
           <Flex direction="row" justify="space-between" gap={6}>
             <Box flex="1" w="190px" h="190px" borderRadius="xl">
-              <Image
+              <OptimizedImage
                 src="/images/home_icons/marinated.avif"
                 fallbackSrc="/images/home_icons/marinated.jpg"
                 alt="Brisket Slice"
@@ -577,7 +678,7 @@ const HomePage = () => {
                 mt={4}
                 onClick={() => navigate("/wholesale/product/1")}
               >
-                <Image
+                <OptimizedImage
                   src="/images/button.png"
                   alt="Order"
                   width="60%"
@@ -602,7 +703,7 @@ const HomePage = () => {
             Why AdamsFoods?
           </Heading>
           <Flex mb={4} gap={4} align="center">
-            <Image
+            <OptimizedImage
               src="/images/why_adamsfoods.png"
               alt="Why AdamsFoods"
               objectFit="contain"
@@ -621,7 +722,7 @@ const HomePage = () => {
             <GridItem>
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
-                  <Image
+                  <OptimizedImage
                     src="/images/why_adamsfoods-1.png"
                     alt="Korean-style cutting"
                     width="80%"
@@ -635,7 +736,7 @@ const HomePage = () => {
             <GridItem>
               <VStack align="center" spacing={2}>
                 <Circle size="30px" bg="white">
-                  <Image
+                  <OptimizedImage
                     src="/images/why_adamsfoods-2.png"
                     alt="Trusted partner"
                     width="80%"
