@@ -454,8 +454,8 @@ const HomePage = () => {
               name: "Deal",
               icon: (
                 <Image
-                  src="/products/home/deal.avif"
-                  fallbackSrc="/products/home/deal.jpg"
+                  src="/images/home_icons/deal.avif"
+                  fallbackSrc="/images/home_icons/deal.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -469,8 +469,8 @@ const HomePage = () => {
               name: "How to Order",
               icon: (
                 <Image
-                  src="/products/home/how_to_order.avif"
-                  fallbackSrc="/products/home/how_to_order.jpg"
+                  src="/images/home_icons/how_to_order.avif"
+                  fallbackSrc="/images/home_icons/how_to_order.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -484,8 +484,8 @@ const HomePage = () => {
               name: "Contact",
               icon: (
                 <Image
-                  src="/products/home/contact.avif"
-                  fallbackSrc="/products/home/contact.jpg"
+                  src="/images/home_icons/contact.avif"
+                  fallbackSrc="/images/home_icons/contact.jpg"
                   alt="Order"
                   objectFit="cover"
                   width="100%"
@@ -535,8 +535,8 @@ const HomePage = () => {
           <Flex direction="row" justify="space-between" gap={6}>
             <Box flex="1" w="190px" h="190px" borderRadius="xl">
               <Image
-                src="/products/home/marinated.avif"
-                fallbackSrc="/products/home/marinated.jpg"
+                src="/images/home_icons/marinated.avif"
+                fallbackSrc="/images/home_icons/marinated.jpg"
                 alt="Brisket Slice"
                 borderRadius="xl"
                 objectFit="cover"
