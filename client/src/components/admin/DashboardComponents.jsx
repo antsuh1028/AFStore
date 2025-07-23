@@ -967,7 +967,6 @@ export const Signups = ({
     console.log("Responding to inquiry:", inquiry);
   };
 
-  //   console.log(inquiries);
 
   return (
     <Box>

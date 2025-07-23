@@ -45,7 +45,6 @@ UsersRouter.get("/signup-requests", async (req, res) => {
 // POST /api/users/login — login and return JWT
 UsersRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  // console.log("Incoming login:", { email, password });
 
   try {
     const result = await db.query("SELECT * FROM users WHERE email = $1", [
@@ -53,12 +52,10 @@ UsersRouter.post("/login", async (req, res) => {
     ]);
 
     if (result.rows.length === 0) {
-      // console.log("No user found with email:", email);
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const user = result.rows[0];
-    // console.log("User found:", user);
 
     let isMatch = false;
 
@@ -73,11 +70,8 @@ UsersRouter.post("/login", async (req, res) => {
           hashedPassword,
           user.id,
         ]);
-        // console.log("Password updated to hashed version for user:", user.email);
       }
     }
-
-    // console.log("Password match?", isMatch);
 
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
@@ -110,7 +104,6 @@ UsersRouter.post("/signup", async (req, res) => {
     phone,
     californiaResale
   } = req.body;
-  // console.log(req.body)
 
   if (!firstName || !lastName || !companyName || !email || !password || !licenseNumber) {
     return res.status(400).json({
@@ -251,7 +244,6 @@ UsersRouter.get("/:id", async (req, res) => {
       "SELECT id, name, email, license_number, phone_number, company, california_resale, is_admin FROM users WHERE id = $1",
       [id]
     );
-    // console.log("Query result:", result.rows);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }

@@ -45,7 +45,6 @@ OrdersRouter.get("/user/:user_id", async (req, res) => {
 OrdersRouter.post("/", async (req, res) => {
   try {
     const { user_id, total_amount } = req.body;
-    // console.log(req.body);
 
     if (!user_id) {
       return res.status(400).json({

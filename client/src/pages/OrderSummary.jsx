@@ -14,9 +14,11 @@ import {
   Text,
   HStack,
   Button,
+  
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/SideBar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, } from "react";
 import ThreeStepLine from "../components/order/OrderPayment";
 import { ShowCart } from "../components/profile/ShowCart";
 import { CircleCheck } from "lucide-react";
@@ -27,6 +29,8 @@ import { getCart, removeFromCart } from "../utils/cartActions";
 const API_URL = import.meta.env.MODE === 'production' 
   ? import.meta.env.VITE_API_URL 
   : import.meta.env.VITE_API_URL_DEV;
+
+
 
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
   return (
@@ -183,10 +187,11 @@ const OrderSummaryPage = () => {
   const [isAgreed2, setIsAgreed2] = useState(false);
   const [isAgreed3, setIsAgreed3] = useState(false);
 
+  const navigate = useNavigate();
+
   const { userInfo, isAuthenticated, userName, userId, userEmail } =
     useAuthContext();
 
-  // console.log({ userInfo, isAuthenticated, userName, userId, userEmail });
 
   const [userAddress, setUserAddress] = useState(null);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -265,7 +270,6 @@ const OrderSummaryPage = () => {
 
       if (orderResponse.ok && orderResult.success) {
         const orderId = orderResult.data.id;
-        // console.log("Order created successfully:", orderResult.data);
 
         // Create order items for each cart item
         const orderItemPromises = cartItems.map(async (item) => {
@@ -291,7 +295,6 @@ const OrderSummaryPage = () => {
         });
 
         const orderItemResults = await Promise.all(orderItemPromises);
-        // console.log(orderItemResults);
 
         const allItemsCreated = orderItemResults.every(
           (result) => result.success
@@ -558,6 +561,7 @@ const OrderSummaryPage = () => {
                 bg="#ececec"
                 borderRadius="full"
                 w="100%"
+                onClick={() => {navigate("/")}}
               >
                 FINISH
               </Button>

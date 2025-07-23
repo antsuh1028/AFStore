@@ -22,7 +22,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.get("/", (req, res) => {
-  // console.log("Root route hit!");
   res.json({ message: "Server is working!" });
 });
 

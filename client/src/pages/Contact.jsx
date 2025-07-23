@@ -69,7 +69,6 @@ const ContactPage = () => {
           fetch(`${API_URL}/api/users/${decoded.userId}`)
             .then((response) => response.json())
             .then((data) => {
-              console.log(data);
               setUserInfo(data.user);
             })
             .catch((error) => {
@@ -108,7 +107,6 @@ const ContactPage = () => {
   }, [isAuthenticated, currUser.userId]);
 
   useEffect(() => {
-    console.log(userInfo);
     if (form.current && userInfo && Object.keys(userInfo).length > 0) {
       if (form.current.user_name)
         form.current.user_name.value = userInfo.name || "";
