@@ -20,13 +20,10 @@ import {
 export const ShowCart = ({ cartItems, setCartItems, totalPrice}) => {
  const navigate = useNavigate();
 
-  
-  
-
    const getImagePath = (name, style) => {
     if (style && name) {
-      const safeName = name.replace(/[^a-zA-Z0-9-_]/g, " ");
-      const safeStyle = style.replace(/[^a-zA-Z0-9-_]/g, " ");
+      const safeName = name.replace(/[\/\\:*?"<>|]/g, "").trim();
+      const safeStyle = style.replace(/[\/\\:*?"<>|]/g, "").trim();
       return `/products/${safeStyle}/${safeName}/01.jpg`;
     }
     return "/images/gray.avif";

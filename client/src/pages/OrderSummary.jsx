@@ -18,7 +18,7 @@ import {
 import Sidebar from "../components/SideBar";
 import { useState, useEffect } from "react";
 import ThreeStepLine from "../components/order/OrderPayment";
-import { ShowCart } from "../components/shop/ShowCart";
+import { ShowCart } from "../components/profile/ShowCart";
 import { CircleCheck } from "lucide-react";
 import { useAuthContext } from "../hooks/useAuth";
 

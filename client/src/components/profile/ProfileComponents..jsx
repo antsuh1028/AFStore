@@ -143,14 +143,12 @@ const OrdersList = ({ orders, currPage }) => {
       align="stretch"
       spacing={8}
       py={4}
-      maxH="80vh"
+      maxH="90vh"
       overflowY="auto"
-      css={{
-        "&::-webkit-scrollbar": {
-          display: "none",
-        },
-        "-ms-overflow-style": "none",
-        "scrollbar-width": "none",
+      sx={{
+        "&::webkitScrollbar": { display: "none" },
+        msOverflowStyle: "none",
+        scrollbarWidth: "none",
       }}
     >
       {" "}
@@ -307,7 +305,7 @@ const OrdersList = ({ orders, currPage }) => {
                     ? item.style.replace(/[^a-zA-Z0-9-_]/g, " ")
                     : "";
                   const safeName = item.name
-                    ? item.name.replace(/[^a-zA-Z0-9-_]/g, " ")
+                    ? item.name.replace(/[\/\\:*?"<>|]/g, "").trim()
                     : "";
                   const imgSrc =
                     safeStyle && safeName

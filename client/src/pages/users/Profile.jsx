@@ -45,7 +45,7 @@ import Footer from "../../components/Footer";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { SimpleGrid } from "@chakra-ui/react";
 import { getCart } from "../../utils/cartActions";
-import { ShowCart } from "../../components/shop/ShowCart";
+import { ShowCart } from "../../components/profile/ShowCart";
 import { myPages } from "../../components/profile/ProfileComponents.";
 
 const API_URL =
