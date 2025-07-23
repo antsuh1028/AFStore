@@ -30,22 +30,25 @@ const PackingPage = () => {
       heading: "40°F Full Cold Chain",
       text: "From production to delivery, we strictly control the temperature to stay at or below 6°C at all times, preserving the freshness, quality, and safety of our meat products.",
       images: [
-        "../../images/thermometer.jpg",
-        "../../images/packing1.jpg",
+        { avif: "../../images/thermometer.avif", jpg: "../../images/thermometer.jpg" },
+        { avif: "../../images/packing1.avif", jpg: "../../images/packing1.jpg" },
       ],
     },
     {
       heading: "Specialized Packaging for Safety",
       text: "We invest in advanced packaging to preserve freshness, extend shelf life, and ensure safety, while preventing contamination and maintaining quality during storage and transport.",
-      images: ["../../images/packing2.jpg", "../../images/packing3.jpg"],
+      images: [
+        { avif: "../../images/packing2.avif", jpg: "../../images/packing2.jpg" },
+        { avif: "../../images/packing3.avif", jpg: "../../images/packing3.jpg" },
+      ],
     },
     {
       heading: "Meat Browning",
       text: "The browning happens because myoglobin in the meat doesn't bind with oxygen. Once exposed to air, the meat will return to a reddish color within 15 to 30 minutes.",
       note: "This is a natural process, and the meat is safe.",
       images: [
-        "../../images/meat_browning_1.jpg",
-        "../../images/meat_browning_2.jpg",
+        { avif: "../../images/meat_browning_1.avif", jpg: "../../images/meat_browning_1.jpg" },
+        { avif: "../../images/meat_browning_2.avif", jpg: "../../images/meat_browning_2.jpg" },
       ],
     },
   ];
@@ -97,12 +100,12 @@ const PackingPage = () => {
                   {section.note}
                 </Text>
               )}
-              {/* Fixed: Consistent Grid layout for all image sections */}
               <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={4}>
-                {section.images.map((src, i) => (
+                {section.images.map((imageSet, i) => (
                   <GridItem key={i}>
                     <Image
-                      src={src}
+                      src={imageSet.avif}
+                      fallbackSrc={imageSet.jpg}
                       alt={`${section.heading} image ${i + 1}`}
                       borderRadius="md"
                       width="100%"
@@ -140,12 +143,12 @@ const PackingPage = () => {
               </Text>
             </VStack>
 
-            {/* Box Images - Already using consistent Grid layout */}
             <Grid templateColumns="repeat(2, 1fr)" gap={4} mt={6} mb={4}>
               <GridItem>
                 <Box textAlign="center">
                   <Image
-                    src="/images/packing_pg_1.jpg"
+                    src="/images/packing_pg_1.avif"
+                    fallbackSrc="/images/packing_pg_1.jpg"
                     alt="20lb box"
                     borderRadius="md"
                     width="100%"
@@ -158,7 +161,8 @@ const PackingPage = () => {
               <GridItem>
                 <Box textAlign="center">
                   <Image
-                    src="/images/packing_pg_2.jpg"
+                    src="/images/packing_pg_2.avif"
+                    fallbackSrc="/images/packing_pg_2.jpg"
                     alt="30lb box"
                     borderRadius="md"
                     width="100%"
