@@ -33,10 +33,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronDownIcon } from "@chakra-ui/icons";
-
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
+import { API_CONFIG } from "../../constants";
 
 const InquiryResponseModal = ({
   isOpen,
@@ -161,7 +158,7 @@ export const Orders = ({
   const handleStatusUpdate = async (orderId, newStatus) => {
     try {
       const res = await fetch(
-        `${API_URL}/api/orders/${orderId}/status`,
+        `${API_CONFIG.BASE_URL}/api/orders/${orderId}/status`,
         {
           method: "PUT",
           headers: {
@@ -855,7 +852,7 @@ export const Signups = ({
   const handleAccept = async (request) => {
     try {
       const res = await fetch(
-        `${API_URL}/api/users/approve-signup/${request.id}`,
+        `${API_CONFIG.BASE_URL}/api/users/approve-signup/${request.id}`,
         {
           method: "POST",
           headers: {
@@ -897,7 +894,7 @@ export const Signups = ({
   const handleConfirmReject = async (request, reason) => {
     try {
       const res = await fetch(
-        `${API_URL}/api/users/signup-requests/${request.id}`,
+        `${API_CONFIG.BASE_URL}/api/users/signup-requests/${request.id}`,
         {
           method: "DELETE",
           headers: {

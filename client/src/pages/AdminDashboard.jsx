@@ -33,10 +33,8 @@ import {
   Orders,
   InventoryStatus,
 } from "../components/admin/DashboardComponents";
+import { API_CONFIG } from "../constants";
 
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -99,7 +97,7 @@ const AdminDashboard = () => {
       }
 
       try {
-        const res = await fetch(`${API_URL}/api/users/${userId}`, {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -140,7 +138,7 @@ const AdminDashboard = () => {
 
     const fetchInquiries = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/inquiries`, {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/inquiries`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -166,7 +164,7 @@ const AdminDashboard = () => {
 
     const fetchOrders = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/orders`, {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -193,7 +191,7 @@ const AdminDashboard = () => {
 
     const fetchOrderItems = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/order-items`, {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/order-items`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -223,7 +221,7 @@ const AdminDashboard = () => {
 
     const fetchItems = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/items`, {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/items`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -252,7 +250,7 @@ const AdminDashboard = () => {
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/users`, {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/users`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

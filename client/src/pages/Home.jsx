@@ -41,10 +41,7 @@ import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
 import { useAuthContext } from "../hooks/useAuth";
 import ImageCarousel from "../components/home/ImageCarousel";
-
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
+import { API_CONFIG } from "../constants";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -148,7 +145,7 @@ const HomePage = () => {
   const searchItems = async () => {
     setIsLoading(true);
     try {
-      const url = `${API_URL}/api/items`;
+      const url = `${API_CONFIG.BASE_URL}/api/items`;
       const response = await fetch(url);
 
       if (response.ok) {

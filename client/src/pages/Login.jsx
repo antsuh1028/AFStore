@@ -21,11 +21,9 @@ import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
-import { useAuthContext } from "../hooks/useAuth"; // Import the auth context
+import { useAuthContext } from "../hooks/useAuth";
+import { API_CONFIG } from "../constants";
 
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -71,7 +69,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/users/login`, {
+      const res = await fetch(`${API_CONFIG.BASE_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

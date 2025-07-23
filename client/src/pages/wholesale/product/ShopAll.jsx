@@ -24,10 +24,8 @@ import Sidebar from "../../../components/SideBar";
 import Footer from "../../../components/Footer";
 import { ProductCard } from "../../../components/shop/ProductCard";
 import Navbar from "../../../components/Navbar";
+import { API_CONFIG } from "../../../constants";
 
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
 
 const AllProductsPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,7 +41,7 @@ const AllProductsPage = () => {
     const fetchAllProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_URL}/api/items`);
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/items`);
         const data = await response.json();
 
         if (!response.ok) {

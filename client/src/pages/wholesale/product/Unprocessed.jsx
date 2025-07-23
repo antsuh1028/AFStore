@@ -16,10 +16,7 @@ import Sidebar from "../../../components/SideBar";
 import Footer from "../../../components/Footer";
 import Navbar from "../../../components/Navbar";
 import { ProductTabs } from "../../../components/shop/ProductGrid";
-
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
+import { API_CONFIG } from "../../../constants";
 
 const UnprocessedPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,13 +27,12 @@ const UnprocessedPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch unprocessed products
   useEffect(() => {
     const fetchUnprocessedProducts = async () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `${API_URL}/api/items/style/unprocessed`
+          `${API_CONFIG.BASE_URL}/api/items/style/unprocessed`
         );
         const data = await response.json();
 

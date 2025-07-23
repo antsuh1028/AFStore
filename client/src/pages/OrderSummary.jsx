@@ -24,12 +24,8 @@ import { ShowCart } from "../components/profile/ShowCart";
 import { CircleCheck } from "lucide-react";
 import { useAuthContext } from "../hooks/useAuth";
 
+import { API_CONFIG } from "../constants";
 import { getCart, removeFromCart } from "../utils/cartActions";
-
-const API_URL = import.meta.env.MODE === 'production' 
-  ? import.meta.env.VITE_API_URL 
-  : import.meta.env.VITE_API_URL_DEV;
-
 
 
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
@@ -223,7 +219,7 @@ const OrderSummaryPage = () => {
 
       try {
         const response = await fetch(
-          `${API_URL}/api/shipping-addresses/user/${userId}`
+          `${API_CONFIG.BASE_URL}/api/shipping-addresses/user/${userId}`
         );
         const data = await response.json();
         if (data.success && data.data[0]) {
@@ -257,8 +253,7 @@ const OrderSummaryPage = () => {
         total_amount: totalPrice,
       };
 
-      // Create the order
-      const orderResponse = await fetch(`${API_URL}/api/orders`, {
+      const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -281,7 +276,7 @@ const OrderSummaryPage = () => {
           };
 
           const itemResponse = await fetch(
-            `${API_URL}/api/order-items`,
+            `${API_CONFIG.BASE_URL}/api/order-items`,
             {
               method: "POST",
               headers: {
