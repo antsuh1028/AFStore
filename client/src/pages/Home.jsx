@@ -153,7 +153,7 @@ const HomePage = () => {
       <Center h="100vh" bg="white">
         <VStack spacing={4}>
           <Image 
-            src="/grayAdams.png" 
+            src="/images/gray_adams.png" 
             alt="AdamsFoods Logo" 
             width="150px"
             opacity={0.8}
@@ -178,7 +178,7 @@ const HomePage = () => {
       >
         {/* Header */}
         <Flex p={4} justify="space-between" align="center">
-          <Image src="/grayAdams.png" alt="AdamsFoods Logo" width="40%" />
+          <Image src="/images/gray_adams.png" alt="AdamsFoods Logo" width="40%" />
           <Flex>
             <IconButton
               aria-label="Profile"

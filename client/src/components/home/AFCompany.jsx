@@ -28,7 +28,6 @@ const AFCompany = () => {
             AdamsFoods Company
           </Heading>
 
-          {/* Image Placeholder */}
           <Box
             w="full"
             h="180px"
@@ -37,7 +36,7 @@ const AFCompany = () => {
             bg="gray.100"
           >
             <Image
-              src="/final/Adams_enterance.png"
+              src="/images/Adams_entrance.png"
               alt="AdamsFoods Company"
               w="full"
               h="full"
@@ -112,7 +111,7 @@ const AFCompany = () => {
             <VStack textAlign="center" borderColor="gray.300" w="30%" h="100%">
               <Box h="7vh" w="100%" position="relative">
                 <Image
-                  src="/Yukbul.png"
+                  src="/images/Yukbul.png"
                   alt="Yuk Bul Logo"
                   objectFit="contain"
                   w="100%"
