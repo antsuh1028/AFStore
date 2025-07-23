@@ -1,5 +1,6 @@
 import {
   Box,
+  Flex,
   VStack,
   Text,
   Link,
@@ -28,12 +29,20 @@ const Sidebar = ({ children }) => {
         >
           <VStack align="flex-start" spacing={4}>
             {/* Logo */}
-            <Box
+            <Flex
               onClick={() => navigate("/")}
               cursor="pointer"
               _hover={{ opacity: 0.8 }}
               transition="opacity 0.2s"
+              justifyContent={"center"}
             >
+              <Image
+                src="/images/main_logo.png"
+                alt="Adams Foods Logo"
+                boxSize="35px"
+                fallbackSrc="/images/main_logo.jpg"
+                mr={2}
+              />
               <Text
                 fontSize="2xl"
                 fontWeight="normal"
@@ -44,7 +53,7 @@ const Sidebar = ({ children }) => {
                 </Box>
                 Foods
               </Text>
-            </Box>
+            </Flex>
             <Box
               h="402px"
               bg="white"

@@ -124,14 +124,26 @@ const PackingPage = () => {
 
   if (pageLoading) {
     return (
-      <Center h="100vh" bg="white">
-        <VStack spacing={4}>
-          <Spinner size="lg" color="gray.500" thickness="3px" />
-          <Text fontSize="sm" color="gray.500">
-            {imagesPreloaded ? "Almost ready..." : "Loading..."}
-          </Text>
-        </VStack>
-      </Center>
+      <Sidebar>
+        <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
+        <Container
+          ref={contentRef}
+          maxW={{ base: "100%", lg: "30%" }}
+          p={0}
+          bg="white"
+          boxShadow="xl"
+          ml={{ base: 0, lg: "40%" }}
+        >
+          <Center h="100vh">
+            <VStack spacing={4}>
+              <Spinner size="lg" color="gray.500" thickness="3px" />
+              <Text fontSize="sm" color="gray.500">
+                {imagesPreloaded ? "Almost ready..." : "Loading..."}
+              </Text>
+            </VStack>
+          </Center>
+        </Container>
+      </Sidebar>
     );
   }
 
