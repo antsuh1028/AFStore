@@ -22,8 +22,11 @@ import {
   AlertIcon,
   Center,
   useToast,
+  GridItem,
+  Grid,
+  VStack,
 } from "@chakra-ui/react";
-import { BellIcon, ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import { BellIcon, ChevronRightIcon, ChevronLeftIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { useAuthContext } from "../hooks/useAuth";
 
 import {
@@ -33,6 +36,375 @@ import {
 } from "../components/admin/DashboardComponents";
 import { API_CONFIG } from "../constants";
 
+const AdminHome = () => {
+  return (
+    <VStack spacing={0} minH={{ base: "80vh", md: "70vh" }} w="100%">
+      {/* Top Section - Responsive height */}
+      <Flex 
+        w="100%" 
+        minH={{ base: "auto", md: "40%" }}
+        direction={{ base: "column", lg: "row" }}
+        flex={{ base: "none", md: "0 0 40%" }}
+      >
+        {/* Left side - Stats Cards */}
+        <Box 
+          w={{ base: "100%", lg: "60%" }} 
+          p={4}
+          minH={{ base: "auto", md: "100%" }}
+        >
+          {/* Top Row - 3 Stat Cards + Monthly Button */}
+          <Flex 
+            gap={4} 
+            minH={{ base: "120px", md: "50%" }}
+            align="stretch" 
+            mb={4}
+            direction={{ base: "column", md: "row" }}
+          >
+            <Flex 
+              gap={4} 
+              w={{ base: "100%", md: "90%" }}
+              flex={1}
+              direction={{ base: "column", sm: "row" }}
+            >
+              {/* New Orders (Pick Up) */}
+              <Box 
+                w={{ base: "100%", sm: "33%" }}
+                p={4} 
+                bg="white" 
+                border="1px" 
+                borderColor="gray.100" 
+                borderRadius="md"
+                minH="100px"
+              >
+                <Text fontSize="sm" color="gray.600" mb={2}>
+                  New Orders (Pick Up)
+                </Text>
+                <Flex align="center" justify="space-between" mb={4}>
+                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">10</Text>
+                  <IconButton 
+                    size="sm" 
+                    variant="ghost" 
+                    borderRadius="full"
+                    bg="gray.100"
+                    icon={<ChevronRightIcon />}
+                  />
+                </Flex>
+              </Box>
+
+              {/* New Orders (Delivery) */}
+              <Box 
+                w={{ base: "100%", sm: "33%" }}
+                p={4} 
+                bg="white" 
+                border="1px" 
+                borderColor="gray.100" 
+                borderRadius="md"
+                minH="100px"
+              >
+                <Text fontSize="sm" color="gray.600" mb={2}>
+                  New Orders (Delivery)
+                </Text>
+                <Flex align="center" justify="space-between" mb={4}>
+                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">5</Text>
+                  <IconButton 
+                    size="sm" 
+                    variant="ghost" 
+                    borderRadius="full"
+                    bg="gray.100"
+                    icon={<ChevronRightIcon />}
+                  />
+                </Flex>
+              </Box>
+
+              {/* New Inquiries */}
+              <Box 
+                w={{ base: "100%", sm: "33%" }}
+                p={4} 
+                bg="white" 
+                border="1px" 
+                borderColor="gray.100" 
+                borderRadius="md"
+                minH="100px"
+              >
+                <Text fontSize="sm" color="gray.600" mb={2}>
+                  New Inquiries
+                </Text>
+                <Flex align="center" justify="space-between" mb={4}>
+                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">5</Text>
+                  <IconButton 
+                    size="sm" 
+                    variant="ghost" 
+                    borderRadius="full"
+                    bg="gray.100"
+                    icon={<ChevronRightIcon />}
+                  />
+                </Flex>
+              </Box>
+            </Flex>
+
+            {/* Monthly Button */}
+            <Flex 
+              direction={{ base: "row", md: "column" }}
+              justify={{ base: "center", md: "flex-start" }}
+              align="center" 
+              minW={{ base: "auto", md: "100px" }}
+              w={{ base: "100%", md: "auto" }}
+            >
+              <Button 
+                variant="outline" 
+                size="sm"
+                rightIcon={<ChevronDownIcon />}
+                bg="white"
+                borderColor="gray.300"
+                _hover={{ bg: "gray.50" }}
+              >
+                Monthly
+              </Button>
+            </Flex>
+          </Flex>
+
+          {/* Bottom Row - Financial Stats */}
+          <Flex 
+            gap={4} 
+            minH={{ base: "120px", md: "50%" }}
+            align="stretch"
+            direction={{ base: "column", md: "row" }}
+          >
+            <Flex 
+              gap={4} 
+              w={{ base: "100%", md: "90%" }}
+              flex={1}
+              direction={{ base: "column", sm: "row" }}
+            >
+              <Box 
+                w={{ base: "100%", sm: "33%" }}
+                p={4} 
+                bg="white" 
+                border="1px" 
+                borderColor="gray.100" 
+                borderRadius="md"
+                minH="80px"
+              >
+                <Text fontSize="sm" color="gray.600" mb={2}>
+                  Today Total Price
+                </Text>
+                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">$2,000.00</Text>
+              </Box>
+              <Box 
+                w={{ base: "100%", sm: "33%" }}
+                p={4} 
+                bg="white" 
+                border="1px" 
+                borderColor="gray.100" 
+                borderRadius="md"
+                minH="80px"
+              >
+                <Text fontSize="sm" color="gray.600" mb={2}>
+                  Total Sales this Month
+                </Text>
+                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">$50,000.00</Text>
+              </Box>
+              <Box 
+                w={{ base: "100%", sm: "33%" }}
+                p={4} 
+                bg="white" 
+                border="1px" 
+                borderColor="gray.100" 
+                borderRadius="md"
+                minH="80px"
+              >
+                <Text fontSize="sm" color="gray.600" mb={2}>
+                  Total Sales last Month
+                </Text>
+                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">$40,000.00</Text>
+              </Box>
+            </Flex>
+            
+            {/* Monthly Button for bottom row */}
+            <Flex 
+              direction={{ base: "row", md: "column" }}
+              justify={{ base: "center", md: "flex-start" }}
+              align="center" 
+              minW={{ base: "auto", md: "100px" }}
+              w={{ base: "100%", md: "auto" }}
+            >
+              <Button 
+                variant="outline" 
+                size="sm"
+                rightIcon={<ChevronDownIcon />}
+                bg="white"
+                borderColor="gray.300"
+                _hover={{ bg: "gray.50" }}
+              >
+                Monthly
+              </Button>
+            </Flex>
+          </Flex>
+        </Box>
+
+        {/* Vertical Divider - Hidden on mobile */}
+        <Divider
+          orientation="vertical"
+          borderColor="gray.200"
+          h="90%"
+          borderWidth="1px"
+          alignSelf="center"
+          display={{ base: "none", lg: "block" }}
+        />
+
+        {/* Horizontal Divider - Only on mobile */}
+        <Divider
+          orientation="horizontal"
+          borderColor="gray.200"
+          borderWidth="1px"
+          my={4}
+          display={{ base: "block", lg: "none" }}
+        />
+
+        {/* Right side - Trending Chart */}
+        <Box 
+          w={{ base: "100%", lg: "40%" }}
+          p={4}
+          minH={{ base: "300px", md: "100%" }}
+        >
+          <Flex justify="space-between" align="center" mb={4}>
+            <Text fontSize={{ base: "md", md: "lg" }} fontWeight="semibold">
+              Trending Orders
+            </Text>
+            <Button 
+              variant="outline" 
+              size="xs"
+              rightIcon={<ChevronDownIcon />}
+              bg="white"
+              borderColor="gray.300"
+              _hover={{ bg: "gray.50" }}
+            >
+              Jul 2025
+            </Button>
+          </Flex>
+          <Box 
+            h={{ base: "200px", md: "80%" }}
+            bg="gray.50" 
+            borderRadius="md" 
+            p={4}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text color="gray.500" textAlign="center">
+              Chart Component Here
+            </Text>
+          </Box>
+        </Box>
+      </Flex>
+
+      {/* Horizontal Divider - Only on desktop */}
+      <Divider 
+        orientation="horizontal" 
+        borderColor="gray.200" 
+        borderWidth="1px"
+        display={{ base: "none", lg: "block" }}
+      />
+
+      {/* Bottom Section - Responsive height */}
+      <Flex 
+        w="100%" 
+        minH={{ base: "auto", md: "60%" }}
+        direction={{ base: "column", lg: "row" }}
+        flex={{ base: "none", md: "0 0 60%" }}
+      >
+        {/* Recently Order History */}
+        <Box 
+          w={{ base: "100%", lg: "60%" }}
+          p={4}
+          minH={{ base: "300px", md: "100%" }}
+        >
+          <Flex justify="space-between" align="center" mb={4}>
+            <Text fontSize={{ base: "md", md: "lg" }} fontWeight="semibold">
+              Recently Order History
+            </Text>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              rightIcon={<ChevronRightIcon />}
+              color="blue.500"
+              _hover={{ bg: "blue.50" }}
+            >
+              View all
+            </Button>
+          </Flex>
+          <Box 
+            h={{ base: "250px", md: "80%" }}
+            bg="gray.50" 
+            borderRadius="md" 
+            p={4}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text color="gray.500" textAlign="center">
+              Order History Table
+            </Text>
+          </Box>
+        </Box>
+
+        {/* Vertical Divider - Hidden on mobile */}
+        <Divider
+          orientation="vertical"
+          borderColor="gray.200"
+          h="90%"
+          alignSelf="center"
+          borderWidth="1px"
+          display={{ base: "none", lg: "block" }}
+        />
+
+        {/* Horizontal Divider - Only on mobile */}
+        <Divider
+          orientation="horizontal"
+          borderColor="gray.200"
+          borderWidth="1px"
+          my={4}
+          display={{ base: "block", lg: "none" }}
+        />
+
+        {/* Sign Up Request */}
+        <Box 
+          w={{ base: "100%", lg: "40%" }}
+          p={4}
+          minH={{ base: "300px", md: "100%" }}
+        >
+          <Flex justify="space-between" align="center" mb={4}>
+            <Text fontSize={{ base: "md", md: "lg" }} fontWeight="semibold">
+              Sign Up Request
+            </Text>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              rightIcon={<ChevronRightIcon />}
+              color="blue.500"
+              _hover={{ bg: "blue.50" }}
+            >
+              View all
+            </Button>
+          </Flex>
+          <Box 
+            h={{ base: "250px", md: "80%" }}
+            bg="gray.50" 
+            borderRadius="md" 
+            p={4}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text color="gray.500" textAlign="center">
+              Sign Up Requests Table
+            </Text>
+          </Box>
+        </Box>
+      </Flex>
+    </VStack>
+  );
+};
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -434,26 +806,18 @@ const AdminDashboard = () => {
   return (
     <Box bg="white" minH="100vh" px={[2, 4, 12]} py={4}>
       <Flex align="center" justify="space-between" mb={4}>
-        <Flex align="center" gap={[2, 4]}>
-          <Image boxSize={["24px", "32px"]} src="/images/main_logo.png" alt="Logo" />
-          <Text
-            fontWeight="bold"
-            fontSize={["md", "lg"]}
-            letterSpacing="wide"
-            _hover={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
-          >
-            AdamsFoods
-          </Text>
-          <Text
-            fontWeight="semibold"
-            fontSize={["sm", "lg"]}
-            color="gray.600"
-            display={["none", "block"]}
-          >
-            MEAT WHOLESALE
-          </Text>
-        </Flex>
+        <Image w="200px" src="/images/gray_adams.png" alt="Logo" />
+        <Text
+          fontWeight="regular"
+          fontSize="xl"
+          color="gray.600"
+          display={["none", "block"]}
+        >
+          <Text as="span" fontWeight="extrabold">
+            MEAT
+          </Text>{" "}
+          WHOLESALE
+        </Text>
         <Flex align="center" gap={[2, 4]}>
           <Text
             fontSize={["xs", "sm"]}
@@ -544,492 +908,9 @@ const AdminDashboard = () => {
           )}
         </Heading>
       </Flex>
-      {currentPage === 1 && (
-        <>
-          {/* <SimpleGrid columns={[1, 2]} spacing={6} mb={8}>
-            <Flex
-              bg="white"
-              borderRadius="2xl"
-              p={6}
-              boxShadow="sm"
-              flexDirection="row"
-              alignItems="flex-start"
-              gap={16}
-              position="relative"
-              overflow="hidden"
-              border="1px"
-            >
-              <Box textAlign="left">
-                <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
-                  Total Revenue (7 days)
-                </Text>
-                <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
-                  ${totalRevenue.toLocaleString()}
-                </Text>
-              </Box>
 
-              <Box textAlign="left">
-                <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
-                  Average Order Value
-                </Text>
-                <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
-                  ${avgOrderValue.toFixed(0)}
-                </Text>
-              </Box>
+      {currentPage === 1 && <AdminHome />}
 
-              <IconButton
-                icon={<ChevronRightIcon boxSize={6} />}
-                aria-label="Go"
-                size="sm"
-                position="absolute"
-                top={4}
-                right={4}
-                variant="ghost"
-                onClick={() => setCurrentPage(2)}
-              />
-            </Flex>
-
-            <Flex
-              bg="white"
-              borderRadius="2xl"
-              p={6}
-              boxShadow="sm"
-              flexDirection="row"
-              alignItems="flex-start"
-              gap={16}
-              position="relative"
-              overflow="hidden"
-              border="1px"
-            >
-              <Box textAlign="left">
-                <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
-                  Sign up Requests
-                </Text>
-                <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
-                  {signupRequests.length}
-                </Text>
-              </Box>
-
-              <Box textAlign="left">
-                <Text fontWeight="bold" fontSize="lg" mb={1} noOfLines={2}>
-                  Inquiries
-                </Text>
-                <Text fontWeight="extrabold" fontSize="3xl" mb={2}>
-                  {inquiries.length}
-                </Text>
-              </Box>
-
-              <IconButton
-                icon={<ChevronRightIcon boxSize={6} />}
-                aria-label="Go"
-                size="sm"
-                position="absolute"
-                top={4}
-                right={4}
-                variant="ghost"
-                onClick={() => setCurrentPage(3)}
-              />
-            </Flex>
-          </SimpleGrid> */}
-          <SimpleGrid columns={[1, 3]} spacing={6} mb={8}>
-            <Box
-              bg="white"
-              borderRadius="3xl"
-              p={8}
-              boxShadow="lg"
-              border="2px solid"
-              borderColor="gray.200"
-              position="relative"
-            >
-              <Text fontWeight="bold" fontSize="lg" mb={4} color="gray.700">
-                New Orders (Pick Up)
-              </Text>
-              <Flex align="baseline" gap={2}>
-                <Text fontWeight="black" fontSize="6xl" lineHeight="1">
-                  {
-                    filteredOrders
-                      .length
-                  }
-                </Text>
-              </Flex>
-              <IconButton
-                icon={<ChevronRightIcon boxSize={6} />}
-                aria-label="Go"
-                size="md"
-                position="absolute"
-                top={6}
-                right={6}
-                variant="ghost"
-                bg="gray.100"
-                borderRadius="full"
-                onClick={() => setCurrentPage(2)}
-              />
-            </Box>
-
-            <Box
-              bg="white"
-              borderRadius="3xl"
-              p={8}
-              boxShadow="lg"
-              border="2px solid"
-              borderColor="gray.200"
-              position="relative"
-            >
-              <Text fontWeight="bold" fontSize="lg" mb={4} color="gray.700">
-                New Orders (Delivery)
-              </Text>
-              <Text fontWeight="black" fontSize="6xl" lineHeight="1">
-                {
-                  filteredOrders.filter((o) => o.delivery_type === "delivery")
-                    .length
-                }
-              </Text>
-              <IconButton
-                icon={<ChevronRightIcon boxSize={6} />}
-                aria-label="Go"
-                size="md"
-                position="absolute"
-                top={6}
-                right={6}
-                variant="ghost"
-                bg="gray.100"
-                borderRadius="full"
-                onClick={() => setCurrentPage(2)}
-              />
-            </Box>
-
-            <Box
-              bg="white"
-              borderRadius="3xl"
-              p={8}
-              boxShadow="lg"
-              border="2px solid"
-              borderColor="gray.200"
-              position="relative"
-            >
-              <Text fontWeight="bold" fontSize="lg" mb={4} color="gray.700">
-                New Inquiries
-              </Text>
-              <Text fontWeight="black" fontSize="6xl" lineHeight="1">
-                {inquiries.length}
-              </Text>
-              <IconButton
-                icon={<ChevronRightIcon boxSize={6} />}
-                aria-label="Go"
-                size="md"
-                position="absolute"
-                top={6}
-                right={6}
-                variant="ghost"
-                bg="gray.100"
-                borderRadius="full"
-                onClick={() => setCurrentPage(3)}
-              />
-            </Box>
-          </SimpleGrid>
-
-          <SimpleGrid columns={[1, 2]} spacing={6} mb={8}>
-            <Box
-              bg="white"
-              borderRadius="3xl"
-              p={8}
-              boxShadow="lg"
-              border="2px solid"
-              borderColor="gray.200"
-              minH="400px"
-            >
-              <Flex justify="space-between" align="center" mb={6}>
-                <Text fontWeight="black" fontSize="xl">
-                  Trending Orders
-                </Text>
-                <Flex align="center" gap={2}>
-                  <Text fontSize="sm" color="gray.600">
-                    Monthly
-                  </Text>
-                  <IconButton
-                    icon={<ChevronRightIcon boxSize={4} />}
-                    aria-label="Dropdown"
-                    size="sm"
-                    variant="ghost"
-                    bg="gray.100"
-                    borderRadius="full"
-                  />
-                </Flex>
-              </Flex>
-
-              {/* Chart bars */}
-              <Flex align="end" gap={6} h="200px" mb={6}>
-                {trendingItems.map(([itemName, quantity], idx) => (
-                  <Box key={itemName} textAlign="center" flex="1">
-                    <Box
-                      bg={idx === 0 ? "red.300" : "gray.200"}
-                      borderRadius="lg"
-                      height={`${Math.max(quantity * 5, 30)}px`}
-                      minW="40px"
-                      mx="auto"
-                      position="relative"
-                    >
-                      {idx === 0 && (
-                        <Badge
-                          position="absolute"
-                          top="-30px"
-                          left="50%"
-                          transform="translateX(-50%)"
-                          bg="gray.600"
-                          color="white"
-                          fontWeight="bold"
-                          fontSize="sm"
-                          borderRadius="md"
-                          px={3}
-                          py={1}
-                        >
-                          {quantity} qty
-                        </Badge>
-                      )}
-                    </Box>
-                    <Text
-                      fontSize="sm"
-                      mt={3}
-                      fontWeight="medium"
-                      noOfLines={2}
-                    >
-                      {itemName}
-                    </Text>
-                  </Box>
-                ))}
-              </Flex>
-            </Box>
-
-            <Box
-              bg="white"
-              borderRadius="3xl"
-              p={8}
-              boxShadow="lg"
-              border="2px solid"
-              borderColor="gray.200"
-              minH="400px"
-            >
-              <Flex justify="space-between" align="center" mb={6}>
-                <Text fontWeight="black" fontSize="xl">
-                  Predicted Total Price
-                </Text>
-                <Flex align="center" gap={2}>
-                  <Text fontSize="sm" color="gray.600">
-                    Monthly
-                  </Text>
-                  <IconButton
-                    icon={<ChevronRightIcon boxSize={4} />}
-                    aria-label="Dropdown"
-                    size="sm"
-                    variant="ghost"
-                    bg="gray.100"
-                    borderRadius="full"
-                  />
-                </Flex>
-              </Flex>
-
-              <Box textAlign="center" mt={12}>
-                <Text fontWeight="black" fontSize="7xl" lineHeight="1">
-                  $50,000.00
-                </Text>
-                <Text
-                  fontWeight="bold"
-                  fontSize="xl"
-                  color="gray.600"
-                  mt={8}
-                  mb={2}
-                >
-                  Today Total Price
-                </Text>
-                <Text fontWeight="black" fontSize="4xl">
-                  $2,000.00
-                </Text>
-              </Box>
-            </Box>
-          </SimpleGrid>
-
-          <SimpleGrid columns={[1, 2]} spacing={6}>
-            <Box
-              bg="white"
-              borderRadius="3xl"
-              p={8}
-              boxShadow="lg"
-              border="2px solid"
-              borderColor="gray.200"
-              minH="400px"
-            >
-              <Flex justify="space-between" align="center" mb={6}>
-                <Text fontWeight="black" fontSize="xl">
-                  Order History
-                </Text>
-                <Flex align="center" gap={2}>
-                  <Text fontSize="sm" color="gray.600">
-                    View all
-                  </Text>
-                  <IconButton
-                    icon={<ChevronRightIcon boxSize={4} />}
-                    aria-label="View all"
-                    size="sm"
-                    variant="ghost"
-                    bg="gray.100"
-                    borderRadius="full"
-                    onClick={() => setCurrentPage(2)}
-                  />
-                </Flex>
-              </Flex>
-
-              <Table variant="simple" size="sm">
-                <Thead>
-                  <Tr>
-                    <Th fontWeight="bold" color="gray.600">
-                      Company
-                    </Th>
-                    <Th fontWeight="bold" color="gray.600">
-                      Contact
-                    </Th>
-                    <Th fontWeight="bold" color="gray.600">
-                      Date
-                    </Th>
-                    <Th fontWeight="bold" color="gray.600">
-                      Status
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {orders.slice(0, 5).map((order) => (
-                    <Tr key={order.id}>
-                      <Td fontWeight="medium">{getUserName(order.user_id)}</Td>
-                      <Td color="blue.500" fontWeight="medium">
-                        {getUserName(order.user_id)}
-                      </Td>
-                      <Td>
-                        {order.order_date
-                          ? new Date(order.order_date).toLocaleDateString()
-                          : ""}
-                      </Td>
-                      <Td>
-                        <Badge
-                          colorScheme={statusColor(order.order_status)}
-                          borderRadius="full"
-                          px={3}
-                        >
-                          {order.order_status}
-                        </Badge>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Box>
-
-            <Box
-              bg="white"
-              borderRadius="3xl"
-              p={8}
-              boxShadow="lg"
-              border="2px solid"
-              borderColor="gray.200"
-              minH="400px"
-            >
-              <Flex justify="space-between" align="center" mb={6}>
-                <Text fontWeight="black" fontSize="xl">
-                  Inventory Status
-                </Text>
-                <Flex align="center" gap={2}>
-                  <Text fontSize="sm" color="gray.600">
-                    View all
-                  </Text>
-                  <IconButton
-                    icon={<ChevronRightIcon boxSize={4} />}
-                    aria-label="View all"
-                    size="sm"
-                    variant="ghost"
-                    bg="gray.100"
-                    borderRadius="full"
-                    onClick={() => setCurrentPage(4)}
-                  />
-                </Flex>
-              </Flex>
-
-              <Table variant="simple" size="sm">
-                <Thead>
-                  <Tr>
-                    <Th fontWeight="bold" color="gray.600">
-                      Product
-                    </Th>
-                    <Th fontWeight="bold" color="gray.600">
-                      In Stock
-                    </Th>
-                    <Th fontWeight="bold" color="gray.600">
-                      Status
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {[
-                    {
-                      product: "Beef Brisket",
-                      stock: "450kg",
-                      status: "Good",
-                      color: "green",
-                    },
-                    {
-                      product: "Sliced Pork Belly",
-                      stock: "120kg",
-                      status: "Low",
-                      color: "yellow",
-                    },
-                    {
-                      product: "Marinated Galbi",
-                      stock: "380kg",
-                      status: "Good",
-                      color: "green",
-                    },
-                    {
-                      product: "Prime Ribeye",
-                      stock: "90kg",
-                      status: "Critical",
-                      color: "red",
-                    },
-                    {
-                      product: "Wagyu",
-                      stock: "400kg",
-                      status: "Good",
-                      color: "green",
-                    },
-                    {
-                      product: "Wagyu bone",
-                      stock: "230kg",
-                      status: "Good",
-                      color: "green",
-                    },
-                    {
-                      product: "Beef Bulgogi",
-                      stock: "50kg",
-                      status: "Critical",
-                      color: "red",
-                    },
-                  ].map((row, idx) => (
-                    <Tr key={idx}>
-                      <Td fontWeight="medium">{row.product}</Td>
-                      <Td>{row.stock}</Td>
-                      <Td>
-                        <Badge
-                          colorScheme={row.color}
-                          borderRadius="full"
-                          px={3}
-                        >
-                          {row.status}
-                        </Badge>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Box>
-          </SimpleGrid>
-        </>
-      )}
       {currentPage === 2 && (
         <Orders
           orders={orders}
