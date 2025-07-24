@@ -15,7 +15,10 @@ import NavDrawer from "../../../components/NavDrawer";
 import Sidebar from "../../../components/SideBar";
 import Footer from "../../../components/Footer";
 import Navbar from "../../../components/Navbar";
-import { ProductTabs } from "../../../components/shop/ProductGrid";
+import {
+  ProductTabs,
+  ErrorMessage,
+} from "../../../components/shop/ProductGrid";
 import { API_CONFIG } from "../../../constants";
 
 const UnprocessedPage = () => {
@@ -64,49 +67,35 @@ const UnprocessedPage = () => {
     return (
       <Sidebar>
         <Container
+          ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
           p={0}
           bg="white"
-          border={{ base: "none", lg: "1px" }}
+          boxShadow="xl"
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
+          position="relative"
         >
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minH="400px"
-          >
-            <VStack spacing={4}>
-              <Spinner size="xl" color="blue.500" />
-              <Text>Loading untrimmed products...</Text>
-            </VStack>
-          </Box>
+          <Navbar onOpen={onOpen} />
+          <VStack spacing={0}>
+            <Box fontSize="2xl" fontWeight="semibold" mb={4}>
+              Untrimmed Meat
+            </Box>
+            <ProductTabs
+              products={[]}
+              getProductsByType={() => []}
+              productType="unprocessed"
+              loading={true}
+            />
+          </VStack>
+          <Footer />
         </Container>
       </Sidebar>
     );
   }
 
   if (error) {
-    return (
-      <Sidebar>
-        <Container
-          maxW={{ base: "100%", lg: "30%" }}
-          p={0}
-          bg="white"
-          border={{ base: "none", lg: "1px" }}
-          ml={{ base: 0, lg: "40%" }}
-          minHeight="100vh"
-        >
-          <Box p={8}>
-            <Alert status="error" borderRadius="md">
-              <AlertIcon />
-              <Text>{error}</Text>
-            </Alert>
-          </Box>
-        </Container>
-      </Sidebar>
-    );
+    return <ErrorMessage error={error} />;
   }
 
   return (
@@ -128,7 +117,11 @@ const UnprocessedPage = () => {
             Untrimmed Meat
           </Box>
 
-          <ProductTabs products={products} getProductsByType={getProductsByType} productType="untrimmed"/>
+          <ProductTabs
+            products={products}
+            getProductsByType={getProductsByType}
+            productType="untrimmed"
+          />
         </VStack>
 
         <Footer />

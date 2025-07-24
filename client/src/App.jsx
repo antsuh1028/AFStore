@@ -1,5 +1,5 @@
-
 import { Box, ChakraProvider } from "@chakra-ui/react";
+import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/Home";
 import ContactPage from "./pages/Contact";
@@ -23,13 +23,16 @@ import {
 } from "./pages/wholesale";
 import ProductDetailPage from "./components/shop/ProductDetails";
 import OrderSummaryPage from "./pages/OrderSummary";
-import CartPage from "./pages/Cart";
 import AdminDashboard from "./pages/AdminDashboard";
 import theme from "./theme";
 import "./fonts.css";
 import { AuthProvider } from "./hooks/useAuth";
+import CookieConsentBanner from "./components/CookieConsentBanner";
 
 function App() {
+  const [showCookieConsent, setShowCookieConsent] = useState(() => {
+    return localStorage.getItem("cookieAgreement") !== "accepted";
+  });
   return (
     <ChakraProvider theme={theme}>
       <AuthProvider>
@@ -81,6 +84,11 @@ function App() {
                 <Route path="/profile/user/:userId" element={<UserProfile />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
               </Routes>
+              {showCookieConsent && (
+                <CookieConsentBanner
+                  onAccept={() => setShowCookieConsent(false)}
+                />
+              )}
             </Box>
           </Box>
         </BrowserRouter>

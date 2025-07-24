@@ -15,9 +15,11 @@ import NavDrawer from "../../../components/NavDrawer";
 import Sidebar from "../../../components/SideBar";
 import Footer from "../../../components/Footer";
 import Navbar from "../../../components/Navbar";
-import { ProductTabs } from "../../../components/shop/ProductGrid";
+import {
+  ProductTabs,
+  ErrorMessage,
+} from "../../../components/shop/ProductGrid";
 import { API_CONFIG } from "../../../constants";
-
 
 const MarinatedPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -32,10 +34,10 @@ const MarinatedPage = () => {
   // Preload thumbnail images
   const preloadImages = (products) => {
     return new Promise((resolve) => {
-      const imageUrls = products.map(product => 
-        `/products/marinated/${product.name}/01.avif`
+      const imageUrls = products.map(
+        (product) => `/products/marinated/${product.name}/01.avif`
       );
-      
+
       let loadedCount = 0;
       const totalImages = imageUrls.length;
 
@@ -44,7 +46,7 @@ const MarinatedPage = () => {
         return;
       }
 
-      imageUrls.forEach(url => {
+      imageUrls.forEach((url) => {
         const img = new Image();
         img.onload = img.onerror = () => {
           loadedCount++;
@@ -62,7 +64,9 @@ const MarinatedPage = () => {
     const fetchMarinatedProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/items/style/marinated`);
+        const response = await fetch(
+          `${API_CONFIG.BASE_URL}/api/items/style/marinated`
+        );
         const data = await response.json();
 
         if (!response.ok) {
@@ -70,11 +74,10 @@ const MarinatedPage = () => {
         }
 
         setProducts(data.data);
-        
+
         // Preload thumbnail images
         await preloadImages(data.data);
         setImagesLoaded(true);
-        
       } catch (err) {
         setError(err.message);
         console.error("Error fetching marinated products:", err);
@@ -94,58 +97,39 @@ const MarinatedPage = () => {
     );
   };
 
-  if (loading || !imagesLoaded) {
+  if (loading) {
     return (
       <Sidebar>
         <Container
+          ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
           p={0}
           bg="white"
-          border={{ base: "none", lg: "1px" }}
+          boxShadow="xl"
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
+          position="relative"
         >
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minH="400px"
-          >
-            <VStack spacing={4}>
-              <Spinner size="xl" color="blue.500" />
-              <Text>
-                {!products.length 
-                  ? "Loading marinated products..." 
-                  : "Preparing images..."
-                }
-              </Text>
-            </VStack>
-          </Box>
+          <Navbar onOpen={onOpen} />
+          <VStack spacing={0}>
+            <Box fontSize="2xl" fontWeight="semibold" mb={4}>
+              Marinated Meat
+            </Box>
+            <ProductTabs
+              products={[]}
+              getProductsByType={() => []}
+              productType="marinated"
+              loading={true}
+            />
+          </VStack>
+          <Footer />
         </Container>
       </Sidebar>
     );
   }
 
   if (error) {
-    return (
-      <Sidebar>
-        <Container
-          maxW={{ base: "100%", lg: "30%" }}
-          p={0}
-          bg="white"
-          border={{ base: "none", lg: "1px" }}
-          ml={{ base: 0, lg: "40%" }}
-          minHeight="100vh"
-        >
-          <Box p={8}>
-            <Alert status="error" borderRadius="md">
-              <AlertIcon />
-              <Text>{error}</Text>
-            </Alert>
-          </Box>
-        </Container>
-      </Sidebar>
-    );
+    return <ErrorMessage error={error} />;
   }
 
   return (

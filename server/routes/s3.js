@@ -11,18 +11,15 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const S3Router = express.Router();
 
-// Optimized cache configuration
 const imageCache = new NodeCache({ 
-  stdTTL: 7200, // 2 hours instead of 1
-  checkperiod: 1200, // Check every 20 minutes instead of 10
-  maxKeys: 2000, // Increased limit
-  useClones: false, // Better performance - don't clone objects
+  stdTTL: 7200,
+  checkperiod: 1200,
+  maxKeys: 2000,
   deleteOnExpire: true
 });
 
-// Separate cache for database results (can have different TTL)
 const dbCache = new NodeCache({
-  stdTTL: 3600, // 1 hour for DB results
+  stdTTL: 3600,
   checkperiod: 600,
   maxKeys: 1000,
   useClones: false
@@ -35,7 +32,6 @@ const upload = multer({
   },
 });
 
-// Optimized S3 client with connection pooling
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -44,23 +40,19 @@ const s3Client = new S3Client({
   },
   maxAttempts: 3,
   retryMode: "adaptive",
-  // Connection pooling settings
   requestHandler: {
     connectionTimeout: 5000,
     socketTimeout: 10000,
   }
 });
 
-// Helper function to construct S3 URL
 const constructS3Url = (imageUrl) => {
   if (!imageUrl) return null;
   
-  // If it's already a full URL, return as is
   if (imageUrl.startsWith('http')) {
     return imageUrl;
   }
   
-  // Remove leading slash if present
   const cleanKey = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl;
   
   return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${cleanKey}`;
@@ -86,7 +78,6 @@ S3Router.post("/upload", upload.single("file"), async (req, res) => {
 
     const s3url = constructS3Url(fileKey);
 
-    // Invalidate both caches for this item
     if (req.body.itemId) {
       imageCache.del(`item_images_${req.body.itemId}`);
       dbCache.del(`db_images_${req.body.itemId}`);
@@ -124,7 +115,7 @@ S3Router.get("/item/:itemId/images", async (req, res) => {
       });
     }
 
-    // Check if we have DB results cached
+    // Check if we have DB results cached 
     let dbResults = dbCache.get(dbCacheKey);
     
     if (!dbResults) {

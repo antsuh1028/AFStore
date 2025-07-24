@@ -43,6 +43,7 @@ import NavDrawer from "../NavDrawer";
 import Sidebar from "../SideBar";
 import Breadcrumbs from "../Breadcrumbs";
 import Footer from "../Footer";
+import ProductDetailSkeleton from "../skeletons/ProductDetailsSkeleton";
 
 import { useAuthContext } from "../../hooks/useAuth";
 import { COLORS, API_CONFIG } from "../../constants";
@@ -60,42 +61,46 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
 
     const basePath = `/products/${productStyle}/${productName}`;
     const paths = [];
-    
+
     for (let i = 1; i <= productImages; i++) {
-      const imageNumber = i.toString().padStart(2, '0');
+      const imageNumber = i.toString().padStart(2, "0");
       paths.push({
         primary: `${basePath}/${imageNumber}.avif`,
         fallback: `${basePath}/${imageNumber}.jpg`,
-        id: `${productName}-${i}`
+        id: `${productName}-${i}`,
       });
     }
-    
-    return paths.length > 0 ? paths : [{ primary: "/images/gray.avif", fallback: "/images/gray.avif" }];
+
+    return paths.length > 0
+      ? paths
+      : [{ primary: "/images/gray.avif", fallback: "/images/gray.avif" }];
   }, [productName, productStyle, productImages]);
 
   useEffect(() => {
     const preloadImage = (imagePath, imageId) => {
       return new Promise((resolve) => {
-        const img = document.createElement('img');
-        
+        const img = document.createElement("img");
+
         img.onload = () => {
-          setLoadedImages(prev => new Set([...prev, imageId + '-primary']));
-          resolve({ success: true, type: 'primary' });
+          setLoadedImages((prev) => new Set([...prev, imageId + "-primary"]));
+          resolve({ success: true, type: "primary" });
         };
-        
+
         img.onerror = () => {
-          const fallbackImg = document.createElement('img');
+          const fallbackImg = document.createElement("img");
           fallbackImg.onload = () => {
-            setLoadedImages(prev => new Set([...prev, imageId + '-fallback']));
-            resolve({ success: true, type: 'fallback' });
+            setLoadedImages(
+              (prev) => new Set([...prev, imageId + "-fallback"])
+            );
+            resolve({ success: true, type: "fallback" });
           };
           fallbackImg.onerror = () => {
-            setFailedImages(prev => new Set([...prev, imageId]));
+            setFailedImages((prev) => new Set([...prev, imageId]));
             resolve({ success: false });
           };
           fallbackImg.src = imagePath.fallback;
         };
-        
+
         img.src = imagePath.primary;
       });
     };
@@ -106,12 +111,11 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
         setIsCurrentImageLoading(false);
       });
 
-      const adjacentIndices = [
-        imagePage - 2,
-        imagePage,    
-      ].filter(index => index >= 0 && index < imagePaths.length);
+      const adjacentIndices = [imagePage - 2, imagePage].filter(
+        (index) => index >= 0 && index < imagePaths.length
+      );
 
-      adjacentIndices.forEach(index => {
+      adjacentIndices.forEach((index) => {
         const imagePath = imagePaths[index];
         if (imagePath) {
           preloadImage(imagePath, imagePath.id);
@@ -125,15 +129,15 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
     if (!currentImagePath) return "/images/gray.avif";
 
     const { id, primary, fallback } = currentImagePath;
-    
-    if (loadedImages.has(id + '-primary')) {
+
+    if (loadedImages.has(id + "-primary")) {
       return primary;
-    } else if (loadedImages.has(id + '-fallback')) {
+    } else if (loadedImages.has(id + "-fallback")) {
       return fallback;
     } else if (failedImages.has(id)) {
       return "/images/gray.avif";
     }
-    
+
     return primary;
   }, [imagePaths, imagePage, loadedImages, failedImages]);
 
@@ -141,14 +145,14 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
 
   const nextImage = useCallback(() => {
     if (imagePage < imagePaths.length) {
-      setImagePage(prev => prev + 1);
+      setImagePage((prev) => prev + 1);
       setIsCurrentImageLoading(true);
     }
   }, [imagePage, imagePaths.length]);
 
   const prevImage = useCallback(() => {
     if (imagePage > 1) {
-      setImagePage(prev => prev - 1);
+      setImagePage((prev) => prev - 1);
       setIsCurrentImageLoading(true);
     }
   }, [imagePage]);
@@ -159,13 +163,20 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   }, []);
 
   const currentImagePath = imagePaths[imagePage - 1];
-  const isCurrentImageReady = currentImagePath && 
-    (loadedImages.has(currentImagePath.id + '-primary') || 
-     loadedImages.has(currentImagePath.id + '-fallback') ||
-     failedImages.has(currentImagePath.id));
+  const isCurrentImageReady =
+    currentImagePath &&
+    (loadedImages.has(currentImagePath.id + "-primary") ||
+      loadedImages.has(currentImagePath.id + "-fallback") ||
+      failedImages.has(currentImagePath.id));
 
   return (
-    <Box position="relative" w="100%" bg="gray.50" borderRadius="lg" overflow="hidden">
+    <Box
+      position="relative"
+      w="100%"
+      bg="gray.50"
+      borderRadius="lg"
+      overflow="hidden"
+    >
       {/* Loading overlay */}
       {isCurrentImageLoading && !isCurrentImageReady && (
         <Center
@@ -262,7 +273,11 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
                 onClick={() => goToImage(index)}
                 transition="all 0.2s"
                 _hover={{ bg: "white" }}
-                boxShadow={imagePage === index + 1 ? "0 0 0 2px rgba(255,255,255,0.8)" : "none"}
+                boxShadow={
+                  imagePage === index + 1
+                    ? "0 0 0 2px rgba(255,255,255,0.8)"
+                    : "none"
+                }
               />
             ))}
           </HStack>
@@ -333,11 +348,14 @@ const ProductDetailPage = () => {
       setLoading(true);
       setError(null);
 
-      const productResponse = await fetch(`${API_CONFIG.BASE_URL}/api/items/${productId}`, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
+      const productResponse = await fetch(
+        `${API_CONFIG.BASE_URL}/api/items/${productId}`,
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
 
       if (!productResponse.ok) {
         const errorData = await productResponse.json();
@@ -412,34 +430,12 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <Sidebar>
-        <NavDrawer
-          isOpen={isOpen}
-          onClose={onClose}
-          containerRef={contentRef}
-        />
-        <Container
-          ref={contentRef}
-          maxW={{ base: "100%", lg: "30%" }}
-          p={0}
-          bg="white"
-          border={{ base: "none", lg: "1px" }}
-          ml={{ base: 0, lg: "40%" }}
-          minHeight="100vh"
-        >
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minH="400px"
-          >
-            <VStack spacing={4}>
-              <Spinner size="xl" color="blue.500" />
-              <Text>Loading product...</Text>
-            </VStack>
-          </Box>
-        </Container>
-      </Sidebar>
+      <ProductDetailSkeleton
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        contentRef={contentRef}
+      />
     );
   }
 
@@ -452,26 +448,71 @@ const ProductDetailPage = () => {
           containerRef={contentRef}
         />
         <Container
-          ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
           p={0}
           bg="white"
-          border={{ base: "none", lg: "1px" }}
+          boxShadow="xl"
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
         >
-          <Box p={8}>
-            <Alert status="error" borderRadius="md">
-              <AlertIcon />
-              <Box>
-                <Text fontWeight="bold">Error!</Text>
-                <Text>{error}</Text>
-              </Box>
-            </Alert>
-            <Button mt={4} onClick={() => navigate(-1)}>
-              Go Back
-            </Button>
+          <Box p={8} textAlign="center">
+            <VStack spacing={6}>
+              {/* Logo */}
+              <Image
+                src="/images/gray_adams.png"
+                alt="AdamsFoods Logo"
+                width="120px"
+                opacity={0.8}
+                mt={4}
+              />
+
+              {/* Error Message */}
+              <VStack spacing={2}>
+                <Heading size="md" color={COLORS.PRIMARY}>
+                  Product Not Found
+                </Heading>
+                <Text
+                  fontSize="sm"
+                  color="gray.600"
+                  maxW="280px"
+                  textAlign="center"
+                >
+                  We couldn't find the product you're looking for. It may no
+                  longer be available. We appologize for the inconvenience.
+                </Text>
+              </VStack>
+
+              {/* Action Buttons */}
+              <VStack spacing={3} w="full" maxW="200px">
+                <Button
+                  bg={COLORS.PRIMARY}
+                  color="white"
+                  borderRadius="full"
+                  size="md"
+                  width="100%"
+                  _hover={{ bg: COLORS.SECONDARY }}
+                  onClick={() => navigate(-1)}
+                >
+                  Go Back
+                </Button>
+
+                <Button
+                  variant="outline"
+                  borderColor={COLORS.PRIMARY}
+                  color={COLORS.PRIMARY}
+                  borderRadius="full"
+                  size="md"
+                  width="100%"
+                  _hover={{ bg: "gray.50" }}
+                  onClick={() => navigate("/")}
+                >
+                  Go Home
+                </Button>
+              </VStack>
+            </VStack>
           </Box>
+
+          <Footer />
         </Container>
       </Sidebar>
     );
@@ -636,7 +677,6 @@ const ProductDetailPage = () => {
                 _hover={{ bg: COLORS.SECONDARY }}
                 borderRadius="full"
                 px={8}
-                
               >
                 CONTACT US
               </Button>

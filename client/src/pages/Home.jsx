@@ -40,6 +40,7 @@ import Sidebar from "../components/SideBar";
 import { useAuthContext } from "../hooks/useAuth";
 import ImageCarousel from "../components/home/ImageCarousel";
 import { API_CONFIG, COLORS } from "../constants";
+import HomeSkeleton from "../components/skeletons/HomeSkeleton";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -60,45 +61,56 @@ const HomePage = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [imagesPreloaded, setImagesPreloaded] = useState(false);
 
-  const criticalImages = useMemo(() => [
-    "/images/gray_adams.png",
-    "/images/marinated_button.avif",
-    "/images/processed_button.avif", 
-    "/images/wholesale_button.avif",
-    "/images/home_icons/marinated.avif",
-    "/images/why_adamsfoods.png",
-    "/images/only_here.png"
-  ], []);
+  const criticalImages = useMemo(
+    () => [
+      "/images/gray_adams.png",
+      "/images/marinated_button.avif",
+      "/images/processed_button.avif",
+      "/images/wholesale_button.avif",
+      "/images/home_icons/marinated.avif",
+      "/images/why_adamsfoods.png",
+      "/images/only_here.png",
+    ],
+    []
+  );
 
-  const secondaryImages = useMemo(() => [
-    "/images/home_icons/deal.avif",
-    "/images/home_icons/how_to_order.avif",
-    "/images/home_icons/contact.avif",
-    "/images/why_adamsfoods-1.png",
-    "/images/why_adamsfoods-2.png",
-    "/images/button.png"
-  ], []);
+  const secondaryImages = useMemo(
+    () => [
+      "/images/home_icons/deal.avif",
+      "/images/home_icons/how_to_order.avif",
+      "/images/home_icons/contact.avif",
+      "/images/why_adamsfoods-1.png",
+      "/images/why_adamsfoods-2.png",
+      "/images/button.png",
+    ],
+    []
+  );
 
-  const preloadImages = async (imageUrls, priority = 'high') => {
+  const preloadImages = async (imageUrls, priority = "high") => {
     const preloadPromises = imageUrls.map((url, index) => {
       return new Promise((resolve) => {
-        const img = document.createElement('img');
-        
+        const img = document.createElement("img");
+
         img.onload = () => resolve({ url, success: true });
         img.onerror = () => {
-          if (url.includes('.avif')) {
-            const fallbackUrl = url.replace('.avif', '.jpg').replace('.avif', '.png');
-            const fallbackImg = document.createElement('img');
-            fallbackImg.onload = () => resolve({ url: fallbackUrl, success: true });
+          if (url.includes(".avif")) {
+            const fallbackUrl = url
+              .replace(".avif", ".jpg")
+              .replace(".avif", ".png");
+            const fallbackImg = document.createElement("img");
+            fallbackImg.onload = () =>
+              resolve({ url: fallbackUrl, success: true });
             fallbackImg.onerror = () => resolve({ url, success: false });
             fallbackImg.src = fallbackUrl;
           } else {
             resolve({ url, success: false });
           }
         };
-        
-        if (priority === 'low') {
-          setTimeout(() => { img.src = url; }, index * 50);
+
+        if (priority === "low") {
+          setTimeout(() => {
+            img.src = url;
+          }, index * 50);
         } else {
           img.src = url;
         }
@@ -110,17 +122,17 @@ const HomePage = () => {
 
   useEffect(() => {
     const initializePage = async () => {
-      const criticalPreloading = preloadImages(criticalImages, 'high');
-      
+      const criticalPreloading = preloadImages(criticalImages, "high");
+
       const [, criticalResults] = await Promise.all([
-        new Promise(resolve => setTimeout(resolve, 300)),
-        criticalPreloading
+        new Promise((resolve) => setTimeout(resolve, 300)),
+        criticalPreloading,
       ]);
 
       setImagesPreloaded(true);
-      
-      preloadImages(secondaryImages, 'low');
-      
+
+      preloadImages(secondaryImages, "low");
+
       setPageLoading(false);
     };
 
@@ -211,7 +223,7 @@ const HomePage = () => {
         return;
       }
 
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.onload = () => {
         setImageSrc(src);
         setImageLoaded(true);
@@ -237,23 +249,9 @@ const HomePage = () => {
       />
     );
   };
-
   if (pageLoading) {
     return (
-      <Center h="100vh" bg="white">
-        <VStack spacing={4}>
-          <OptimizedImage 
-            src="/images/gray_adams.png" 
-            alt="AdamsFoods Logo" 
-            width="150px"
-            opacity={0.8}
-          />
-          <Spinner size="lg" color="gray.500" thickness="3px" />
-          <Text fontSize="sm" color="gray.500">
-            {imagesPreloaded ? "Almost ready..." : "Loading..."}
-          </Text>
-        </VStack>
-      </Center>
+      <HomeSkeleton isOpen={isOpen} onClose={onClose} contentRef={contentRef} />
     );
   }
 
@@ -270,10 +268,10 @@ const HomePage = () => {
       >
         {/* Header */}
         <Flex p={4} justify="space-between" align="center">
-          <OptimizedImage 
-            src="/images/gray_adams.png" 
-            alt="AdamsFoods Logo" 
-            width="40%" 
+          <OptimizedImage
+            src="/images/gray_adams.png"
+            alt="AdamsFoods Logo"
+            width="40%"
           />
           <Flex>
             <IconButton
@@ -495,7 +493,13 @@ const HomePage = () => {
         </Modal>
 
         {/* Categories */}
-        <Grid templateColumns="repeat(3, 1fr)" gap={4} px={4} mb={8} overflowX="auto">
+        <Grid
+          templateColumns="repeat(3, 1fr)"
+          gap={4}
+          px={4}
+          mb={8}
+          overflowX="auto"
+        >
           {[
             {
               name: "Marinated",
@@ -643,7 +647,7 @@ const HomePage = () => {
             <VStack
               align="flex-start"
               flex="1"
-              spacing={1} 
+              spacing={1}
               position="relative"
               pb="4"
             >

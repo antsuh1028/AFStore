@@ -1,19 +1,112 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
+  Container,
   Text,
   SimpleGrid,
   Tabs,
   TabList,
   TabPanels,
   Tab,
-  TabPanel,
+  TabPanel,Image,Button,
+  VStack,
+  Heading,
 } from "@chakra-ui/react";
 import { ProductCard } from "./ProductCard";
+import ProductCardSkeleton from "../skeletons/ProductCardSkeleton";
+import Sidebar from "../SideBar";
+import Navbar from "../Navbar";
+import Footer from "../Footer";
+import { useNavigate } from "react-router-dom";
+import { COLORS } from "../../constants";
 
-const renderProductGrid = (filteredProducts, emptyMessage) => (
+export const ErrorMessage = ({ error, onOpen }) => {
+  const navigate = useNavigate();
+
+  return (
+    <Sidebar>
+      <Container
+        maxW={{ base: "100%", lg: "30%" }}
+        p={0}
+        bg="white"
+        boxShadow="xl"
+        ml={{ base: 0, lg: "40%" }}
+        minHeight="100vh"
+      >
+        <Navbar onOpen={onOpen} />
+        
+        <Box p={8} textAlign="center">
+          <VStack spacing={6}>
+            {/* Logo */}
+            <Image
+              src="/images/gray_adams.png"
+              alt="AdamsFoods Logo"
+              width="120px"
+              opacity={0.8}
+              mt={4}
+            />
+
+            {/* Error Message */}
+            <VStack spacing={2}>
+              <Heading size="md" color={COLORS.PRIMARY}>
+                Something went wrong
+              </Heading>
+              <Text fontSize="sm" color="gray.600" maxW="280px" textAlign="center">
+                {error || "We're having trouble loading this page. Please try again."}
+              </Text>
+            </VStack>
+
+            {/* Action Buttons */}
+            <VStack spacing={3} w="full" maxW="200px">
+              <Button 
+                bg={COLORS.PRIMARY}
+                color="white"
+                borderRadius="full"
+                size="md"
+                width="100%"
+                _hover={{ bg: COLORS.SECONDARY }}
+                onClick={() => window.location.reload()}
+              >
+                Try Again
+              </Button>
+              
+              <Button 
+                variant="outline"
+                borderColor={COLORS.PRIMARY}
+                color={COLORS.PRIMARY}
+                borderRadius="full"
+                size="md"
+                width="100%"
+                _hover={{ bg: "gray.50" }}
+                onClick={() => navigate('/')}
+              >
+                Go Home
+              </Button>
+            </VStack>
+          </VStack>
+        </Box>
+        
+        <Footer />
+      </Container>
+    </Sidebar>
+  );
+};
+
+const renderProductGrid = (
+  filteredProducts,
+  emptyMessage,
+  isLoading = false
+) => (
   <Box minHeight="400px">
-    {filteredProducts.filter((item) => item.show).length === 0 ? (
+    {isLoading ? (
+      <SimpleGrid columns={2} spacing={2} pb={8}>
+        {Array(6)
+          .fill()
+          .map((_, i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
+      </SimpleGrid>
+    ) : filteredProducts.filter((item) => item.show).length === 0 ? (
       <Box
         textAlign="center"
         py={8}
@@ -36,80 +129,92 @@ const renderProductGrid = (filteredProducts, emptyMessage) => (
   </Box>
 );
 
-export const ProductTabs = ({ products, getProductsByType, productType }) => {
-  const [preloadedTabs, setPreloadedTabs] = useState(new Set([0])); // All tab is preloaded initially
+export const ProductTabs = ({
+  products,
+  getProductsByType,
+  productType,
+  loading = false,
+}) => {
+  const [preloadedTabs, setPreloadedTabs] = useState(new Set([0]));
   const [imagePreloadCache, setImagePreloadCache] = useState(new Set());
 
-  // Memoize tab data to avoid recalculation
-  const tabData = useMemo(() => [
-    { key: "all", products: products, label: "All" },
-    { key: "beef", products: getProductsByType("beef"), label: "Beef" },
-    { key: "pork", products: getProductsByType("pork"), label: "Pork" },
-    { key: "chicken", products: getProductsByType("chicken"), label: "Poultry" }
-  ], [products, getProductsByType]);
+  const tabData = useMemo(
+    () => [
+      { key: "all", products: products, label: "All" },
+      { key: "beef", products: getProductsByType("beef"), label: "Beef" },
+      { key: "pork", products: getProductsByType("pork"), label: "Pork" },
+      {
+        key: "chicken",
+        products: getProductsByType("chicken"),
+        label: "Poultry",
+      },
+    ],
+    [products, getProductsByType]
+  );
 
-  // Smart image preloading function
-  const preloadTabImages = useCallback((tabProducts, tabIndex) => {
-    if (preloadedTabs.has(tabIndex)) return;
+  const preloadTabImages = useCallback(
+    (tabProducts, tabIndex) => {
+      if (preloadedTabs.has(tabIndex)) return;
 
-    const imageUrls = tabProducts
-      .filter(item => item.show && item.name && item.style)
-      .slice(0, 8) // Only preload first 8 images per tab
-      .map(product => ({
-        avif: `/products/${product.style}/${product.name}/01.avif`,
-        jpg: `/products/${product.style}/${product.name}/01.jpg`,
-        id: `${product.style}-${product.name}`
-      }));
-    
-    // Preload images asynchronously
-    imageUrls.forEach(({ avif, jpg, id }) => {
-      if (imagePreloadCache.has(id)) return;
+      const imageUrls = tabProducts
+        .filter((item) => item.show && item.name && item.style)
+        .slice(0, 8)
+        .map((product) => ({
+          avif: `/products/${product.style}/${product.name}/01.avif`,
+          jpg: `/products/${product.style}/${product.name}/01.jpg`,
+          id: `${product.style}-${product.name}`,
+        }));
 
-      const preloadImage = () => {
-        const img = document.createElement('img');
-        
-        img.onload = () => {
-          setImagePreloadCache(prev => new Set([...prev, id]));
-        };
-        
-        img.onerror = () => {
-          // Try JPG fallback
-          const fallbackImg = document.createElement('img');
-          fallbackImg.onload = () => {
-            setImagePreloadCache(prev => new Set([...prev, id]));
+      imageUrls.forEach(({ avif, jpg, id }) => {
+        if (imagePreloadCache.has(id)) return;
+
+        const preloadImage = () => {
+          const img = document.createElement("img");
+
+          img.onload = () => {
+            setImagePreloadCache((prev) => new Set([...prev, id]));
           };
-          fallbackImg.onerror = () => {
-            // Mark as failed but still cache to avoid retries
-            setImagePreloadCache(prev => new Set([...prev, id + '-failed']));
+
+          img.onerror = () => {
+            const fallbackImg = document.createElement("img");
+            fallbackImg.onload = () => {
+              setImagePreloadCache((prev) => new Set([...prev, id]));
+            };
+            fallbackImg.onerror = () => {
+              setImagePreloadCache(
+                (prev) => new Set([...prev, id + "-failed"])
+              );
+            };
+            fallbackImg.src = jpg;
           };
-          fallbackImg.src = jpg;
+
+          img.src = avif;
         };
-        
-        img.src = avif;
-      };
 
-      // Delay preloading slightly to not block main thread
-      setTimeout(preloadImage, 100);
-    });
+        setTimeout(preloadImage, 100);
+      });
 
-    setPreloadedTabs(prev => new Set([...prev, tabIndex]));
-  }, [preloadedTabs, imagePreloadCache]);
+      setPreloadedTabs((prev) => new Set([...prev, tabIndex]));
+    },
+    [preloadedTabs, imagePreloadCache]
+  );
 
-  // Preload visible tab images on mount
   useEffect(() => {
     if (tabData[0]?.products.length > 0) {
       preloadTabImages(tabData[0].products, 0);
     }
   }, [tabData, preloadTabImages]);
 
-  const handleTabChange = useCallback((index) => {
-    const selectedTabData = tabData[index];
-    if (selectedTabData && !preloadedTabs.has(index)) {
-      preloadTabImages(selectedTabData.products, index);
-    }
-  }, [tabData, preloadTabImages, preloadedTabs]);
+  const handleTabChange = useCallback(
+    (index) => {
+      const selectedTabData = tabData[index];
+      if (selectedTabData && !preloadedTabs.has(index)) {
+        preloadTabImages(selectedTabData.products, index);
+      }
+    },
+    [tabData, preloadTabImages, preloadedTabs]
+  );
 
-  // Intersection Observer for lazy loading when tabs come into view
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -125,15 +230,19 @@ export const ProductTabs = ({ products, getProductsByType, productType }) => {
       { threshold: 0.1 }
     );
 
-    // Observe tab panels
-    const tabPanels = document.querySelectorAll('[data-tab-index]');
-    tabPanels.forEach(panel => observer.observe(panel));
+    const tabPanels = document.querySelectorAll("[data-tab-index]");
+    tabPanels.forEach((panel) => observer.observe(panel));
 
     return () => observer.disconnect();
   }, [tabData, preloadTabImages, preloadedTabs]);
 
   return (
-    <Tabs w="100%" variant="unstyled" isFitted={false} onChange={handleTabChange}>
+    <Tabs
+      w="100%"
+      variant="unstyled"
+      isFitted={false}
+      onChange={handleTabChange}
+    >
       <TabList justifyContent="center" gap={4} mb={6} overflowX="auto">
         {tabData.map(({ label }, index) => (
           <Tab
@@ -170,7 +279,8 @@ export const ProductTabs = ({ products, getProductsByType, productType }) => {
           <TabPanel key={key} p={2} data-tab-index={index}>
             {renderProductGrid(
               tabProducts,
-              `No ${productType} ${key === 'all' ? '' : key} products found`
+              `No ${productType} ${key === "all" ? "" : key} products found`,
+              loading
             )}
           </TabPanel>
         ))}
