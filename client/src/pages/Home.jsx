@@ -51,6 +51,8 @@ const HomePage = () => {
   } = useDisclosure();
   const navigate = useNavigate();
   const contentRef = useRef(null);
+  const searchRef = useRef(null);
+  
   const { isAuthenticated, userId, loading } = useAuthContext();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -151,6 +153,22 @@ const HomePage = () => {
 
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
 
   const searchItems = async () => {
     setIsLoading(true);
@@ -318,7 +336,7 @@ const HomePage = () => {
         <ImageCarousel />
 
         {/* Enhanced Search Bar */}
-        <Box px={4} mb={6} position="relative" pt={2}>
+        <Box px={4} mb={6} position="relative" pt={2} ref={searchRef}>
           <form onSubmit={handleSearchSubmit}>
             <InputGroup
               size="lg"
@@ -333,7 +351,7 @@ const HomePage = () => {
                 placeholder="Search for..."
                 borderRadius="full"
                 py={6}
-                bg={COLORS.GRAY_LIGHT}
+                bg="#f9f9f9"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => searchQuery.length > 2 && setShowDropdown(true)}
@@ -386,7 +404,7 @@ const HomePage = () => {
                   >
                     <Flex align="center" gap={3}>
                       {item.images > 0 && (
-                        <OptimizedImage
+                        <Image
                           src={`/products/${item.style}/${item.name}/01.avif`}
                           fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
                           alt={item.name}
@@ -396,7 +414,7 @@ const HomePage = () => {
                         />
                       )}
                       {item.images === 0 && (
-                        <OptimizedImage
+                        <Image
                           src="images/gray.avif"
                           alt={item.name}
                           boxSize="40px"

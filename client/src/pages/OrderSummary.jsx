@@ -13,11 +13,11 @@ import {
   Text,
   HStack,
   Button,
-  
+  Link,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/SideBar";
-import { useState, useEffect, } from "react";
+import { useState, useEffect } from "react";
 import ThreeStepLine from "../components/order/OrderPayment";
 import { ShowCart } from "../components/profile/ShowCart";
 import { CircleCheck } from "lucide-react";
@@ -25,7 +25,6 @@ import { useAuthContext } from "../hooks/useAuth";
 
 import { API_CONFIG, COLORS } from "../constants";
 import { getCart, removeFromCart } from "../utils/cartActions";
-
 
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
   return (
@@ -89,8 +88,8 @@ const OrderPayment = ({
             Order & Payment Policy
           </Text>
           <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            After placing your order, you will recieve a confirmation email and pickup
-            time once confirmed.
+            After placing your order, you will recieve a confirmation email and
+            pickup time once confirmed.
           </Text>
         </Box>
 
@@ -98,12 +97,12 @@ const OrderPayment = ({
           <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
             Payment Terms
           </Text>
-          <Text fontSize="xs" color="gray.700" lineHeight="tall">
+          {/* <Text fontSize="xs" color="gray.700" lineHeight="tall">
             <Text as="span" fontWeight="bold">
               Delivery:
             </Text>{" "}
             Full prepayment required.
-          </Text>
+          </Text> */}
           <Text fontSize="xs" color="gray.700" lineHeight="tall">
             <Text as="span" fontWeight="bold">
               Pickup:
@@ -120,7 +119,7 @@ const OrderPayment = ({
             Accepted payment methods:
           </Text>
           <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            Cash & credit card only.
+            Cash & credit card only (AMEX excluded ).
           </Text>
         </Box>
 
@@ -186,7 +185,6 @@ const OrderSummaryPage = () => {
 
   const { userInfo, isAuthenticated, userName, userId, userEmail } =
     useAuthContext();
-
 
   const [userAddress, setUserAddress] = useState(null);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -435,7 +433,13 @@ const OrderSummaryPage = () => {
                 </HStack>
               </VStack>
               <VStack spacing={4}>
-                <Flex bg={COLORS.GRAY_LIGHT} py={2} px={6} align="flex-start" gap={4}>
+                <Flex
+                  bg={COLORS.GRAY_LIGHT}
+                  py={2}
+                  px={6}
+                  align="flex-start"
+                  gap={4}
+                >
                   <CircleCheck />
                   {/* <Text fontSize="12px" color="gray.500" lineHeight="1.2">
                     If you provide your desired delivery address, We will email
@@ -548,17 +552,46 @@ const OrderSummaryPage = () => {
                   </HStack>
                 </Box>
               </VStack>
-
-              <Button
-                justifySelf="end"
-                mt={4}
-                bg={COLORS.GRAY_MEDIUM}
-                borderRadius="full"
-                w="100%"
-                onClick={() => {navigate("/")}}
-              >
-                FINISH
-              </Button>
+              <VStack>
+                <Box
+                  mt={8}
+                  p={4}
+                  borderRadius="md"
+                  textAlign="center"
+                  borderColor="gray.200"
+                >
+                  <Text fontSize="xs" color="gray.600" mb={2}>
+                    Have any concerns about your order?
+                  </Text>
+                  <HStack justify="center" spacing={1}>
+                    <Text fontSize="xs" color="gray.600">
+                      Email us at
+                    </Text>
+                    <Link
+                      fontSize="sm"
+                      href="mailto:admin@adamsfoods.us"
+                      color="#b3967f"
+                      fontWeight="semibold"
+                      textDecoration="underline"
+                      _hover={{ color: "#494949" }}
+                    >
+                      admin@adamsfoods.us
+                    </Link>
+                  </HStack>
+                </Box>
+                <Button
+                  justifySelf="end"
+                  mt={2}
+                  bg={COLORS.GRAY_MEDIUM}
+                  borderRadius="full"
+                  w="100%"
+                  onClick={() => {
+                    navigate("/");
+                  }}
+                >
+                  FINISH
+                </Button>
+              </VStack>
             </VStack>
           )}
         </Box>

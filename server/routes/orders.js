@@ -3,16 +3,20 @@ import { db } from "../db/index.js";
 
 const OrdersRouter = express.Router();
 
+// Get all orders - SORTED BY MOST RECENT
 OrdersRouter.get("/", async (req, res) => {
   try {
-    const result = await db.query(`SELECT * FROM orders;`);
+    const result = await db.query(`
+      SELECT * FROM orders 
+      ORDER BY order_date DESC
+    `);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-//Get Orders by user_id
+//Get Orders by user_id - SORTED BY MOST RECENT
 OrdersRouter.get("/user/:user_id", async (req, res) => {
   try {
     const userId = req.params.user_id;
@@ -23,9 +27,11 @@ OrdersRouter.get("/user/:user_id", async (req, res) => {
       });
     }
 
-    const result = await db.query(`SELECT * FROM orders WHERE user_id = $1`, [
-      userId,
-    ]);
+    const result = await db.query(`
+      SELECT * FROM orders 
+      WHERE user_id = $1 
+      ORDER BY order_date DESC
+    `, [userId]);
 
     res.json({
       success: true,
@@ -129,7 +135,7 @@ OrdersRouter.put("/:id", async (req, res) => {
       `UPDATE orders
        SET 
            total_amount = COALESCE($1, total_amount)
-       WHERE id = $1
+       WHERE id = $2
        RETURNING *`,
       [total_amount, orderId]
     );

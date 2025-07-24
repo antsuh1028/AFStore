@@ -30,6 +30,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
+import { useMemo } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Filter } from "lucide-react";
@@ -38,7 +39,7 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import { SimpleGrid } from "@chakra-ui/react";
 
 import { COLORS, API_CONFIG } from "../../constants";
-
+import Logger from "../../utils/logger";
 
 const OrdersList = ({ orders, currPage }) => {
   const navigate = useNavigate();
@@ -46,22 +47,23 @@ const OrdersList = ({ orders, currPage }) => {
   const [itemDetailsMap, setItemDetailsMap] = useState({});
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
-  const [filteredOrders, setFilteredOrders] = useState(orders);
+
+  const sortedAndFilteredOrders = useMemo(() => {
+    const sorted = [...orders].sort((a, b) => {
+      return new Date(b.order_date) - new Date(a.order_date);
+    });
+
+    if (filterStatus === "all") {
+      return sorted;
+    } else {
+      return sorted.filter((order) => order.order_status === filterStatus);
+    }
+  }, [orders, filterStatus]);
 
   const getUniqueStatuses = () => {
     const statuses = [...new Set(orders.map((order) => order.order_status))];
     return statuses.filter((status) => status);
   };
-
-  useEffect(() => {
-    if (filterStatus === "all") {
-      setFilteredOrders(orders);
-    } else {
-      setFilteredOrders(
-        orders.filter((order) => order.order_status === filterStatus)
-      );
-    }
-  }, [orders, filterStatus]);
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -81,7 +83,7 @@ const OrdersList = ({ orders, currPage }) => {
   };
 
   useEffect(() => {
-    if (!filteredOrders || filteredOrders.length === 0) return;
+    if (!sortedAndFilteredOrders || sortedAndFilteredOrders.length === 0) return;
     setLoading(true);
 
     const fetchOrderItemsAndDetails = async () => {
@@ -89,7 +91,7 @@ const OrdersList = ({ orders, currPage }) => {
       const itemIds = new Set();
 
       await Promise.all(
-        filteredOrders.map(async (order) => {
+        sortedAndFilteredOrders.map(async (order) => {
           const res = await fetch(
             `${API_CONFIG.BASE_URL}/api/order-items/orders/${order.id}`
           );
@@ -100,24 +102,29 @@ const OrdersList = ({ orders, currPage }) => {
           }
         })
       );
-      setOrderItemsMap(itemsMap);
 
-      const detailsMap = {};
-      await Promise.all(
-        Array.from(itemIds).map(async (itemId) => {
-          const res = await fetch(`${API_CONFIG.BASE_URL}/api/items/${itemId}`);
-          const data = await res.json();
-          if (data.data) {
-            detailsMap[itemId] = data.data;
-          }
-        })
-      );
-      setItemDetailsMap(detailsMap);
+      setOrderItemsMap(itemsMap);
+      Logger.info("Order items map (pre-sorted by order_date):", itemsMap);
+
+      if (itemIds.size > 0) {
+        const itemDetailsRes = await fetch(
+          `${API_CONFIG.BASE_URL}/api/items?ids=${Array.from(itemIds).join(',')}`
+        );
+        const itemDetailsData = await itemDetailsRes.json();
+        if (itemDetailsData.success) {
+          const detailsMap = {};
+          itemDetailsData.data.forEach((item) => {
+            detailsMap[item.id] = item;
+          });
+          setItemDetailsMap(detailsMap);
+        }
+      }
+
       setLoading(false);
     };
 
     fetchOrderItemsAndDetails();
-  }, [filteredOrders]);
+  }, [sortedAndFilteredOrders]);
 
   if (loading) {
     return (
@@ -149,11 +156,10 @@ const OrdersList = ({ orders, currPage }) => {
         scrollbarWidth: "none",
       }}
     >
-      {" "}
       {currPage === "orders" && (
         <Flex alignItems="center" justifyContent="space-between" px={4}>
           <Text fontSize="sm" color="gray.600">
-            {filteredOrders.length} of {orders.length} orders
+            {sortedAndFilteredOrders.length} of {orders.length} orders
           </Text>
 
           <Flex alignItems="center" gap={2}>
@@ -228,7 +234,8 @@ const OrdersList = ({ orders, currPage }) => {
           </Flex>
         </Flex>
       )}
-      {filteredOrders.length === 0 ? (
+
+      {sortedAndFilteredOrders.length === 0 ? (
         <Center py={8}>
           <VStack spacing={2}>
             <Text color="gray.500">
@@ -248,120 +255,118 @@ const OrdersList = ({ orders, currPage }) => {
           </VStack>
         </Center>
       ) : (
-        filteredOrders
-          .sort((b, a) => new Date(a.order_date) - new Date(b.order_date))
-          .map((order) => (
-            <Box key={order.id}>
-              <Flex
-                gap={4}
-                alignItems="left"
-                justifyContent="left"
-                alignSelf="center"
-                height="24px"
-                ml={4}
-                mb={4}
+        sortedAndFilteredOrders.map((order) => (
+          <Box key={order.id}>
+            <Flex
+              gap={4}
+              alignItems="left"
+              justifyContent="left"
+              alignSelf="center"
+              height="24px"
+              ml={4}
+              mb={4}
+            >
+              <Text
+                fontSize="sm"
+                color="gray.500"
+                mb={2}
+                textAlign="left"
+                textDecoration="underline"
               >
-                <Text
-                  fontSize="sm"
-                  color="gray.500"
-                  mb={2}
-                  textAlign="left"
-                  textDecoration="underline"
-                >
-                  {order.order_date
-                    ? new Date(order.order_date).toLocaleDateString()
-                    : ""}
-                </Text>
-                <Divider
-                  orientation="vertical"
-                  borderColor="black"
-                  bg="black"
-                  height="20px"
-                />
-                <Badge
-                  colorScheme={getStatusColor(order.order_status)}
-                  fontSize="xs"
-                  mb={2}
-                  textTransform="capitalize"
-                >
-                  {order.order_status}
-                </Badge>
-                <Divider
-                  orientation="vertical"
-                  borderColor="black"
-                  bg="black"
-                  height="20px"
-                />
-                <Text fontSize="xs" color="gray.500" mb={2} textAlign="left">
-                  {order.order_number}
-                </Text>
-              </Flex>
-              <SimpleGrid columns={2} spacing={4}>
-                {(orderItemsMap[order.id] || []).map((oi) => {
-                  const item = itemDetailsMap[oi.item_id] || {};
-                  const safeStyle = item.style
-                    ? item.style.replace(/[^a-zA-Z0-9-_]/g, " ")
-                    : "";
-                  const safeName = item.name
-                    ? item.name.replace(/[\/\\:*?"<>|]/g, "").trim()
-                    : "";
-                  const imgSrc =
-                    safeStyle && safeName
-                      ? `/products/${safeStyle}/${safeName}/01.jpg`
-                      : "/images/gray.avif";
-                  return (
-                    <VStack
-                      key={oi.id}
-                      bg="white"
-                      borderRadius="xl"
-                      p={2}
-                      alignItems="center"
-                      _hover={{ cursor: "pointer", boxShadow: "sm" }}
-                      onClick={() => {
-                        navigate(`/wholesale/product/${item.id}`);
-                      }}
-                    >
-                      <Image
-                        src={imgSrc}
-                        alt={item.name || ""}
-                        boxSize="175px"
-                        objectFit="cover"
-                        borderRadius="md"
-                        fallbackSrc="/images/gray.avif"
-                      />
-                      <Box flex="1">
-                        <Text
-                          fontWeight="semibold"
-                          fontSize="sm"
-                          noOfLines={2}
-                          textAlign="left"
-                        >
-                          {item.name || "Item"}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          color="gray.500"
-                          mt={1}
-                          textAlign="left"
-                        >
-                          {item.spec || ""}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          color="gray.500"
-                          mt={1}
-                          textAlign="left"
-                        >
-                          Qty: {oi.quantity}
-                        </Text>
-                      </Box>
-                    </VStack>
-                  );
-                })}
-              </SimpleGrid>
-              <Divider borderColor="gray.200" my={2} />
-            </Box>
-          ))
+                {order.order_date
+                  ? new Date(order.order_date).toLocaleDateString()
+                  : ""}
+              </Text>
+              <Divider
+                orientation="vertical"
+                borderColor="black"
+                bg="black"
+                height="20px"
+              />
+              <Badge
+                colorScheme={getStatusColor(order.order_status)}
+                fontSize="xs"
+                mb={2}
+                textTransform="capitalize"
+              >
+                {order.order_status}
+              </Badge>
+              <Divider
+                orientation="vertical"
+                borderColor="black"
+                bg="black"
+                height="20px"
+              />
+              <Text fontSize="xs" color="gray.500" mb={2} textAlign="left">
+                {order.order_number}
+              </Text>
+            </Flex>
+            <SimpleGrid columns={2} spacing={4}>
+              {(orderItemsMap[order.id] || []).map((oi) => {
+                const item = itemDetailsMap[oi.item_id] || {};
+                const safeStyle = item.style
+                  ? item.style.replace(/[^a-zA-Z0-9-_]/g, " ")
+                  : "";
+                const safeName = item.name
+                  ? item.name.replace(/[\/\\:*?"<>|]/g, "").trim()
+                  : "";
+                const imgSrc =
+                  safeStyle && safeName
+                    ? `/products/${safeStyle}/${safeName}/01.jpg`
+                    : "/images/gray.avif";
+                return (
+                  <VStack
+                    key={oi.id}
+                    bg="white"
+                    borderRadius="xl"
+                    p={2}
+                    alignItems="center"
+                    _hover={{ cursor: "pointer", boxShadow: "sm" }}
+                    onClick={() => {
+                      navigate(`/wholesale/product/${item.id}`);
+                    }}
+                  >
+                    <Image
+                      src={imgSrc}
+                      alt={item.name || ""}
+                      boxSize="175px"
+                      objectFit="cover"
+                      borderRadius="md"
+                      fallbackSrc="/images/gray.avif"
+                    />
+                    <Box flex="1">
+                      <Text
+                        fontWeight="semibold"
+                        fontSize="sm"
+                        noOfLines={2}
+                        textAlign="left"
+                      >
+                        {item.name || "Item"}
+                      </Text>
+                      <Text
+                        fontSize="xs"
+                        color="gray.500"
+                        mt={1}
+                        textAlign="left"
+                      >
+                        {item.spec || ""}
+                      </Text>
+                      <Text
+                        fontSize="xs"
+                        color="gray.500"
+                        mt={1}
+                        textAlign="left"
+                      >
+                        Qty: {oi.quantity}
+                      </Text>
+                    </Box>
+                  </VStack>
+                );
+              })}
+            </SimpleGrid>
+            <Divider borderColor="gray.200" my={2} />
+          </Box>
+        ))
       )}
     </VStack>
   );
@@ -445,20 +450,29 @@ export const myPages = (
           <Text color="white" fontWeight="bold" ml={2}>
             Profile
           </Text>
-          <Link
-            fontSize="10px"
-            color="white"
-            textDecoration="underline"
-            mx={2}
-            _hover={{ color: "gray.200" }}
-            minW="48px"
-            textAlign="right"
-            onClick={() => setCurrPage("edit")}
-          >
-            Edit
-          </Link>
+          <Flex gap={2} align="center">
+            <Link
+              fontSize="xs"
+              color="white"
+              textDecoration="underline"
+              _hover={{ color: "gray.200" }}
+              onClick={() => setCurrPage("edit")}
+            >
+              Edit
+            </Link>
+            <Divider orientation="vertical" borderColor="white" h="12px" />
+            <Link
+              fontSize="xs"
+              color="white"
+              textDecoration="underline"
+              _hover={{ color: "gray.200" }}
+              onClick={handleLogout}
+            >
+              Log out
+            </Link>
+          </Flex>
         </Flex>
-        <VStack p={2} my={4} align="stretch">
+        <VStack p={2} mt={4} mb={16} align="stretch">
           <Box px={4} py={2}>
             <Grid templateColumns="90px 1fr" rowGap={4} columnGap={2}>
               <Text
@@ -535,8 +549,8 @@ export const myPages = (
               </Text>
             </Grid>
           </Box>
-          <Flex my={10} justify="space-between" width="100%">
-            {/* <Button
+          {/* <Flex my={10} justify="space-between" width="100%">
+            <Button
               bg="none"
               size="xs"
               textDecoration="underline"
@@ -545,18 +559,8 @@ export const myPages = (
               onClick={deleteModalDisclosure.onOpen}
             >
               Delete Account
-            </Button> */}
-            <Button
-              bg="none"
-              size="xs"
-              textDecoration="underline"
-              color="#b8b7b7"
-              _hover={{ bg: "none", color: "black" }}
-              onClick={handleLogout}
-            >
-              Log out
             </Button>
-          </Flex>
+          </Flex> */}
         </VStack>
 
         <Flex
@@ -572,9 +576,9 @@ export const myPages = (
             My Orders
           </Text>
           <Link
-            fontSize="10px"
+            fontSize="xs"
             color="white"
-            textDecoration="underline"
+            textDecoration="underline" 
             mx={2}
             _hover={{ color: "gray.200" }}
             minW="48px"
@@ -610,7 +614,6 @@ export const myPages = (
               <Button
                 colorScheme="red"
                 onClick={() => {
-                  // Add delete logic here
                   deleteModalDisclosure.onClose();
                 }}
               >

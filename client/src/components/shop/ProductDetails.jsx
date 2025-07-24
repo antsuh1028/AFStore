@@ -34,6 +34,7 @@ import {
   ChevronDown,
   ChevronUp,
   ShoppingCart,
+  InfoIcon,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
@@ -47,6 +48,7 @@ import ProductDetailSkeleton from "../skeletons/ProductDetailsSkeleton";
 
 import { useAuthContext } from "../../hooks/useAuth";
 import { COLORS, API_CONFIG } from "../../constants";
+import Navbar from "../Navbar";
 
 const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
@@ -447,7 +449,9 @@ const ProductDetailPage = () => {
           onClose={onClose}
           containerRef={contentRef}
         />
+
         <Container
+          ref={contentRef}
           maxW={{ base: "100%", lg: "30%" }}
           p={0}
           bg="white"
@@ -455,6 +459,7 @@ const ProductDetailPage = () => {
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
         >
+          <Navbar onOpen={onOpen} />
           <Box p={8} textAlign="center">
             <VStack spacing={6}>
               {/* Logo */}
@@ -556,90 +561,114 @@ const ProductDetailPage = () => {
         ml={{ base: 0, lg: "40%" }}
         minHeight="100vh"
       >
-        <Box>
-          <Flex p={4} justify="space-between" align="center">
-            <IconButton
-              aria-label="Back"
-              icon={<ChevronLeft size={24} />}
-              variant="ghost"
-              size="sm"
-              colorScheme="gray"
-              onClick={handleBackNavigation}
-            />
-            <IconButton
-              aria-label="Menu"
-              size="sm"
-              icon={<Text>☰</Text>}
-              variant="ghost"
-              onClick={onOpen}
-            />
-          </Flex>
-        </Box>
+        <Navbar onOpen={onOpen} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
           <Breadcrumbs listOfBreadCrumbs={breadcrumbs} />
         </Box>
 
         {/* Alerts*/}
-        {showCartAlert && (
-          <Box px={4} mb={4}>
-            <Alert status="success" borderRadius="md">
-              <AlertIcon />
-              <Box flex="1">
-                <Text fontWeight="bold">Added to Cart!</Text>
-                <Text>{product.name} has been added to your cart.</Text>
-                <Text
-                  textDecor="underline"
-                  _hover={{ cursor: "pointer" }}
-                  onClick={() => {
-                    navigate(`/profile/user/${userId}`, {
-                      state: { activeTab: 1 },
-                    });
-                    setShowCartAlert(false);
-                  }}
-                >
-                  View in Cart.
-                </Text>
-              </Box>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowCartAlert(false)}
+        {/* Cart Success Alert */}
+        <Box
+          position="fixed"
+          top={showCartAlert ? "20px" : "-100px"}
+          left="50%"
+          transform="translateX(-50%)"
+          zIndex={9999}
+          transition="all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+          opacity={showCartAlert ? 1 : 0}
+          w="90%"
+          maxW="400px"
+        >
+          <Alert
+            status="success"
+            borderRadius="lg"
+            boxShadow="0 10px 30px rgba(0, 0, 0, 0.2)"
+            bg="white"
+            border="1px"
+            borderColor="green.200"
+          >
+            <AlertIcon color="green.500" />
+            <Box flex="1">
+              <Text fontWeight="bold" color="green.800">
+                Added to Cart!
+              </Text>
+              <Text fontSize="sm" color="gray.700">
+                {product?.name} has been added to your cart.
+              </Text>
+              <Text
+                fontSize="sm"
+                color="green.600"
+                textDecor="underline"
+                cursor="pointer"
+                _hover={{ color: "green.800" }}
+                onClick={() => {
+                  navigate(`/profile/user/${userId}`, {
+                    state: { activeTab: 1 },
+                  });
+                  setShowCartAlert(false);
+                }}
               >
-                ×
-              </Button>
-            </Alert>
-          </Box>
-        )}
+                View in Cart →
+              </Text>
+            </Box>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon="×"
+              onClick={() => setShowCartAlert(false)}
+              _hover={{ bg: "green.100" }}
+            />
+          </Alert>
+        </Box>
 
-        {showCartReject && (
-          <Box px={4} mb={4}>
-            <Alert status="error" borderRadius="md">
-              <AlertIcon />
-              <Box flex="1">
-                <Text fontWeight="bold">Failed Adding to Cart!</Text>
-                <Text>
-                  Cart functionality requires cookies.
-                  <Button
-                    variant="link"
-                    colorScheme="blue"
-                    ml={1}
-                    onClick={handleAcceptCookies}
-                  >
-                    Accept Cookies & Add to Cart
-                  </Button>
-                </Text>
-              </Box>
+        {/*Cart Reject Alert */}
+        <Box
+          position="fixed"
+          top={showCartReject ? "20px" : "-100px"}
+          left="50%"
+          transform="translateX(-50%)"
+          zIndex={9999}
+          transition="all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+          opacity={showCartReject ? 1 : 0}
+          w="90%"
+          maxW="400px"
+        >
+          <Alert
+            status="error"
+            borderRadius="lg"
+            boxShadow="0 10px 30px rgba(0, 0, 0, 0.2)"
+            bg="white"
+            border="1px"
+            borderColor="red.200"
+          >
+            <AlertIcon color="red.500" />
+            <Box flex="1">
+              <Text fontWeight="bold" color="red.800">
+                Failed Adding to Cart!
+              </Text>
+              <Text fontSize="sm" color="gray.700" mb={2}>
+                Cart functionality requires cookies.
+              </Text>
               <Button
                 size="sm"
-                variant="ghost"
-                onClick={() => setShowCartReject(false)}
+                colorScheme="red"
+                variant="outline"
+                onClick={handleAcceptCookies}
+                _hover={{ bg: "red.50" }}
               >
-                ×
+                Accept Cookies & Add to Cart
               </Button>
-            </Alert>
-          </Box>
-        )}
+            </Box>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon="×"
+              onClick={() => setShowCartReject(false)}
+              _hover={{ bg: "red.100" }}
+            />
+          </Alert>
+        </Box>
 
         <VStack spacing={4} px={4} pb={8}>
           <Heading
@@ -717,12 +746,12 @@ const ProductDetailPage = () => {
                 <FiThermometer />
                 <Text fontSize="sm">Keep frozen</Text>
               </HStack>
-              <HStack>
+              {/* <HStack>
                 <FiTruck />
                 <Text fontSize="sm">
                   Free local shipping in orders over $3000
                 </Text>
-              </HStack>
+              </HStack> */}
               <HStack>
                 <WarningIcon />
                 <Text fontSize="sm">Cook thoroughly before consumption</Text>
@@ -794,7 +823,7 @@ const ProductDetailPage = () => {
           </CollapsibleSection>
 
           <CollapsibleSection
-            title="INGREDIENTS"
+            title="INGREDIENTS + ALLERGENS"
             isOpen={isIngredientsOpen}
             onToggle={() => setIsIngredientsOpen(!isIngredientsOpen)}
           >
@@ -808,6 +837,28 @@ const ProductDetailPage = () => {
               <Text fontSize="sm" color="gray.600">
                 {product.allergens?.join(", ") ||
                   "Allergen information not provided."}
+              </Text>
+            </Box>
+            <Box
+              mt={4}
+              p={3}
+              bg="yellow.50"
+              border="1px"
+              borderColor="yellow.200"
+              borderRadius="md"
+            >
+              <Text fontSize="xs" color="gray.700" lineHeight="1.4">
+                <Flex
+                  as="span"
+                  fontWeight="semibold"
+                  py={2}
+                >
+                  <Box mr={2}><InfoIcon size={16} /></Box>
+                   Important:
+                </Flex>{" "}
+                All products are processed in facilities that handle soy, wheat,
+                sesame, and other major allergens. Always verify current
+                allergen information on product packaging before use.
               </Text>
             </Box>
           </CollapsibleSection>

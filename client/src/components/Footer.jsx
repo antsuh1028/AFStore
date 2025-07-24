@@ -66,7 +66,7 @@ const Footer = () => {
               Monday to Friday
             </Text>
             <Text color="gray.600" fontSize="xs" noOfLines={1}>
-              8am - 4pm PST
+              8am - 3;30pm PST
             </Text>
           </VStack>
 
