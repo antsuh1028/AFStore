@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import {
   Box,
-  Button,
   Container,
   Flex,
   Heading,
@@ -17,7 +16,6 @@ import {
   HStack,
   VStack,
   Divider,
-  SimpleGrid,
   Link,
   useDisclosure,
   List,

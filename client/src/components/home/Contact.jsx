@@ -14,7 +14,6 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import emailjs from "emailjs-com";
-import Footer from "../Footer";
 
 const Contact = () => {
   const form = useRef();
@@ -34,7 +33,7 @@ const Contact = () => {
   };
 
   const inputStyle = {
-    borderRadius: "999px", // hemispherical ends
+    borderRadius: "full",
     bg: "gray.50",
     border: "1px solid",
     borderColor: "gray.400",

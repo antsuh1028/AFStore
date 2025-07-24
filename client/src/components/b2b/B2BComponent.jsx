@@ -1,20 +1,13 @@
-import React from "react";
 import {
   Box,
-  Container,
   Heading,
   Text,
   VStack,
   HStack,
-  Flex,
   Divider,
-  List,
-  ListItem,
-  ListIcon,
   useColorModeValue,
   Button,
 } from "@chakra-ui/react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { COLORS } from "../../constants";
 

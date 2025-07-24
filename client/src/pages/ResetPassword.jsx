@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
-  Box,
   Heading,
-  Text,
   Input,
   Button,
   VStack,

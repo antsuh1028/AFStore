@@ -2,17 +2,12 @@ import React from "react";
 import {
   Box,
   Container,
-  Flex,
   Heading,
   Text,
   VStack,
-  Divider,
-  Image,
-  IconButton,
   useDisclosure,
   List,
   ListItem,
-  ListIcon,
 } from "@chakra-ui/react";
 import { MdCircle } from "react-icons/md";
 import { useNavigate } from "react-router-dom";

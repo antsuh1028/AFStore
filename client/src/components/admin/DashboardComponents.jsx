@@ -30,7 +30,6 @@ import {
   ModalOverlay,
   useDisclosure,
   Textarea,
-  Image,
 } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { API_CONFIG } from "../../constants";

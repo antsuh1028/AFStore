@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   Container,
@@ -7,8 +6,6 @@ import {
   VStack,
   Image,
   Flex,
-  HStack,
-  Divider,
 } from "@chakra-ui/react";
 
 const AFCompany = () => {

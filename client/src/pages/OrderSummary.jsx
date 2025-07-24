@@ -7,7 +7,6 @@ import {
   Flex,
   Box,
   useDisclosure,
-  Divider,
   VStack,
   Heading,
   Container,

@@ -10,7 +10,6 @@ import {
   VStack,
   Image,
 } from "@chakra-ui/react";
-import { ChevronLeft } from "lucide-react";
 import Footer from "../../components/Footer";
 import Sidebar from "../../components/SideBar";
 import NavDrawer from "../../components/NavDrawer";

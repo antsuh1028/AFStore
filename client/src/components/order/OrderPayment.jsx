@@ -1,6 +1,4 @@
-import React from "react";
-import { Box, Flex, Circle, useColorModeValue, Button } from "@chakra-ui/react";
-import { CheckIcon } from "@chakra-ui/icons";
+import { Box, Flex, Circle, useColorModeValue,  } from "@chakra-ui/react";
 
 const ThreeStepLine = ({ currentStep = 1, setCurrentStep }) => {
   const activeColor = useColorModeValue("black", "blue.300");

@@ -1,17 +1,12 @@
-import React from "react";
 import {
   Box,
   Heading,
   Text,
-  Link,
   VStack,
   Flex,
   Circle,
-  useColorModeValue,
-  Divider,
   List,
   ListItem,
-  Badge,
 } from "@chakra-ui/react";
 import { COLORS } from "../../constants";
 

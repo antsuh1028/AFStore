@@ -1,18 +1,12 @@
 import React, { useRef } from "react";
 import {
   Box,
-  Button,
   Container,
-  Flex,
-  Heading,
-  IconButton,
   useDisclosure,
-  Text,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import NavDrawer from "../../components/NavDrawer";
 import Sidebar from "../../components/SideBar";
-import { ChevronLeft } from "lucide-react";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import B2BContent from "../../components/b2b/B2BComponent";
 import Footer from "../../components/Footer";

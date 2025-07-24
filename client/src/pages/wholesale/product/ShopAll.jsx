@@ -2,8 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import {
   Box,
   Container,
-  Flex,
-  IconButton,
   useDisclosure,
   Text,
   VStack,

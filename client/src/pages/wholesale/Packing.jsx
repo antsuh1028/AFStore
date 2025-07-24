@@ -6,7 +6,6 @@ import {
   Heading,
   Image,
   Text,
-  IconButton,
   VStack,
   Divider,
   Grid,
@@ -15,7 +14,6 @@ import {
   Spinner,
   Center,
 } from "@chakra-ui/react";
-import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import NavDrawer from "../../components/NavDrawer";

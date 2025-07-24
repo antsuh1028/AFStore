@@ -19,7 +19,6 @@ import {
   IconButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Info } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import emailjs from "emailjs-com";
 import { getCart } from "../utils/cartActions";
