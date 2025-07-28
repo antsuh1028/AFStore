@@ -25,8 +25,15 @@ import {
   GridItem,
   Grid,
   VStack,
+  Link,
+  Select,
 } from "@chakra-ui/react";
-import { BellIcon, ChevronRightIcon, ChevronLeftIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import {
+  BellIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+  ChevronDownIcon,
+} from "@chakra-ui/icons";
 import { useAuthContext } from "../hooks/useAuth";
 
 import {
@@ -35,376 +42,8 @@ import {
   InventoryStatus,
 } from "../components/admin/DashboardComponents";
 import { API_CONFIG } from "../constants";
-
-const AdminHome = () => {
-  return (
-    <VStack spacing={0} minH={{ base: "80vh", md: "70vh" }} w="100%">
-      {/* Top Section - Responsive height */}
-      <Flex 
-        w="100%" 
-        minH={{ base: "auto", md: "40%" }}
-        direction={{ base: "column", lg: "row" }}
-        flex={{ base: "none", md: "0 0 40%" }}
-      >
-        {/* Left side - Stats Cards */}
-        <Box 
-          w={{ base: "100%", lg: "60%" }} 
-          p={4}
-          minH={{ base: "auto", md: "100%" }}
-        >
-          {/* Top Row - 3 Stat Cards + Monthly Button */}
-          <Flex 
-            gap={4} 
-            minH={{ base: "120px", md: "50%" }}
-            align="stretch" 
-            mb={4}
-            direction={{ base: "column", md: "row" }}
-          >
-            <Flex 
-              gap={4} 
-              w={{ base: "100%", md: "90%" }}
-              flex={1}
-              direction={{ base: "column", sm: "row" }}
-            >
-              {/* New Orders (Pick Up) */}
-              <Box 
-                w={{ base: "100%", sm: "33%" }}
-                p={4} 
-                bg="white" 
-                border="1px" 
-                borderColor="gray.100" 
-                borderRadius="md"
-                minH="100px"
-              >
-                <Text fontSize="sm" color="gray.600" mb={2}>
-                  New Orders (Pick Up)
-                </Text>
-                <Flex align="center" justify="space-between" mb={4}>
-                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">10</Text>
-                  <IconButton 
-                    size="sm" 
-                    variant="ghost" 
-                    borderRadius="full"
-                    bg="gray.100"
-                    icon={<ChevronRightIcon />}
-                  />
-                </Flex>
-              </Box>
-
-              {/* New Orders (Delivery) */}
-              <Box 
-                w={{ base: "100%", sm: "33%" }}
-                p={4} 
-                bg="white" 
-                border="1px" 
-                borderColor="gray.100" 
-                borderRadius="md"
-                minH="100px"
-              >
-                <Text fontSize="sm" color="gray.600" mb={2}>
-                  New Orders (Delivery)
-                </Text>
-                <Flex align="center" justify="space-between" mb={4}>
-                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">5</Text>
-                  <IconButton 
-                    size="sm" 
-                    variant="ghost" 
-                    borderRadius="full"
-                    bg="gray.100"
-                    icon={<ChevronRightIcon />}
-                  />
-                </Flex>
-              </Box>
-
-              {/* New Inquiries */}
-              <Box 
-                w={{ base: "100%", sm: "33%" }}
-                p={4} 
-                bg="white" 
-                border="1px" 
-                borderColor="gray.100" 
-                borderRadius="md"
-                minH="100px"
-              >
-                <Text fontSize="sm" color="gray.600" mb={2}>
-                  New Inquiries
-                </Text>
-                <Flex align="center" justify="space-between" mb={4}>
-                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">5</Text>
-                  <IconButton 
-                    size="sm" 
-                    variant="ghost" 
-                    borderRadius="full"
-                    bg="gray.100"
-                    icon={<ChevronRightIcon />}
-                  />
-                </Flex>
-              </Box>
-            </Flex>
-
-            {/* Monthly Button */}
-            <Flex 
-              direction={{ base: "row", md: "column" }}
-              justify={{ base: "center", md: "flex-start" }}
-              align="center" 
-              minW={{ base: "auto", md: "100px" }}
-              w={{ base: "100%", md: "auto" }}
-            >
-              <Button 
-                variant="outline" 
-                size="sm"
-                rightIcon={<ChevronDownIcon />}
-                bg="white"
-                borderColor="gray.300"
-                _hover={{ bg: "gray.50" }}
-              >
-                Monthly
-              </Button>
-            </Flex>
-          </Flex>
-
-          {/* Bottom Row - Financial Stats */}
-          <Flex 
-            gap={4} 
-            minH={{ base: "120px", md: "50%" }}
-            align="stretch"
-            direction={{ base: "column", md: "row" }}
-          >
-            <Flex 
-              gap={4} 
-              w={{ base: "100%", md: "90%" }}
-              flex={1}
-              direction={{ base: "column", sm: "row" }}
-            >
-              <Box 
-                w={{ base: "100%", sm: "33%" }}
-                p={4} 
-                bg="white" 
-                border="1px" 
-                borderColor="gray.100" 
-                borderRadius="md"
-                minH="80px"
-              >
-                <Text fontSize="sm" color="gray.600" mb={2}>
-                  Today Total Price
-                </Text>
-                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">$2,000.00</Text>
-              </Box>
-              <Box 
-                w={{ base: "100%", sm: "33%" }}
-                p={4} 
-                bg="white" 
-                border="1px" 
-                borderColor="gray.100" 
-                borderRadius="md"
-                minH="80px"
-              >
-                <Text fontSize="sm" color="gray.600" mb={2}>
-                  Total Sales this Month
-                </Text>
-                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">$50,000.00</Text>
-              </Box>
-              <Box 
-                w={{ base: "100%", sm: "33%" }}
-                p={4} 
-                bg="white" 
-                border="1px" 
-                borderColor="gray.100" 
-                borderRadius="md"
-                minH="80px"
-              >
-                <Text fontSize="sm" color="gray.600" mb={2}>
-                  Total Sales last Month
-                </Text>
-                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">$40,000.00</Text>
-              </Box>
-            </Flex>
-            
-            {/* Monthly Button for bottom row */}
-            <Flex 
-              direction={{ base: "row", md: "column" }}
-              justify={{ base: "center", md: "flex-start" }}
-              align="center" 
-              minW={{ base: "auto", md: "100px" }}
-              w={{ base: "100%", md: "auto" }}
-            >
-              <Button 
-                variant="outline" 
-                size="sm"
-                rightIcon={<ChevronDownIcon />}
-                bg="white"
-                borderColor="gray.300"
-                _hover={{ bg: "gray.50" }}
-              >
-                Monthly
-              </Button>
-            </Flex>
-          </Flex>
-        </Box>
-
-        {/* Vertical Divider - Hidden on mobile */}
-        <Divider
-          orientation="vertical"
-          borderColor="gray.200"
-          h="90%"
-          borderWidth="1px"
-          alignSelf="center"
-          display={{ base: "none", lg: "block" }}
-        />
-
-        {/* Horizontal Divider - Only on mobile */}
-        <Divider
-          orientation="horizontal"
-          borderColor="gray.200"
-          borderWidth="1px"
-          my={4}
-          display={{ base: "block", lg: "none" }}
-        />
-
-        {/* Right side - Trending Chart */}
-        <Box 
-          w={{ base: "100%", lg: "40%" }}
-          p={4}
-          minH={{ base: "300px", md: "100%" }}
-        >
-          <Flex justify="space-between" align="center" mb={4}>
-            <Text fontSize={{ base: "md", md: "lg" }} fontWeight="semibold">
-              Trending Orders
-            </Text>
-            <Button 
-              variant="outline" 
-              size="xs"
-              rightIcon={<ChevronDownIcon />}
-              bg="white"
-              borderColor="gray.300"
-              _hover={{ bg: "gray.50" }}
-            >
-              Jul 2025
-            </Button>
-          </Flex>
-          <Box 
-            h={{ base: "200px", md: "80%" }}
-            bg="gray.50" 
-            borderRadius="md" 
-            p={4}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text color="gray.500" textAlign="center">
-              Chart Component Here
-            </Text>
-          </Box>
-        </Box>
-      </Flex>
-
-      {/* Horizontal Divider - Only on desktop */}
-      <Divider 
-        orientation="horizontal" 
-        borderColor="gray.200" 
-        borderWidth="1px"
-        display={{ base: "none", lg: "block" }}
-      />
-
-      {/* Bottom Section - Responsive height */}
-      <Flex 
-        w="100%" 
-        minH={{ base: "auto", md: "60%" }}
-        direction={{ base: "column", lg: "row" }}
-        flex={{ base: "none", md: "0 0 60%" }}
-      >
-        {/* Recently Order History */}
-        <Box 
-          w={{ base: "100%", lg: "60%" }}
-          p={4}
-          minH={{ base: "300px", md: "100%" }}
-        >
-          <Flex justify="space-between" align="center" mb={4}>
-            <Text fontSize={{ base: "md", md: "lg" }} fontWeight="semibold">
-              Recently Order History
-            </Text>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              rightIcon={<ChevronRightIcon />}
-              color="blue.500"
-              _hover={{ bg: "blue.50" }}
-            >
-              View all
-            </Button>
-          </Flex>
-          <Box 
-            h={{ base: "250px", md: "80%" }}
-            bg="gray.50" 
-            borderRadius="md" 
-            p={4}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text color="gray.500" textAlign="center">
-              Order History Table
-            </Text>
-          </Box>
-        </Box>
-
-        {/* Vertical Divider - Hidden on mobile */}
-        <Divider
-          orientation="vertical"
-          borderColor="gray.200"
-          h="90%"
-          alignSelf="center"
-          borderWidth="1px"
-          display={{ base: "none", lg: "block" }}
-        />
-
-        {/* Horizontal Divider - Only on mobile */}
-        <Divider
-          orientation="horizontal"
-          borderColor="gray.200"
-          borderWidth="1px"
-          my={4}
-          display={{ base: "block", lg: "none" }}
-        />
-
-        {/* Sign Up Request */}
-        <Box 
-          w={{ base: "100%", lg: "40%" }}
-          p={4}
-          minH={{ base: "300px", md: "100%" }}
-        >
-          <Flex justify="space-between" align="center" mb={4}>
-            <Text fontSize={{ base: "md", md: "lg" }} fontWeight="semibold">
-              Sign Up Request
-            </Text>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              rightIcon={<ChevronRightIcon />}
-              color="blue.500"
-              _hover={{ bg: "blue.50" }}
-            >
-              View all
-            </Button>
-          </Flex>
-          <Box 
-            h={{ base: "250px", md: "80%" }}
-            bg="gray.50" 
-            borderRadius="md" 
-            p={4}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text color="gray.500" textAlign="center">
-              Sign Up Requests Table
-            </Text>
-          </Box>
-        </Box>
-      </Flex>
-    </VStack>
-  );
-};
+import { ListEndIcon } from "lucide-react";
+import AdminHome from "../components/admin/AdminHome";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -431,6 +70,7 @@ const AdminDashboard = () => {
   const [inventory, setInventory] = useState([]);
   const [signupRequests, setSignupRequests] = useState([]);
   const [inquiries, setInquiries] = useState([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   const pages = {
     1: "Dashboard",
@@ -529,32 +169,35 @@ const AdminDashboard = () => {
     fetchInquiries();
   }, [isAuthenticated, isAdmin, token]);
 
-  useEffect(() => {
-    if (!isAuthenticated || !isAdmin || !token) return;
+useEffect(() => {
+  if (!isAuthenticated || !isAdmin || !token) return;
 
-    const fetchOrders = async () => {
-      try {
-        const res = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setOrders(data);
-        } else if (data.data) {
-          setOrders(data.data);
-        } else {
-          setOrders([]);
-        }
-      } catch (err) {
-        console.error("Error fetching orders:", err);
+  const fetchOrders = async () => {
+    setIsLoadingData(true);
+    try {
+      const res = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else if (data.data) {
+        setOrders(data.data);
+      } else {
         setOrders([]);
       }
-    };
-    fetchOrders();
-  }, [isAuthenticated, isAdmin, token]);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      setOrders([]);
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
+  fetchOrders();
+}, [isAuthenticated, isAdmin, token]);
 
   useEffect(() => {
     if (!isAuthenticated || !isAdmin || !token) return;
@@ -909,7 +552,17 @@ const AdminDashboard = () => {
         </Heading>
       </Flex>
 
-      {currentPage === 1 && <AdminHome />}
+      {currentPage === 1 && (
+        <AdminHome
+  orders={orders}
+  usersMap={usersMap}
+  signupRequests={signupRequests}
+  inquiries={inquiries}
+  orderItemsMap={orderItemsMap}
+  setCurrentPage={setCurrentPage}
+  isLoading={isLoadingData}
+/>
+      )}
 
       {currentPage === 2 && (
         <Orders

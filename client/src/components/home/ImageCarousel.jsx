@@ -6,6 +6,7 @@ const ImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const images = [
     { avif: "/images/main_banner_2.avif", fallback: "/images/main_banner_2.png" },
@@ -16,11 +17,17 @@ const ImageCarousel = () => {
   const minSwipeDistance = 50;
 
   const goToPrevious = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
   const goToNext = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex((prev) => (prev + 1) % images.length);
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
   const onTouchStart = (e) => {
@@ -46,6 +53,13 @@ const ImageCarousel = () => {
     }
   };
 
+  const handleDotClick = (index) => {
+    if (isAnimating || index === currentIndex) return;
+    setIsAnimating(true);
+    setCurrentIndex(index);
+    setTimeout(() => setIsAnimating(false), 300);
+  };
+
   return (
     <Box px={4}>
       <Box
@@ -57,15 +71,28 @@ const ImageCarousel = () => {
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <Image
-          src={images[currentIndex].avif}
-          alt="Various Meat Cuts"
-          height="80%"
-          width="100%"
-          objectFit="contain"
-          transition="opacity 0.5s ease-in-out"
-          fallbackSrc={images[currentIndex].fallback}
-        />
+        {/* Image Container with Sliding Animation */}
+        <Box
+          display="flex"
+          width={`${images.length * 100}%`}
+          transform={`translateX(-${(currentIndex * 100) / images.length}%)`}
+          transition="transform 0.3s ease-in-out"
+        >
+          {images.map((image, index) => (
+            <Box
+              key={index}
+              width={`${100 / images.length}%`}
+              flexShrink={0}
+            >
+              <Image
+                src={image.avif}
+                alt={`Banner ${index + 1}`}
+                width="100%"
+                fallbackSrc={image.fallback}
+              />
+            </Box>
+          ))}
+        </Box>
 
         {/* Navigation Arrows */}
         <IconButton
@@ -81,6 +108,7 @@ const ImageCarousel = () => {
           _hover={{ bg: "blackAlpha.800" }}
           onClick={goToPrevious}
           aria-label="Previous image"
+          disabled={isAnimating}
         />
 
         <IconButton
@@ -96,6 +124,7 @@ const ImageCarousel = () => {
           _hover={{ bg: "blackAlpha.800" }}
           onClick={goToNext}
           aria-label="Next image"
+          disabled={isAnimating}
         />
 
         {/* Dots Indicator */}
@@ -115,7 +144,7 @@ const ImageCarousel = () => {
               borderRadius="full"
               bg={index === currentIndex ? "white" : "whiteAlpha.500"}
               cursor="pointer"
-              onClick={() => setCurrentIndex(index)}
+              onClick={() => handleDotClick(index)}
               transition="background 0.3s"
             />
           ))}

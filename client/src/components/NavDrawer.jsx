@@ -305,7 +305,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                   <Image
                     src={icon}
                     fallbackSrc={fallback}
-                    boxSize="70px"
+                    boxSize="75px"
                     objectFit="cover"
                     borderRadius="full"
                     alt={label}
