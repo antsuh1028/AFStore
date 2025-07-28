@@ -179,6 +179,7 @@ const AdminHome = ({
                     borderRadius="full"
                     bg="gray.100"
                     icon={<ChevronRightIcon />}
+                    onClick={()=>{setCurrentPage(2)}}
                   />
                 </Flex>
               </Box>
@@ -207,6 +208,7 @@ const AdminHome = ({
                     borderRadius="full"
                     bg="gray.100"
                     icon={<ChevronRightIcon />}
+                    onClick={()=>{setCurrentPage(2)}}
                   />
                 </Flex>
               </Box>
@@ -235,6 +237,7 @@ const AdminHome = ({
                     borderRadius="full"
                     bg="gray.100"
                     icon={<ChevronRightIcon />}
+                    onClick={()=>{setCurrentPage(3)}}
                   />
                 </Flex>
               </Box>
@@ -422,6 +425,7 @@ const AdminHome = ({
               size="sm"
               rightIcon={<ChevronRightIcon />}
               _hover={{ bg: "blue.50" }}
+              onClick={()=>{setCurrentPage(2)}}
             >
               View all
             </Button>
@@ -539,6 +543,7 @@ const AdminHome = ({
               size="sm"
               rightIcon={<ChevronRightIcon />}
               _hover={{ bg: "blue.50" }}
+              onClick={()=>{setCurrentPage(3)}}
             >
               View all
             </Button>

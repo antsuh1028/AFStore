@@ -169,35 +169,35 @@ const AdminDashboard = () => {
     fetchInquiries();
   }, [isAuthenticated, isAdmin, token]);
 
-useEffect(() => {
-  if (!isAuthenticated || !isAdmin || !token) return;
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin || !token) return;
 
-  const fetchOrders = async () => {
-    setIsLoadingData(true);
-    try {
-      const res = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setOrders(data);
-      } else if (data.data) {
-        setOrders(data.data);
-      } else {
+    const fetchOrders = async () => {
+      setIsLoadingData(true);
+      try {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setOrders(data);
+        } else if (data.data) {
+          setOrders(data.data);
+        } else {
+          setOrders([]);
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err);
         setOrders([]);
+      } finally {
+        setIsLoadingData(false);
       }
-    } catch (err) {
-      console.error("Error fetching orders:", err);
-      setOrders([]);
-    } finally {
-      setIsLoadingData(false);
-    }
-  };
-  fetchOrders();
-}, [isAuthenticated, isAdmin, token]);
+    };
+    fetchOrders();
+  }, [isAuthenticated, isAdmin, token]);
 
   useEffect(() => {
     if (!isAuthenticated || !isAdmin || !token) return;
@@ -340,6 +340,34 @@ useEffect(() => {
 
     fetchSignupRequests();
   }, [isAuthenticated, isAdmin, token]);
+
+  useEffect(() => {
+    window.history.pushState(
+      { adminPage: currentPage },
+      "",
+      window.location.href
+    );
+
+    const handlePopState = (event) => {
+      if (event.state?.adminPage) {
+        setCurrentPage(event.state.adminPage);
+      } else {
+        setCurrentPage(1);
+        window.history.pushState({ adminPage: 1 }, "", window.location.href);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    window.history.replaceState(
+      { adminPage: currentPage },
+      "",
+      window.location.href
+    );
+  }, [currentPage]);
 
   const getStockStatus = (quantity) => {
     if (quantity <= 50) return "Critical";
@@ -485,7 +513,7 @@ useEffect(() => {
         border="1px"
         borderColor="gray.400"
       />
-      <Flex align="center" gap={6} mb={4} justify="space-between">
+      <Flex align="center" my={12} gap={4}>
         <IconButton
           icon={<ChevronLeftIcon boxSize={6} />}
           aria-label="Back"
@@ -497,45 +525,6 @@ useEffect(() => {
               : setCurrentPage(1);
           }}
         />
-
-        <Flex align="center" gap={6}>
-          <Flex align="center" gap={2}>
-            <IconButton
-              icon={<BellIcon />}
-              aria-label="Notifications"
-              size="sm"
-              variant="ghost"
-            />
-            <Badge
-              colorScheme="red"
-              borderRadius="full"
-              px={2}
-              fontWeight="bold"
-              fontSize="md"
-            >
-              4
-            </Badge>
-            <Text fontWeight="semibold" fontSize="md">
-              Notifications
-            </Text>
-          </Flex>
-
-          <Divider orientation="vertical" height="24px" />
-
-          <Box>
-            <Text fontWeight="semibold" fontSize="md">
-              Date
-            </Text>
-            <Text fontSize="sm" color="gray.600">
-              {new Date(
-                Date.now() - 7 * 24 * 60 * 60 * 1000
-              ).toLocaleDateString()}{" "}
-              – {new Date().toLocaleDateString()}
-            </Text>
-          </Box>
-        </Flex>
-      </Flex>
-      <Flex align="center" justify="space-between" mb={8}>
         <Heading
           as="h1"
           fontWeight="extrabold"
@@ -554,14 +543,14 @@ useEffect(() => {
 
       {currentPage === 1 && (
         <AdminHome
-  orders={orders}
-  usersMap={usersMap}
-  signupRequests={signupRequests}
-  inquiries={inquiries}
-  orderItemsMap={orderItemsMap}
-  setCurrentPage={setCurrentPage}
-  isLoading={isLoadingData}
-/>
+          orders={orders}
+          usersMap={usersMap}
+          signupRequests={signupRequests}
+          inquiries={inquiries}
+          orderItemsMap={orderItemsMap}
+          setCurrentPage={setCurrentPage}
+          isLoading={isLoadingData}
+        />
       )}
 
       {currentPage === 2 && (

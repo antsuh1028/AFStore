@@ -793,7 +793,7 @@ const ProductDetailPage = () => {
                 <Text fontSize="sm" color="gray.500">
                   Weight
                 </Text>
-                <Text fontWeight="medium">{product.avg_weight} lbs</Text>
+                <Text fontWeight="medium">{product.avg_weight} lbs / pack</Text>
               </GridItem>
             </Grid>
             <Text fontSize="sm" color="gray.600">
@@ -823,7 +823,7 @@ const ProductDetailPage = () => {
           </CollapsibleSection>
 
           <CollapsibleSection
-            title="INGREDIENTS + ALLERGENS"
+            title="INGREDIENTS & ALLERGENS"
             isOpen={isIngredientsOpen}
             onToggle={() => setIsIngredientsOpen(!isIngredientsOpen)}
           >

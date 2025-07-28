@@ -675,7 +675,7 @@ const HomePage = () => {
                 marginBottom={4}
               />
               <Heading fontSize="16px" mb={4}>
-                Chuck Slice (Bulgogi)
+                Marinated Sliced Boneless Beef Chuck (Beef Bulgogi)
               </Heading>
               <Text fontSize="12px" width="100%">
                 A cut only AdamsFoods can make, crafted with precision,
