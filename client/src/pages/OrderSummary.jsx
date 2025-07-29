@@ -216,7 +216,7 @@ const OrderSummaryPage = () => {
 
       try {
         const response = await fetch(
-          `${API_CONFIG.BASE_URL}/api/shipping-addresses/user/${userId}`
+          `${API_CONFIG.BASE_URL}/api/addresses/user/${userId}`
         );
         const data = await response.json();
         if (data.success && data.data[0]) {

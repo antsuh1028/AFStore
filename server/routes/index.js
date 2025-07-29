@@ -18,7 +18,7 @@ router.use("/carts", CartsRouter);
 router.use("/items", ItemsRouter);
 router.use("/order-items", OrderItemsRouter);
 router.use("/orders", OrdersRouter);
-router.use("/shipping-addresses", AddressRouter);
+router.use("/addresses", AddressRouter);
 router.use("/s3", S3Router);
 router.use("/inquiries", InquiriesRouter);
 

@@ -15,6 +15,7 @@ import {
   Th,
   Td,
   VStack,
+  HStack,
   Divider,
   Select,
   Menu,
@@ -30,9 +31,15 @@ import {
   ModalOverlay,
   useDisclosure,
   Textarea,
+  Input,
 } from "@chakra-ui/react";
-import { ChevronRightIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import {
+  ChevronRightIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@chakra-ui/icons";
 import { API_CONFIG } from "../../constants";
+// import { ChevronUpIcon } from "lucide-react";
 
 const InquiryResponseModal = ({
   isOpen,
@@ -143,15 +150,28 @@ export const Orders = ({
   token,
   setOrders,
   toast,
+  userAddresses,
+  orderType,
 }) => {
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState(orderType);
   const [expandedRows, setExpandedRows] = useState(new Set());
 
   const statusColor = (status) => {
-    if (status === "complete") return "green";
+    if (status === "complete" || status === "completion") return "green";
     if (status === "incomplete") return "yellow";
-    if (status === "pending") return "gray";
+    if (status === "pending") return "red";
+    if (status === "contacted") return "orange";
+    if (status === "quote sent") return "purple";
+    if (status === "order placed") return "blue";
+    if (status === "declined") return "red";
     return "gray";
+  };
+  const FormatAddress = (address) => {
+    if (!address) return "No address provided";
+
+    return `${address.address_line_1}${
+      address.address_line_2 ? ", " + address.address_line_2 : ""
+    }, ${address.city}, ${address.state} ${address.zip_code}`;
   };
 
   const handleStatusUpdate = async (orderId, newStatus) => {
@@ -218,7 +238,10 @@ export const Orders = ({
     orders
       ?.filter((order) => {
         if (filter === "all") return true;
-        return order.order_status?.toLowerCase() === filter;
+        return (
+          order.order_status?.toLowerCase() === filter ||
+          order.order_type?.toLowerCase() === filter
+        );
       })
       .sort((a, b) => new Date(b.order_date) - new Date(a.order_date)) || [];
 
@@ -235,8 +258,13 @@ export const Orders = ({
           onChange={(e) => setFilter(e.target.value)}
         >
           <option value="all">All Orders</option>
-          <option value="pending">Pending</option>
-          <option value="complete">Complete</option>
+          {Array.from(
+            new Set(orders?.map((order) => order.order_status).filter(Boolean))
+          ).map((status) => (
+            <option key={status} value={status.toLowerCase()}>
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </option>
+          ))}
         </Select>
       </Flex>
 
@@ -247,7 +275,7 @@ export const Orders = ({
             Total Orders
           </Text>
           <Text fontSize="2xl" fontWeight="bold">
-            {orders?.length || 0}
+            {filteredOrders?.length || 0}
           </Text>
         </Box>
         <Box bg="gray.50" p={4} borderRadius="lg">
@@ -255,8 +283,9 @@ export const Orders = ({
             Pending Orders
           </Text>
           <Text fontSize="2xl" fontWeight="bold">
-            {orders?.filter((o) => o.order_status?.toLowerCase() === "pending")
-              .length || 0}
+            {filteredOrders?.filter(
+              (o) => o.order_status?.toLowerCase() === "pending"
+            ).length || 0}
           </Text>
         </Box>
         <Box bg="gray.50" p={4} borderRadius="lg">
@@ -265,7 +294,7 @@ export const Orders = ({
           </Text>
           <Text fontSize="2xl" fontWeight="bold">
             $
-            {orders
+            {filteredOrders
               ?.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)
               .toLocaleString() || 0}
           </Text>
@@ -273,17 +302,19 @@ export const Orders = ({
       </SimpleGrid>
 
       {/* Orders Table */}
-      <Box overflow="auto" maxH="400px">
+      <Box overflow="auto" maxH="600px">
         <Table variant="simple" size="sm">
           <Thead position="sticky" top={0} bg="white" zIndex={1}>
             <Tr>
-              <Th fontWeight="bold">Order #</Th>
               <Th>Customer</Th>
+              <Th fontWeight="bold">Order #</Th>
+              <Th fontWeight="bold">Email</Th>
+              <Th fontWeight="bold">License Number</Th>
+              <Th fontWeight="bold">CA resale</Th>
               <Th>Date</Th>
-              <Th>Company</Th>
-              <Th>Status</Th>
+
               <Th>Total</Th>
-              <Th>Actions</Th>
+              <Th>Status</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -291,141 +322,164 @@ export const Orders = ({
               filteredOrders.map((order) => (
                 <React.Fragment key={order.id}>
                   <Tr>
-                    <Td fontWeight="bold">{order.order_number}</Td>
-                    <Td>{getUserName(order.user_id)}</Td>
-                    <Td>
+                    <Td py={4}>
+                      <Text fontWeight="bold" fontSize="md" mb={2}>
+                        {getUserName(order.user_id)}
+                      </Text>
+                      <Text color="gray.600" fontSize="md" fontWeight="bold">
+                        {usersMap[order.user_id]?.company || "Not Listed"}
+                      </Text>
+                    </Td>
+                    <Td fontWeight="bold">#{order.order_number}</Td>
+                    <Td py={4}>{usersMap[order.user_id]?.email}</Td>
+                    <Td py={4}>{usersMap[order.user_id]?.license_number}</Td>
+                    <Td py={4}>{usersMap[order.user_id]?.california_resale}</Td>
+                    <Td py={4}>
                       {order.order_date
                         ? new Date(order.order_date).toLocaleDateString()
                         : "N/A"}
                     </Td>
-                    <Td>{usersMap[order.user_id]?.company || `Not Listed`}</Td>
-                    <Td>
-                      <Menu>
-                        <MenuButton
-                          as={Button}
-                          rightIcon={<ChevronDownIcon />}
-                          size="xs"
-                          variant="outline"
-                          bg="white"
-                          borderColor="gray.300"
-                          _hover={{ bg: "gray.50" }}
-                          _active={{ bg: "gray.100" }}
-                        >
-                          <Badge colorScheme={statusColor(order.order_status)}>
-                            {order.order_status}
-                          </Badge>
-                        </MenuButton>
-                        <MenuList>
-                          <MenuItem
-                            onClick={() =>
-                              handleStatusUpdate(order.id, "pending")
-                            }
-                          >
-                            <Badge colorScheme={statusColor("pending")}>
-                              pending
-                            </Badge>
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() =>
-                              handleStatusUpdate(order.id, "complete")
-                            }
-                          >
-                            <Badge colorScheme={statusColor("complete")}>
-                              complete
-                            </Badge>
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() =>
-                              handleStatusUpdate(order.id, "incomplete")
-                            }
-                          >
-                            <Badge colorScheme={statusColor("incomplete")}>
-                              incomplete
-                            </Badge>
-                          </MenuItem>
-                        </MenuList>
-                      </Menu>
-                    </Td>
                     <Td fontWeight="bold">${order.total_amount}</Td>
-                    <Td>
+                    <Td py={4}>
+                      <Badge
+                        colorScheme={statusColor(order.order_status)}
+                        variant="subtle"
+                      >
+                        {order.order_status}
+                      </Badge>
+                    </Td>
+
+                    <Td py={4}>
                       <Button
                         size="xs"
                         variant="outline"
                         onClick={() => toggleRow(order.id)}
+                        border="none"
+                        _hover={{ bg: "transparent" }}
                       >
-                        {expandedRows.has(order.id) ? "Hide" : "View"}
+                        {expandedRows.has(order.id) ? (
+                          <ChevronUpIcon boxSize={8} />
+                        ) : (
+                          <ChevronDownIcon boxSize={8} />
+                        )}
                       </Button>
                     </Td>
                   </Tr>
+
                   {expandedRows.has(order.id) && (
                     <Tr>
-                      <Td colSpan={7} bg="gray.50" p={4}>
-                        <Box>
-                          <Heading size="sm" mb={3}>
-                            Order Details
-                          </Heading>
-                          <SimpleGrid columns={2} spacing={4} mb={4}>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Order Date:
-                              </Text>
-                              <Text fontSize="sm">
-                                {order.order_date
-                                  ? new Date(
-                                      order.order_date
-                                    ).toLocaleDateString()
-                                  : "N/A"}
-                              </Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                User ID:
-                              </Text>
-                              <Text fontSize="sm">{order.user_id}</Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Address:
-                              </Text>
-                              <Text fontSize="sm">
-                                {order.shipping_address || "N/A"}
-                              </Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Phone:
-                              </Text>
-                              <Text fontSize="sm">
-                                {usersMap[order.user_id].phone_number || "N/A"}
-                              </Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Notes:
-                              </Text>
-                              <Text fontSize="sm">
-                                {order.notes || "No notes"}
-                              </Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold">
-                                Created:
-                              </Text>
-                              <Text fontSize="sm">
-                                {order.created_at
-                                  ? new Date(order.created_at).toLocaleString()
-                                  : "N/A"}
-                              </Text>
-                            </Box>
-                          </SimpleGrid>
+                      <Td colSpan={9} p={4}>
+                        <Flex gap={6}>
+                          {/* Left - Address */}
+                          <Box w="30%">
+                            <Text fontSize="sm" fontWeight="bold" mb={2}>
+                              Address:
+                            </Text>
+                            <Text fontSize="sm" mb={3}>
+                              {FormatAddress(userAddresses[order.user_id])}
+                            </Text>
 
-                          {/* Order Items Section */}
-                          <Box>
-                            <Heading size="sm" mb={3}>
-                              Order Items
-                            </Heading>
-                            {orderItemsMap[order.id] &&
-                            orderItemsMap[order.id].length > 0 ? (
+                            <Text fontSize="sm" fontWeight="bold" mb={2}>
+                              Phone:
+                            </Text>
+                            <Text fontSize="sm" mb={3}>
+                              {usersMap[order.user_id]?.phone_number || "N/A"}
+                            </Text>
+
+                            <Text fontSize="sm" fontWeight="bold" mb={2}>
+                              Created:
+                            </Text>
+                            <Text fontSize="sm" mb={4}>
+                              {order.created_at
+                                ? new Date(order.created_at).toLocaleString()
+                                : "N/A"}
+                            </Text>
+
+                            <Menu>
+                              <MenuButton
+                                as={Button}
+                                rightIcon={<ChevronDownIcon />}
+                                size="xs"
+                                variant="outline"
+                                bg="white"
+                                borderColor="gray.300"
+                                _hover={{ bg: "gray.50" }}
+                                _active={{ bg: "gray.100" }}
+                              >
+                                <Badge
+                                  colorScheme={statusColor(order.order_status)}
+                                >
+                                  {order.order_status}
+                                </Badge>
+                              </MenuButton>
+                              <MenuList>
+                                <MenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(order.id, "contacted")
+                                  }
+                                >
+                                  <Badge colorScheme={statusColor("contacted")}>
+                                    contacted
+                                  </Badge>
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(order.id, "quote sent")
+                                  }
+                                >
+                                  <Badge
+                                    colorScheme={statusColor("quote sent")}
+                                  >
+                                    quote sent
+                                  </Badge>
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(order.id, "order placed")
+                                  }
+                                >
+                                  <Badge
+                                    colorScheme={statusColor("order placed")}
+                                  >
+                                    order placed
+                                  </Badge>
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(order.id, "declined")
+                                  }
+                                >
+                                  <Badge colorScheme={statusColor("declined")}>
+                                    declined
+                                  </Badge>
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(order.id, "pending")
+                                  }
+                                >
+                                  <Badge colorScheme={statusColor("pending")}>
+                                    pending
+                                  </Badge>
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(order.id, "complete")
+                                  }
+                                >
+                                  <Badge
+                                    colorScheme={statusColor("completion")}
+                                  >
+                                    complete
+                                  </Badge>
+                                </MenuItem>
+                              </MenuList>
+                            </Menu>
+                          </Box>
+
+                          {/* Right - Items Table */}
+                          <Box w="70%">
+                            {orderItemsMap[order.id]?.length > 0 ? (
                               <Table size="sm" variant="simple">
                                 <Thead>
                                   <Tr>
@@ -440,19 +494,19 @@ export const Orders = ({
                                     (item, index) => (
                                       <Tr key={index}>
                                         <Td fontSize="xs">
-                                          {itemsMap[item.item_id].name ||
+                                          {itemsMap[item.item_id]?.name ||
                                             `Item #${item.item_id}`}
                                         </Td>
                                         <Td fontSize="xs">{item.quantity}</Td>
                                         <Td fontSize="xs">
-                                          ${itemsMap[item.item_id].price}
+                                          ${itemsMap[item.item_id]?.price}
                                         </Td>
                                         <Td fontSize="xs" fontWeight="bold">
                                           $
                                           {(
                                             item.quantity *
-                                            itemsMap[item.item_id].price
-                                          ).toFixed(2) || 0}
+                                              itemsMap[item.item_id]?.price || 0
+                                          ).toFixed(2)}
                                         </Td>
                                       </Tr>
                                     )
@@ -461,11 +515,11 @@ export const Orders = ({
                               </Table>
                             ) : (
                               <Text fontSize="sm" color="gray.500">
-                                No items found for this order
+                                No items found
                               </Text>
                             )}
                           </Box>
-                        </Box>
+                        </Flex>
                       </Td>
                     </Tr>
                   )}
@@ -487,7 +541,6 @@ export const Orders = ({
 
 export const Signups = ({
   signupRequests,
-  inquiries,
   token,
   setSignupRequests,
   toast,
@@ -611,7 +664,6 @@ export const Signups = ({
     console.log("Responding to inquiry:", inquiry);
   };
 
-
   return (
     <Box>
       <RejectModal
@@ -694,162 +746,172 @@ export const Signups = ({
           </Table>
         </Box>
       </Box>
+    </Box>
+  );
+};
 
-      <Box
-        bg="white"
-        borderRadius="2xl"
-        p={6}
-        boxShadow="sm"
-        minH="500px"
-        mt={8}
-      >
-        <Heading size="lg" fontWeight="bold" mb={6}>
-          Inquiries - {inquiries.length}
-        </Heading>
-        <Box overflow="auto" maxH="400px">
-          <Table variant="simple" size="sm">
-            <Thead position="sticky" top={0} bg="white" zIndex={1}>
-              <Tr>
-                <Th fontWeight="bold">Name</Th>
-                <Th>Email</Th>
-                <Th>License #</Th>
-                <Th>Cart Total</Th>
-                <Th>Date</Th>
-                <Th>Status</Th>
-                <Th>Actions</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {inquiries?.length > 0 ? (
-                inquiries.map((inquiry) => (
-                  <React.Fragment key={inquiry.id}>
+export const Inquiries = ({ inquiries }) => {
+  const [expandedInquiries, setExpandedInquiries] = useState(new Set());
+  const [responses, setResponses] = useState({});
+  const toggleInquiry = (inquiryId) => {
+    const newExpanded = new Set(expandedInquiries);
+    if (newExpanded.has(inquiryId)) {
+      newExpanded.delete(inquiryId);
+    } else {
+      newExpanded.add(inquiryId);
+    }
+    setExpandedInquiries(newExpanded);
+  };
+
+  const handleRespondInquiry = (inquiry, message) => {
+    // TODO SEND EMAIL THROUGH EMAILJS
+    console.log("Responding to inquiry:", inquiry);
+    console.log("Message:", message);
+  };
+  return (
+    <Box bg="white" borderRadius="2xl" p={6} boxShadow="sm" minH="600px" mt={8}>
+      <Heading size="lg" fontWeight="bold" mb={6}>
+        Inquiries - {inquiries.length}
+      </Heading>
+      <Box overflow="auto" maxH="600px">
+        <Table variant="simple" size="sm">
+          <Thead position="sticky" top={0} bg="white" zIndex={1}>
+            <Tr>
+              <Th fontWeight="bold">Name</Th>
+              <Th>Company</Th>
+              <Th>Email</Th>
+              <Th>License #</Th>
+              <Th>CA Resale</Th>
+              <Th>Date</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {inquiries?.length > 0 ? (
+              inquiries.map((inquiry) => (
+                <React.Fragment key={inquiry.id}>
+                  <Tr>
+                    <Td fontWeight="bold">{inquiry.name}</Td>
+                    <Td>{inquiry.company}</Td>
+                    <Td>{inquiry.email}</Td>
+                    <Td>{inquiry.license_number}</Td>
+                    <Td>{inquiry.california_resale}</Td>
+                    <Td>
+                      {inquiry.timestamp
+                        ? new Date(inquiry.timestamp).toLocaleDateString()
+                        : "N/A"}
+                    </Td>
+                    <Td>
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        mr={2}
+                        onClick={() => toggleInquiry(inquiry.id)}
+                        border="none"
+                        _hover={{ bg: "transparent" }}
+                      >
+                        {expandedInquiries.has(inquiry.id) ? (
+                          <ChevronUpIcon boxSize={8} />
+                        ) : (
+                          <ChevronDownIcon boxSize={8} />
+                        )}
+                      </Button>
+                    </Td>
+                  </Tr>
+                  {expandedInquiries.has(inquiry.id) && (
                     <Tr>
-                      <Td fontWeight="bold">{inquiry.name}</Td>
-                      <Td>{inquiry.email}</Td>
-                      <Td>{inquiry.license_number}</Td>
-                      <Td>${inquiry.cart_total}</Td>
-                      <Td>
-                        {inquiry.timestamp
-                          ? new Date(inquiry.timestamp).toLocaleDateString()
-                          : "N/A"}
-                      </Td>
-                      <Td>
-                        <Badge
-                          colorScheme={
-                            inquiry.status === "pending"
-                              ? "yellow"
-                              : inquiry.status === "responded"
-                              ? "green"
-                              : inquiry.status === "quote_sent"
-                              ? "blue"
-                              : inquiry.status === "in_negotiation"
-                              ? "purple"
-                              : "gray"
-                          }
-                          textTransform="capitalize"
-                        >
-                          {inquiry.status.replace("_", " ")}
-                        </Badge>
-                      </Td>
-                      <Td>
-                        <Button
-                          size="xs"
-                          variant="outline"
-                          mr={2}
-                          onClick={() => toggleInquiry(inquiry.id)}
-                        >
-                          {expandedInquiries.has(inquiry.id) ? "Hide" : "View"}
-                        </Button>
-                        <Button
-                          size="xs"
-                          colorScheme="green"
-                          onClick={() => handleRespondInquiry(inquiry)}
-                        >
-                          Respond
-                        </Button>
-                      </Td>
-                    </Tr>
-                    {expandedInquiries.has(inquiry.id) && (
-                      <Tr>
-                        <Td colSpan={7} bg="gray.50" p={4}>
-                          <VStack align="stretch" spacing={4}>
-                            <SimpleGrid columns={2} spacing={4}>
+                      <Td colSpan={7} p={4}>
+                        <Flex gap={6}>
+                          {/* Left - Contact Info */}
+                          <Box w="25%">
+                            <VStack align="start" spacing={3}>
                               <Box>
-                                <Text fontSize="sm" fontWeight="bold">
+                                <Text fontSize="sm" fontWeight="bold" mb={2}>
                                   Phone:
                                 </Text>
-                                <Text fontSize="sm">{inquiry.phone}</Text>
+                                <Text fontSize="sm" ml={1}>
+                                  {inquiry.phone}
+                                </Text>
                               </Box>
                               <Box>
-                                <Text fontSize="sm" fontWeight="bold">
-                                  License:
+                                <Text fontSize="sm" fontWeight="bold" mb={2}>
+                                  Address:
                                 </Text>
-                                <Text fontSize="sm">
-                                  {inquiry.license_number}
+                                <Text fontSize="sm" ml={1}>
+                                  {inquiry.company_address_1}
+                                  {inquiry.company_address_2 &&
+                                    `, ${inquiry.company_address_2}`}
+                                  <br />
+                                  {inquiry.city}, {inquiry.state}{" "}
+                                  {inquiry.zip_code}
                                 </Text>
                               </Box>
-                            </SimpleGrid>
+                            </VStack>
+                          </Box>
 
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold" mb={2}>
-                                Message:
-                              </Text>
-                              <Text
-                                fontSize="sm"
-                                bg="white"
-                                p={3}
-                                borderRadius="md"
-                              >
-                                {inquiry.message}
-                              </Text>
-                            </Box>
-
-                            <Box>
-                              <Text fontSize="sm" fontWeight="bold" mb={2}>
-                                Cart Items:
-                              </Text>
-                              <VStack spacing={1} align="stretch">
-                                {(inquiry.cart_items || []).map((item, idx) => (
-                                  <Flex
-                                    key={idx}
-                                    justify="space-between"
-                                    bg="white"
-                                    p={2}
-                                    borderRadius="md"
-                                  >
-                                    <Text fontSize="xs">
-                                      {item.name} (Qty: {item.quantity})
-                                    </Text>
-                                    <Text fontSize="xs" fontWeight="bold">
-                                      ${(item.price * item.quantity).toFixed(2)}
-                                    </Text>
-                                  </Flex>
-                                ))}
-                                <Divider />
-                                <Flex justify="space-between" fontWeight="bold">
-                                  <Text fontSize="sm">Total:</Text>
-                                  <Text fontSize="sm">
-                                    ${inquiry.cart_total}
-                                  </Text>
-                                </Flex>
-                              </VStack>
-                            </Box>
-                          </VStack>
-                        </Td>
-                      </Tr>
-                    )}
-                  </React.Fragment>
-                ))
-              ) : (
-                <Tr>
-                  <Td colSpan={7} textAlign="center" py={8}>
-                    <Text color="gray.500">No inquiries found</Text>
-                  </Td>
-                </Tr>
-              )}
-            </Tbody>
-          </Table>
-        </Box>
+                          {/* Right - Message & Response */}
+                          <Box w="60%">
+                            <VStack align="stretch" spacing={4}>
+                              <Box>
+                                <Text fontSize="sm" fontWeight="bold" mb={2}>
+                                  Message:
+                                </Text>
+                                <Text
+                                  fontSize="sm"
+                                  bg="white"
+                                  p={3}
+                                  borderRadius="md"
+                                >
+                                  {inquiry.message}
+                                </Text>
+                              </Box>
+                              <Box>
+                                <Text fontSize="sm" fontWeight="bold" mb={2}>
+                                  Response:
+                                </Text>
+                                <Textarea
+                                  name="response"
+                                  fontSize="sm"
+                                  bg="white"
+                                  placeholder="Type your response..."
+                                  rows={4}
+                                  value={responses[inquiry.id] || ""}
+                                  onChange={(e) =>
+                                    setResponses((prev) => ({
+                                      ...prev,
+                                      [inquiry.id]: e.target.value,
+                                    }))
+                                  }
+                                />
+                                <Button
+                                  size="sm"
+                                  my={4}
+                                  onClick={() =>
+                                    handleRespondInquiry(
+                                      inquiry,
+                                      responses[inquiry.id] || ""
+                                    )
+                                  }
+                                >
+                                  Send Email
+                                </Button>
+                              </Box>
+                            </VStack>
+                          </Box>
+                        </Flex>
+                      </Td>
+                    </Tr>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <Tr>
+                <Td colSpan={7} textAlign="center" py={8}>
+                  <Text color="gray.500">No inquiries found</Text>
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        </Table>
       </Box>
     </Box>
   );

@@ -118,7 +118,7 @@ const UserProfile = () => {
     const fetchAddress = async () => {
       try {
         const addressResponse = await fetch(
-          `${API_CONFIG.BASE_URL}/api/shipping-addresses/user/${userId}`
+          `${API_CONFIG.BASE_URL}/api/addresses/user/${userId}`
         );
 
         const address = await addressResponse.json();

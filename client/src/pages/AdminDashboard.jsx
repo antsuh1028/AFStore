@@ -40,6 +40,7 @@ import {
   Signups,
   Orders,
   InventoryStatus,
+  Inquiries,
 } from "../components/admin/DashboardComponents";
 import { API_CONFIG } from "../constants";
 import { ListEndIcon } from "lucide-react";
@@ -71,12 +72,15 @@ const AdminDashboard = () => {
   const [signupRequests, setSignupRequests] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [userAddresses, setUserAddresses] = useState({});
+  const [orderType, setOrderType] = useState("pickup")
 
   const pages = {
     1: "Dashboard",
     2: "Orders",
-    3: "Sign Ups & Inquiries",
-    4: "Inventory Status",
+    3: "Inquiries",
+    4: "Signup Requests",
+    5: "Inventory Status",
   };
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -298,6 +302,38 @@ const AdminDashboard = () => {
   }, [isAuthenticated, isAdmin, token]);
 
   useEffect(() => {
+    if (!isAuthenticated || !isAdmin || !token) return;
+
+    const fetchUserAddresses = async () => {
+      try {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/addresses`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (res.ok) {
+          const response = await res.json();
+          const addresses = response.data;
+          const map = {}; // Add this line
+
+          addresses.forEach((address) => {
+            if (address && address.id) {
+              map[address.user_id] = address;
+            }
+          });
+          setUserAddresses(map);
+        }
+      } catch (err) {
+        console.error("Error fetching user addresses:", err);
+      }
+    };
+
+    fetchUserAddresses();
+  }, [isAuthenticated, isAdmin, token]);
+  useEffect(() => {
     if (Object.keys(itemsMap).length > 0) {
       const inventoryData = Object.values(itemsMap).map((item) => ({
         item_id: item.id,
@@ -316,7 +352,7 @@ const AdminDashboard = () => {
     const fetchSignupRequests = async () => {
       try {
         const res = await fetch(
-          "https://af-store-back.vercel.app/api/users/signup-requests",
+          `${API_CONFIG.BASE_URL}/api/users/signup-requests`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -550,6 +586,7 @@ const AdminDashboard = () => {
           orderItemsMap={orderItemsMap}
           setCurrentPage={setCurrentPage}
           isLoading={isLoadingData}
+          setOrderType={setOrderType}
         />
       )}
 
@@ -562,19 +599,21 @@ const AdminDashboard = () => {
           token={token}
           setOrders={setOrders}
           toast={toast}
+          userAddresses={userAddresses}
+          orderType={orderType}
         />
       )}
-      {currentPage === 3 && (
+      {currentPage === 3 && <Inquiries inquiries={inquiries} />}
+      {currentPage === 4 && (
         <Signups
           signupRequests={signupRequests}
-          inquiries={inquiries}
           token={token}
           setSignupRequests={setSignupRequests}
           toast={toast}
         />
       )}
 
-      {currentPage === 4 && <InventoryStatus />}
+      {currentPage === 5 && <InventoryStatus />}
       {/* {currentPage === 5 && <InventoryStatus />} */}
     </Box>
   );

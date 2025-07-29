@@ -88,7 +88,7 @@ OrdersRouter.put("/:id/status", async (req, res) => {
     const orderId = parseInt(req.params.id);
     const newStatus = req.body.status;
 
-    const allowedStatuses = ["pending", "complete", "incomplete"];
+    const allowedStatuses = ["pending", "complete", "incomplete", "contacted", "quote sent", "order placed", "declined"];
 
     if (isNaN(orderId)) {
       return res.status(400).json({ error: "Invalid order ID" });

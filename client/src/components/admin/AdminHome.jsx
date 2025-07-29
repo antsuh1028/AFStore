@@ -29,10 +29,10 @@ const AdminHome = ({
   orderItemsMap = {},
   setCurrentPage,
   isLoading = false,
+  setOrderType,
 }) => {
   const [topDisplay, setTopDisplay] = useState(1);
   const [botDisplay, setBotDisplay] = useState(1);
-  console.log("AdminHome orders:", signupRequests);
 
   const getUserName = (userId) => {
     return (
@@ -179,7 +179,7 @@ const AdminHome = ({
                     borderRadius="full"
                     bg="gray.100"
                     icon={<ChevronRightIcon />}
-                    onClick={()=>{setCurrentPage(2)}}
+                    onClick={()=>{setOrderType("pickup");setCurrentPage(2)}}
                   />
                 </Flex>
               </Box>
@@ -208,7 +208,7 @@ const AdminHome = ({
                     borderRadius="full"
                     bg="gray.100"
                     icon={<ChevronRightIcon />}
-                    onClick={()=>{setCurrentPage(2)}}
+                    onClick={()=>{setOrderType("delivery");setCurrentPage(2)}}
                   />
                 </Flex>
               </Box>
@@ -543,7 +543,7 @@ const AdminHome = ({
               size="sm"
               rightIcon={<ChevronRightIcon />}
               _hover={{ bg: "blue.50" }}
-              onClick={()=>{setCurrentPage(3)}}
+              onClick={()=>{setCurrentPage(4)}}
             >
               View all
             </Button>

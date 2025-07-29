@@ -85,7 +85,7 @@ const ContactPage = () => {
       if (isAuthenticated && currUser.userId) {
         try {
           const response = await fetch(
-            `${API_CONFIG.BASE_URL}/api/shipping-addresses/user/${currUser.userId}`
+            `${API_CONFIG.BASE_URL}/api/addresses/user/${currUser.userId}`
           );
 
           const data = await response.json();
@@ -472,7 +472,7 @@ const ContactPage = () => {
                       type="text"
                       name="california_resale"
                       {...inputStyle}
-                      placeholder="# 123-456789"
+                      placeholder="#123-456789"
                     />
                     <Box mt={2}>
                       <Button
