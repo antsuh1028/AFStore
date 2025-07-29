@@ -33,6 +33,7 @@ const AdminHome = ({
 }) => {
   const [topDisplay, setTopDisplay] = useState(1);
   const [botDisplay, setBotDisplay] = useState(1);
+  const [timeFilter, setTimeFilter] = useState(7);
 
   const getUserName = (userId) => {
     return (
@@ -79,18 +80,29 @@ const AdminHome = ({
     }
   };
 
-  // Calculate statistics from real data
   const getDateFilteredOrders = () => {
     const now = new Date();
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
+    const weekAgo = new Date(now.getTime() - timeFilter * 24 * 60 * 60 * 1000);
     return orders.filter((order) => {
       const orderDate = new Date(order.order_date);
       return orderDate >= weekAgo && orderDate <= now;
     });
   };
 
+  // Add function to filter inquiries by date
+  const getDateFilteredInquiries = () => {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - timeFilter * 24 * 60 * 60 * 1000);
+    return inquiries.filter((inquiry) => {
+      if (!inquiry.timestamp) return false;
+      const inquiryDate = new Date(inquiry.timestamp);
+      return inquiryDate >= weekAgo && inquiryDate <= now;
+    });
+  };
+
   const filteredOrders = getDateFilteredOrders();
+  const filteredInquiries = getDateFilteredInquiries();
+  
   const pickupOrders = filteredOrders.filter(
     (order) => order.order_type?.toLowerCase() === "pickup"
   ).length;
@@ -102,29 +114,70 @@ const AdminHome = ({
     0
   );
 
-  // Calculate monthly revenue
+  // Calculate monthly revenue based on time filter
   const now = new Date();
-  const thisMonth = orders.filter((order) => {
-    const orderDate = new Date(order.order_date);
-    return (
-      orderDate.getMonth() === now.getMonth() &&
-      orderDate.getFullYear() === now.getFullYear()
-    );
-  });
-  const lastMonth = orders.filter((order) => {
-    const orderDate = new Date(order.order_date);
-    const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    return (
-      orderDate.getMonth() === lastMonthDate.getMonth() &&
-      orderDate.getFullYear() === lastMonthDate.getFullYear()
-    );
-  });
+  const getRevenueData = () => {
+    if (timeFilter === 7) {
+      // Weekly view - show this week vs last week
+      const thisWeekStart = new Date(now);
+      thisWeekStart.setDate(now.getDate() - now.getDay()); // Start of this week (Sunday)
+      thisWeekStart.setHours(0, 0, 0, 0);
+      
+      const lastWeekStart = new Date(thisWeekStart);
+      lastWeekStart.setDate(thisWeekStart.getDate() - 7);
+      const lastWeekEnd = new Date(thisWeekStart);
+      lastWeekEnd.setTime(thisWeekStart.getTime() - 1);
 
-  const thisMonthRevenue = thisMonth.reduce(
+      const thisWeekOrders = orders.filter((order) => {
+        const orderDate = new Date(order.order_date);
+        return orderDate >= thisWeekStart && orderDate <= now;
+      });
+
+      const lastWeekOrders = orders.filter((order) => {
+        const orderDate = new Date(order.order_date);
+        return orderDate >= lastWeekStart && orderDate <= lastWeekEnd;
+      });
+
+      return {
+        currentPeriod: thisWeekOrders,
+        previousPeriod: lastWeekOrders,
+        currentLabel: "Total Sales this Week",
+        previousLabel: "Total Sales last Week"
+      };
+    } else {
+      // Monthly view - show this month vs last month
+      const thisMonth = orders.filter((order) => {
+        const orderDate = new Date(order.order_date);
+        return (
+          orderDate.getMonth() === now.getMonth() &&
+          orderDate.getFullYear() === now.getFullYear()
+        );
+      });
+
+      const lastMonth = orders.filter((order) => {
+        const orderDate = new Date(order.order_date);
+        const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        return (
+          orderDate.getMonth() === lastMonthDate.getMonth() &&
+          orderDate.getFullYear() === lastMonthDate.getFullYear()
+        );
+      });
+
+      return {
+        currentPeriod: thisMonth,
+        previousPeriod: lastMonth,
+        currentLabel: "Total Sales this Month",
+        previousLabel: "Total Sales last Month"
+      };
+    }
+  };
+
+  const revenueData = getRevenueData();
+  const currentPeriodRevenue = revenueData.currentPeriod.reduce(
     (sum, o) => sum + (Number(o.total_amount) || 0),
     0
   );
-  const lastMonthRevenue = lastMonth.reduce(
+  const previousPeriodRevenue = revenueData.previousPeriod.reduce(
     (sum, o) => sum + (Number(o.total_amount) || 0),
     0
   );
@@ -142,195 +195,237 @@ const AdminHome = ({
           p={4}
           minH={{ base: "auto", md: "100%" }}
         >
-          <Flex
-            gap={4}
-            minH={{ base: "120px", md: "50%" }}
-            align="stretch"
-            mb={4}
-            direction={{ base: "column", md: "row" }}
-          >
-            <Flex
-              gap={4}
-              w={{ base: "100%", md: "90%" }}
-              flex={1}
-              direction={{ base: "column", sm: "row" }}
-            >
-              {/* New Orders (Pick Up) */}
-              <Box
-                w={{ base: "100%", sm: "33%" }}
-                p={4}
-                bg="white"
-                border="1px"
-                borderColor="gray.100"
-                borderRadius="md"
-                minH="50px"
-                h="90%"
+          <Flex justify="space-between" align="start" gap={4}>
+            <VStack spacing={4} flex={1}>
+              {/* Top Row - Stats Cards */}
+              <Flex
+                gap={4}
+                minH={{ base: "120px", md: "50%" }}
+                align="stretch"
+                direction={{ base: "column", md: "row" }}
+                w="100%"
               >
-                <Text fontSize="sm" color="black" mb={2} fontWeight="extrabold">
-                  New Orders (Pick Up)
-                </Text>
-                <Flex align="center" justify="space-between" mb={4}>
-                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">
-                    {pickupOrders}
-                  </Text>
-                  <IconButton
-                    size="sm"
-                    variant="ghost"
-                    borderRadius="full"
-                    bg="gray.100"
-                    icon={<ChevronRightIcon />}
-                    onClick={()=>{setOrderType("pickup");setCurrentPage(2)}}
-                  />
-                </Flex>
-              </Box>
+                <Flex
+                  gap={4}
+                  flex={1}
+                  direction={{ base: "column", sm: "row" }}
+                >
+                  {/* Pick Up Card */}
+                  <Box
+                    w={{ base: "100%", sm: "33%" }}
+                    p={4}
+                    bg="white"
+                    border="1px"
+                    borderColor="gray.100"
+                    borderRadius="md"
+                    minH="50px"
+                  >
+                    <Text
+                      fontSize="sm"
+                      color="black"
+                      mb={2}
+                      fontWeight="extrabold"
+                    >
+                      New Orders (Pick Up)
+                    </Text>
+                    <Flex align="center" justify="space-between">
+                      <Text
+                        fontSize={{ base: "2xl", md: "3xl" }}
+                        fontWeight="bold"
+                      >
+                        {pickupOrders}
+                      </Text>
+                      <IconButton
+                        size="sm"
+                        variant="ghost"
+                        borderRadius="full"
+                        bg="gray.100"
+                        icon={<ChevronRightIcon />}
+                        onClick={() => {
+                          setOrderType("pickup");
+                          setCurrentPage(2);
+                        }}
+                      />
+                    </Flex>
+                  </Box>
 
-              {/* New Orders (Delivery) */}
-              <Box
-                w={{ base: "100%", sm: "33%" }}
-                p={4}
-                bg="white"
-                border="1px"
-                borderColor="gray.100"
-                borderRadius="md"
-                minH="50px"
-                h="90%"
+                  {/* Delivery Card */}
+                  <Box
+                    w={{ base: "100%", sm: "33%" }}
+                    p={4}
+                    bg="white"
+                    border="1px"
+                    borderColor="gray.100"
+                    borderRadius="md"
+                    minH="50px"
+                  >
+                    <Text
+                      fontSize="sm"
+                      color="black"
+                      mb={2}
+                      fontWeight="extrabold"
+                    >
+                      New Orders (Delivery)
+                    </Text>
+                    <Flex align="center" justify="space-between">
+                      <Text
+                        fontSize={{ base: "2xl", md: "3xl" }}
+                        fontWeight="bold"
+                      >
+                        {deliveryOrders}
+                      </Text>
+                      <IconButton
+                        size="sm"
+                        variant="ghost"
+                        borderRadius="full"
+                        bg="gray.100"
+                        icon={<ChevronRightIcon />}
+                        onClick={() => {
+                          setOrderType("delivery");
+                          setCurrentPage(2);
+                        }}
+                      />
+                    </Flex>
+                  </Box>
+
+                  {/* Inquiries Card - Updated to use filtered inquiries */}
+                  <Box
+                    w={{ base: "100%", sm: "33%" }}
+                    p={4}
+                    bg="white"
+                    border="1px"
+                    borderColor="gray.100"
+                    borderRadius="md"
+                    minH="50px"
+                  >
+                    <Text
+                      fontSize="sm"
+                      color="black"
+                      mb={2}
+                      fontWeight="extrabold"
+                    >
+                      New Inquiries
+                    </Text>
+                    <Flex align="center" justify="space-between">
+                      <Text
+                        fontSize={{ base: "2xl", md: "3xl" }}
+                        fontWeight="bold"
+                      >
+                        {filteredInquiries.length}
+                      </Text>
+                      <IconButton
+                        size="sm"
+                        variant="ghost"
+                        borderRadius="full"
+                        bg="gray.100"
+                        icon={<ChevronRightIcon />}
+                        onClick={() => setCurrentPage(3)}
+                      />
+                    </Flex>
+                  </Box>
+                </Flex>
+              </Flex>
+
+              {/* Bottom Row - Financial Stats */}
+              <Flex
+                gap={4}
+                minH={{ base: "120px", md: "50%" }}
+                align="stretch"
+                direction={{ base: "column", md: "row" }}
+                w="100%"
               >
-                <Text fontSize="sm" color="black" mb={2} fontWeight="extrabold">
-                  New Orders (Delivery)
-                </Text>
-                <Flex align="center" justify="space-between" mb={4}>
-                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">
-                    {deliveryOrders}
-                  </Text>
-                  <IconButton
-                    size="sm"
-                    variant="ghost"
-                    borderRadius="full"
-                    bg="gray.100"
-                    icon={<ChevronRightIcon />}
-                    onClick={()=>{setOrderType("delivery");setCurrentPage(2)}}
-                  />
+                <Flex
+                  gap={4}
+                  flex={1}
+                  direction={{ base: "column", sm: "row" }}
+                >
+                  <Box
+                    w={{ base: "100%", sm: "33%" }}
+                    p={4}
+                    bg="white"
+                    border="1px"
+                    borderColor="gray.100"
+                    borderRadius="md"
+                    minH="80px"
+                  >
+                    <Text
+                      fontSize="sm"
+                      color="black"
+                      mb={2}
+                      fontWeight="extrabold"
+                    >
+                      {timeFilter === 7 ? "Today" : "This Period"} Total Price
+                    </Text>
+                    <Text
+                      fontSize={{ base: "xl", md: "2xl" }}
+                      fontWeight="bold"
+                    >
+                      ${totalRevenue.toLocaleString()}
+                    </Text>
+                  </Box>
+                  <Box
+                    w={{ base: "100%", sm: "33%" }}
+                    p={4}
+                    bg="white"
+                    border="1px"
+                    borderColor="gray.100"
+                    borderRadius="md"
+                    minH="80px"
+                  >
+                    <Text
+                      fontSize="sm"
+                      color="black"
+                      mb={2}
+                      fontWeight="extrabold"
+                    >
+                      {revenueData.currentLabel}
+                    </Text>
+                    <Text
+                      fontSize={{ base: "xl", md: "2xl" }}
+                      fontWeight="bold"
+                    >
+                      ${currentPeriodRevenue.toLocaleString()}
+                    </Text>
+                  </Box>
+                  <Box
+                    w={{ base: "100%", sm: "33%" }}
+                    p={4}
+                    bg="white"
+                    border="1px"
+                    borderColor="gray.100"
+                    borderRadius="md"
+                    minH="80px"
+                  >
+                    <Text
+                      fontSize="sm"
+                      color="black"
+                      mb={2}
+                      fontWeight="extrabold"
+                    >
+                      {revenueData.previousLabel}
+                    </Text>
+                    <Text
+                      fontSize={{ base: "xl", md: "2xl" }}
+                      fontWeight="bold"
+                    >
+                      ${previousPeriodRevenue.toLocaleString()}
+                    </Text>
+                  </Box>
                 </Flex>
-              </Box>
+              </Flex>
+            </VStack>
 
-              {/* New Inquiries */}
-              <Box
-                w={{ base: "100%", sm: "33%" }}
-                p={4}
-                bg="white"
-                border="1px"
-                borderColor="gray.100"
-                borderRadius="md"
-                minH="50px"
-                h="90%"
-              >
-                <Text fontSize="sm" color="black" mb={2} fontWeight="extrabold">
-                  New Inquiries
-                </Text>
-                <Flex align="center" justify="space-between" mb={4}>
-                  <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">
-                    {inquiries.length}
-                  </Text>
-                  <IconButton
-                    size="sm"
-                    variant="ghost"
-                    borderRadius="full"
-                    bg="gray.100"
-                    icon={<ChevronRightIcon />}
-                    onClick={()=>{setCurrentPage(3)}}
-                  />
-                </Flex>
-              </Box>
-            </Flex>
-
-            {/* Monthly Button */}
+            {/* Time Filter Select */}
             <Select
               defaultValue={1}
               size="sm"
               width="fit-content"
               borderRadius="full"
               bg="gray.50"
-              onChange={(e) => setTopDisplay(e.target.value)}
-            >
-              <option value={1}>Weekly</option>
-              <option value={2}>Monthly</option>
-            </Select>
-          </Flex>
-
-          {/* Bottom Row - Financial Stats */}
-          <Flex
-            gap={4}
-            minH={{ base: "120px", md: "50%" }}
-            align="stretch"
-            direction={{ base: "column", md: "row" }}
-          >
-            <Flex
-              gap={4}
-              w={{ base: "100%", md: "90%" }}
-              flex={1}
-              direction={{ base: "column", sm: "row" }}
-            >
-              <Box
-                w={{ base: "100%", sm: "33%" }}
-                p={4}
-                bg="white"
-                border="1px"
-                borderColor="gray.100"
-                borderRadius="md"
-                minH="80px"
-                h="90%"
-              >
-                <Text fontSize="sm" color="black" mb={2} fontWeight="extrabold">
-                  Today Total Price
-                </Text>
-                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
-                  ${totalRevenue.toLocaleString()}
-                </Text>
-              </Box>
-              <Box
-                w={{ base: "100%", sm: "33%" }}
-                p={4}
-                bg="white"
-                border="1px"
-                borderColor="gray.100"
-                borderRadius="md"
-                minH="80px"
-                h="90%"
-              >
-                <Text fontSize="sm" color="black" mb={2} fontWeight="extrabold">
-                  Total Sales this Month
-                </Text>
-                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
-                  ${thisMonthRevenue.toLocaleString()}
-                </Text>
-              </Box>
-              <Box
-                w={{ base: "100%", sm: "33%" }}
-                p={4}
-                bg="white"
-                border="1px"
-                borderColor="gray.100"
-                borderRadius="md"
-                minH="80px"
-                h="90%"
-              >
-                <Text fontSize="sm" color="black" mb={2} fontWeight="extrabold">
-                  Total Sales last Month
-                </Text>
-                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
-                  ${lastMonthRevenue.toLocaleString()}
-                </Text>
-              </Box>
-            </Flex>
-
-            {/* Monthly Button for bottom row */}
-            <Select
-              defaultValue={1}
-              size="sm"
-              width="fit-content"
-              borderRadius="full"
-              bg="gray.50"
-              onChange={(e) => setBotDisplay(e.target.value)}
+              onChange={(e) => {
+                setTopDisplay(e.target.value);
+                setTimeFilter(e.target.value === "1" ? 7 : 30);
+              }}
             >
               <option value={1}>Weekly</option>
               <option value={2}>Monthly</option>
@@ -425,7 +520,9 @@ const AdminHome = ({
               size="sm"
               rightIcon={<ChevronRightIcon />}
               _hover={{ bg: "blue.50" }}
-              onClick={()=>{setCurrentPage(2)}}
+              onClick={() => {
+                setCurrentPage(2);
+              }}
             >
               View all
             </Button>
@@ -543,7 +640,9 @@ const AdminHome = ({
               size="sm"
               rightIcon={<ChevronRightIcon />}
               _hover={{ bg: "blue.50" }}
-              onClick={()=>{setCurrentPage(4)}}
+              onClick={() => {
+                setCurrentPage(4);
+              }}
             >
               View all
             </Button>
