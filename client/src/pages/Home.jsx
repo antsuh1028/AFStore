@@ -368,12 +368,12 @@ const HomePage = () => {
             </InputGroup>
           </form>
 
-          {/* API Status Indicator */}
+          {/* API Status Indicator
           {apiStatus === "disconnected" && (
             <Text fontSize="xs" color="orange.600" textAlign="center" mt={2}>
               API disconnected - showing sample data
             </Text>
-          )}
+          )} */}
 
           {/* Search Dropdown Results */}
           {showDropdown && searchResults.length > 0 && (
@@ -393,7 +393,8 @@ const HomePage = () => {
             >
               <List spacing={0}>
                 {searchResults.map((item) => (
-                  <ListItem
+                  item.show &&
+                  (<ListItem
                     key={item.id}
                     p={3}
                     cursor="pointer"
@@ -431,7 +432,7 @@ const HomePage = () => {
                         </Text>
                       </VStack>
                     </Flex>
-                  </ListItem>
+                  </ListItem>) 
                 ))}
               </List>
             </Box>
@@ -453,7 +454,8 @@ const HomePage = () => {
                   maxH="80vh"
                 >
                   {searchResults.map((item) => (
-                    <GridItem key={item.id}>
+                    item.show &&
+                    (<GridItem key={item.id}>
                       <Flex
                         p={4}
                         border="1px"
@@ -498,7 +500,7 @@ const HomePage = () => {
                           </HStack>
                         </VStack>
                       </Flex>
-                    </GridItem>
+                    </GridItem>)
                   ))}
                 </Grid>
               ) : (

@@ -118,7 +118,7 @@ const UserProfile = () => {
     const fetchAddress = async () => {
       try {
         const addressResponse = await fetch(
-          `${API_CONFIG.BASE_URL}/api/addresses/user/${userId}`
+          `${API_CONFIG.BASE_URL}/api/shipping-addresses/user/${userId}`
         );
 
         const address = await addressResponse.json();
@@ -241,7 +241,13 @@ const UserProfile = () => {
             variant="ghost"
             size="lg"
             colorScheme="gray"
-            onClick={() => navigate("/")}
+            onClick={() => {
+              if (currPage === "all" || currPage === "cart") {
+                navigate("/");
+              } else {
+                setCurrPage("all");
+              }
+            }}
           />
           <IconButton
             aria-label="Menu"

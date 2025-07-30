@@ -739,14 +739,13 @@ export const myPages = (
               >
                 California Resale :
               </Text>
-              <Input
+              <Text
                 h="100%"
                 fontSize="sm"
                 textAlign="left"
-                value={userInformation.california_resale || ""}
                 name="california_resale"
-                readOnly
-              />
+                ml={4}
+              >{userInformation.california_resale || ""}</Text>
               <Text
                 fontWeight="bold"
                 textTransform="uppercase"
@@ -756,14 +755,13 @@ export const myPages = (
               >
                 Business License :
               </Text>
-              <Input
+              <Text
                 h="100%"
                 fontSize="sm"
                 textAlign="left"
-                value={userInformation.license_number || ""}
-                name="license_number"
-                readOnly
-              />
+                name="california_resale"
+                ml={4}
+              >{userInformation.license_number || ""}</Text>
               <Text
                 fontWeight="bold"
                 textTransform="uppercase"
@@ -773,14 +771,13 @@ export const myPages = (
               >
                 Address :
               </Text>
-              <Input
-                h="120%"
+              <Text
+                h="100%"
                 fontSize="sm"
                 textAlign="left"
-                value={address || ""}
-                name="address"
-                readOnly
-              />
+                name="california_resale"
+                ml={4}
+              >{address || ""}</Text>
             </Grid>
           </Box>
           <Button colorScheme="gray" size="md" my={8} onClick={handleSubmit}>

@@ -73,7 +73,7 @@ const AdminDashboard = () => {
   const [inquiries, setInquiries] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [userAddresses, setUserAddresses] = useState({});
-  const [orderType, setOrderType] = useState("pickup")
+  const [orderType, setOrderType] = useState("pickup");
 
   const pages = {
     1: "Dashboard",
@@ -567,13 +567,18 @@ const AdminDashboard = () => {
           fontSize={["3xl", "4xl"]}
           letterSpacing="tight"
           lineHeight="1"
+          w="100%"
+          whiteSpace="nowrap"
+          overflow="hidden"
+          textOverflow="ellipsis"
         >
-          Dashboard{" "}
-          {currentPage !== 1 && (
-            <Text as="span" fontWeight="normal" fontSize="2x">
-              - {pages[currentPage]}
-            </Text>
-          )}
+          Dashboard
+          {currentPage !== 1 &&
+            ` - ${pages[currentPage]}${
+              currentPage === 2 && orderType
+                ? ` (${orderType === "pickup" ? "Pickup" : "Delivery"})`
+                : ""
+            }`}
         </Heading>
       </Flex>
 

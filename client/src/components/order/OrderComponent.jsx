@@ -66,7 +66,7 @@ const OrderContent = () => {
           <Text fontSize="sm" fontWeight="bold">3</Text>
         </Circle>
         <Text fontSize="md" fontWeight="bold">
-          Choose your meats and select Pick-Up or Delivery.
+          Choose your meats and select Pick-Up or Delivery (Not available temporarily).
         </Text>
       </Flex>
 
@@ -93,7 +93,8 @@ const OrderContent = () => {
           DELIVERY
         </Text>
         <List spacing={1} fontSize="xs" ml={4}mb={4}>
-          <ListItem>• {"\u00A0\u00A0"}Full payment is required upfront.</ListItem>
+          {/* <ListItem>• {"\u00A0\u00A0"}Full payment is required upfront.</ListItem> */}
+          <ListItem>• {"\u00A0\u00A0"}Delivery options are unavailable at this time.</ListItem>
         </List>
       </Box>
 
@@ -115,9 +116,9 @@ const OrderContent = () => {
         </Text>
 
         <VStack align="start"  mb={4} ml={4}>
-          <Text fontSize="sm">
+          {/* <Text fontSize="sm">
             • {"\u00A0\u00A0"}Delivery Orders: Full prepayment is required before delivery.
-          </Text>
+          </Text> */}
 
           <Box >
             <Text fontSize="sm">
