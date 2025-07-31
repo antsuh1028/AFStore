@@ -149,13 +149,16 @@ ItemsRouter.post("/", async (req, res) => {
       spec,
       avg_weight,
       style,
+      show = true, // Default to true
+      allergens,
+      ingredients,
     } = req.body;
 
     if (
       !name ||
       !species ||
       !description ||
-      !price ||
+      price === undefined ||
       !brand ||
       !grade ||
       !origin ||
@@ -183,9 +186,9 @@ ItemsRouter.post("/", async (req, res) => {
     const upperSpecies = species.toUpperCase();
 
     const result = await db.query(
-      `INSERT INTO items (name, species, description, images, price, brand, grade, origin, spec, avg_weight, style)
-   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-   RETURNING *`,
+      `INSERT INTO items (name, species, description, images, price, brand, grade, origin, spec, avg_weight, style, show, allergens, ingredients)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+       RETURNING *`,
       [
         name,
         upperSpecies,
@@ -198,6 +201,9 @@ ItemsRouter.post("/", async (req, res) => {
         spec,
         avg_weight,
         style,
+        show,
+        allergens || null,
+        ingredients || null,
       ]
     );
 
@@ -215,7 +221,7 @@ ItemsRouter.post("/", async (req, res) => {
   }
 });
 
-//Update Item in tatble
+//Update Item - Support partial updates
 ItemsRouter.put("/:id", async (req, res) => {
   try {
     const itemId = req.params.id;
@@ -226,62 +232,50 @@ ItemsRouter.put("/:id", async (req, res) => {
       });
     }
 
-    const {
-      name,
-      species,
-      description,
-      images,
-      price,
-      brand,
-      grade,
-      origin,
-      spec,
-      avg_weight,
-      style,
-    } = req.body;
-
-    if (
-      !name ||
-      !species ||
-      !description ||
-      !price ||
-      !brand ||
-      !grade ||
-      !origin ||
-      !spec ||
-      !avg_weight ||
-      !style
-    ) {
-      return res.status(400).json({
-        error: "Missing required fields",
-        required: [
-          "name",
-          "species",
-          "description",
-          "price",
-          "brand",
-          "grade",
-          "origin",
-          "spec",
-          "avg_weight",
-          "style",
-        ],
+    // First, get the current item
+    const currentItem = await db.query("SELECT * FROM items WHERE id = $1", [itemId]);
+    
+    if (currentItem.rows.length === 0) {
+      return res.status(404).json({
+        error: "Item not found",
       });
     }
+
+    // Merge current data with updates (partial update support)
+    const current = currentItem.rows[0];
+    const updates = req.body;
+    
+    const {
+      name = current.name,
+      species = current.species,
+      description = current.description,
+      images = current.images,
+      price = current.price,
+      brand = current.brand,
+      grade = current.grade,
+      origin = current.origin,
+      spec = current.spec,
+      avg_weight = current.avg_weight,
+      style = current.style,
+      show = current.show,
+      allergens = current.allergens,
+      ingredients = current.ingredients,
+    } = updates;
 
     const upperSpecies = species.toUpperCase();
 
     const result = await db.query(
       `UPDATE items 
-   SET name = $1, species = $2, description = $3, images = $4, price = $5, 
-       brand = $6, grade = $7, origin = $8, spec = $9, avg_weight = $10, style = $11
-   WHERE id = $12
-   RETURNING *`,
+       SET name = $1, species = $2, description = $3, images = $4, price = $5, 
+           brand = $6, grade = $7, origin = $8, spec = $9, avg_weight = $10, 
+           style = $11, show = $12, allergens = $13, ingredients = $14
+       WHERE id = $15
+       RETURNING *`,
       [
         name,
         upperSpecies,
         description,
-        images || null,
+        images,
         price,
         brand,
         grade,
@@ -289,9 +283,75 @@ ItemsRouter.put("/:id", async (req, res) => {
         spec,
         avg_weight,
         style,
+        show,
+        allergens,
+        ingredients,
         itemId,
       ]
     );
+
+    res.json({
+      success: true,
+      data: result.rows[0],
+      message: "Item updated successfully",
+    });
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({
+      error: "Internal server error",
+      message: err.message,
+    });
+  }
+});
+
+// PATCH route for simple field updates (like toggling show status)
+ItemsRouter.patch("/:id", async (req, res) => {
+  try {
+    const itemId = req.params.id;
+
+    if (isNaN(itemId)) {
+      return res.status(400).json({
+        error: "Invalid item ID. ID must be a number.",
+      });
+    }
+
+    // Build dynamic update query based on provided fields
+    const updates = req.body;
+    const allowedFields = [
+      'name', 'species', 'description', 'images', 'price', 'brand', 
+      'grade', 'origin', 'spec', 'avg_weight', 'style', 'show', 
+      'allergens', 'ingredients'
+    ];
+    
+    const updateFields = [];
+    const values = [];
+    let paramCount = 1;
+
+    for (const [key, value] of Object.entries(updates)) {
+      if (allowedFields.includes(key)) {
+        if (key === 'species') {
+          updateFields.push(`${key} = $${paramCount}`);
+          values.push(value.toLowerCase());
+        } else {
+          updateFields.push(`${key} = $${paramCount}`);
+          values.push(value);
+        }
+        paramCount++;
+      }
+    }
+
+    if (updateFields.length === 0) {
+      return res.status(400).json({
+        error: "No valid fields to update",
+        allowedFields,
+      });
+    }
+
+    values.push(itemId);
+
+    const query = `UPDATE items SET ${updateFields.join(', ')} WHERE id = $${paramCount} RETURNING *`;
+    
+    const result = await db.query(query, values);
 
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -348,7 +408,5 @@ ItemsRouter.delete("/:id", async (req, res) => {
     });
   }
 });
-
-
 
 export { ItemsRouter };

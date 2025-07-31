@@ -22,6 +22,7 @@ import {
 import { ChevronRightIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
 const AdminHome = ({
+  items = [],
   orders = [],
   usersMap = {},
   signupRequests = [],
@@ -32,8 +33,9 @@ const AdminHome = ({
   setOrderType,
 }) => {
   const [topDisplay, setTopDisplay] = useState(1);
-  const [botDisplay, setBotDisplay] = useState(1);
   const [timeFilter, setTimeFilter] = useState(7);
+
+  const itemsArray = Object.values(items);
 
   const getUserName = (userId) => {
     return (
@@ -102,7 +104,7 @@ const AdminHome = ({
 
   const filteredOrders = getDateFilteredOrders();
   const filteredInquiries = getDateFilteredInquiries();
-  
+
   const pickupOrders = filteredOrders.filter(
     (order) => order.order_type?.toLowerCase() === "pickup"
   ).length;
@@ -122,7 +124,7 @@ const AdminHome = ({
       const thisWeekStart = new Date(now);
       thisWeekStart.setDate(now.getDate() - now.getDay()); // Start of this week (Sunday)
       thisWeekStart.setHours(0, 0, 0, 0);
-      
+
       const lastWeekStart = new Date(thisWeekStart);
       lastWeekStart.setDate(thisWeekStart.getDate() - 7);
       const lastWeekEnd = new Date(thisWeekStart);
@@ -142,7 +144,7 @@ const AdminHome = ({
         currentPeriod: thisWeekOrders,
         previousPeriod: lastWeekOrders,
         currentLabel: "Total Sales this Week",
-        previousLabel: "Total Sales last Week"
+        previousLabel: "Total Sales last Week",
       };
     } else {
       // Monthly view - show this month vs last month
@@ -156,7 +158,11 @@ const AdminHome = ({
 
       const lastMonth = orders.filter((order) => {
         const orderDate = new Date(order.order_date);
-        const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lastMonthDate = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          1
+        );
         return (
           orderDate.getMonth() === lastMonthDate.getMonth() &&
           orderDate.getFullYear() === lastMonthDate.getFullYear()
@@ -167,7 +173,7 @@ const AdminHome = ({
         currentPeriod: thisMonth,
         previousPeriod: lastMonth,
         currentLabel: "Total Sales this Month",
-        previousLabel: "Total Sales last Month"
+        previousLabel: "Total Sales last Month",
       };
     }
   };
@@ -495,7 +501,7 @@ const AdminHome = ({
         display={{ base: "none", lg: "block" }}
       />
 
-      {/* Bottom Section - Responsive height */}
+      {/* Middle Section - Responsive height */}
       <Flex
         w="100%"
         minH={{ base: "auto", md: "60%" }}
@@ -712,6 +718,140 @@ const AdminHome = ({
                     <Td colSpan={3} py={8}>
                       <Center>
                         <Text color="gray.500">No signup requests</Text>
+                      </Center>
+                    </Td>
+                  </Tr>
+                )}
+              </Tbody>
+            </Table>
+          </Box>
+        </Box>
+      </Flex>
+
+      <Divider
+        orientation="horizontal"
+        borderColor="gray.200"
+        borderWidth="1px"
+        display={{ base: "none", lg: "block" }}
+      />
+
+      <Flex
+        w="100%"
+        minH={{ base: "auto", md: "90%", lg: "40vh" }}
+        direction={{ base: "column", lg: "row" }}
+        flex={{ base: "none", md: "0 0 40%" }}
+        // border="1px"
+      >
+        <Box w={{ base: "100%" }} p={4} minH={{ base: "300px", md: "100%" }}>
+          {/* Recent Order History Content */}
+          <Flex justify="space-between" align="center" mb={6}>
+            <Box>
+              <Text fontSize="lg" fontWeight="bold" mb={1}>
+                Item List
+              </Text>
+            </Box>
+            <Button
+              variant="ghost"
+              size="sm"
+              rightIcon={<ChevronRightIcon />}
+              _hover={{ bg: "blue.50" }}
+              onClick={() => {
+                setCurrentPage(6);
+              }}
+            >
+              View all
+            </Button>
+          </Flex>
+          <Box
+            maxH="50vh"
+            overflowY="auto"
+            border="1px"
+            borderColor="gray.200"
+            borderRadius="md"
+          >
+            <Table variant="simple" size="sm">
+              <Thead>
+                <Tr>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Product Name
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Price
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Brand
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Spec
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Style
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Status
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody maxH="20vh">
+                {isLoading ? (
+                  <Tr>
+                    <Td colSpan={6} py={8}>
+                      <Center>
+                        <Spinner size="md" color="blue.500" />
+                      </Center>
+                    </Td>
+                  </Tr>
+                ) : itemsArray.length > 0 ? (
+                  itemsArray.map((item) => (
+                    <Tr key={item.id}>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text fontSize="xs" fontWeight="medium">
+                          {item.name}
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text fontSize="sm" fontWeight="medium">
+                          $ {item.price} / lb
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text fontSize="sm" fontWeight="medium">
+                          {item.brand}
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text fontSize="sm" color="gray.700">
+                          {item.spec}
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text
+                          fontSize="sm"
+                          color="gray.700"
+                          textTransform="capitalize"
+                        >
+                          {item.style}
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Badge
+                          colorScheme={item.show ? "green" : "red"}
+                          variant="subtle"
+                          borderRadius="full"
+                          px={3}
+                          py={1}
+                          fontSize="xs"
+                        >
+                          {item.show ? "Active" : "Hidden"}
+                        </Badge>
+                      </Td>
+                    </Tr>
+                  ))
+                ) : (
+                  <Tr>
+                    <Td colSpan={5} py={8}>
+                      <Center>
+                        <Text color="gray.500">No products found</Text>
                       </Center>
                     </Td>
                   </Tr>

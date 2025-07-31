@@ -37,14 +37,16 @@ import {
 import { useAuthContext } from "../hooks/useAuth";
 
 import {
-  Signups,
   Orders,
   InventoryStatus,
-  Inquiries,
 } from "../components/admin/DashboardComponents";
+
 import { API_CONFIG } from "../constants";
 import { ListEndIcon } from "lucide-react";
 import AdminHome from "../components/admin/AdminHome";
+import { Signups } from "../components/admin/Signups";
+import { Inquiries } from "../components/admin/Inquiries";
+import { ItemList } from "../components/admin/ItemsList";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -81,6 +83,7 @@ const AdminDashboard = () => {
     3: "Inquiries",
     4: "Signup Requests",
     5: "Inventory Status",
+    6: "Item List",
   };
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -510,6 +513,50 @@ const AdminDashboard = () => {
 
   const trendingItems = getTrendingItems();
 
+  const UpdateItem = async (item) => {
+    try {
+      const res = await fetch(`${API_CONFIG.BASE_URL}/api/items/${item.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      if (data.success) {
+        setItems((prevItems) => ({
+          ...prevItems,
+          [item.id]: data.data,
+        }));
+
+        toast({
+          title: "Item Updated",
+          description: "Product has been updated successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        throw new Error(data.message || "Failed to update item");
+      }
+    } catch (err) {
+      console.error("Error updating item:", err);
+      toast({
+        title: "Update Failed",
+        description: err.message || "Failed to update product",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <Box bg="white" minH="100vh" px={[2, 4, 12]} py={4}>
       <Flex align="center" justify="space-between" mb={4}>
@@ -584,6 +631,7 @@ const AdminDashboard = () => {
 
       {currentPage === 1 && (
         <AdminHome
+          items={itemsMap}
           orders={orders}
           usersMap={usersMap}
           signupRequests={signupRequests}
@@ -620,6 +668,12 @@ const AdminDashboard = () => {
 
       {currentPage === 5 && <InventoryStatus />}
       {/* {currentPage === 5 && <InventoryStatus />} */}
+      {currentPage === 6 && <ItemList 
+  items={itemsMap} 
+  setItems={setItemsMap}  
+  token={token}       
+  toast={toast}      
+/>}
     </Box>
   );
 };

@@ -64,7 +64,7 @@ UsersRouter.post("/login", async (req, res) => {
     } else {
       isMatch = password === user.password;
 
-      if (isMatch) {
+      if (isMatch && !user.disabled) {
         const hashedPassword = await bcrypt.hash(password, 12);
         await db.query("UPDATE users SET password = $1 WHERE id = $2", [
           hashedPassword,
@@ -73,6 +73,9 @@ UsersRouter.post("/login", async (req, res) => {
       }
     }
 
+    if (user.disabled) {
+      return res.status(401).json({ message: "Account has been suspended" });
+    }
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -237,11 +240,12 @@ UsersRouter.put("/:id", async (req, res) => {
   }
 });
 
+
 UsersRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const result = await db.query(
-      "SELECT id, name, email, license_number, phone_number, company, california_resale, is_admin FROM users WHERE id = $1",
+      "SELECT id, name, email, license_number, phone_number, company, california_resale, is_admin, disabled FROM users WHERE id = $1",
       [id]
     );
     if (result.rows.length === 0) {

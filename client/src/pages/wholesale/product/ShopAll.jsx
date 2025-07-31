@@ -83,6 +83,7 @@ const AllProductsPage = () => {
       ) : (
         <SimpleGrid columns={2} >
           {filteredProducts.map((item) => (
+            item.show &&
             <ProductCard key={item.id} {...item} />
           ))}
         </SimpleGrid>
