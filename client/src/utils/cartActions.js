@@ -6,18 +6,28 @@ export const getCart = () => {
 };
 
 export const addToCart = (product) => {
-  const cart = getCart();
-  const existing = cart.find((item) => item.id === product.id);
+  try {
+    const cart = getCart();
+    const existing = cart.find((item) => item.id === product.id);
 
-  if (existing) {
-    existing.quantity += 1;
-  } else {
-    cart.push({ ...product, quantity: 1 });
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      // Include everything except ingredients (which can be very long)
+      const { ingredients, ...productWithoutIngredients } = product;
+      
+      cart.push({
+        ...productWithoutIngredients,
+        quantity: 1
+      });
+    }
+
+    Cookies.set("cart", JSON.stringify(cart), { expires: 30 });
+    console.log("Added to cart:", product.name);
+  } catch (error) {
+    console.error("Error adding to cart:", error);
   }
-
-  Cookies.set("cart", JSON.stringify(cart), { expires: 30 });
 };
-
 export const subtractFromCart = (productId) => {
   const cart = getCart();
   const existing = cart.find((item) => item.id === productId);

@@ -90,6 +90,7 @@ const ContactPage = () => {
 
           const data = await response.json();
           if (data.success && data.data.length > 0) {
+            console.log(data.data);
             setUserAddress(data.data[0]);
           }
         } catch (error) {
@@ -180,13 +181,13 @@ const ContactPage = () => {
         (sum, item) => sum + item.price * item.quantity,
         0
       ),
-      company_address_1: formData.get("company_address_1"),
-      company_address_2: formData.get("company_address_2"),
-      city: formData.get("city"),
-      state: formData.get("state"),
-      zip_code: formData.get("zip_code"),
-      business_license: formData.get("business_license"),
-      california_resale: formData.get("california_resale"),
+      company_address_1: userAddress?.address_line_1,
+      company_address_2: userAddress?.address_line_2,
+      city: userAddress?.city,
+      state: userAddress?.state,
+      zip_code: userAddress?.zip_code,
+      business_license: userInfo?.license_number,
+      california_resale: userInfo?.california_resale,
     };
 
     try {
@@ -201,12 +202,14 @@ const ContactPage = () => {
       if (!response.ok) {
         throw new Error("Failed to submit inquiry");
       }
+      console.log(inquiryData);
 
+      // Send the inquiryData instead of form.current
       await emailjs.send(
         import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
         import.meta.env.VITE_EMAIL_JS_TEMPLATE_CONTACT,
         {
-          ...Object.fromEntries(new FormData(form.current)),
+          ...inquiryData,
           time: new Date().toISOString(),
         },
         import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
@@ -267,35 +270,6 @@ const ContactPage = () => {
             We look forward to hearing from you
           </Text>
           <Divider mb={6} borderColor="gray.300" />
-
-          {/* Test Data Button
-          <Button
-            onClick={() => {
-              if (form.current) {
-                form.current.user_name.value = "John Doe";
-                form.current.user_email.value = "john.doe@acmerestaurant.com";
-                form.current.user_phone.value = "(323) 943-9318";
-                form.current.company.value = "Acme Restaurant Corp";
-                form.current.company_address_1.value = "1805 Industrial St";
-                form.current.company_address_2.value = "Suite 100";
-                form.current.city.value = "Los Angeles";
-                form.current.zip_code.value = "90021";
-                form.current.state.value = "CA";
-                form.current.business_license.value = "LA-1234567";
-                form.current.california_resale.value = "# 123-456789";
-                form.current.message.value =
-                  "Test inquiry for wholesale meat products";
-
-                setEmail("john.doe@acmerestaurant.com");
-              }
-            }}
-            size="sm"
-            colorScheme="orange"
-            mb={4}
-            width="100%"
-          >
-            Fill Test Data
-          </Button> */}
 
           <form ref={form} onSubmit={sendEmail}>
             <VStack spacing={4} align="stretch">
@@ -415,17 +389,6 @@ const ContactPage = () => {
                         placeholder="CA"
                       />
                     </FormControl>
-                    {/* <FormControl>
-                  <FormLabel fontWeight="semibold" fontSize="sm">
-                    Phone
-                  </FormLabel>
-                  <Input
-                    type="tel"
-                    name="phone_2"
-                    {...inputStyle}
-                    placeholder="(123) 456-7890"
-                  />
-                </FormControl> */}
                   </HStack>
                   <FormControl>
                     <FormLabel fontWeight="semibold" fontSize="sm">

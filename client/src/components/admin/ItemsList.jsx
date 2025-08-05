@@ -343,7 +343,7 @@ export const ItemList = ({ items, setItems, token, toast }) => {
                     </Td>
                     <Td py={3} px={4} borderColor="gray.100">
                       {renderEditableField(item, "style", "select", {
-                        choices: ["marinated", "unprocessed", "processed"],
+                        choices: ["marinated", "unprocessed", "processed", "premium"],
                       })}
                     </Td>
                     <Td py={3} px={4} borderColor="gray.100">
@@ -510,7 +510,7 @@ export const ItemList = ({ items, setItems, token, toast }) => {
                           {/* Ingredients */}
                           <FormControl>
                             <FormLabel fontSize="sm" fontWeight="bold" mb={2}>
-                              Ingredients (comma-separated):
+                              Ingredients (comma separated):
                             </FormLabel>
                             {renderEditableField(
                               item,
@@ -522,7 +522,7 @@ export const ItemList = ({ items, setItems, token, toast }) => {
                           {/* Allergens */}
                           <FormControl>
                             <FormLabel fontSize="sm" fontWeight="bold" mb={2}>
-                              Allergens (comma-separated):
+                              Allergens (comma separated):
                             </FormLabel>
                             {editingItems.has(item.id) ? (
                               renderEditableField(item, "allergens", "textarea")

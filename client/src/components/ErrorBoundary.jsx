@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Heading, Text, Button, VStack, Alert, AlertIcon, Image, Container } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, VStack, Image, } from '@chakra-ui/react';
 import { COLORS } from '../constants';
 import Logger from '../utils/logger';
 

@@ -1,9 +1,12 @@
-export { default as B2BPage } from './B2B.jsx';
-export { default as DealPage } from './Deal.jsx';
-export { default as FAQPage } from './Faq.jsx';
-export { default as HowToOrderPage } from './Order.jsx';
-export { default as PackingPage } from './Packing.jsx';
-export { default as MarinatedPage } from './product/Marinated.jsx';
-export { default as ProcessedPage } from './product/Processed.jsx';
-export { default as UnprocessedPage } from './product/Unprocessed.jsx';
-export { default as AllProductsPage } from './product/ShopAll.jsx';
+import PremiumPage from "./product/Premium.jsx";
+
+export { default as B2BPage } from "./B2B.jsx";
+export { default as DealPage } from "./Deal.jsx";
+export { default as FAQPage } from "./Faq.jsx";
+export { default as HowToOrderPage } from "./Order.jsx";
+export { default as PackingPage } from "./Packing.jsx";
+export { default as MarinatedPage } from "./product/Marinated.jsx";
+export { default as ProcessedPage } from "./product/Processed.jsx";
+export { default as UnprocessedPage } from "./product/Unprocessed.jsx";
+export { default as PremiumPage } from "./product/Premium.jsx";
+export { default as AllProductsPage } from "./product/ShopAll.jsx";

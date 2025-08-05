@@ -19,6 +19,7 @@ import {
   MarinatedPage,
   ProcessedPage,
   UnprocessedPage,
+  PremiumPage,
   AllProductsPage,
 } from "./pages/wholesale";
 import ProductDetailPage from "./components/shop/ProductDetails";
@@ -74,6 +75,10 @@ function App() {
                 <Route
                   path="/wholesale/unprocessed"
                   element={<UnprocessedPage />}
+                />
+                <Route
+                  path="/wholesale/premium"
+                  element={<PremiumPage />}
                 />
                 <Route
                   path="/wholesale/shop-all"

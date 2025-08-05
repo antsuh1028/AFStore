@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect, useMemo } from "react";
 import {
   Box,
   Container,
-  Flex,
   Heading,
   Image,
   Text,

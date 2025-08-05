@@ -483,7 +483,7 @@ const ProductDetailPage = () => {
                   textAlign="center"
                 >
                   We couldn't find the product you're looking for. It may no
-                  longer be available. We appologize for the inconvenience.
+                  longer be available. We apologize for the inconvenience.
                 </Text>
               </VStack>
 
@@ -847,19 +847,28 @@ const ProductDetailPage = () => {
               borderColor="yellow.200"
               borderRadius="md"
             >
-              <Text fontSize="xs" color="gray.700" lineHeight="1.4">
-                <Flex
-                  as="span"
-                  fontWeight="semibold"
-                  py={2}
-                >
-                  <Box mr={2}><InfoIcon size={16} /></Box>
-                   Important:
-                </Flex>{" "}
-                All products are processed in facilities that handle soy, wheat,
-                sesame, and other major allergens. Always verify current
-                allergen information on product packaging before use.
-              </Text>
+              <Flex
+                fontSize="xs"
+                color="gray.700"
+                lineHeight="1.4"
+                align="flex-start"
+              >
+                <Box mr={2} mt="1px">
+                  <InfoIcon size={16} />
+                </Box>
+                <Box>
+                  <Text as="span" fontWeight="semibold">
+                    Important:
+                  </Text>
+                  <Text as="span">
+                    {" "}
+                    All products are processed in facilities that handle soy,
+                    wheat, sesame, and other major allergens. Always verify
+                    current allergen information on product packaging before
+                    use.
+                  </Text>
+                </Box>
+              </Flex>
             </Box>
           </CollapsibleSection>
 

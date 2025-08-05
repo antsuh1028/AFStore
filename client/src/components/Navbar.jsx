@@ -31,7 +31,7 @@ const Navbar = ({ onOpen }) => {
           size="sm"
           colorScheme="gray"
           onClick={() => {
-            navigate("/");
+            navigate(-1);
           }}
           _hover={{ bg: "gray.100" }}
         />

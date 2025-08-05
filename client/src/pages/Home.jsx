@@ -26,10 +26,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Spinner,
-  Center,
 } from "@chakra-ui/react";
-import { SearchIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { SearchIcon, } from "@chakra-ui/icons";
 import { ShoppingCart, UserRound } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -52,7 +50,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const contentRef = useRef(null);
   const searchRef = useRef(null);
-  
+
   const { isAuthenticated, userId, loading } = useAuthContext();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -162,11 +160,11 @@ const HomePage = () => {
     };
 
     if (showDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDropdown]);
 
@@ -363,6 +361,7 @@ const HomePage = () => {
                   variant="ghost"
                   type="submit"
                   isLoading={isLoading}
+                  _hover={{cursor:"pointer"}}
                 />
               </InputRightElement>
             </InputGroup>
@@ -392,48 +391,50 @@ const HomePage = () => {
               borderColor="gray.200"
             >
               <List spacing={0}>
-                {searchResults.map((item) => (
-                  item.show &&
-                  (<ListItem
-                    key={item.id}
-                    p={3}
-                    cursor="pointer"
-                    _hover={{ bg: "gray.50" }}
-                    onClick={() => handleResultClick(item)}
-                    borderBottom="1px"
-                    borderColor="gray.100"
-                  >
-                    <Flex align="center" gap={3}>
-                      {item.images > 0 && (
-                        <Image
-                          src={`/products/${item.style}/${item.name}/01.avif`}
-                          fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
-                          alt={item.name}
-                          boxSize="40px"
-                          objectFit="cover"
-                          borderRadius="md"
-                        />
-                      )}
-                      {item.images === 0 && (
-                        <Image
-                          src="images/gray.avif"
-                          alt={item.name}
-                          boxSize="40px"
-                          objectFit="cover"
-                          borderRadius="md"
-                        />
-                      )}
-                      <VStack align="start" spacing={1} flex={1}>
-                        <Text fontWeight="semibold" fontSize="sm">
-                          {item.name}
-                        </Text>
-                        <Text fontSize="xs" color="gray.600">
-                          {item.species} • ${item.price}
-                        </Text>
-                      </VStack>
-                    </Flex>
-                  </ListItem>) 
-                ))}
+                {searchResults.map(
+                  (item) =>
+                    item.show && (
+                      <ListItem
+                        key={item.id}
+                        p={3}
+                        cursor="pointer"
+                        _hover={{ bg: "gray.50" }}
+                        onClick={() => handleResultClick(item)}
+                        borderBottom="1px"
+                        borderColor="gray.100"
+                      >
+                        <Flex align="center" gap={3}>
+                          {item.images > 0 && (
+                            <Image
+                              src={`/products/${item.style}/${item.name}/01.avif`}
+                              fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
+                              alt={item.name}
+                              boxSize="40px"
+                              objectFit="cover"
+                              borderRadius="md"
+                            />
+                          )}
+                          {item.images === 0 && (
+                            <Image
+                              src="images/gray.avif"
+                              alt={item.name}
+                              boxSize="40px"
+                              objectFit="cover"
+                              borderRadius="md"
+                            />
+                          )}
+                          <VStack align="start" spacing={1} flex={1}>
+                            <Text fontWeight="semibold" fontSize="sm">
+                              {item.name}
+                            </Text>
+                            <Text fontSize="xs" color="gray.600">
+                              {item.species} • ${item.price}
+                            </Text>
+                          </VStack>
+                        </Flex>
+                      </ListItem>
+                    )
+                )}
               </List>
             </Box>
           )}
@@ -453,55 +454,57 @@ const HomePage = () => {
                   overflowY="auto"
                   maxH="80vh"
                 >
-                  {searchResults.map((item) => (
-                    item.show &&
-                    (<GridItem key={item.id}>
-                      <Flex
-                        p={4}
-                        border="1px"
-                        borderColor="gray.200"
-                        borderRadius="md"
-                        cursor="pointer"
-                        _hover={{ bg: "gray.50" }}
-                        onClick={() => {
-                          handleResultClick(item);
-                          onSearchClose();
-                        }}
-                      >
-                        <OptimizedImage
-                          src={
-                            item.images > 0
-                              ? `/products/${item.style}/${item.name}/01.avif`
-                              : "/images/gray.avif"
-                          }
-                          fallbackSrc={
-                            item.images > 0
-                              ? `/products/${item.style}/${item.name}/01.jpg`
-                              : "/images/gray.avif"
-                          }
-                          alt={item.name}
-                          w="25%"
-                          objectFit="cover"
-                          borderRadius="md"
-                          mr={4}
-                        />
-                        <VStack align="start" spacing={2} flex={1}>
-                          <Text fontWeight="bold">{item.name}</Text>
-                          <Text fontSize="sm" color="gray.600">
-                            {item.description}
-                          </Text>
-                          <HStack>
-                            <Text fontSize="sm" color="blue.600">
-                              {item.species}
-                            </Text>
-                            <Text fontSize="sm" fontWeight="bold">
-                              ${item.price}
-                            </Text>
-                          </HStack>
-                        </VStack>
-                      </Flex>
-                    </GridItem>)
-                  ))}
+                  {searchResults.map(
+                    (item) =>
+                      item.show && (
+                        <GridItem key={item.id}>
+                          <Flex
+                            p={4}
+                            border="1px"
+                            borderColor="gray.200"
+                            borderRadius="md"
+                            cursor="pointer"
+                            _hover={{ bg: "gray.50" }}
+                            onClick={() => {
+                              handleResultClick(item);
+                              onSearchClose();
+                            }}
+                          >
+                            <OptimizedImage
+                              src={
+                                item.images > 0
+                                  ? `/products/${item.style}/${item.name}/01.avif`
+                                  : "/images/gray.avif"
+                              }
+                              fallbackSrc={
+                                item.images > 0
+                                  ? `/products/${item.style}/${item.name}/01.jpg`
+                                  : "/images/gray.avif"
+                              }
+                              alt={item.name}
+                              w="25%"
+                              objectFit="cover"
+                              borderRadius="md"
+                              mr={4}
+                            />
+                            <VStack align="start" spacing={2} flex={1}>
+                              <Text fontWeight="bold">{item.name}</Text>
+                              <Text fontSize="sm" color="gray.600">
+                                {item.description}
+                              </Text>
+                              <HStack>
+                                <Text fontSize="sm" color="blue.600">
+                                  {item.species}
+                                </Text>
+                                <Text fontSize="sm" fontWeight="bold">
+                                  ${item.price}
+                                </Text>
+                              </HStack>
+                            </VStack>
+                          </Flex>
+                        </GridItem>
+                      )
+                  )}
                 </Grid>
               ) : (
                 <Text textAlign="center" color="gray.500">
@@ -636,6 +639,148 @@ const HomePage = () => {
             </GridItem>
           ))}
         </Grid>
+        {/* Categories */}
+        {/* <Grid
+          templateColumns="repeat(2, 1fr)"
+          templateRows="repeat(2, 1fr)"
+          gap={4}
+          px={4}
+          mb={8}
+          overflowX="auto"
+        >
+          {[
+            {
+              name: "Marinated",
+              url: "/wholesale/marinated",
+              image: "/images/marinated_button.avif",
+              fallback: "images/marinated_button.png",
+            },
+            {
+              name: "Premium",
+              url: "/wholesale/unprocessed",
+              image: "/images/gray.avif",
+              fallback: "/images/wholesale_button.png",
+            },
+            {
+              name: "Prepped",
+              url: "/wholesale/processed",
+              image: "/images/processed_button.avif",
+              fallback: "images/processed_button.png",
+            },
+            {
+              name: "Untrimmed",
+              url: "/wholesale/unprocessed",
+              image: "/images/wholesale_button.avif",
+              fallback: "/images/wholesale_button.png",
+            },
+          ].map((category, idx) => (
+            <GridItem key={idx}>
+              <Flex
+                border="1px"
+                spacing={2}
+                cursor="pointer"
+                onClick={() => navigate(category.url)}
+                alignContent="center"
+                borderRadius="full"
+              >
+                <Box
+                  size="75px"
+                  bg="white"
+                  border="1px"
+                  borderColor="gray.100"
+                  overflow="hidden"
+                  borderRadius="full"
+                >
+                  <OptimizedImage
+                    src={category.image}
+                    fallbackSrc={category.fallback}
+                    alt={category.name}
+                    width="75px"
+                    height="75px"
+                    // objectFit="cover"
+                  />
+                </Box>
+                <Text fontSize="sm" fontWeight="semibold">
+                  {category.name}
+                </Text>
+              </Flex>
+            </GridItem>
+          ))}
+        </Grid>
+        <Grid
+          templateColumns="repeat(3, 1fr)"
+          gap={4}
+          px={4}
+          mb={8}
+          overflowX="auto"
+        >
+          {[
+            {
+              name: "Deal",
+              icon: (
+                <OptimizedImage
+                  src="/images/home_icons/deal.avif"
+                  fallbackSrc="/images/home_icons/deal.jpg"
+                  alt="Order"
+                  objectFit="cover"
+                  width="100%"
+                  height="100%"
+                  borderRadius="full"
+                />
+              ),
+              url: "/wholesale/deal",
+            },
+            {
+              name: "How to Order",
+              icon: (
+                <OptimizedImage
+                  src="/images/home_icons/how_to_order.avif"
+                  fallbackSrc="/images/home_icons/how_to_order.jpg"
+                  alt="Order"
+                  objectFit="cover"
+                  width="100%"
+                  height="100%"
+                  borderRadius="full"
+                />
+              ),
+              url: "/wholesale/how-to-order",
+            },
+            {
+              name: "Contact",
+              icon: (
+                <OptimizedImage
+                  src="/images/home_icons/contact.avif"
+                  fallbackSrc="/images/home_icons/contact.jpg"
+                  alt="Order"
+                  objectFit="cover"
+                  width="100%"
+                  height="100%"
+                  borderRadius="full"
+                />
+              ),
+              url: "/contact",
+            },
+          ].map((action, idx) => (
+            <GridItem key={idx}>
+              <VStack spacing={2} my={4}>
+                <Circle
+                  size="75px"
+                  bg={COLORS.GRAY_MEDIUM}
+                  color="white"
+                  onClick={() => {
+                    navigate(`${action.url}`);
+                  }}
+                  cursor="pointer"
+                >
+                  {action.icon}
+                </Circle>
+                <Text fontSize="sm" fontWeight="semibold">
+                  {action.name}
+                </Text>
+              </VStack>
+            </GridItem>
+          ))}
+        </Grid> */}
 
         {/* Location */}
         <HStack px={6} mb={3} spacing={2} ml={2}>
