@@ -204,7 +204,6 @@ const ContactPage = () => {
       }
       console.log(inquiryData);
 
-      // Send the inquiryData instead of form.current
       await emailjs.send(
         import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
         import.meta.env.VITE_EMAIL_JS_TEMPLATE_CONTACT,
@@ -223,7 +222,6 @@ const ContactPage = () => {
         isClosable: true,
       });
 
-      // Reset form
       form.current.reset();
       setEmail("");
     } catch (error) {

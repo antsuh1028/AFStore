@@ -27,7 +27,7 @@ import { useAuthContext } from "../hooks/useAuth";
 import { API_CONFIG, COLORS } from "../constants";
 import { getCart, removeFromCart } from "../utils/cartActions";
 
-import emailjs from "emailjs-com"; 
+import emailjs from "emailjs-com";
 
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
   return (
@@ -198,7 +198,10 @@ const OrderSummaryPage = () => {
 
   // Calculate pricing
   const TAX_RATE = 0.095; // 9.5% CA sales tax
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
   const calculatedTax = subtotal * TAX_RATE;
   const finalTotal = subtotal + calculatedTax + deliveryFee;
 
@@ -315,10 +318,10 @@ const OrderSummaryPage = () => {
         if (allItemsCreated) {
           setOrderNumber(orderResult.data.order_number);
           setOrderDate(formatOrderDate(orderResult.data.order_date));
-          
+
           // Send confirmation email
           await sendOrderConfirmationEmail(orderResult.data);
-          
+
           cartItems.forEach((item) => {
             removeFromCart(item.id);
           });
@@ -339,42 +342,50 @@ const OrderSummaryPage = () => {
     }
   };
 
-const sendOrderConfirmationEmail = async (orderData) => {
-  try {
-    // Format order items as an array of objects for the template
-    const orderItemsForEmail = cartItems.map(item => ({
-      name: item.name,
-      quantity: item.quantity,
-      price: item.price.toFixed(2),
-      itemTotal: (item.price * item.quantity).toFixed(2)
-    }));
+  const sendOrderConfirmationEmail = async (orderData) => {
+    try {
+      // Format order items as an array of objects for the template
+      const orderItemsForEmail = cartItems.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price.toFixed(2),
+        itemTotal: (item.price * item.quantity).toFixed(2),
+      }));
 
-    const emailData = {
-      customerName: userName,
-      companyName: userInfo?.company || "Not specified",
-      customerAddress: formatAddress(userAddress),
-      orderNumber: orderData.order_number,
-      orderDate: formatOrderDate(orderData.order_date),
-      orderItems: orderItemsForEmail, // Array of item objects
-      totalQuantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
-      estimatedTotal: finalTotal.toFixed(2),
-      email: userEmail,   
-      name: userName,      
-    };
+      const emailData = {
+        customerName: userName,
+        companyName: userInfo?.company || "Not specified",
+        customerAddress: formatAddress(userAddress),
+        orderNumber: orderData.order_number,
+        orderDate: formatOrderDate(orderData.order_date),
+        orderItems: orderItemsForEmail, // Array of item objects
+        totalQuantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+        estimatedTotal: finalTotal.toFixed(2),
+        email: userEmail,
+        name: userName,
+      };
 
-    // Using EmailJS
-    await emailjs.send(
-      API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
-      API_CONFIG.VITE_EMAIL_JS_TEMPLATE_ORDER_CONFIRMATION,
-      emailData,
-      API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
-    );
+      // Sends to Customer
+      await emailjs.send(
+        API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
+        API_CONFIG.VITE_EMAIL_JS_TEMPLATE_ORDER_CONFIRMATION,
+        emailData,
+        API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
+      );
 
-    console.log('Order confirmation email sent successfully');
-  } catch (error) {
-    console.error('Failed to send confirmation email:', error);
-  }
-};
+      // Sends to Admin
+      await emailjs.send(
+        API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
+        API_CONFIG.VITE_EMAIL_JS_TEMPLATE_ORDER_CONFIRMATION_ADMIN,
+        emailData,
+        API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
+      );
+
+      console.log("Order confirmation email sent successfully");
+    } catch (error) {
+      console.error("Failed to send confirmation email:", error);
+    }
+  };
   const formatAddress = (addressData) => {
     if (!addressData) return "—";
 
@@ -492,7 +503,7 @@ const sendOrderConfirmationEmail = async (orderData) => {
                   </Text>
                 </HStack>
               </VStack>
-              
+
               <VStack spacing={4} w="100%">
                 <Flex
                   bg={COLORS.GRAY_LIGHT}
@@ -507,40 +518,65 @@ const sendOrderConfirmationEmail = async (orderData) => {
                     apologize for the inconvenience.
                   </Text>
                 </Flex>
-                
+
                 {/* Order Summary Section */}
-                <VStack spacing={3} w="100%" px={4} py={4} bg="gray.50" borderRadius="lg">
+                <VStack
+                  spacing={3}
+                  w="100%"
+                  px={4}
+                  py={4}
+                  bg="gray.50"
+                  borderRadius="lg"
+                >
                   <Text fontSize="md" fontWeight="bold" alignSelf="flex-start">
                     Order Summary
                   </Text>
-                  
+
                   <HStack justify="space-between" w="100%">
-                    <Text fontSize="sm" color="gray.600">Subtotal:</Text>
-                    <Text fontSize="sm" fontWeight="medium">${subtotal.toFixed(2)}</Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Subtotal:
+                    </Text>
+                    <Text fontSize="sm" fontWeight="medium">
+                      ${subtotal.toFixed(2)}
+                    </Text>
                   </HStack>
-                  
+
                   <HStack justify="space-between" w="100%">
-                    <Text fontSize="sm" color="gray.600">Sales Tax (9.5%):</Text>
-                    <Text fontSize="sm" fontWeight="medium">${calculatedTax.toFixed(2)}</Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Sales Tax (9.5%):
+                    </Text>
+                    <Text fontSize="sm" fontWeight="medium">
+                      ${calculatedTax.toFixed(2)}
+                    </Text>
                   </HStack>
-                  
+
                   {deliveryOption === "delivery" && (
                     <HStack justify="space-between" w="100%">
-                      <Text fontSize="sm" color="gray.600">Delivery Fee:</Text>
-                      <Text fontSize="sm" fontWeight="medium">${deliveryFee.toFixed(2)}</Text>
+                      <Text fontSize="sm" color="gray.600">
+                        Delivery Fee:
+                      </Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        ${deliveryFee.toFixed(2)}
+                      </Text>
                     </HStack>
                   )}
-                  
+
                   <Divider />
-                  
+
                   <HStack justify="space-between" w="100%" pt={2}>
-                    <Text fontSize="md" fontWeight="bold">Total:</Text>
-                    <Text fontSize="md" fontWeight="bold" color={COLORS.PRIMARY}>
+                    <Text fontSize="md" fontWeight="bold">
+                      Total:
+                    </Text>
+                    <Text
+                      fontSize="md"
+                      fontWeight="bold"
+                      color={COLORS.PRIMARY}
+                    >
                       ${finalTotal.toFixed(2)}
                     </Text>
                   </HStack>
                 </VStack>
-                
+
                 <Button
                   size="sm"
                   bg={COLORS.GRAY_MEDIUM}
@@ -557,7 +593,7 @@ const sendOrderConfirmationEmail = async (orderData) => {
               </VStack>
             </VStack>
           )}
-          
+
           {currentStep === 1 && (
             <VStack>
               <OrderPayment
@@ -583,124 +619,120 @@ const sendOrderConfirmationEmail = async (orderData) => {
               </Button>
             </VStack>
           )}
-          
+
           {currentStep === 2 && (
-  <VStack
-    spacing={6}
-    px={4}
-    align="center"
-    minH="60vh"  // Changed from fixed height to minimum height
-    py={8}      // Added padding for better spacing
-  >
-    {/* Order Details Section */}
-    <VStack spacing={4} w="100%">
-      <HStack
-        justify="space-between"
-        bg="gray.50"
-        p={3}
-        borderRadius="full"
-        border="1px"
-        borderColor="gray.200"
-        w="100%"
-      >
-        <Text fontSize="sm" color="gray.500">
-          Order Number
-        </Text>
-        <Text fontSize="sm" fontWeight="semibold">
-          #{orderNumber}
-        </Text>
-      </HStack>
+            <VStack
+              spacing={6}
+              px={4}
+              align="center"
+              minH="60vh" // Changed from fixed height to minimum height
+              py={8} // Added padding for better spacing
+            >
+              {/* Order Details Section */}
+              <VStack spacing={4} w="100%">
+                <HStack
+                  justify="space-between"
+                  bg="gray.50"
+                  p={3}
+                  borderRadius="full"
+                  border="1px"
+                  borderColor="gray.200"
+                  w="100%"
+                >
+                  <Text fontSize="sm" color="gray.500">
+                    Order Number
+                  </Text>
+                  <Text fontSize="sm" fontWeight="semibold">
+                    #{orderNumber}
+                  </Text>
+                </HStack>
 
-      <HStack
-        justify="space-between"
-        bg="gray.50"
-        p={3}
-        borderRadius="full"
-        border="1px"
-        borderColor="gray.200"
-        w="100%"
-      >
-        <Text fontSize="sm" color="gray.500">
-          Date
-        </Text>
-        <Text fontSize="sm" fontWeight="semibold">
-          {orderDate}
-        </Text>
-      </HStack>
+                <HStack
+                  justify="space-between"
+                  bg="gray.50"
+                  p={3}
+                  borderRadius="full"
+                  border="1px"
+                  borderColor="gray.200"
+                  w="100%"
+                >
+                  <Text fontSize="sm" color="gray.500">
+                    Date
+                  </Text>
+                  <Text fontSize="sm" fontWeight="semibold">
+                    {orderDate}
+                  </Text>
+                </HStack>
 
-      <HStack
-        justify="space-between"
-        bg="gray.50"
-        p={3}
-        borderRadius="full"
-        border="1px"
-        borderColor="gray.200"
-        w="100%"
-      >
-        <Text fontSize="sm" color="gray.500">
-          Total
-        </Text>
-        <Text fontSize="sm" fontWeight="semibold">
-          ${finalTotal.toFixed(2)}
-        </Text>
-      </HStack>
-    </VStack>
+                <HStack
+                  justify="space-between"
+                  bg="gray.50"
+                  p={3}
+                  borderRadius="full"
+                  border="1px"
+                  borderColor="gray.200"
+                  w="100%"
+                >
+                  <Text fontSize="sm" color="gray.500">
+                    Total
+                  </Text>
+                  <Text fontSize="sm" fontWeight="semibold">
+                    ${finalTotal.toFixed(2)}
+                  </Text>
+                </HStack>
+              </VStack>
 
-    {/* Confirmation Message */}
-    <Box p={4} w="100%">
-      <HStack align="flex-start" spacing={2}>
-        <CircleCheck />
-        <VStack align="flex-start" spacing={2}>
-          <Text fontSize="sm" color="gray.700" lineHeight="1.4">
-            Until you receive a confirmation email, your order is
-            not considered confirmed.
-          </Text>
-          <Text fontSize="xs" color="gray.500" lineHeight="1.4">
-            Check your email for order confirmation and quote details.
-          </Text>
-        </VStack>
-      </HStack>
-    </Box>
-    
-    {/* Bottom Section */}
-    <VStack spacing={4} w="100%" mt="auto">  {/* mt="auto" pushes to bottom */}
-      <Box
-        p={4}
-        borderRadius="md"
-        textAlign="center"
-        w="100%"
-      >
-        <Text fontSize="xs" color="gray.600" mb={2}>
-          Have any concerns about your order?
-        </Text>
-        <HStack justify="center" spacing={1}>
-          <Text fontSize="xs" color="gray.600">
-            Email us at
-          </Text>
-          <Link
-            fontSize="sm"
-            href="mailto:sales@adamsfoods.us"
-            color="#b3967f"
-            fontWeight="semibold"
-            textDecoration="underline"
-            _hover={{ color: "#494949" }}
-          >
-            sales@adamsfoods.us
-          </Link>
-        </HStack>
-      </Box>
-      
-      <Button
-        bg={COLORS.GRAY_MEDIUM}
-        borderRadius="full"
-        w="100%"
-        onClick={() => navigate("/")}
-      >
-        FINISH
-      </Button>
-    </VStack>
-  </VStack>
-)}
+              {/* Confirmation Message */}
+              <Box p={4} w="100%">
+                <HStack align="flex-start" spacing={2}>
+                  <CircleCheck />
+                  <VStack align="flex-start" spacing={2}>
+                    <Text fontSize="sm" color="gray.700" lineHeight="1.4">
+                      Until you receive a confirmation email, your order is not
+                      considered confirmed.
+                    </Text>
+                    <Text fontSize="xs" color="gray.500" lineHeight="1.4">
+                      Check your email for order confirmation and quote details.
+                    </Text>
+                  </VStack>
+                </HStack>
+              </Box>
+
+              {/* Bottom Section */}
+              <VStack spacing={4} w="100%" mt="auto">
+                {" "}
+                {/* mt="auto" pushes to bottom */}
+                <Box p={4} borderRadius="md" textAlign="center" w="100%">
+                  <Text fontSize="xs" color="gray.600" mb={2}>
+                    Have any concerns about your order?
+                  </Text>
+                  <HStack justify="center" spacing={1}>
+                    <Text fontSize="xs" color="gray.600">
+                      Email us at
+                    </Text>
+                    <Link
+                      fontSize="sm"
+                      href="mailto:sales@adamsfoods.us"
+                      color="#b3967f"
+                      fontWeight="semibold"
+                      textDecoration="underline"
+                      _hover={{ color: "#494949" }}
+                    >
+                      sales@adamsfoods.us
+                    </Link>
+                  </HStack>
+                </Box>
+                <Button
+                  bg={COLORS.GRAY_MEDIUM}
+                  borderRadius="full"
+                  w="100%"
+                  onClick={() => navigate("/")}
+                >
+                  FINISH
+                </Button>
+              </VStack>
+            </VStack>
+          )}
         </Box>
       </Container>
     </Sidebar>
