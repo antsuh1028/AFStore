@@ -34,7 +34,7 @@ const TermsAndPoliciesPage = () => {
         boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
-        <Navbar onOpen={onOpen} />
+        <Navbar onOpen={onOpen} home={true} />
 
         {/* Terms & Policies Header */}
         <Box px={4} py={8} textAlign="center">

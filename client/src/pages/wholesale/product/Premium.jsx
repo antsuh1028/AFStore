@@ -110,7 +110,7 @@ const PremiumPage = () => {
           minHeight="100vh"
           position="relative"
         >
-          <Navbar onOpen={onOpen} />
+          <Navbar onOpen={onOpen} home={true} />
           <VStack spacing={0}>
             <Box fontSize="2xl" fontWeight="semibold" mb={4}>
               Premium Meat
@@ -145,7 +145,7 @@ const PremiumPage = () => {
         minHeight="100vh"
         position="relative"
       >
-        <Navbar onOpen={onOpen} />
+        <Navbar onOpen={onOpen} home={true} />
 
         <VStack spacing={0}>
           <Box fontSize="2xl" fontWeight="semibold" mb={4}>

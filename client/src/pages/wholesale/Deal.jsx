@@ -34,7 +34,7 @@ const DealPage = () => {
           containerRef={contentRef}
         />
 
-        <Navbar onOpen={onOpen} />
+        <Navbar onOpen={onOpen} home={true} />
 
         {/* Deal Header */}
         <Box textAlign="center" py={6} px={4}>

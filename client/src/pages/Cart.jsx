@@ -196,7 +196,7 @@ const CartPage = () => {
         position="relative"
       >
         
-        <Navbar onOpen={onOpen} />
+        <Navbar onOpen={onOpen} home={true} />
 
         {cookieAgreement === "accepted" ? (
           <Box p={6}>

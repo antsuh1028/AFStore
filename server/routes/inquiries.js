@@ -75,11 +75,17 @@ InquiriesRouter.post("/", async (req, res) => {
 InquiriesRouter.put("/:id/status", async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
     
-    const result = await db.query(
-      "UPDATE inquiries SET status = $1 WHERE id = $2 RETURNING *",
-      [status, id]
+    const result = await db.query(`
+      UPDATE inquiries 
+      SET status = CASE 
+        WHEN status = 'resolved' THEN 'unresolved'::inquiry_status
+        WHEN status = 'unresolved' THEN 'resolved'::inquiry_status
+        ELSE 'unresolved'::inquiry_status
+      END 
+      WHERE id = $1 
+      RETURNING *`,
+      [id]
     );
     
     if (result.rows.length === 0) {
@@ -91,7 +97,6 @@ InquiriesRouter.put("/:id/status", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 // DELETE /api/inquiries/:id - Delete inquiry
 InquiriesRouter.delete("/:id", async (req, res) => {
   try {

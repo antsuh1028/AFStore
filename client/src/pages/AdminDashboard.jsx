@@ -656,7 +656,7 @@ const AdminDashboard = () => {
           orderType={orderType}
         />
       )}
-      {currentPage === 3 && <Inquiries inquiries={inquiries} />}
+      {currentPage === 3 && <Inquiries inquiries={inquiries} setInquiries={setInquiries} />}
       {currentPage === 4 && (
         <Signups
           signupRequests={signupRequests}

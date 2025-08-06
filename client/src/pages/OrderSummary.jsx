@@ -19,7 +19,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/SideBar";
 import { useState, useEffect } from "react";
-import ThreeStepLine from "../components/order/OrderPayment";
+import ThreeStepLine from "../components/order/ThreeStepLine";
 import { ShowCart } from "../components/profile/ShowCart";
 import { CircleCheck } from "lucide-react";
 import { useAuthContext } from "../hooks/useAuth";
@@ -196,14 +196,11 @@ const OrderSummaryPage = () => {
   const [userAddress, setUserAddress] = useState(null);
   const [isPageLoading, setIsPageLoading] = useState(true);
 
-  // Calculate pricing
-  const TAX_RATE = 0.095; // 9.5% CA sales tax
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const calculatedTax = subtotal * TAX_RATE;
-  const finalTotal = subtotal + calculatedTax + deliveryFee;
+  const finalTotal = subtotal + deliveryFee;
 
   const formatOrderDate = (dateString) => {
     const date = new Date(dateString);
@@ -531,7 +528,7 @@ const OrderSummaryPage = () => {
                   <Text fontSize="md" fontWeight="bold" alignSelf="flex-start">
                     Order Summary
                   </Text>
-
+{/* 
                   <HStack justify="space-between" w="100%">
                     <Text fontSize="sm" color="gray.600">
                       Subtotal:
@@ -539,16 +536,16 @@ const OrderSummaryPage = () => {
                     <Text fontSize="sm" fontWeight="medium">
                       ${subtotal.toFixed(2)}
                     </Text>
-                  </HStack>
+                  </HStack> */}
 
-                  <HStack justify="space-between" w="100%">
+                  {/* <HStack justify="space-between" w="100%">
                     <Text fontSize="sm" color="gray.600">
                       Sales Tax (9.5%):
                     </Text>
                     <Text fontSize="sm" fontWeight="medium">
                       ${calculatedTax.toFixed(2)}
                     </Text>
-                  </HStack>
+                  </HStack> */}
 
                   {deliveryOption === "delivery" && (
                     <HStack justify="space-between" w="100%">

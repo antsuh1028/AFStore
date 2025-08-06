@@ -95,7 +95,7 @@ const FAQPage = () => {
         ml={{ base: 0, lg: "40%" }}
       >
         {/* Top nav */}
-        <Navbar onOpen={onOpen} />
+        <Navbar onOpen={onOpen} home={true} />
 
         {/* Breadcrumbs */}
         <Box py={3} px={4} display="flex" justifyContent="center">

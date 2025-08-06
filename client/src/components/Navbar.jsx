@@ -3,7 +3,7 @@ import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuth";
 
-const Navbar = ({ onOpen }) => {
+const Navbar = ({ onOpen , home}) => {
   const navigate = useNavigate();
 
   const { isAuthenticated, userId, loading } = useAuthContext();
@@ -30,8 +30,8 @@ const Navbar = ({ onOpen }) => {
           variant="ghost"
           size="sm"
           colorScheme="gray"
-          onClick={() => {
-            navigate(-1);
+          onClick={() => {console.log(home)
+            home ? navigate("/"): navigate(-1);
           }}
           _hover={{ bg: "gray.100" }}
         />

@@ -28,7 +28,7 @@ const HowToOrderPage = () => {
         boxShadow="xl"
         ml={{ base: 0, lg: "40%" }}
       >
-        <Navbar onOpen={onOpen} />
+        <Navbar onOpen={onOpen} home={true} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
           <Breadcrumbs

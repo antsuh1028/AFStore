@@ -459,7 +459,7 @@ const ProductDetailPage = () => {
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
         >
-          <Navbar onOpen={onOpen} />
+          <Navbar onOpen={onOpen}/>
           <Box p={8} textAlign="center">
             <VStack spacing={6}>
               {/* Logo */}

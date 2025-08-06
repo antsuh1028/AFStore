@@ -33,7 +33,7 @@ export const ErrorMessage = ({ error, onOpen }) => {
         ml={{ base: 0, lg: "40%" }}
         minHeight="100vh"
       >
-        <Navbar onOpen={onOpen} />
+        <Navbar onOpen={onOpen} home={true} />
         
         <Box p={8} textAlign="center">
           <VStack spacing={6}>
