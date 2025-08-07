@@ -88,7 +88,9 @@ const Footer = () => {
             </Text>
           </VStack>
         </Flex>
-
+        <Text fontSize="xs" color="gray.500" textAlign="center" mt={8} px={2}>
+          Copyright © 2025 AdamsFoods. All rights reserved.{" "}
+        </Text>
         {/* Language and Currency */}
         {/* <Flex
             justifyContent="space-between"

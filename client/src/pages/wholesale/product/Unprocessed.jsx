@@ -46,7 +46,7 @@ const UnprocessedPage = () => {
         setProducts(data.data);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching untrimmed products:", err);
+        console.error("Error fetching whole meat products:", err);
       } finally {
         setLoading(false);
       }
@@ -79,7 +79,7 @@ const UnprocessedPage = () => {
           <Navbar onOpen={onOpen} home={true} />
           <VStack spacing={0}>
             <Box fontSize="2xl" fontWeight="semibold" mb={4}>
-              Untrimmed Meat
+              Whole Meat
             </Box>
             <ProductTabs
               products={[]}
@@ -114,13 +114,13 @@ const UnprocessedPage = () => {
         <Navbar onOpen={onOpen} home={true} />
         <VStack spacing={0}>
           <Box fontSize="2xl" fontWeight="semibold" mb={4}>
-            Untrimmed Meat
+            Whole Meat
           </Box>
 
           <ProductTabs
             products={products}
             getProductsByType={getProductsByType}
-            productType="untrimmed"
+            productType="whole meat"
           />
         </VStack>
 

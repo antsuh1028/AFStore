@@ -79,8 +79,8 @@ const TermsAndPoliciesPage = () => {
                 </Text>
               </Box>
               <Text fontSize="sm" color="gray.700" ml={2}>
-                This agreement governs your use of the Adams Foods Wholesale
-                App. By using our services, you agree to these terms.
+                This agreement governs your use of the AdamsFoods Wholesale App.
+                By using our services, you agree to these terms.
               </Text>
             </Box>
 
@@ -156,7 +156,7 @@ const TermsAndPoliciesPage = () => {
                 </Text>
               </Box>
               <Text fontSize="sm" color="gray.700" ml={2}>
-                Adams Foods is not liable for indirect damages, loss of revenue,
+                AdamsFoods is not liable for indirect damages, loss of revenue,
                 or product misuse.
               </Text>
             </Box>
@@ -575,6 +575,35 @@ const TermsAndPoliciesPage = () => {
               with privacy regulations.
             </Text>
           </Box>
+        </Box>
+        {/* Privacy & Image Rights Statement Section */}
+        <Heading
+          size="sm"
+          fontWeight="bold"
+          textAlign="right"
+          mb={-2}
+          mr={10}
+          mt={12}
+        >
+          Image Rights & Copyright
+        </Heading>
+        <Box
+          px={6}
+          paddingTop={4}
+          paddingBottom={10}
+          m={4}
+          borderRadius={24}
+          bg={COLORS.GRAY_LIGHT}
+        >
+          <VStack spacing={5} align="stretch">
+            <Text fontSize="sm" color="gray.700" ml={2}>
+              All images, logos, and visual content on this platform are the
+              exclusive property of AdamsFoods and its affiliated brands,
+              including Meat Papa, Adams Gourmet Beef, and Yukbul. Unauthorized
+              use, reproduction, or distribution of any visual materials without
+              written consent is strictly prohibited.
+            </Text>
+          </VStack>
         </Box>
 
         <Footer />

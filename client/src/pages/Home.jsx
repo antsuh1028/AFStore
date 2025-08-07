@@ -27,7 +27,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { SearchIcon, } from "@chakra-ui/icons";
+import { SearchIcon } from "@chakra-ui/icons";
 import { ShoppingCart, UserRound } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -361,7 +361,7 @@ const HomePage = () => {
                   variant="ghost"
                   type="submit"
                   isLoading={isLoading}
-                  _hover={{cursor:"pointer"}}
+                  _hover={{ cursor: "pointer" }}
                 />
               </InputRightElement>
             </InputGroup>
@@ -454,57 +454,48 @@ const HomePage = () => {
                   overflowY="auto"
                   maxH="80vh"
                 >
-                  {searchResults.map(
-                    (item) =>
-                      item.show && (
-                        <GridItem key={item.id}>
-                          <Flex
-                            p={4}
-                            border="1px"
-                            borderColor="gray.200"
+                  {searchResults
+                    .filter((item) => item.show && item.images > 0)
+                    .map((item) => (
+                      <GridItem key={item.id}>
+                        <Flex
+                          p={4}
+                          border="1px"
+                          borderColor="gray.200"
+                          borderRadius="md"
+                          cursor="pointer"
+                          _hover={{ bg: "gray.50" }}
+                          onClick={() => {
+                            handleResultClick(item);
+                            onSearchClose();
+                          }}
+                        >
+                          <OptimizedImage
+                            src={`/products/${item.style}/${item.name}/01.avif`}
+                            fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
+                            alt={item.name}
+                            w="25%"
+                            objectFit="cover"
                             borderRadius="md"
-                            cursor="pointer"
-                            _hover={{ bg: "gray.50" }}
-                            onClick={() => {
-                              handleResultClick(item);
-                              onSearchClose();
-                            }}
-                          >
-                            <OptimizedImage
-                              src={
-                                item.images > 0
-                                  ? `/products/${item.style}/${item.name}/01.avif`
-                                  : "/images/gray.avif"
-                              }
-                              fallbackSrc={
-                                item.images > 0
-                                  ? `/products/${item.style}/${item.name}/01.jpg`
-                                  : "/images/gray.avif"
-                              }
-                              alt={item.name}
-                              w="25%"
-                              objectFit="cover"
-                              borderRadius="md"
-                              mr={4}
-                            />
-                            <VStack align="start" spacing={2} flex={1}>
-                              <Text fontWeight="bold">{item.name}</Text>
-                              <Text fontSize="sm" color="gray.600">
-                                {item.description}
+                            mr={4}
+                          />
+                          <VStack align="start" spacing={2} flex={1}>
+                            <Text fontWeight="bold">{item.name}</Text>
+                            <Text fontSize="sm" color="gray.600">
+                              {item.description}
+                            </Text>
+                            <HStack>
+                              <Text fontSize="sm" color="blue.600">
+                                {item.species}
                               </Text>
-                              <HStack>
-                                <Text fontSize="sm" color="blue.600">
-                                  {item.species}
-                                </Text>
-                                <Text fontSize="sm" fontWeight="bold">
-                                  ${item.price}
-                                </Text>
-                              </HStack>
-                            </VStack>
-                          </Flex>
-                        </GridItem>
-                      )
-                  )}
+                              <Text fontSize="sm" fontWeight="bold">
+                                ${item.price}
+                              </Text>
+                            </HStack>
+                          </VStack>
+                        </Flex>
+                      </GridItem>
+                    ))}
                 </Grid>
               ) : (
                 <Text textAlign="center" color="gray.500">
@@ -537,7 +528,7 @@ const HomePage = () => {
               fallback: "images/processed_button.png",
             },
             {
-              name: "Untrimmed",
+              name: "Whole Meat",
               url: "/wholesale/unprocessed",
               image: "/images/wholesale_button.avif",
               fallback: "/images/wholesale_button.png",
@@ -668,7 +659,7 @@ const HomePage = () => {
               fallback: "images/processed_button.png",
             },
             {
-              name: "Untrimmed",
+              name: "Whole Meat",
               url: "/wholesale/unprocessed",
               image: "/images/wholesale_button.avif",
               fallback: "/images/wholesale_button.png",
@@ -893,7 +884,7 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  "Korean-style cutting"
+                  "Korean style cutting"
                 </Text>
               </VStack>
             </GridItem>
@@ -914,11 +905,11 @@ const HomePage = () => {
           </Grid>
           <VStack align="flex-start" spacing={4} p={2}>
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              Founded in 2012, Adams Foods produces safe, tailored products in
-              USDA-inspected facilities.
+              Founded in 2012, AdamsFoods produces safe, tailored products in
+              USDA inspected facilities.
             </Text>
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              Our exclusive Korean-style cutting has built strong partnerships,
+              Our exclusive Korean style cutting has built strong partnerships,
               proudly representing K-BBQ.
             </Text>
             <Text fontSize="sm" color="gray.600" lineHeight="tall">

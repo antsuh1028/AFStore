@@ -38,7 +38,7 @@ const ITEMS = [
     color: COLORS.GRAY_MEDIUM,
   },
   {
-    label: "Untrimmed",
+    label: "Whole Meat",
     to: "/wholesale/unprocessed",
     icon: "/images/wholesale_button.avif",
     fallback: "/images/wholesale_button.png",

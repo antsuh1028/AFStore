@@ -420,7 +420,7 @@ const ProductDetailPage = () => {
           product?.style === "processed"
             ? "Prepped"
             : product?.style === "unprocessed"
-            ? "Untrimmed"
+            ? "Whole Meat"
             : product?.style?.charAt(0).toUpperCase() +
               product?.style?.slice(1),
         url: `/wholesale/${product?.style}`,
@@ -721,9 +721,11 @@ const ProductDetailPage = () => {
                 />
               )}
             </HStack>
-            <Text fontSize="xl" fontWeight="bold" color="black">
+            {isAuthenticated ? (<Text fontSize="xl" fontWeight="bold" color="black">
               ${product.price}/lb
-            </Text>
+            </Text>) : (<Text fontSize="sm" fontWeight="bold" color="black" p={2}    textAlign="center ">
+              Login to see prices
+            </Text>)}
           </HStack>
 
           <VStack spacing={2} align="stretch" w="100%">

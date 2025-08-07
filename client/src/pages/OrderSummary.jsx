@@ -161,7 +161,7 @@ const OrderPayment = ({
             isChecked={isAgreed3}
             onChange={() => setIsAgreed3(!isAgreed3)}
           >
-            I agree that Adams Foods is not liable for any issues arising after
+            I agree that AdamsFoods is not liable for any issues arising after
             product delivery, including improper storage, preparation, or
             handling.
           </StyledCheckbox>

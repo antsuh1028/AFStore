@@ -8,7 +8,9 @@ import {
   TabList,
   TabPanels,
   Tab,
-  TabPanel,Image,Button,
+  TabPanel,
+  Image,
+  Button,
   VStack,
   Heading,
 } from "@chakra-ui/react";
@@ -34,7 +36,7 @@ export const ErrorMessage = ({ error, onOpen }) => {
         minHeight="100vh"
       >
         <Navbar onOpen={onOpen} home={true} />
-        
+
         <Box p={8} textAlign="center">
           <VStack spacing={6}>
             {/* Logo */}
@@ -51,14 +53,20 @@ export const ErrorMessage = ({ error, onOpen }) => {
               <Heading size="md" color={COLORS.PRIMARY}>
                 Something went wrong
               </Heading>
-              <Text fontSize="sm" color="gray.600" maxW="280px" textAlign="center">
-                {error || "We're having trouble loading this page. Please try again."}
+              <Text
+                fontSize="sm"
+                color="gray.600"
+                maxW="280px"
+                textAlign="center"
+              >
+                {error ||
+                  "We're having trouble loading this page. Please try again."}
               </Text>
             </VStack>
 
             {/* Action Buttons */}
             <VStack spacing={3} w="full" maxW="200px">
-              <Button 
+              <Button
                 bg={COLORS.PRIMARY}
                 color="white"
                 borderRadius="full"
@@ -69,8 +77,8 @@ export const ErrorMessage = ({ error, onOpen }) => {
               >
                 Try Again
               </Button>
-              
-              <Button 
+
+              <Button
                 variant="outline"
                 borderColor={COLORS.PRIMARY}
                 color={COLORS.PRIMARY}
@@ -78,14 +86,14 @@ export const ErrorMessage = ({ error, onOpen }) => {
                 size="md"
                 width="100%"
                 _hover={{ bg: "gray.50" }}
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
               >
                 Go Home
               </Button>
             </VStack>
           </VStack>
         </Box>
-        
+
         <Footer />
       </Container>
     </Sidebar>
@@ -95,39 +103,43 @@ export const ErrorMessage = ({ error, onOpen }) => {
 const renderProductGrid = (
   filteredProducts,
   emptyMessage,
-  isLoading = false
-) => (
-  <Box minHeight="400px">
-    {isLoading ? (
-      <SimpleGrid columns={2} spacing={2} pb={8}>
-        {Array(6)
-          .fill()
-          .map((_, i) => (
-            <ProductCardSkeleton key={i} />
+  isLoading = false,
+) => {
+  const visibleProducts = filteredProducts.filter(
+    (item) => item.show && item.images > 0
+  );
+
+  return (
+    <Box minHeight="400px">
+      {isLoading ? (
+        <SimpleGrid columns={2} spacing={2} pb={8}>
+          {Array(6)
+            .fill()
+            .map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+        </SimpleGrid>
+      ) : visibleProducts.length === 0 ? (
+        <Box
+          textAlign="center"
+          py={8}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          minHeight="300px"
+        >
+          <Text color="gray.500">{emptyMessage}</Text>
+        </Box>
+      ) : (
+        <SimpleGrid columns={2} spacing={2} pb={8}>
+          {visibleProducts.map((item) => (
+            <ProductCard key={item.id} {...item}/>
           ))}
-      </SimpleGrid>
-    ) : filteredProducts.filter((item) => item.show).length === 0 ? (
-      <Box
-        textAlign="center"
-        py={8}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        minHeight="300px"
-      >
-        <Text color="gray.500">{emptyMessage}</Text>
-      </Box>
-    ) : (
-      <SimpleGrid columns={2} spacing={2} pb={8}>
-        {filteredProducts
-          .filter((item) => item.show)
-          .map((item) => (
-            <ProductCard key={item.id} {...item} />
-          ))}
-      </SimpleGrid>
-    )}
-  </Box>
-);
+        </SimpleGrid>
+      )}
+    </Box>
+  );
+};
 
 export const ProductTabs = ({
   products,
@@ -280,7 +292,7 @@ export const ProductTabs = ({
             {renderProductGrid(
               tabProducts,
               `No ${productType} ${key === "all" ? "" : key} products found`,
-              loading
+              loading,
             )}
           </TabPanel>
         ))}

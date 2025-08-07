@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Image, IconButton } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
@@ -7,6 +7,7 @@ const ImageCarousel = () => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   const images = [
     { avif: "/images/main_banner_2.avif", fallback: "/images/main_banner_2.png" },
@@ -15,6 +16,19 @@ const ImageCarousel = () => {
   ];
 
   const minSwipeDistance = 50;
+
+  // Auto-advance functionality
+  useEffect(() => {
+    if (isPaused || isAnimating) return;
+
+    const interval = setInterval(() => {
+      setIsAnimating(true);
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+      setTimeout(() => setIsAnimating(false), 300);
+    }, 2500); // Change every 2 seconds
+
+    return () => clearInterval(interval);
+  }, [isPaused, isAnimating, images.length]);
 
   const goToPrevious = () => {
     if (isAnimating) return;
@@ -60,6 +74,15 @@ const ImageCarousel = () => {
     setTimeout(() => setIsAnimating(false), 300);
   };
 
+  // Pause auto-advance on hover
+  const handleMouseEnter = () => {
+    setIsPaused(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPaused(false);
+  };
+
   return (
     <Box px={4}>
       <Box
@@ -70,6 +93,8 @@ const ImageCarousel = () => {
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {/* Image Container with Sliding Animation */}
         <Box
