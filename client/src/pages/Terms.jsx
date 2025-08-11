@@ -231,7 +231,7 @@ const TermsAndPoliciesPage = () => {
                   <Box as="span" mr={2} fontSize="6px">
                     <MdCircle />
                   </Box>
-                  California Resale Certificate
+                  California Resale Certificate (CDTFA-230)
                 </ListItem>
                 <ListItem fontSize="sm" display="flex" alignItems="center">
                   <Box as="span" mr={2} fontSize="6px">

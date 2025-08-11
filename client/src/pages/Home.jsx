@@ -565,12 +565,27 @@ const HomePage = () => {
 
           {[
             {
+              name: "Adams",
+              icon: (
+                <OptimizedImage
+                  src="/images/home_icons/adams.avif"
+                  fallbackSrc="/images/home_icons/adams.jpg"
+                  alt="Adams"
+                  objectFit="cover"
+                  width="100%"
+                  height="100%"
+                  borderRadius="full"
+                />
+              ),
+              url: "/wholesale/adams-gourmet",
+            },
+            {
               name: "Deal",
               icon: (
                 <OptimizedImage
                   src="/images/home_icons/deal.avif"
                   fallbackSrc="/images/home_icons/deal.jpg"
-                  alt="Order"
+                  alt="Deal"
                   objectFit="cover"
                   width="100%"
                   height="100%"
@@ -594,21 +609,7 @@ const HomePage = () => {
               ),
               url: "/wholesale/how-to-order",
             },
-            {
-              name: "Contact",
-              icon: (
-                <OptimizedImage
-                  src="/images/home_icons/contact.avif"
-                  fallbackSrc="/images/home_icons/contact.jpg"
-                  alt="Order"
-                  objectFit="cover"
-                  width="100%"
-                  height="100%"
-                  borderRadius="full"
-                />
-              ),
-              url: "/contact",
-            },
+            
           ].map((action, idx) => (
             <GridItem key={idx}>
               <VStack spacing={2} my={4}>

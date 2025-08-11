@@ -488,7 +488,7 @@ const Signup = () => {
 
               <FormControl>
                 <FormLabel fontWeight="semibold" fontSize="sm">
-                  California Resale Certificate
+                  California Resale Certificate (CDTFA-230)
                 </FormLabel>
                 <Input
                   type="text"

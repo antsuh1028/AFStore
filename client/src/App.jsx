@@ -19,7 +19,7 @@ import {
   MarinatedPage,
   ProcessedPage,
   UnprocessedPage,
-  PremiumPage,
+  AdamsGourmetPage,
   AllProductsPage,
 } from "./pages/wholesale";
 import ProductDetailPage from "./components/shop/ProductDetails";
@@ -77,8 +77,8 @@ function App() {
                   element={<UnprocessedPage />}
                 />
                 <Route
-                  path="/wholesale/premium"
-                  element={<PremiumPage />}
+                  path="/wholesale/adams-gourmet"
+                  element={<AdamsGourmetPage />}
                 />
                 <Route
                   path="/wholesale/shop-all"

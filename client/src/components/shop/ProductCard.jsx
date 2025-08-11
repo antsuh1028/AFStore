@@ -170,7 +170,7 @@ export const ProductCard = ({
           {isAuthenticated ? (<Text fontWeight="bold" fontSize="sm">
             ${price}/lb
           </Text>) : (<Text fontWeight="bold" fontSize="sm">
-            unavailable
+            Unavailable
           </Text>)}
         </Box>
       </Box>

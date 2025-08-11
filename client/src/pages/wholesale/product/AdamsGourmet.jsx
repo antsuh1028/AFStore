@@ -21,7 +21,7 @@ import {
 } from "../../../components/shop/ProductGrid";
 import { API_CONFIG } from "../../../constants";
 
-const PremiumPage = () => {
+const AdamsGourmetPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const contentRef = useRef(null);
@@ -80,7 +80,7 @@ const PremiumPage = () => {
         setImagesLoaded(true);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching premium products:", err);
+        console.error("Error fetching adams gourmet products:", err);
       } finally {
         setLoading(false);
       }
@@ -113,7 +113,7 @@ const PremiumPage = () => {
           <Navbar onOpen={onOpen} home={true} />
           <VStack spacing={0}>
             <Box fontSize="2xl" fontWeight="semibold" mb={4}>
-              Premium Meat
+              Adams Gourmet Beef
             </Box>
             <ProductTabs
               products={[]}
@@ -149,7 +149,7 @@ const PremiumPage = () => {
 
         <VStack spacing={0}>
           <Box fontSize="2xl" fontWeight="semibold" mb={4}>
-            Premium Meat
+            Adams Gourmet Beef
           </Box>
 
           <ProductTabs
@@ -165,4 +165,4 @@ const PremiumPage = () => {
   );
 };
 
-export default PremiumPage;
+export default AdamsGourmetPage;

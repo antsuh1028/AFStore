@@ -588,6 +588,21 @@ export const myPages = (
             View all
           </Link>
         </Flex>
+        <VStack bg={COLORS.GRAY_LIGHT} p={2} my={4}>
+          <Flex>
+            <Icon as={CheckCircleIcon} color="black" m={2} />
+            <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
+              For order changes or mistakes, please contact us via the "Contact
+              Us" page.
+            </Text>
+          </Flex>
+          <Flex>
+            <Icon as={CheckCircleIcon} color="black" m={2} />
+            <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
+              Returns are not accepted once meat processing has begun.
+            </Text>
+          </Flex>
+        </VStack>
         <OrdersList orders={orders.slice(0, 2)} currPage={currPage} />
         <Modal
           isOpen={deleteModalDisclosure.isOpen}
@@ -639,7 +654,6 @@ export const myPages = (
             My Orders
           </Text>
         </Flex>
-        <OrdersList orders={orders} currPage={currPage} />
         <VStack bg={COLORS.GRAY_LIGHT} p={2} my={4}>
           <Flex>
             <Icon as={CheckCircleIcon} color="black" m={2} />
@@ -655,6 +669,8 @@ export const myPages = (
             </Text>
           </Flex>
         </VStack>
+        <OrdersList orders={orders} currPage={currPage} />
+        
       </>
     );
   }

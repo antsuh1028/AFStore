@@ -27,6 +27,7 @@ import {
   List,
   ListItem,
   Center,
+  Link,
 } from "@chakra-ui/react";
 import {
   ChevronLeft,
@@ -421,9 +422,11 @@ const ProductDetailPage = () => {
             ? "Prepped"
             : product?.style === "unprocessed"
             ? "Whole Meat"
+            : product?.style === "premium"
+            ? "Adams Gourmet"
             : product?.style?.charAt(0).toUpperCase() +
               product?.style?.slice(1),
-        url: `/wholesale/${product?.style}`,
+        url: `/wholesale/${product?.style === "premium" ? "adams-gourmet" : product?.style}`,
       },
       { label: (product?.name || "Product").substring(0, 30) + "..." },
     ],
@@ -459,7 +462,7 @@ const ProductDetailPage = () => {
           ml={{ base: 0, lg: "40%" }}
           minHeight="100vh"
         >
-          <Navbar onOpen={onOpen}/>
+          <Navbar onOpen={onOpen} />
           <Box p={8} textAlign="center">
             <VStack spacing={6}>
               {/* Logo */}
@@ -721,11 +724,22 @@ const ProductDetailPage = () => {
                 />
               )}
             </HStack>
-            {isAuthenticated ? (<Text fontSize="xl" fontWeight="bold" color="black">
-              ${product.price}/lb
-            </Text>) : (<Text fontSize="sm" fontWeight="bold" color="black" p={2}    textAlign="center ">
-              Login to see prices
-            </Text>)}
+            {isAuthenticated ? (
+              <Text fontSize="xl" fontWeight="bold" color="black">
+                ${product.price}/lb
+              </Text>
+            ) : (
+              <Link
+                fontSize="sm"
+                fontWeight="bold"
+                color="black"
+                p={2}
+                textAlign="center "
+                href="/login"
+              >
+                Login to see prices
+              </Link>
+            )}
           </HStack>
 
           <VStack spacing={2} align="stretch" w="100%">

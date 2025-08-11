@@ -48,7 +48,7 @@ const FAQPage = () => {
       textEnd:
         " as we are confident in the safety and quality of our products.",
       noteBody:
-        "However, exchanges are possible if there is an issue with the product. For pick-up orders, both parties will inspect the meat together before handing it over. Therefore, refunds are not possible after this point. \n\nIf you receive the meat via delivery and find a problem, please contact us within 24 hours. If you have any questions or concerns, please feel free to contact us. We are happy to assist you.",
+        "However, exchanges are possible if there is an issue with the product. For pick-up orders, both parties will inspect the meat together before handing it over. Therefore, refunds are not possible after this point. \n\nIf you receive the product via delivery and find a problem, please contact us within 24 hours. If you have any questions or concerns, please feel free to contact us. We are happy to assist you.",
       noteBold: `• ${"\u00A0\u00A0"}(323)943-9318\n•  ${"\u00A0\u00A0"}admin@adamsfoods.us`,
     },
     {
@@ -74,7 +74,7 @@ const FAQPage = () => {
     {
       heading: "Q. Cash & Carry",
       textStart: "Get ",
-      highlight: "extra meat",
+      highlight: "extra product",
       textEnd: " when you pay with cash and pick up!",
     },
     {
