@@ -50,12 +50,17 @@ import ProductDetailSkeleton from "../skeletons/ProductDetailsSkeleton";
 import { useAuthContext } from "../../hooks/useAuth";
 import { COLORS, API_CONFIG } from "../../constants";
 import Navbar from "../Navbar";
+import { useLanguage } from "../../hooks/LanguageContext";
 
 const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
   const [loadedImages, setLoadedImages] = useState(new Set());
   const [failedImages, setFailedImages] = useState(new Set());
   const [isCurrentImageLoading, setIsCurrentImageLoading] = useState(true);
+
+  // Touch/swipe state
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   const imagePaths = useMemo(() => {
     if (!productName || !productStyle || !productImages) {
@@ -165,6 +170,30 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
     setIsCurrentImageLoading(true);
   }, []);
 
+  // Touch handlers for swipe functionality
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50; // Swipe left (next image)
+    const isRightSwipe = distance < -50; // Swipe right (previous image)
+
+    if (isLeftSwipe && hasMultipleImages) {
+      nextImage();
+    } else if (isRightSwipe && hasMultipleImages) {
+      prevImage();
+    }
+  };
+
   const currentImagePath = imagePaths[imagePage - 1];
   const isCurrentImageReady =
     currentImagePath &&
@@ -179,6 +208,9 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
       bg="gray.50"
       borderRadius="lg"
       overflow="hidden"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
     >
       {/* Loading overlay */}
       {isCurrentImageLoading && !isCurrentImageReady && (
@@ -307,14 +339,14 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
 };
 
 const CollapsibleSection = ({ title, isOpen, onToggle, children }) => (
-  <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
+  <Box w="100%"  borderColor="gray.100" borderRadius="md">
     <Button
       w="100%"
       justifyContent="space-between"
       variant="ghost"
       onClick={onToggle}
       rightIcon={isOpen ? <ChevronUp /> : <ChevronDown />}
-      fontWeight="bold"
+      fontWeight="extrabold"
       py={4}
     >
       {title}
@@ -345,7 +377,7 @@ const ProductDetailPage = () => {
 
   const { userInfo, isAuthenticated, logout, userName, userId, userEmail } =
     useAuthContext();
-
+  const { selectedLanguage } = useLanguage();
   const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
@@ -426,7 +458,9 @@ const ProductDetailPage = () => {
             ? "Adams Gourmet"
             : product?.style?.charAt(0).toUpperCase() +
               product?.style?.slice(1),
-        url: `/wholesale/${product?.style === "premium" ? "adams-gourmet" : product?.style}`,
+        url: `/wholesale/${
+          product?.style === "premium" ? "adams-gourmet" : product?.style
+        }`,
       },
       { label: (product?.name || "Product").substring(0, 30) + "..." },
     ],
@@ -742,17 +776,30 @@ const ProductDetailPage = () => {
             )}
           </HStack>
 
-          <VStack spacing={2} align="stretch" w="100%">
+          <VStack spacing={2} align="stretch" w="100%" mb={4}>
             <Box bg={COLORS.GRAY_LIGHT} p={4} borderRadius="md">
               <HStack spacing={2}>
                 <CheckCircleIcon color="green.500" />
                 <VStack align="flex-start" spacing={0}>
-                  <Text fontSize="sm" fontWeight="medium">
-                    Pick up available at DTLA Warehouse
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    Usually ready in 24 hours
-                  </Text>
+                  {selectedLanguage.code === "en" ? (
+                    <>
+                      <Text fontSize="sm" fontWeight="medium">
+                        Pick up available at DTLA Warehouse
+                      </Text>
+                      <Text fontSize="sm" color="gray.600">
+                        Usually ready in 24 hours
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text fontSize="sm" fontWeight="medium">
+                        픽업은 DTLA DTLA Warehouse에서 가능합니다.
+                      </Text>
+                      <Text fontSize="sm" color="gray.600">
+                        보통 24시간 내에 준비됩니다.
+                      </Text>
+                    </>
+                  )}
                 </VStack>
               </HStack>
             </Box>
@@ -760,22 +807,26 @@ const ProductDetailPage = () => {
             <VStack align="flex-start" px={8} spacing={3}>
               <HStack>
                 <FiThermometer />
-                <Text fontSize="sm">Keep frozen</Text>
-              </HStack>
-              {/* <HStack>
-                <FiTruck />
                 <Text fontSize="sm">
-                  Free local shipping in orders over $3000
+                  {selectedLanguage.code === "en"
+                    ? "Keep frozen"
+                    : "냉동 보관해 주세요."}
                 </Text>
-              </HStack> */}
+              </HStack>
               <HStack>
                 <WarningIcon />
-                <Text fontSize="sm">Cook thoroughly before consumption</Text>
+                <Text fontSize="sm">
+                  {selectedLanguage.code === "en"
+                    ? "Cook thoroughly before consumption"
+                    : "섭취 전에는 충분히 익혀서 드시기 바랍니다."}
+                </Text>
               </HStack>
               <HStack>
                 <FiPackage />
                 <Text fontSize="sm">
-                  Pack Date: See package label for details
+                  {selectedLanguage.code === "en"
+                    ? "Pack Date: See package label for details"
+                    : "포장일자는 패키지 라벨을 참고해 주세요."}
                 </Text>
               </HStack>
             </VStack>

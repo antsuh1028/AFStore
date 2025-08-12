@@ -32,6 +32,7 @@ import { getCart } from "../../utils/cartActions";
 import { ShowCart } from "../../components/profile/ShowCart";
 import { myPages } from "../../components/profile/ProfileComponents";
 import { API_CONFIG, COLORS } from "../../constants";
+import { useLanguage } from "../../hooks/LanguageContext";
 
 const UserProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -42,6 +43,7 @@ const UserProfile = () => {
   const location = useLocation();
   const defaultTabIndex = location.state?.activeTab || 0;
   const deleteModalDisclosure = useDisclosure();
+
 
   const {
     userInfo,
@@ -55,6 +57,7 @@ const UserProfile = () => {
     updateUserInfo,
     refreshUserInfo,
   } = useAuthContext();
+  const { selectedLanguage } = useLanguage();
 
   const [orders, setOrders] = useState([]);
   const [cartItems, setCartItems] = useState(() => getCart());
@@ -474,7 +477,7 @@ const UserProfile = () => {
               </TabList>
               <TabPanels my={8}>
                 <TabPanel>
-                  {myPages(currPage, {
+                  {myPages(currPage, selectedLanguage,{
                     userInformation,
                     setUserInformation,
                     updateUserInfo,

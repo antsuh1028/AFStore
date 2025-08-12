@@ -45,7 +45,6 @@ const OrdersList = ({ orders, currPage }) => {
   const [itemDetailsMap, setItemDetailsMap] = useState({});
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
-
   const sortedAndFilteredOrders = useMemo(() => {
     const sorted = [...orders].sort((a, b) => {
       return new Date(b.order_date) - new Date(a.order_date);
@@ -81,7 +80,8 @@ const OrdersList = ({ orders, currPage }) => {
   };
 
   useEffect(() => {
-    if (!sortedAndFilteredOrders || sortedAndFilteredOrders.length === 0) return;
+    if (!sortedAndFilteredOrders || sortedAndFilteredOrders.length === 0)
+      return;
     setLoading(true);
 
     const fetchOrderItemsAndDetails = async () => {
@@ -106,7 +106,9 @@ const OrdersList = ({ orders, currPage }) => {
 
       if (itemIds.size > 0) {
         const itemDetailsRes = await fetch(
-          `${API_CONFIG.BASE_URL}/api/items?ids=${Array.from(itemIds).join(',')}`
+          `${API_CONFIG.BASE_URL}/api/items?ids=${Array.from(itemIds).join(
+            ","
+          )}`
         );
         const itemDetailsData = await itemDetailsRes.json();
         if (itemDetailsData.success) {
@@ -372,6 +374,7 @@ const OrdersList = ({ orders, currPage }) => {
 
 export const myPages = (
   currPage,
+  selectedLanguage,
   {
     userInformation,
     setUserInformation,
@@ -576,7 +579,7 @@ export const myPages = (
           <Link
             fontSize="xs"
             color="white"
-            textDecoration="underline" 
+            textDecoration="underline"
             mx={2}
             _hover={{ color: "gray.200" }}
             minW="48px"
@@ -588,21 +591,6 @@ export const myPages = (
             View all
           </Link>
         </Flex>
-        <VStack bg={COLORS.GRAY_LIGHT} p={2} my={4}>
-          <Flex>
-            <Icon as={CheckCircleIcon} color="black" m={2} />
-            <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
-              For order changes or mistakes, please contact us via the "Contact
-              Us" page.
-            </Text>
-          </Flex>
-          <Flex>
-            <Icon as={CheckCircleIcon} color="black" m={2} />
-            <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
-              Returns are not accepted once meat processing has begun.
-            </Text>
-          </Flex>
-        </VStack>
         <OrdersList orders={orders.slice(0, 2)} currPage={currPage} />
         <Modal
           isOpen={deleteModalDisclosure.isOpen}
@@ -655,22 +643,70 @@ export const myPages = (
           </Text>
         </Flex>
         <VStack bg={COLORS.GRAY_LIGHT} p={2} my={4}>
-          <Flex>
-            <Icon as={CheckCircleIcon} color="black" m={2} />
-            <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
-              For order changes or mistakes, please contact us via the "Contact
-              Us" page.
-            </Text>
-          </Flex>
-          <Flex>
-            <Icon as={CheckCircleIcon} color="black" m={2} />
-            <Text fontSize="12px" color="black" textAlign="left" ml={2} mr={4}>
-              Returns are not accepted once meat processing has begun.
-            </Text>
-          </Flex>
+          {selectedLanguage.code === "en" ? (
+            <>
+              <Flex>
+                <Icon as={CheckCircleIcon} color="black" m={2} />
+                <Text
+                  fontSize="12px"
+                  color="black"
+                  textAlign="left"
+                  ml={2}
+                  mr={4}
+                >
+                  For order changes or mistakes, please contact us via the
+                  "Contact Us" page.
+                </Text>
+              </Flex>
+              <Flex>
+                <Icon as={CheckCircleIcon} color="black" m={2} />
+                <Text
+                  fontSize="12px"
+                  color="black"
+                  textAlign="left"
+                  ml={2}
+                  mr={4}
+                >
+                  Returns are not accepted once meat processing has begun.
+                </Text>
+              </Flex>
+            </>
+          ) : (
+            <>
+              <Flex align="flex-start" w="100%" mx={2}>
+                <Icon as={CheckCircleIcon} color="black" m={2} />
+                <Text
+                  fontSize="13px"
+                  color="black"
+                  textAlign="left"
+                  ml={2}
+                  mr={4}
+                  lineHeight="1.6"
+                  letterSpacing="0.3px"
+                >
+                  주문 변경이나 오류가 있을 경우, "문의하기" 페이지를 통해
+                  연락해 주세요.
+                </Text>
+              </Flex>
+              <Flex align="flex-start" w="100%" mx={2}>
+                {" "}
+                <Icon as={CheckCircleIcon} color="black" mx={2} />
+                <Text
+                  fontSize="13px"
+                  color="black"
+                  textAlign="left"
+                  ml={2}
+                  mr={4}
+                  lineHeight="1.6"
+                  letterSpacing="0.3px"
+                >
+                  고기 가공이 시작된 이후에는 반품이 불가합니다.
+                </Text>
+              </Flex>
+            </>
+          )}
         </VStack>
         <OrdersList orders={orders} currPage={currPage} />
-        
       </>
     );
   }
@@ -759,7 +795,9 @@ export const myPages = (
                 textAlign="left"
                 name="california_resale"
                 ml={4}
-              >{userInformation.california_resale || ""}</Text>
+              >
+                {userInformation.california_resale || ""}
+              </Text>
               <Text
                 fontWeight="bold"
                 textTransform="uppercase"
@@ -775,7 +813,9 @@ export const myPages = (
                 textAlign="left"
                 name="california_resale"
                 ml={4}
-              >{userInformation.license_number || ""}</Text>
+              >
+                {userInformation.license_number || ""}
+              </Text>
               <Text
                 fontWeight="bold"
                 textTransform="uppercase"
@@ -791,7 +831,9 @@ export const myPages = (
                 textAlign="left"
                 name="california_resale"
                 ml={4}
-              >{address || ""}</Text>
+              >
+                {address || ""}
+              </Text>
             </Grid>
           </Box>
           <Button colorScheme="gray" size="md" my={8} onClick={handleSubmit}>

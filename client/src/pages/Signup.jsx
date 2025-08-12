@@ -25,6 +25,7 @@ import Footer from "../components/Footer";
 
 import emailjs from "emailjs-com";
 import { API_CONFIG, COLORS } from "../constants";
+import { useLanguage } from "../hooks/LanguageContext";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -48,6 +49,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const contentRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { selectedLanguage } = useLanguage();
 
   const form = useRef();
 
@@ -68,7 +70,6 @@ const Signup = () => {
         : ""
     );
   };
-  
 
   const inputStyle = {
     borderRadius: "full",
@@ -481,7 +482,11 @@ const Signup = () => {
                     name="license_file"
                     fileName={licenseFileName}
                     setFileName={setLicenseFileName}
-                    helpText="*Please attach the Business License"
+                    helpText={
+                    selectedLanguage.code === "en"
+                      ? "*Please attach the Business License"
+                      : "*사업자등록증을 첨부해 주세요."
+                  }
                   />
                 </Box>
               </FormControl>
@@ -502,19 +507,34 @@ const Signup = () => {
                     name="resale_cert_file"
                     fileName={businessFileName}
                     setFileName={setBusinessFileName}
-                    helpText="*Please attach the California Resale Certificate"
+                    helpText={
+                    selectedLanguage.code === "en"
+                      ? "*Please attach the California Resale Certificate"
+                      : "*CA 재판매 증명서를 첨부해 주세요."
+                  }
                   />
                 </Box>
               </FormControl>
 
-              <CustomCheckbox
-                checked={agreementChecked}
-                // disabled={true}
-                onChange={() => setAgreementChecked(!agreementChecked)}
-              >
-                To ensure wholesale eligibility, please provide your license
-                number and upload a copy during sign-up.
-              </CustomCheckbox>
+              {selectedLanguage.code === "en" ? (
+                <CustomCheckbox
+                  checked={agreementChecked}
+                  // disabled={true}
+                  onChange={() => setAgreementChecked(!agreementChecked)}
+                >
+                  To ensure wholesale eligibility, please provide your license
+                  number and upload a copy during sign-up.
+                </CustomCheckbox>
+              ) : (
+                <CustomCheckbox
+                  checked={agreementChecked}
+                  // disabled={true}
+                  onChange={() => setAgreementChecked(!agreementChecked)}
+                >
+                  도매 자격 확인을 위해 가입 시 사업자 등록번호를 기재하고
+                  사본을 업로드해 주세요.
+                </CustomCheckbox>
+              )}
 
               <FormControl>
                 <FormLabel fontWeight="semibold" fontSize="sm">
@@ -525,11 +545,15 @@ const Signup = () => {
                   name="gov_id_file"
                   fileName={govIdFileName}
                   setFileName={setGovIdFileName}
-                  helpText="*Please attach the government ID."
+                  helpText={
+                    selectedLanguage.code === "en"
+                      ? "*Please attach the government ID."
+                      : "*도매 라이선스를 첨부해 주세요."
+                  }
                 />
               </FormControl>
 
-              <FormControl>
+              {/* <FormControl>
                 <FormLabel fontWeight="semibold" fontSize="sm">
                   Business License or Reseller Permit
                 </FormLabel>
@@ -538,17 +562,30 @@ const Signup = () => {
                   name="business_file"
                   fileName={businessFileName}
                   setFileName={setBusinessFileName}
-                  helpText="*Please attach the business license."
+                  helpText={
+                    selectedLanguage.code === "en"
+                      ? "*Please attach the business license."
+                      : "*도매 라이선스를 첨부해 주세요."
+                  }
                 />
-              </FormControl>
+              </FormControl> */}
 
               <Box bg="gray.50" p={4} borderRadius="md">
-                <CustomCheckbox checked={true} disabled={true}>
-                  Please allow 1-2 business days for account review and
-                  verification. Accounts that do not meet our criteria may be
-                  declined without notice. Providing complete and accurate
-                  documentation helps speed up the approval process.
-                </CustomCheckbox>
+                {selectedLanguage.code === "en" ? (
+                  <CustomCheckbox checked={true} disabled={true}>
+                    Please allow 1-2 business days for account review and
+                    verification. Accounts that do not meet our criteria may be
+                    declined without notice. Providing complete and accurate
+                    documentation helps speed up the approval process.
+                  </CustomCheckbox>
+                ) : (
+                  <CustomCheckbox checked={true} disabled={true}>
+                    계정 검토 및 인증에는 24~48시간이 소요될 수 있습니다. 당사
+                    기준에 부합하지 않는 계정은 사전 통보 없이 거절될 수
+                    있습니다. 완전하고 정확한 서류를 제출하면 승인 절차가 더
+                    빨라집니다.
+                  </CustomCheckbox>
+                )}
               </Box>
 
               <Box display="flex" justifyContent="center" width="100%" pt={4}>
@@ -561,7 +598,7 @@ const Signup = () => {
                   borderRadius="full"
                   size="lg"
                   width="100%"
-                  _hover={{ bg: COLORS.SECONDARY}}
+                  _hover={{ bg: COLORS.SECONDARY }}
                   _disabled={{ bg: "gray.400" }}
                 >
                   CREATE ACCOUNT

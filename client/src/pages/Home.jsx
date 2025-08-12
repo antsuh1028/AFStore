@@ -39,6 +39,7 @@ import { useAuthContext } from "../hooks/useAuth";
 import ImageCarousel from "../components/home/ImageCarousel";
 import { API_CONFIG, COLORS } from "../constants";
 import HomeSkeleton from "../components/skeletons/HomeSkeleton";
+import { useLanguage } from "../hooks/LanguageContext";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -52,6 +53,7 @@ const HomePage = () => {
   const searchRef = useRef(null);
 
   const { isAuthenticated, userId, loading } = useAuthContext();
+  const { selectedLanguage } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -609,7 +611,6 @@ const HomePage = () => {
               ),
               url: "/wholesale/how-to-order",
             },
-            
           ].map((action, idx) => (
             <GridItem key={idx}>
               <VStack spacing={2} my={4}>
@@ -631,148 +632,6 @@ const HomePage = () => {
             </GridItem>
           ))}
         </Grid>
-        {/* Categories */}
-        {/* <Grid
-          templateColumns="repeat(2, 1fr)"
-          templateRows="repeat(2, 1fr)"
-          gap={4}
-          px={4}
-          mb={8}
-          overflowX="auto"
-        >
-          {[
-            {
-              name: "Marinated",
-              url: "/wholesale/marinated",
-              image: "/images/marinated_button.avif",
-              fallback: "images/marinated_button.png",
-            },
-            {
-              name: "Premium",
-              url: "/wholesale/unprocessed",
-              image: "/images/gray.avif",
-              fallback: "/images/wholesale_button.png",
-            },
-            {
-              name: "Prepped",
-              url: "/wholesale/processed",
-              image: "/images/processed_button.avif",
-              fallback: "images/processed_button.png",
-            },
-            {
-              name: "Whole Meat",
-              url: "/wholesale/unprocessed",
-              image: "/images/wholesale_button.avif",
-              fallback: "/images/wholesale_button.png",
-            },
-          ].map((category, idx) => (
-            <GridItem key={idx}>
-              <Flex
-                border="1px"
-                spacing={2}
-                cursor="pointer"
-                onClick={() => navigate(category.url)}
-                alignContent="center"
-                borderRadius="full"
-              >
-                <Box
-                  size="75px"
-                  bg="white"
-                  border="1px"
-                  borderColor="gray.100"
-                  overflow="hidden"
-                  borderRadius="full"
-                >
-                  <OptimizedImage
-                    src={category.image}
-                    fallbackSrc={category.fallback}
-                    alt={category.name}
-                    width="75px"
-                    height="75px"
-                    // objectFit="cover"
-                  />
-                </Box>
-                <Text fontSize="sm" fontWeight="semibold">
-                  {category.name}
-                </Text>
-              </Flex>
-            </GridItem>
-          ))}
-        </Grid>
-        <Grid
-          templateColumns="repeat(3, 1fr)"
-          gap={4}
-          px={4}
-          mb={8}
-          overflowX="auto"
-        >
-          {[
-            {
-              name: "Deal",
-              icon: (
-                <OptimizedImage
-                  src="/images/home_icons/deal.avif"
-                  fallbackSrc="/images/home_icons/deal.jpg"
-                  alt="Order"
-                  objectFit="cover"
-                  width="100%"
-                  height="100%"
-                  borderRadius="full"
-                />
-              ),
-              url: "/wholesale/deal",
-            },
-            {
-              name: "How to Order",
-              icon: (
-                <OptimizedImage
-                  src="/images/home_icons/how_to_order.avif"
-                  fallbackSrc="/images/home_icons/how_to_order.jpg"
-                  alt="Order"
-                  objectFit="cover"
-                  width="100%"
-                  height="100%"
-                  borderRadius="full"
-                />
-              ),
-              url: "/wholesale/how-to-order",
-            },
-            {
-              name: "Contact",
-              icon: (
-                <OptimizedImage
-                  src="/images/home_icons/contact.avif"
-                  fallbackSrc="/images/home_icons/contact.jpg"
-                  alt="Order"
-                  objectFit="cover"
-                  width="100%"
-                  height="100%"
-                  borderRadius="full"
-                />
-              ),
-              url: "/contact",
-            },
-          ].map((action, idx) => (
-            <GridItem key={idx}>
-              <VStack spacing={2} my={4}>
-                <Circle
-                  size="75px"
-                  bg={COLORS.GRAY_MEDIUM}
-                  color="white"
-                  onClick={() => {
-                    navigate(`${action.url}`);
-                  }}
-                  cursor="pointer"
-                >
-                  {action.icon}
-                </Circle>
-                <Text fontSize="sm" fontWeight="semibold">
-                  {action.name}
-                </Text>
-              </VStack>
-            </GridItem>
-          ))}
-        </Grid> */}
 
         {/* Location */}
         <HStack px={6} mb={3} spacing={2} ml={2}>
@@ -885,7 +744,9 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  "Korean style cutting"
+                  {selectedLanguage.code === "en"
+                    ? '"Korean style cutting"'
+                    : '"한국 스타일 고기 컷"'}
                 </Text>
               </VStack>
             </GridItem>
@@ -899,24 +760,47 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  "Trusted partner"
+                  {selectedLanguage.code === "en"
+                    ? '"Trusted partner"'
+                    : "“신뢰할 수 있는 파트너”"}
                 </Text>
               </VStack>
             </GridItem>
           </Grid>
           <VStack align="flex-start" spacing={4} p={2}>
-            <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              Founded in 2012, AdamsFoods produces safe, tailored products in
-              USDA inspected facilities.
-            </Text>
-            <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              Our exclusive Korean style cutting has built strong partnerships,
-              proudly representing K-BBQ.
-            </Text>
-            <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              Through quality and reliability, we have become a trusted partner
-              in LA and beyond.
-            </Text>
+            {selectedLanguage.code === "en" ? (
+              <>
+                <Text fontSize="sm" color="gray.600" lineHeight="tall">
+                  Founded in 2012, AdamsFoods produces safe, tailored products
+                  in USDA inspected facilities.
+                </Text>
+                <Text fontSize="sm" color="gray.600" lineHeight="tall">
+                  Our exclusive Korean style cutting has built strong
+                  partnerships, proudly representing K-BBQ.
+                </Text>
+                <Text fontSize="sm" color="gray.600" lineHeight="tall">
+                  Through quality and reliability, we have become a trusted
+                  partner in LA and beyond.
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text fontSize="sm" color="gray.600" lineHeight="tall">
+                  2012년에 설립된 AdamdFoods는 USDA에서 검사한 시설 (EST.51212)
+                  에서 안전한 제품을 생산합니다.
+                </Text>
+
+                <Text fontSize="sm" color="gray.600" lineHeight="tall">
+                  저희 회사만의 독창적인 한국식 고기 커팅 기술은 K-BBQ를
+                  대표하는 강력한 파트너십을 구축해 왔습니다.
+                </Text>
+
+                <Text fontSize="sm" color="gray.600" lineHeight="tall">
+                  품질과 신뢰를 바탕으로, 저희는 LA를 비롯해, 타 주까지 다양한
+                  지역에서 믿을 수 있는 파트너로 자리매김했습니다.
+                </Text>
+              </>
+            )}
           </VStack>
         </Box>
         {/* Company Website Link */}

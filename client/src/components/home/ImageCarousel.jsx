@@ -10,14 +10,22 @@ const ImageCarousel = () => {
   const [isPaused, setIsPaused] = useState(false);
 
   const images = [
-    { avif: "/images/main_banner_2.avif", fallback: "/images/main_banner_2.png" },
-    { avif: "/images/main_banner_3.avif", fallback: "/images/main_banner_3.jpg" },
-    { avif: "/images/main_banner_1.avif", fallback: "/images/main_banner_1.jpg" },
+    {
+      avif: "/images/main_banner_2.avif",
+      fallback: "/images/main_banner_2.png",
+    },
+    {
+      avif: "/images/main_banner_3.avif",
+      fallback: "/images/main_banner_3.jpg",
+    },
+    {
+      avif: "/images/main_banner_1.avif",
+      fallback: "/images/main_banner_1.jpg",
+    },
   ];
 
   const minSwipeDistance = 50;
 
-  // Auto-advance functionality
   useEffect(() => {
     if (isPaused || isAnimating) return;
 
@@ -25,7 +33,7 @@ const ImageCarousel = () => {
       setIsAnimating(true);
       setCurrentIndex((prev) => (prev + 1) % images.length);
       setTimeout(() => setIsAnimating(false), 300);
-    }, 2500); // Change every 2 seconds
+    }, 2500);
 
     return () => clearInterval(interval);
   }, [isPaused, isAnimating, images.length]);
@@ -74,7 +82,6 @@ const ImageCarousel = () => {
     setTimeout(() => setIsAnimating(false), 300);
   };
 
-  // Pause auto-advance on hover
   const handleMouseEnter = () => {
     setIsPaused(true);
   };
@@ -84,19 +91,18 @@ const ImageCarousel = () => {
   };
 
   return (
-    <Box px={4}>
+    <Box>
       <Box
         bg="tan.100"
-        borderRadius="lg"
         overflow="hidden"
         position="relative"
+        borderRadius="0" 
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Image Container with Sliding Animation */}
         <Box
           display="flex"
           width={`${images.length * 100}%`}
@@ -104,11 +110,7 @@ const ImageCarousel = () => {
           transition="transform 0.3s ease-in-out"
         >
           {images.map((image, index) => (
-            <Box
-              key={index}
-              width={`${100 / images.length}%`}
-              flexShrink={0}
-            >
+            <Box key={index} width={`${100 / images.length}%`} flexShrink={0}>
               <Image
                 src={image.avif}
                 alt={`Banner ${index + 1}`}
@@ -166,7 +168,6 @@ const ImageCarousel = () => {
               key={index}
               width="8px"
               height="8px"
-              borderRadius="full"
               bg={index === currentIndex ? "white" : "whiteAlpha.500"}
               cursor="pointer"
               onClick={() => handleDotClick(index)}

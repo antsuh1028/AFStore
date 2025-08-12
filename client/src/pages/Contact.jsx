@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 
 import {
   Box,
+  Flex,
   Heading,
   Text,
   Input,
@@ -29,6 +30,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import NavDrawer from "../components/NavDrawer";
 import Navbar from "../components/Navbar";
 import { COLORS, API_CONFIG } from "../constants";
+import { useLanguage } from "../hooks/LanguageContext";
 
 const ContactPage = () => {
   const form = useRef();
@@ -49,6 +51,7 @@ const ContactPage = () => {
   const [userAddress, setUserAddress] = useState(null);
 
   const location = useLocation();
+  const { selectedLanguage } = useLanguage();
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -267,7 +270,34 @@ const ContactPage = () => {
           <Text mb={4} color="gray.500" fontSize="md" textAlign="center">
             We look forward to hearing from you
           </Text>
+          
           <Divider mb={6} borderColor="gray.300" />
+
+          <Box mb={6}>
+            <VStack spacing={3} align="stretch">
+              <Text fontSize="sm" fontWeight="bold" color="black">
+                {selectedLanguage.code === "en" ? "Inquiries" : "문의 사항"}
+              </Text>
+
+              <Text fontSize="sm" color="gray.600" lineHeight="1.5">
+                {selectedLanguage.code === "en"
+                  ? "To ensure we can address your enquiry correctly, please provide a detailed message."
+                  : "정확한 답변을 위해 상세한 내용을 작성해 주세요."}
+              </Text>
+
+              <Text fontSize="sm" color="black" fontWeight="semibold">
+                {selectedLanguage.code === "en"
+                  ? "Support hours : Mon~Fri, 8:00AM~2:30PM"
+                  : "운영 시간: 월~금, 오전 8시 ~ 오후 2시 30분"}
+              </Text>
+
+              <Text fontSize="sm" color="gray.600" lineHeight="1.5">
+                {selectedLanguage.code === "en"
+                  ? "Please make sure to specify the exact title of the meat!"
+                  : "고기 명칭을 정확히 기재해 주시기 바랍니다!"}
+              </Text>
+            </VStack>
+          </Box>
 
           <form ref={form} onSubmit={sendEmail}>
             <VStack spacing={4} align="stretch">
@@ -398,11 +428,11 @@ const ContactPage = () => {
                       {...inputStyle}
                       placeholder="LA-1234567 or 2025-000123"
                     />
-                    <Box mt={2}>
+                    <Flex mt={2}>
                       <Button
                         as="label"
                         htmlFor="business-license-upload"
-                        fontSize="sm"
+                        fontSize="xs"
                         color="blue.500"
                         textDecoration="underline"
                         cursor="pointer"
@@ -420,10 +450,13 @@ const ContactPage = () => {
                         accept=".pdf,.jpg,.jpeg,.png"
                         display="none"
                       />
-                      <Text fontSize="sm" color="gray.500" mt={1}>
-                        *Please attach the Business License
+                      <Text fontSize="2xs" color="gray.500" mt={1} ml={2}>
+                        {selectedLanguage.code === "en" 
+                          ? "*Please attach the Business License"
+                          : "*사업자 등록증을 첨부해 주세요"
+                        }
                       </Text>
-                    </Box>
+                    </Flex>
                   </FormControl>
                   <FormControl>
                     <FormLabel fontWeight="semibold" fontSize="sm">
@@ -435,11 +468,11 @@ const ContactPage = () => {
                       {...inputStyle}
                       placeholder="#123-456789"
                     />
-                    <Box mt={2}>
+                    <Flex mt={2}>
                       <Button
                         as="label"
                         htmlFor="resale-cert-upload"
-                        fontSize="sm"
+                        fontSize="xs"
                         color="blue.500"
                         textDecoration="underline"
                         cursor="pointer"
@@ -457,10 +490,13 @@ const ContactPage = () => {
                         accept=".pdf,.jpg,.jpeg,.png"
                         display="none"
                       />
-                      <Text fontSize="sm" color="gray.500" mt={1}>
-                        *Please attach the California Resale Certificate
+                      <Text fontSize="2xs" color="gray.500" mt={1} ml={2}>
+                        {selectedLanguage.code === "en" 
+                          ? "*Please attach the California Resale Certificate"
+                          : "*캘리포니아 재판매 증명서를 첨부해 주세요"
+                        }
                       </Text>
-                    </Box>
+                    </Flex>
                   </FormControl>{" "}
                 </>
               )}
@@ -523,8 +559,9 @@ const ContactPage = () => {
             </VStack>
           </form>
 
-          <Footer />
+          
         </Box>
+        <Footer />
       </Container>
     </Sidebar>
   );

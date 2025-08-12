@@ -45,6 +45,7 @@ const Sidebar = ({ children }) => {
               justifyContent={"center"}
             >
               <Image
+              px={4}
                 src="/images/gray_adams.png"
                 alt="AdamsFoods Logo"
                 fallbackSrc="/images/gray_adams.png"

@@ -8,9 +8,16 @@ import {
   Text,
   VStack,
   Image,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
+import { useLanguage } from "../hooks/LanguageContext";
 
 const Footer = () => {
+  const { selectedLanguage, languages, changeLanguage } = useLanguage();
+
   return (
     <Box as="footer" py={8} px={4}>
       <Container maxW="container.lg">
@@ -66,7 +73,7 @@ const Footer = () => {
               Monday to Friday
             </Text>
             <Text color="gray.600" fontSize="xs" noOfLines={1}>
-              8am - 3;30pm PST
+              8am - 3:30pm PST
             </Text>
           </VStack>
 
@@ -88,64 +95,116 @@ const Footer = () => {
             </Text>
           </VStack>
         </Flex>
-        <Text fontSize="xs" color="gray.500" textAlign="center" mt={8} px={2}>
-          Copyright © 2025 AdamsFoods. All rights reserved.{" "}
-        </Text>
-        {/* Language and Currency */}
-        {/* <Flex
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Box
-              borderWidth="1px"
-              borderColor="gray.200"
-              borderRadius="full"
-              px={4}
-              py={2}
-              width={{ base: "full", md: "auto" }}
-              maxW={{ base: "200px", md: "auto" }}
-            >
-              <Flex alignItems="center" justifyContent="space-between">
-                <Text>English</Text>
-                <Box as="span" ml={2}>
-                  <svg
-                    width="12"
-                    height="8"
-                    viewBox="0 0 12 8"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M1 1.5L6 6.5L11 1.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </Box>
-              </Flex>
-            </Box>
-  
-            <Flex alignItems="center">
+
+        {/* Language and Currency Dropdown */}
+        <Flex justifyContent="space-between" alignItems="center">
+          {/* Language Dropdown */}
+          <Menu>
+            <MenuButton>
               <Box
-                width="24px"
-                height="24px"
+                borderWidth="1px"
+                borderColor="gray.200"
                 borderRadius="full"
-                overflow="hidden"
-                mr={2}
+                px={4}
+                py={2}
+                width={{ base: "full", md: "auto" }}
+                maxW={{ base: "200px", md: "auto" }}
+                cursor="pointer"
+                _hover={{ bg: "gray.50" }}
+                transition="background 0.2s"
               >
-                <Image
-                  src="https://flagcdn.com/w20/us.png"
-                  alt="US Flag"
-                  width="100%"
-                  height="100%"
-                  objectFit="cover"
-                />
+                <Flex alignItems="center" justifyContent="space-between">
+                  <Text>{selectedLanguage.name}</Text>
+                  <Box as="span" ml={2}>
+                    <svg
+                      width="12"
+                      height="8"
+                      viewBox="0 0 12 8"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1 1.5L6 6.5L11 1.5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </Box>
+                </Flex>
               </Box>
-              <Text>United States (USD $)</Text>
-            </Flex>
-          </Flex> */}
+            </MenuButton>
+            
+            <MenuList zIndex={1000}>
+              {languages.map((language) => (
+                <MenuItem
+                  key={language.code}
+                  onClick={() => changeLanguage(language)}
+                  _hover={{ bg: "gray.50" }}
+                  bg={selectedLanguage.code === language.code ? "blue.50" : "white"}
+                >
+                  <Flex alignItems="center" width="100%">
+                    <Box
+                      width="20px"
+                      height="15px"
+                      borderRadius="sm"
+                      overflow="hidden"
+                      mr={3}
+                    >
+                      <Image
+                        src={language.flag}
+                        alt={`${language.country} Flag`}
+                        width="100%"
+                        height="100%"
+                        objectFit="cover"
+                      />
+                    </Box>
+                    <Box>
+                      <Text fontWeight="medium" fontSize="sm">
+                        {language.name}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        {language.country} ({language.currency})
+                      </Text>
+                    </Box>
+                  </Flex>
+                </MenuItem>
+              ))}
+            </MenuList>
+          </Menu>
+
+          {/* Current Selection Display */}
+          <Flex alignItems="center">
+            <Box
+              width="24px"
+              height="24px"
+              borderRadius="full"
+              overflow="hidden"
+              mr={2}
+            >
+              <Image
+                src={selectedLanguage.flag}
+                alt={`${selectedLanguage.country} Flag`}
+                width="100%"
+                height="100%"
+                objectFit="cover"
+              />
+            </Box>
+            <Text>{selectedLanguage.country} ({selectedLanguage.currency})</Text>
+          </Flex>
+        </Flex>
+
+        <Text
+          fontSize="2xs"
+          color="gray.500"
+          textAlign="center"
+          mt={8}
+          mb={-4}
+          px={2}
+        >
+          Copyright © 2025 AdamsFoods. All rights reserved.
+        </Text>
       </Container>
     </Box>
   );
