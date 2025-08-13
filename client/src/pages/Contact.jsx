@@ -31,6 +31,7 @@ import NavDrawer from "../components/NavDrawer";
 import Navbar from "../components/Navbar";
 import { COLORS, API_CONFIG } from "../constants";
 import { useLanguage } from "../hooks/LanguageContext";
+import { translator } from "../utils/translator";
 
 const ContactPage = () => {
   const form = useRef();
@@ -270,31 +271,34 @@ const ContactPage = () => {
           <Text mb={4} color="gray.500" fontSize="md" textAlign="center">
             We look forward to hearing from you
           </Text>
-          
+
           <Divider mb={6} borderColor="gray.300" />
 
           <Box mb={6}>
             <VStack spacing={3} align="stretch">
               <Text fontSize="sm" fontWeight="bold" color="black">
-                {selectedLanguage.code === "en" ? "Inquiries" : "문의 사항"}
+                {translator("Inquiries", "문의 사항")}
               </Text>
 
               <Text fontSize="sm" color="gray.600" lineHeight="1.5">
-                {selectedLanguage.code === "en"
-                  ? "To ensure we can address your enquiry correctly, please provide a detailed message."
-                  : "정확한 답변을 위해 상세한 내용을 작성해 주세요."}
+                {translator(
+                  "To ensure we can address your enquiry correctly, please provide a detailed message.",
+                  "정확한 답변을 위해 상세한 내용을 작성해 주세요."
+                )}
               </Text>
 
               <Text fontSize="sm" color="black" fontWeight="semibold">
-                {selectedLanguage.code === "en"
-                  ? "Support hours : Mon~Fri, 8:00AM~2:30PM"
-                  : "운영 시간: 월~금, 오전 8시 ~ 오후 2시 30분"}
+                {translator(
+                  "Support hours : Mon~Fri, 8:00AM~2:30PM",
+                  "운영 시간: 월~금, 오전 8시 ~ 오후 2시 30분"
+                )}
               </Text>
 
               <Text fontSize="sm" color="gray.600" lineHeight="1.5">
-                {selectedLanguage.code === "en"
-                  ? "Please make sure to specify the exact title of the meat!"
-                  : "고기 명칭을 정확히 기재해 주시기 바랍니다!"}
+                {translator(
+                  "Please make sure to specify the exact title of the meat!",
+                  "고기 명칭을 정확히 기재해 주시기 바랍니다!"
+                )}
               </Text>
             </VStack>
           </Box>
@@ -451,10 +455,10 @@ const ContactPage = () => {
                         display="none"
                       />
                       <Text fontSize="2xs" color="gray.500" mt={1} ml={2}>
-                        {selectedLanguage.code === "en" 
-                          ? "*Please attach the Business License"
-                          : "*사업자 등록증을 첨부해 주세요"
-                        }
+                        {translator(
+                          "*Please attach the Business License",
+                          "*사업자 등록증을 첨부해 주세요"
+                        )}
                       </Text>
                     </Flex>
                   </FormControl>
@@ -491,10 +495,10 @@ const ContactPage = () => {
                         display="none"
                       />
                       <Text fontSize="2xs" color="gray.500" mt={1} ml={2}>
-                        {selectedLanguage.code === "en" 
-                          ? "*Please attach the California Resale Certificate"
-                          : "*캘리포니아 재판매 증명서를 첨부해 주세요"
-                        }
+                        {translator(
+                          "*Please attach the California Resale Certificate",
+                          "*캘리포니아 재판매 증명서를 첨부해 주세요"
+                        )}
                       </Text>
                     </Flex>
                   </FormControl>{" "}
@@ -558,8 +562,6 @@ const ContactPage = () => {
               </Box>
             </VStack>
           </form>
-
-          
         </Box>
         <Footer />
       </Container>

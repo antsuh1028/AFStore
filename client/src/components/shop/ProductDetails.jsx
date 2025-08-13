@@ -51,6 +51,7 @@ import { useAuthContext } from "../../hooks/useAuth";
 import { COLORS, API_CONFIG } from "../../constants";
 import Navbar from "../Navbar";
 import { useLanguage } from "../../hooks/LanguageContext";
+import { translator } from "../../utils/translator";
 
 const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
@@ -339,7 +340,7 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
 };
 
 const CollapsibleSection = ({ title, isOpen, onToggle, children }) => (
-  <Box w="100%"  borderColor="gray.100" borderRadius="md">
+  <Box w="100%" borderColor="gray.100" borderRadius="md">
     <Button
       w="100%"
       justifyContent="space-between"
@@ -808,25 +809,25 @@ const ProductDetailPage = () => {
               <HStack>
                 <FiThermometer />
                 <Text fontSize="sm">
-                  {selectedLanguage.code === "en"
-                    ? "Keep frozen"
-                    : "냉동 보관해 주세요."}
+                  {translator("Keep frozen", "냉동 보관해 주세요.")}
                 </Text>
               </HStack>
               <HStack>
                 <WarningIcon />
                 <Text fontSize="sm">
-                  {selectedLanguage.code === "en"
-                    ? "Cook thoroughly before consumption"
-                    : "섭취 전에는 충분히 익혀서 드시기 바랍니다."}
+                  {translator(
+                    "Cook thoroughly before consumption",
+                    "섭취 전에는 충분히 익혀서 드시기 바랍니다."
+                  )}
                 </Text>
               </HStack>
               <HStack>
                 <FiPackage />
                 <Text fontSize="sm">
-                  {selectedLanguage.code === "en"
-                    ? "Pack Date: See package label for details"
-                    : "포장일자는 패키지 라벨을 참고해 주세요."}
+                  {translator(
+                    "Pack Date: See package label for details",
+                    "포장일자는 패키지 라벨을 참고해 주세요."
+                  )}
                 </Text>
               </HStack>
             </VStack>

@@ -8,3 +8,4 @@ export { default as ProcessedPage } from "./product/Processed.jsx";
 export { default as UnprocessedPage } from "./product/Unprocessed.jsx";
 export { default as AdamsGourmetPage } from "./product/AdamsGourmet.jsx";
 export { default as AllProductsPage } from "./product/ShopAll.jsx";
+

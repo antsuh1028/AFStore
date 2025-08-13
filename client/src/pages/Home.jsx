@@ -39,7 +39,7 @@ import { useAuthContext } from "../hooks/useAuth";
 import ImageCarousel from "../components/home/ImageCarousel";
 import { API_CONFIG, COLORS } from "../constants";
 import HomeSkeleton from "../components/skeletons/HomeSkeleton";
-import { useLanguage } from "../hooks/LanguageContext";
+import { translator } from "../utils/translator";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,7 +53,6 @@ const HomePage = () => {
   const searchRef = useRef(null);
 
   const { isAuthenticated, userId, loading } = useAuthContext();
-  const { selectedLanguage } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -744,9 +743,10 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  {selectedLanguage.code === "en"
-                    ? '"Korean style cutting"'
-                    : '"한국 스타일 고기 컷"'}
+                  {translator(
+                    '"Korean style cutting"',
+                    '"한국 스타일 고기 컷"'
+                  )}
                 </Text>
               </VStack>
             </GridItem>
@@ -760,47 +760,35 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  {selectedLanguage.code === "en"
-                    ? '"Trusted partner"'
-                    : "“신뢰할 수 있는 파트너”"}
+                  {translator(
+                    '"Trusted partner"',
+                    '"신뢰할 수 있는 파트너"'
+                  )}
                 </Text>
               </VStack>
             </GridItem>
           </Grid>
           <VStack align="flex-start" spacing={4} p={2}>
-            {selectedLanguage.code === "en" ? (
-              <>
-                <Text fontSize="sm" color="gray.600" lineHeight="tall">
-                  Founded in 2012, AdamsFoods produces safe, tailored products
-                  in USDA inspected facilities.
-                </Text>
-                <Text fontSize="sm" color="gray.600" lineHeight="tall">
-                  Our exclusive Korean style cutting has built strong
-                  partnerships, proudly representing K-BBQ.
-                </Text>
-                <Text fontSize="sm" color="gray.600" lineHeight="tall">
-                  Through quality and reliability, we have become a trusted
-                  partner in LA and beyond.
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text fontSize="sm" color="gray.600" lineHeight="tall">
-                  2012년에 설립된 AdamdFoods는 USDA에서 검사한 시설 (EST.51212)
-                  에서 안전한 제품을 생산합니다.
-                </Text>
+            <Text fontSize="sm" color="gray.600" lineHeight="tall">
+              {translator(
+                "Founded in 2012, AdamsFoods produces safe, tailored products in USDA inspected facilities.",
+                "2012년에 설립된 AdamdFoods는 USDA에서 검사한 시설 (EST.51212) 에서 안전한 제품을 생산합니다."
+              )}
+            </Text>
 
-                <Text fontSize="sm" color="gray.600" lineHeight="tall">
-                  저희 회사만의 독창적인 한국식 고기 커팅 기술은 K-BBQ를
-                  대표하는 강력한 파트너십을 구축해 왔습니다.
-                </Text>
+            <Text fontSize="sm" color="gray.600" lineHeight="tall">
+              {translator(
+                "Our exclusive Korean style cutting has built strong partnerships, proudly representing K-BBQ.",
+                "저희 회사만의 독창적인 한국식 고기 커팅 기술은 K-BBQ를 대표하는 강력한 파트너십을 구축해 왔습니다."
+              )}
+            </Text>
 
-                <Text fontSize="sm" color="gray.600" lineHeight="tall">
-                  품질과 신뢰를 바탕으로, 저희는 LA를 비롯해, 타 주까지 다양한
-                  지역에서 믿을 수 있는 파트너로 자리매김했습니다.
-                </Text>
-              </>
-            )}
+            <Text fontSize="sm" color="gray.600" lineHeight="tall">
+              {translator(
+                "Through quality and reliability, we have become a trusted partner in LA and beyond.",
+                "품질과 신뢰를 바탕으로, 저희는 LA를 비롯해, 타 주까지 다양한 지역에서 믿을 수 있는 파트너로 자리매김했습니다."
+              )}
+            </Text>
           </VStack>
         </Box>
         {/* Company Website Link */}

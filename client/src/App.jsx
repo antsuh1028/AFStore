@@ -25,6 +25,7 @@ import {
 import ProductDetailPage from "./components/shop/ProductDetails";
 import OrderSummaryPage from "./pages/OrderSummary";
 import AdminDashboard from "./pages/AdminDashboard";
+import { CookiesPage } from "./pages/Cookies";
 import theme from "./theme";
 import "./fonts.css";
 import { AuthProvider } from "./hooks/useAuth";
@@ -100,6 +101,7 @@ function App() {
                     element={<UserProfile />}
                   />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/cookie" element={<CookiesPage />} />
                 </Routes>
                 {showCookieConsent && (
                   <CookieConsentBanner
