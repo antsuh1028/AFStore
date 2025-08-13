@@ -43,6 +43,13 @@ const Signup = () => {
   const [licenseFileName, setLicenseFileName] = useState("");
   const [govIdFileName, setGovIdFileName] = useState("");
   const [businessFileName, setBusinessFileName] = useState("");
+  const [resaleFileName, setResaleFileName] = useState("");
+  
+  // File upload error states
+  const [licenseFileError, setLicenseFileError] = useState("");
+  const [govIdFileError, setGovIdFileError] = useState("");
+  const [businessFileError, setBusinessFileError] = useState("");
+  const [resaleFileError, setResaleFileError] = useState("");
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -83,7 +90,22 @@ const Signup = () => {
     },
   };
 
-  const FileUploadField = ({ id, name, fileName, setFileName, helpText }) => (
+  const validateFile = (file) => {
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+    
+    if (file.size > maxSize) {
+      return "File size must be less than 10MB";
+    }
+    
+    if (!allowedTypes.includes(file.type)) {
+      return "Only PDF, JPG, and PNG files are allowed";
+    }
+    
+    return "";
+  };
+
+  const FileUploadField = ({ id, name, fileName, setFileName, helpText, error, setError }) => (
     <Box mb={2} key={`file-upload-${id}`}>
       <input
         id={id}
@@ -93,7 +115,33 @@ const Signup = () => {
         style={{ display: "none" }}
         onChange={(e) => {
           const file = e.target.files?.[0];
-          setFileName(file ? file.name : "");
+          if (file) {
+            const validationError = validateFile(file);
+            if (validationError) {
+              setError(validationError);
+              setFileName("");
+              toast({
+                title: "Invalid file",
+                description: validationError,
+                status: "error",
+                duration: 4000,
+                isClosable: true,
+              });
+            } else {
+              setError("");
+              setFileName(file.name);
+              toast({
+                title: "File uploaded successfully",
+                description: `${file.name} is ready to submit`,
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+              });
+            }
+          } else {
+            setFileName("");
+            setError("");
+          }
         }}
       />
       <Flex align="flex-start" gap={2}>
@@ -117,8 +165,13 @@ const Signup = () => {
         </Text>
       </Flex>
       {fileName && (
-        <Text fontSize="xs" color="gray.600" mt={1}>
-          Selected: {fileName}
+        <Text fontSize="xs" color="green.600" mt={1} fontWeight="medium">
+          ✓ Selected: {fileName}
+        </Text>
+      )}
+      {error && (
+        <Text fontSize="xs" color="red.500" mt={1}>
+          {error}
         </Text>
       )}
     </Box>
@@ -182,9 +235,10 @@ const Signup = () => {
 
     const formData = new FormData(e.target);
 
-    if (emailError || licenseError) {
+    if (emailError || licenseError || licenseFileError || govIdFileError || businessFileError || resaleFileError) {
       toast({
         title: "Please fix form errors.",
+        description: "Check all form fields and file uploads for errors.",
         status: "error",
         duration: 4000,
         isClosable: true,
@@ -481,7 +535,9 @@ const Signup = () => {
                     name="license_file"
                     fileName={licenseFileName}
                     setFileName={setLicenseFileName}
-                    helpText="*Please attach the Business License"
+                    helpText="*Please attach the Business License (PDF, JPG, PNG only, max 10MB)"
+                    error={licenseFileError}
+                    setError={setLicenseFileError}
                   />
                 </Box>
               </FormControl>
@@ -500,9 +556,11 @@ const Signup = () => {
                   <FileUploadField
                     id="resale-cert-upload"
                     name="resale_cert_file"
-                    fileName={businessFileName}
-                    setFileName={setBusinessFileName}
-                    helpText="*Please attach the California Resale Certificate"
+                    fileName={resaleFileName}
+                    setFileName={setResaleFileName}
+                    helpText="*Please attach the California Resale Certificate (PDF, JPG, PNG only, max 10MB)"
+                    error={resaleFileError}
+                    setError={setResaleFileError}
                   />
                 </Box>
               </FormControl>
@@ -525,7 +583,9 @@ const Signup = () => {
                   name="gov_id_file"
                   fileName={govIdFileName}
                   setFileName={setGovIdFileName}
-                  helpText="*Please attach the government ID."
+                  helpText="*Please attach the government ID (PDF, JPG, PNG only, max 10MB)"
+                  error={govIdFileError}
+                  setError={setGovIdFileError}
                 />
               </FormControl>
 
@@ -539,6 +599,8 @@ const Signup = () => {
                   fileName={businessFileName}
                   setFileName={setBusinessFileName}
                   helpText="*Please attach the business license."
+                  error={businessFileError}
+                  setError={setBusinessFileError}
                 />
               </FormControl>
 
