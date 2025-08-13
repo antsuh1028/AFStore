@@ -6,10 +6,12 @@ import { apiRouter } from "./routes/index.js";
 dotenv.config();
 
 const app = express();
-const PORT =
-  process.env.NODE_ENV === "development"
-    ? process.env.DEV_SERVER_PORT
-    : process.env.PROD_SERVER_PORT;
+const PORT = parseInt(
+  process.env.PORT
+  || (NODE_ENV === "development" ? process.env.DEV_SERVER_PORT : process.env.PROD_SERVER_PORT)
+  || "3000",
+  10
+);
 
 app.use(cors({
   origin: [
