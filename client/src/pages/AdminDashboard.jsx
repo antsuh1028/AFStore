@@ -47,6 +47,7 @@ import AdminHome from "../components/admin/AdminHome";
 import { Signups } from "../components/admin/Signups";
 import { Inquiries } from "../components/admin/Inquiries";
 import { ItemList } from "../components/admin/ItemsList";
+import { encodeUserId } from "../utils/urlEncryption";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ const AdminDashboard = () => {
     error: authError,
     token,
   } = useAuthContext();
+  const encryptedUserId = encodeUserId(userId);
 
   const [isLoadingAdmin, setIsLoadingAdmin] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -604,7 +606,8 @@ const AdminDashboard = () => {
           variant="ghost"
           onClick={() => {
             currentPage === 1
-              ? navigate(`/profile/user/${userId}`)
+            
+              ? navigate(`/profile/user/${encryptedUserId}`)
               : setCurrentPage(1);
           }}
         />

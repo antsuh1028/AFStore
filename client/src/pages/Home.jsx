@@ -39,7 +39,8 @@ import { useAuthContext } from "../hooks/useAuth";
 import ImageCarousel from "../components/home/ImageCarousel";
 import { API_CONFIG, COLORS } from "../constants";
 import HomeSkeleton from "../components/skeletons/HomeSkeleton";
-import { translator } from "../utils/translator";
+import { useLanguage } from "../hooks/LanguageContext";
+import { encodeUserId } from "../utils/urlEncryption";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,6 +54,13 @@ const HomePage = () => {
   const searchRef = useRef(null);
 
   const { isAuthenticated, userId, loading } = useAuthContext();
+  const encryptedUserId = encodeUserId(userId);
+  const { selectedLanguage } = useLanguage();
+
+  // Translation helper function
+  const t = (englishText, koreanText) => {
+    return selectedLanguage.code === "ko" ? koreanText : englishText;
+  };
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -224,7 +232,7 @@ const HomePage = () => {
     }
 
     if (isAuthenticated && userId) {
-      navigate(`/profile/user/${userId}`);
+      navigate(`/profile/user/${encryptedUserId}`);
     } else {
       navigate("/login");
     }
@@ -305,7 +313,7 @@ const HomePage = () => {
                 icon={<ShoppingCart size={24} />}
                 variant="ghost"
                 onClick={() => {
-                  navigate(`/profile/user/${userId}`, {
+                  navigate(`/profile/user/${encryptedUserId}`, {
                     state: { activeTab: 1 },
                   });
                 }}
@@ -743,7 +751,7 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  {translator(
+                  {t(
                     '"Korean style cutting"',
                     '"한국 스타일 고기 컷"'
                   )}
@@ -760,7 +768,7 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  {translator(
+                  {t(
                     '"Trusted partner"',
                     '"신뢰할 수 있는 파트너"'
                   )}
@@ -770,21 +778,21 @@ const HomePage = () => {
           </Grid>
           <VStack align="flex-start" spacing={4} p={2}>
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              {translator(
+              {t(
                 "Founded in 2012, AdamsFoods produces safe, tailored products in USDA inspected facilities.",
                 "2012년에 설립된 AdamdFoods는 USDA에서 검사한 시설 (EST.51212) 에서 안전한 제품을 생산합니다."
               )}
             </Text>
 
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              {translator(
+              {t(
                 "Our exclusive Korean style cutting has built strong partnerships, proudly representing K-BBQ.",
                 "저희 회사만의 독창적인 한국식 고기 커팅 기술은 K-BBQ를 대표하는 강력한 파트너십을 구축해 왔습니다."
               )}
             </Text>
 
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              {translator(
+              {t(
                 "Through quality and reliability, we have become a trusted partner in LA and beyond.",
                 "품질과 신뢰를 바탕으로, 저희는 LA를 비롯해, 타 주까지 다양한 지역에서 믿을 수 있는 파트너로 자리매김했습니다."
               )}

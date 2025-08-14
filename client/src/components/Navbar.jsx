@@ -2,11 +2,14 @@ import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
 import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuth";
+import { encodeUserId } from "../utils/urlEncryption";
 
 const Navbar = ({ onOpen , home}) => {
   const navigate = useNavigate();
 
   const { isAuthenticated, userId, loading } = useAuthContext();
+  const encryptedUserId = encodeUserId(userId);
+  
 
   const handleUserIconClick = () => {
 
@@ -15,7 +18,7 @@ const Navbar = ({ onOpen , home}) => {
     }
 
     if (isAuthenticated && userId) {
-      navigate(`/profile/user/${userId}`);
+      navigate(`/profile/user/${encryptedUserId}`);
     } else {
       navigate("/login");
     }
@@ -50,7 +53,7 @@ const Navbar = ({ onOpen , home}) => {
               icon={<ShoppingCart size={24} />}
               variant="ghost"
               onClick={() => {
-                navigate(`/profile/user/${userId}`, {
+                navigate(`/profile/user/${encryptedUserId}`, {
                   state: { activeTab: 1 },
                 });
               }}

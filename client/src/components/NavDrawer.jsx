@@ -16,11 +16,15 @@ import {
   Link,
   Spinner,
   VStack,
+  Badge,
+  HStack,
 } from "@chakra-ui/react";
-import { ChevronLeft, ShoppingCart, UserRound } from "lucide-react";
+import { ChevronLeft, ShoppingCart, UserRound, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuth";
 import { COLORS } from "../constants";
+import { API_CONFIG } from "../constants";
+import { encodeUserId } from "../utils/urlEncryption";
 
 const ITEMS = [
   {
@@ -51,7 +55,6 @@ const ITEMS = [
     fallback: "/images/home_icons/adams.jpg",
     color: COLORS.GRAY_MEDIUM,
   },
-
   {
     label: "Deal",
     to: "/wholesale/deal",
@@ -66,7 +69,7 @@ const ITEMS = [
     fallback: "/images/home_icons/how_to_order.jpg",
     color: COLORS.GRAY_MEDIUM,
   },
-    {
+  {
     label: "Contact",
     to: "/contact",
     icon: "/images/home_icons/contact.avif",
@@ -98,6 +101,9 @@ const ITEMS = [
 
 export default function NavDrawer({ isOpen, onClose, containerRef }) {
   const [drawerWidth, setDrawerWidth] = useState("100%");
+  const [points, setPoints] = useState(0);
+  const [pointsLoading, setPointsLoading] = useState(false);
+  const [pointsError, setPointsError] = useState(null);
   const navigate = useNavigate();
 
   const {
@@ -110,6 +116,43 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
     error,
   } = useAuthContext();
 
+  // Fetch user points
+  useEffect(() => {
+    const fetchUserPoints = async () => {
+      if (!isAuthenticated || !userId) {
+        setPoints(0);
+        return;
+      }
+
+      setPointsLoading(true);
+      setPointsError(null);
+
+      try {
+        const res = await fetch(
+          `${API_CONFIG.BASE_URL}/api/points/user/${userId}/total`
+        );
+        const data = await res.json();
+
+        if (data.success) {
+          setPoints(data.data.total_points || 0);
+        } else {
+          setPointsError("Failed to load points");
+        }
+      } catch (err) {
+        console.error("Error fetching points:", err);
+        setPointsError("Failed to load points");
+        setPoints(0);
+      } finally {
+        setPointsLoading(false);
+      }
+    };
+
+    if (isOpen) {
+      fetchUserPoints();
+    }
+  }, [isOpen, isAuthenticated, userId]);
+
+  // Handle drawer width
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef && containerRef.current) {
@@ -128,13 +171,15 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
 
   const handleLogout = () => {
     logout();
+    setPoints(0); // Reset points on logout
     onClose();
     navigate("/");
   };
 
   const handleProfileClick = () => {
     if (isAuthenticated && userId) {
-      navigate(`/profile/user/${userId}`);
+      const encryptedUserId = encodeUserId(userId);
+      navigate(`/profile/user/${encryptedUserId}`);
       onClose();
     } else {
       navigate("/login");
@@ -179,9 +224,11 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                 icon={<ShoppingCart size={24} />}
                 variant="ghost"
                 onClick={() => {
-                  navigate(`/profile/user/${userId}`, {
+                  const encryptedUserId = encodeUserId(userId);
+                  navigate(`/profile/user/${encryptedUserId}`, {
                     state: { activeTab: 1 },
                   });
+                  onClose();
                 }}
                 _hover={{ bg: "gray.100" }}
               />
@@ -217,6 +264,39 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                   {isAuthenticated ? userName : "Guest"}
                 </Text>
               </Heading>
+
+              {/* Points Display for Authenticated Users */}
+              {isAuthenticated && (
+                <Box mb={4}>
+                  <HStack justify="center" spacing={2}>
+                    <Star size={16} color="#b3967f" fill="#b3967f" />
+                    <Text fontSize="sm" color="gray.600">
+                      Rewards Points:
+                    </Text>
+                    {pointsLoading ? (
+                      <Spinner size="xs" />
+                    ) : pointsError ? (
+                      <Text fontSize="xs" color="red.500">
+                        Error loading points
+                      </Text>
+                    ) : (
+                      <Badge
+                        colorScheme="yellow"
+                        variant="solid"
+                        px={3}
+                        py={1}
+                        borderRadius="full"
+                        fontWeight="bold"
+                      >
+                        {points.toLocaleString()}
+                      </Badge>
+                    )}
+                  </HStack>
+                  <Text fontSize="xs" color="gray.400" mt={1}>
+                    Earned in last 6 months
+                  </Text>
+                </Box>
+              )}
 
               <Box my={6} fontSize="sm">
                 {isAuthenticated ? (
@@ -325,23 +405,36 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
               </GridItem>
             ))}
           </Grid>
-          <Box pt={12}>
+          <Flex pt={24}>
             <Link
               onClick={() => {
                 navigate("/terms-and-policies");
-                onClose(); 
+                onClose();
               }}
               fontSize="xs"
               textDecoration="underline"
               cursor="pointer"
-              _hover={{ color: "blue.500" }}
+              color={COLORS.PRIMARY}
+              _hover={{ color: COLORS.SECONDARY }}
             >
               Terms & Policies
             </Link>
-          </Box>
+            <Link
+              onClick={() => {
+                navigate("/cookies");
+                onClose();
+              }}
+              fontSize="xs"
+              textDecoration="underline"
+              cursor="pointer"
+              color={COLORS.PRIMARY}
+              _hover={{ color: "blue.500" }}
+              ml={4}
+            >
+              Cookies Policy
+            </Link>
+          </Flex>
         </DrawerBody>
-
-        {/* Footer Link */}
       </DrawerContent>
     </Drawer>
   );

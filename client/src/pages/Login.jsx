@@ -22,6 +22,7 @@ import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
 import { useAuthContext } from "../hooks/useAuth";
 import { API_CONFIG, COLORS } from "../constants";
+import { encodeUserId } from "../utils/urlEncryption";
 
 
 
@@ -36,6 +37,7 @@ const Login = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { login, isAuthenticated, userId } = useAuthContext();
+  const encryptedUserId = encodeUserId(userId);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -43,7 +45,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated && userId) {
-      navigate(`/profile/user/${userId}`);
+      navigate(`/profile/user/${encryptedUserId}`);
     }
   }, [isAuthenticated, userId, navigate]);
 
@@ -87,7 +89,7 @@ const Login = () => {
             isClosable: true,
           });
           
-          navigate(result.user.id ? `/profile/user/${result.user.id}` : "/");
+          navigate(result.user.id ? `/profile/user/${encryptedUserId}` : "/");
         } else {
           toast({
             title: "Login failed.",

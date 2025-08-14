@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import Sidebar from "../../components/SideBar";
 import NavDrawer from "../../components/NavDrawer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Filter } from "lucide-react";
 import { useAuthContext } from "../../hooks/useAuth";
 import Footer from "../../components/Footer";
@@ -33,6 +33,7 @@ import { ShowCart } from "../../components/profile/ShowCart";
 import { myPages } from "../../components/profile/ProfileComponents";
 import { API_CONFIG, COLORS } from "../../constants";
 import { useLanguage } from "../../hooks/LanguageContext";
+import { decodeUserId } from "../../utils/urlEncryption";
 
 const UserProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,6 +65,8 @@ const UserProfile = () => {
   const [userAddress, setUserAddress] = useState([]);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const [userInformation, setUserInformation] = useState({});
+  const { encryptedUserId } = useParams();
+  const actualUserId = decodeUserId(encryptedUserId);
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,

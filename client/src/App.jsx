@@ -97,7 +97,7 @@ function App() {
                   />
                   <Route path="/order-summary" element={<OrderSummaryPage />} />
                   <Route
-                    path="/profile/user/:userId"
+                    path="/profile/user/:encryptedUserId"
                     element={<UserProfile />}
                   />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />

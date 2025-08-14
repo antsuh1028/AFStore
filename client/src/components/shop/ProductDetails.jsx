@@ -51,7 +51,7 @@ import { useAuthContext } from "../../hooks/useAuth";
 import { COLORS, API_CONFIG } from "../../constants";
 import Navbar from "../Navbar";
 import { useLanguage } from "../../hooks/LanguageContext";
-import { translator } from "../../utils/translator";
+import { encodeUserId } from "../../utils/urlEncryption";
 
 const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
@@ -379,6 +379,15 @@ const ProductDetailPage = () => {
   const { userInfo, isAuthenticated, logout, userName, userId, userEmail } =
     useAuthContext();
   const { selectedLanguage } = useLanguage();
+
+  // Local translator function - no external dependencies
+  const t = useCallback(
+    (englishText, koreanText) => {
+      return selectedLanguage?.code === "ko" ? koreanText : englishText;
+    },
+    [selectedLanguage]
+  );
+
   const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
@@ -641,7 +650,8 @@ const ProductDetailPage = () => {
                 cursor="pointer"
                 _hover={{ color: "green.800" }}
                 onClick={() => {
-                  navigate(`/profile/user/${userId}`, {
+                  const encryptedUserId = encodeUserId(userId);
+                  navigate(`/profile/user/${encryptedUserId}`, {
                     state: { activeTab: 1 },
                   });
                   setShowCartAlert(false);
@@ -809,13 +819,13 @@ const ProductDetailPage = () => {
               <HStack>
                 <FiThermometer />
                 <Text fontSize="sm">
-                  {translator("Keep frozen", "냉동 보관해 주세요.")}
+                  {t("Keep frozen", "냉동 보관해 주세요.")}
                 </Text>
               </HStack>
               <HStack>
                 <WarningIcon />
                 <Text fontSize="sm">
-                  {translator(
+                  {t(
                     "Cook thoroughly before consumption",
                     "섭취 전에는 충분히 익혀서 드시기 바랍니다."
                   )}
@@ -824,7 +834,7 @@ const ProductDetailPage = () => {
               <HStack>
                 <FiPackage />
                 <Text fontSize="sm">
-                  {translator(
+                  {t(
                     "Pack Date: See package label for details",
                     "포장일자는 패키지 라벨을 참고해 주세요."
                   )}

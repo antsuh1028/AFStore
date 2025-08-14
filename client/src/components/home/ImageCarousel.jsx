@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Image, IconButton } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { useLanguage } from "../../hooks/LanguageContext";
 
 const ImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -8,21 +9,62 @@ const ImageCarousel = () => {
   const [touchEnd, setTouchEnd] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const { selectedLanguage } = useLanguage();
 
-  const images = [
-    {
-      avif: "/images/main_banner_2.avif",
-      fallback: "/images/main_banner_2.png",
-    },
-    {
-      avif: "/images/main_banner_3.avif",
-      fallback: "/images/main_banner_3.jpg",
-    },
-    {
-      avif: "/images/main_banner_1.avif",
-      fallback: "/images/main_banner_1.jpg",
-    },
-  ];
+  const images =
+    selectedLanguage.code === "ko"
+      ? [
+          {
+            avif: "/banners/01.avif",
+            fallback: "/banners/01.jpg",
+          },
+          {
+            avif: "/banners/02.avif",
+            fallback: "/banners/02.jpg",
+          },
+          {
+            avif: "/banners/03.avif",
+            fallback: "/banners/03.jpg",
+          },
+          {
+            avif: "/banners/04.avif",
+            fallback: "/banners/04.jpg",
+          },
+          {
+            avif: "/banners/05.avif",
+            fallback: "/banners/05.jpg",
+          },
+          {
+            avif: "/banners/06.avif",
+            fallback: "/banners/06.jpg",
+          },
+        ]
+      : [
+          {
+            avif: "/banners/07.avif",
+            fallback: "/banners/07.jpg",
+          },
+          {
+            avif: "/banners/08.avif",
+            fallback: "/banners/08.jpg",
+          },
+          {
+            avif: "/banners/09.avif",
+            fallback: "/banners/09.jpg",
+          },
+          {
+            avif: "/banners/10.avif",
+            fallback: "/banners/10.jpg",
+          },
+          {
+            avif: "/banners/11.avif",
+            fallback: "/banners/11.jpg",
+          },
+          {
+            avif: "/banners/12.avif",
+            fallback: "/banners/12.jpg",
+          },
+        ];
 
   const minSwipeDistance = 50;
 
@@ -96,7 +138,7 @@ const ImageCarousel = () => {
         bg="tan.100"
         overflow="hidden"
         position="relative"
-        borderRadius="0" 
+        borderRadius="0"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -130,7 +172,7 @@ const ImageCarousel = () => {
           transform="translateY(-50%)"
           bg="blackAlpha.600"
           color="white"
-          size="sm"
+          size="xs"
           borderRadius="full"
           _hover={{ bg: "blackAlpha.800" }}
           onClick={goToPrevious}
@@ -146,7 +188,7 @@ const ImageCarousel = () => {
           transform="translateY(-50%)"
           bg="blackAlpha.600"
           color="white"
-          size="sm"
+          size="xs"
           borderRadius="full"
           _hover={{ bg: "blackAlpha.800" }}
           onClick={goToNext}

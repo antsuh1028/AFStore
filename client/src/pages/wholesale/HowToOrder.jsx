@@ -59,7 +59,7 @@ const HowToOrderPage = () => {
         </Box>
 
         <Box>
-          <Box width="100%" py={6} px={10}>
+          <Box width="100%" py={6} px={6}>
             <Heading
               as="h1"
               size="md"
