@@ -26,6 +26,10 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
+  Menu,
+  MenuList,
+  MenuButton,
+  MenuItem,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 import { ShoppingCart, UserRound } from "lucide-react";
@@ -55,7 +59,7 @@ const HomePage = () => {
 
   const { isAuthenticated, userId, loading } = useAuthContext();
   const encryptedUserId = encodeUserId(userId);
-  const { selectedLanguage } = useLanguage();
+  const { selectedLanguage, languages, changeLanguage } = useLanguage();
 
   // Translation helper function
   const t = (englishText, koreanText) => {
@@ -299,6 +303,59 @@ const HomePage = () => {
             width="40%"
           />
           <Flex>
+            <Menu>
+              <MenuButton mr={2}>
+                <Box
+                  width="20px"
+                  height="16px"
+                  borderRadius="sm"
+                  overflow="hidden"
+                  cursor="pointer"
+                >
+                  <Image
+                    src={selectedLanguage.flag}
+                    alt={`${selectedLanguage.country} Flag`}
+                    width="100%"
+                    height="100%"
+                    objectFit="cover"
+                  />
+                </Box>
+              </MenuButton>
+              <MenuList minW="40px" >
+                <MenuItem onClick={() => changeLanguage(languages[0])}>
+                  <Box
+                    width="20px"
+                    height="16px"
+                    borderRadius="sm"
+                    overflow="hidden"
+                  >
+                    <Image
+                      src={languages[0].flag}
+                      alt={`${languages[0].country} Flag`}
+                      width="100%"
+                      height="100%"
+                      objectFit="cover"
+                    />                    
+                  </Box>
+                </MenuItem>
+                <MenuItem onClick={() => changeLanguage(languages[1])}>
+                  <Box
+                    width="20px"
+                    height="16px"
+                    borderRadius="sm"
+                    overflow="hidden"
+                  >
+                    <Image
+                      src={languages[1].flag}
+                      alt={`${languages[1].country} Flag`}
+                      width="100%"
+                      height="100%"
+                      objectFit="cover"
+                    />
+                  </Box>
+                </MenuItem>
+              </MenuList>
+            </Menu>
             <IconButton
               aria-label="Profile"
               icon={<UserRound size={24} />}
@@ -751,10 +808,7 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  {t(
-                    '"Korean style cutting"',
-                    '"한국 스타일 고기 컷"'
-                  )}
+                  {t('"Korean style cutting"', '"한국 스타일 고기 컷"')}
                 </Text>
               </VStack>
             </GridItem>
@@ -768,10 +822,7 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  {t(
-                    '"Trusted partner"',
-                    '"신뢰할 수 있는 파트너"'
-                  )}
+                  {t('"Trusted partner"', '"신뢰할 수 있는 파트너"')}
                 </Text>
               </VStack>
             </GridItem>

@@ -67,7 +67,7 @@ const ForgotPassword = () => {
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-          />
+          /> 
           <Button onClick={handleRequest} colorScheme="blue">
             Send Reset Link
           </Button>

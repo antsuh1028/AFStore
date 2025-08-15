@@ -31,7 +31,7 @@ export const LanguageProvider = ({ children }) => {
   const changeLanguage = (language) => {
     setSelectedLanguage(language);
     // Here you can add translation logic
-    console.log("Language changed to:", language);
+    // console.log("Language changed to:", language);
   };
 
   return (

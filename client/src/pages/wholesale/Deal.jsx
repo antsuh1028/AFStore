@@ -50,8 +50,8 @@ const DealPage = () => {
             <Divider mt={2} borderColor="gray.200" />
           </Box>
           <Image
-            src="/images/deal_pg_poster.jpg"
-            fallbackSrc="/images/gray.avif"
+            src="/images/deal_pg_poster.avif"
+            fallbackSrc="/images/deal_pg_poster.jpg"
             boxSize="100%"
             objectFit="cover"
             mb={6}
