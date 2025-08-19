@@ -49,32 +49,39 @@ import emailjs from "emailjs-com";
 import { inquiryResponseTemplate } from "../../constants/emailResponse";
 
 const ResponseModal = ({ inquiryData = {}, isOpen, onClose, onEmailSent }) => {
+  
   const toast = useToast();
 
   const handleEmailSend = async () => {
     try {
+      console.log("Sending email with data:", inquiryData);
+      if (!inquiryData.to_email) {
+        throw new Error("Recipient email is missing");
+      }
+
       await emailjs.send(
         API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
-        API_CONFIG.VITE_EMAIL_JS_TEMPLATE_INQUIRY_RESPONSE,
+        API_CONFIG.VITE_EMAIL_JS_TEMPLATE_RESPONSE,
         inquiryData,
         API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
       );
 
       toast({
         title: "Response Sent!",
-        description: `Your response has been sent to ${inquiryData.email}`,
+        description: `Your response has been sent to ${inquiryData.to_email}`,
         status: "success",
         duration: 5000,
         isClosable: true,
       });
 
-      onEmailSent?.(); // Callback to parent component
+      onEmailSent?.();
       onClose();
     } catch (error) {
       console.error("Failed to send response:", error);
       toast({
         title: "Failed to Send",
         description:
+          error.message ||
           "There was an error sending your response. Please try again.",
         status: "error",
         duration: 5000,
@@ -212,6 +219,7 @@ export const Inquiries = ({ inquiries = {}, setInquiries }) => {
   };
 
   const handleRespondInquiry = async (inquiry, message) => {
+    
     if (!message.trim()) {
       toast({
         title: "Response Required",
@@ -224,20 +232,36 @@ export const Inquiries = ({ inquiries = {}, setInquiries }) => {
     }
 
     const emailData = {
+      to_email: inquiry.email,
+      to_name: inquiry.name,
+
       customerName: inquiry.name,
       companyName: inquiry.company || "Not specified",
+      responseMessage: message.trim(),
+      originalMessage: inquiry.message || "No message provided",
+      inquiryDate: inquiry.timestamp
+        ? new Date(inquiry.timestamp).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : "Not available",
+
       phone: inquiry.phone || "Not provided",
       licenseNumber: inquiry.license_number || "Not provided",
       californiaResale: inquiry.california_resale || "Not provided",
-      inquiryDate: inquiry.timestamp
-        ? new Date(inquiry.timestamp).toLocaleDateString()
-        : "Not available",
-      originalMessage: inquiry.message || "No message provided",
-      responseMessage: message.trim(),
-      email: inquiry.email,
-      name: inquiry.name,
-      id: inquiry.id,
+
+      responseType: "inquiry",
+      showReference: true,
+
+      inquiryId: inquiry.id,
+      responseDate: new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
     };
+    console.log("Email data prepared:", emailData);
 
     setInquiryData(emailData);
     onOpen();
@@ -475,4 +499,3 @@ export const Inquiries = ({ inquiries = {}, setInquiries }) => {
     </Box>
   );
 };
-
