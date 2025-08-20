@@ -41,6 +41,7 @@ import { useAuthContext } from "../hooks/useAuth";
 import ImageCarousel from "../components/home/ImageCarousel";
 import { API_CONFIG, COLORS } from "../constants";
 import HomeSkeleton from "../components/skeletons/HomeSkeleton";
+import { handleApiResponse } from "../utils/apiHelpers";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -175,32 +176,27 @@ const HomePage = () => {
     try {
       const url = `${API_CONFIG.BASE_URL}/api/items`;
       const response = await fetch(url);
-
-      if (response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          if (data.data && Array.isArray(data.data)) {
-            const filteredItems = data.data.filter(
-              (item) =>
-                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.species
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase()) ||
-                item.description
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase())
-            );
-            setSearchResults(filteredItems.slice(0, 10));
-            setShowDropdown(true);
-            setApiStatus("connected");
-            return;
-          }
-        }
+      const data = await handleApiResponse(response);
+      
+      if (data.data && Array.isArray(data.data)) {
+        const filteredItems = data.data.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.species
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            item.description
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        );
+        setSearchResults(filteredItems.slice(0, 10));
+        setShowDropdown(true);
+        setApiStatus("connected");
       }
     } catch (error) {
       console.error("Search error:", error);
       setSearchResults([]);
+      setApiStatus("error");
     } finally {
       setIsLoading(false);
     }

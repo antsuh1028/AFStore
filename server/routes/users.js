@@ -6,11 +6,68 @@ import dotenv from "dotenv";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import { isMainThread } from "worker_threads";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { logger } from "../utils/logger.js";
 
 dotenv.config();
 
 const UsersRouter = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
+
+// Initialize S3 client for document downloads
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESSKEYID,
+    secretAccessKey: process.env.AWS_SECRETACCESSKEY,
+  },
+  maxAttempts: 3,
+  retryMode: "adaptive",
+});
+
+// Authentication middleware
+const authenticate = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!token) {
+      return res.status(401).json({ error: "Missing authorization token" });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = { id: decoded.userId, email: decoded.email };
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+};
+
+// Admin authentication middleware
+const requireAdmin = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const result = await db.query(
+      "SELECT is_admin FROM users WHERE id = $1",
+      [req.user.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!result.rows[0].is_admin) {
+      return res.status(403).json({ error: "Admin access required" });
+    }
+
+    next();
+  } catch (err) {
+    logger.error("Admin check failed", { userId: req.user?.id, error: err.message });
+    return res.status(500).json({ error: "Server error during admin verification" });
+  }
+};
 
 const transporter = nodemailer.createTransport({
   service: "gmail", // or another provider
@@ -240,6 +297,170 @@ UsersRouter.put("/:id", async (req, res) => {
   }
 });
 
+// GET /api/users/:userId/documents - List user documents (admin only)
+UsersRouter.get("/:userId/documents", authenticate, requireAdmin, async (req, res) => {
+  const start = Date.now();
+  const { userId } = req.params;
+  
+  try {
+    // Validate userId parameter
+    const userIdNum = parseInt(userId);
+    if (isNaN(userIdNum)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    // Check if the user exists
+    const userResult = await db.query(
+      "SELECT id, name, email FROM users WHERE id = $1",
+      [userIdNum]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Fetch user documents
+    const documentsResult = await db.query(
+      `SELECT 
+        id,
+        document_type,
+        s3_key,
+        original_filename,
+        file_size,
+        upload_date
+      FROM user_documents 
+      WHERE user_id = $1 
+      ORDER BY upload_date DESC`,
+      [userIdNum]
+    );
+
+    const documents = documentsResult.rows.map(doc => ({
+      id: doc.id,
+      documentType: doc.document_type,
+      originalFilename: doc.original_filename,
+      fileSize: doc.file_size,
+      uploadedAt: doc.upload_date,
+      s3Key: doc.s3_key
+    }));
+
+    const durationMs = Date.now() - start;
+    logger.info("User documents fetched", {
+      adminUserId: req.user.id,
+      targetUserId: userIdNum,
+      documentCount: documents.length,
+      durationMs,
+      ip: req.ip
+    });
+
+    res.json({
+      user: userResult.rows[0],
+      documents,
+      total: documents.length
+    });
+
+  } catch (err) {
+    const durationMs = Date.now() - start;
+    logger.error("Failed to fetch user documents", {
+      adminUserId: req.user?.id,
+      targetUserId: userId,
+      error: err.message,
+      durationMs,
+      ip: req.ip
+    });
+    console.error("Error fetching user documents:", err);
+    res.status(500).json({ error: "Failed to fetch user documents" });
+  }
+});
+
+// GET /api/users/:userId/documents/:documentId/download - Download user document (admin only)
+UsersRouter.get("/:userId/documents/:documentId/download", authenticate, requireAdmin, async (req, res) => {
+  const start = Date.now();
+  const { userId, documentId } = req.params;
+  
+  try {
+    // Validate parameters
+    const userIdNum = parseInt(userId);
+    const documentIdNum = parseInt(documentId);
+    
+    if (isNaN(userIdNum) || isNaN(documentIdNum)) {
+      return res.status(400).json({ error: "Invalid user ID or document ID" });
+    }
+
+    // Fetch document information with user validation
+    const documentResult = await db.query(
+      `SELECT 
+        ud.id,
+        ud.s3_key,
+        ud.original_filename,
+        ud.document_type,
+        u.name as user_name,
+        u.email as user_email
+      FROM user_documents ud
+      JOIN users u ON ud.user_id = u.id
+      WHERE ud.id = $1 AND ud.user_id = $2`,
+      [documentIdNum, userIdNum]
+    );
+
+    if (documentResult.rows.length === 0) {
+      return res.status(404).json({ error: "Document not found for this user" });
+    }
+
+    const document = documentResult.rows[0];
+
+    // Generate signed URL for S3 download
+    const command = new GetObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: document.s3_key,
+    });
+
+    const signedUrl = await getSignedUrl(s3Client, command, { 
+      expiresIn: 3600 // 1 hour
+    });
+
+    const durationMs = Date.now() - start;
+    logger.info("Document download initiated", {
+      adminUserId: req.user.id,
+      targetUserId: userIdNum,
+      documentId: documentIdNum,
+      documentType: document.document_type,
+      fileName: document.original_filename,
+      userEmail: document.user_email,
+      durationMs,
+      ip: req.ip
+    });
+
+    res.json({
+      downloadUrl: signedUrl,
+      document: {
+        id: document.id,
+        originalFilename: document.original_filename,
+        documentType: document.document_type
+      },
+      user: {
+        name: document.user_name,
+        email: document.user_email
+      },
+      expiresIn: 3600 // seconds
+    });
+
+  } catch (err) {
+    const durationMs = Date.now() - start;
+    logger.error("Document download failed", {
+      adminUserId: req.user?.id,
+      targetUserId: userId,
+      documentId: documentId,
+      error: err.message,
+      code: err.code || err.Code,
+      durationMs,
+      ip: req.ip
+    });
+    console.error("Error generating download URL:", err);
+    res.status(500).json({ 
+      error: "Failed to generate download URL",
+      message: err.message 
+    });
+  }
+});
 
 UsersRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
