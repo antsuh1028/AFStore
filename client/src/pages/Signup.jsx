@@ -566,8 +566,8 @@ const Signup = () => {
               </FormControl>
 
               <CustomCheckbox
-                checked={true}
-                disabled={true}
+                checked={agreementChecked}
+                disabled={false}
                 onChange={() => setAgreementChecked(!agreementChecked)}
               >
                 To ensure wholesale eligibility, please provide your license
