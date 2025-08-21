@@ -483,7 +483,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
             </Link>
             <Link
               onClick={() => {
-                navigate("/cookies");
+                navigate("/cookie");
                 onClose();
               }}
               fontSize="xs"
