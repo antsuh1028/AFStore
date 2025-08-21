@@ -10,6 +10,7 @@ import { AddressRouter } from './shipping_addresses.js';
 import { S3Router } from "./s3.js";
 import { InquiriesRouter } from "./inquiries.js";
 import { PointRouter } from "./points.js";
+import EmailRouter from "./email.js";
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.use("/addresses", AddressRouter);
 router.use("/s3", S3Router);
 router.use("/inquiries", InquiriesRouter);
 router.use("/points", PointRouter);
+router.use("/email", EmailRouter);
 
 export { router as apiRouter };

@@ -28,7 +28,6 @@ import { API_CONFIG, COLORS } from "../constants";
 import { getCart, removeFromCart } from "../utils/cartActions";
 import { useLanguage } from "../hooks/LanguageContext";
 
-import emailjs from "emailjs-com";
 
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
   return (
@@ -77,9 +76,9 @@ const OrderPayment = ({
   setIsAgreed3,
 }) => {
   const { selectedLanguage } = useLanguage();
-   const translator = (englishText, koreanText) => {
-   return selectedLanguage.code === "ko" ? koreanText : englishText;
- };
+  const translator = (englishText, koreanText) => {
+    return selectedLanguage.code === "ko" ? koreanText : englishText;
+  };
   return (
     <Box p={6} bg="white" borderRadius="md" maxW="400px">
       <VStack spacing={4} align="stretch">
@@ -229,567 +228,511 @@ const OrderPayment = ({
 };
 
 const OrderSummaryPage = () => {
- const { isOpen, onOpen, onClose } = useDisclosure();
- const [currentStep, setCurrentStep] = useState(0);
- const [deliveryOption, setDeliveryOption] = useState("pickup");
- const contentRef = React.useRef(null);
- const [cartItems, setCartItems] = useState(() => getCart());
- const [orderNumber, setOrderNumber] = useState("");
- const [orderDate, setOrderDate] = useState("");
- const [isAgreed1, setIsAgreed1] = useState(false);
- const [isAgreed2, setIsAgreed2] = useState(false);
- const [isAgreed3, setIsAgreed3] = useState(false);
- const [salesTax, setSalesTax] = useState(0);
- const [deliveryFee, setDeliveryFee] = useState(0);
- const [userAddress, setUserAddress] = useState(null);
- const [isPageLoading, setIsPageLoading] = useState(true);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [deliveryOption, setDeliveryOption] = useState("pickup");
+  const contentRef = React.useRef(null);
+  const [cartItems, setCartItems] = useState(() => getCart());
+  const [orderNumber, setOrderNumber] = useState("");
+  const [orderDate, setOrderDate] = useState("");
+  const [isAgreed1, setIsAgreed1] = useState(false);
+  const [isAgreed2, setIsAgreed2] = useState(false);
+  const [isAgreed3, setIsAgreed3] = useState(false);
+  const [salesTax, setSalesTax] = useState(0);
+  const [deliveryFee, setDeliveryFee] = useState(0);
+  const [userAddress, setUserAddress] = useState(null);
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
- const navigate = useNavigate();
- const { userInfo, isAuthenticated, userName, userId, userEmail } = useAuthContext();
- const { selectedLanguage } = useLanguage();
+  const navigate = useNavigate();
+  const { userInfo, isAuthenticated, userName, userId, userEmail } =
+    useAuthContext();
+  const { selectedLanguage } = useLanguage();
 
- const translator = (englishText, koreanText) => {
-   return selectedLanguage.code === "ko" ? koreanText : englishText;
- };
+  const translator = (englishText, koreanText) => {
+    return selectedLanguage.code === "ko" ? koreanText : englishText;
+  };
 
- const subtotal = cartItems.reduce(
-   (sum, item) => sum + item.price * item.quantity,
-   0
- );
- const finalTotal = subtotal + deliveryFee;
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const finalTotal = subtotal + deliveryFee;
 
- useEffect(() => {
-   const timer = setTimeout(() => {
-     setIsPageLoading(false);
-   }, 500);
-   return () => clearTimeout(timer);
- }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
- useEffect(() => {
-   const fetchAddress = async () => {
-     if (!userId) return;
-     try {
-       const response = await fetch(
-         `${API_CONFIG.BASE_URL}/api/addresses/user/${userId}`
-       );
-       const data = await response.json();
-       if (data.success && data.data[0]) {
-         setUserAddress(data.data[0]);
-       }
-     } catch (err) {
-       console.error("Error fetching address:", err);
-     }
-   };
-   fetchAddress();
- }, [userId]);
-
- useEffect(() => {
-   if (deliveryOption === "pickup") {
-     setDeliveryFee(0);
-   } else {
-     setDeliveryFee(25);
-   }
- }, [deliveryOption]);
-
- const formatOrderDate = (dateString) => {
-   const date = new Date(dateString);
-   return date.toLocaleDateString("en-US", {
-     year: "numeric",
-     month: "long",
-     day: "numeric",
-   });
- };
-
- const formatAddress = (addressData) => {
-   if (!addressData) return "—";
-   const parts = [
-     addressData.address_line_1,
-     addressData.address_line_2,
-     `${addressData.city}, ${addressData.state} ${addressData.zip_code}`,
-   ].filter(Boolean);
-   return parts.join(", ");
- };
-
-const sendOrderConfirmationEmail = async (orderData) => {
-  try {
-    const orderItemsForEmail = cartItems.map((item) => ({
-      name: item.name,
-      quantity: item.quantity,
-      price: item.price.toFixed(2),
-      itemTotal: (item.price * item.quantity).toFixed(2),
-    }));
-
-    const baseEmailData = {
-      customerName: userName,
-      companyName: userInfo?.company || "Not specified",
-      customerAddress: formatAddress(userAddress),
-      orderNumber: orderData.order_number,
-      orderDate: formatOrderDate(orderData.order_date),
-      orderItems: orderItemsForEmail,
-      totalQuantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
-      estimatedTotal: finalTotal.toFixed(2),
-      email: userEmail,
-      name: userName,
+  useEffect(() => {
+    const fetchAddress = async () => {
+      if (!userId) return;
+      try {
+        const response = await fetch(
+          `${API_CONFIG.BASE_URL}/api/addresses/user/${userId}`
+        );
+        const data = await response.json();
+        if (data.success && data.data[0]) {
+          setUserAddress(data.data[0]);
+        }
+      } catch (err) {
+        console.error("Error fetching address:", err);
+      }
     };
+    fetchAddress();
+  }, [userId]);
 
-    // Send to Customer
-    await emailjs.send(
-      API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
-      API_CONFIG.VITE_EMAIL_JS_TEMPLATE_ORDER_CONFIRMATION,
-      {
-        ...baseEmailData,
-        to_email: userEmail,
-        responseType: "customer",
-        isCustomer: true,
-        isAdmin: false,
-      },
-      API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
+  useEffect(() => {
+    if (deliveryOption === "pickup") {
+      setDeliveryFee(0);
+    } else {
+      setDeliveryFee(25);
+    }
+  }, [deliveryOption]);
+
+  const formatOrderDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const formatAddress = (addressData) => {
+    if (!addressData) return "—";
+    const parts = [
+      addressData.address_line_1,
+      addressData.address_line_2,
+      `${addressData.city}, ${addressData.state} ${addressData.zip_code}`,
+    ].filter(Boolean);
+    return parts.join(", ");
+  };
+
+  const handleOrder = async () => {
+    try {
+      if (!isAuthenticated || !userId) {
+        console.error("User not authenticated");
+        return;
+      }
+      if (!cartItems || cartItems.length === 0) {
+        console.error("Cart is empty");
+        return;
+      }
+      if (!isAgreed1 || !isAgreed2 || !isAgreed3) {
+        console.error("All agreements must be accepted");
+        return;
+      }
+
+      const orderData = {
+        user_id: userId,
+        total_amount: finalTotal,
+        order_type: deliveryOption,
+        cart_items: cartItems.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price.toFixed(2),
+          itemTotal: (item.quantity * item.price).toFixed(2),
+        })),
+      };
+
+      const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const orderResult = await orderResponse.json();
+
+      if (orderResponse.ok && orderResult.success) {
+        const orderId = orderResult.data.id;
+
+        // Create order items
+        const orderItemPromises = cartItems.map(async (item) => {
+          const orderItemData = {
+            order_id: orderId,
+            item_id: item.id,
+            quantity: item.quantity,
+            unit_price: item.price,
+          };
+
+          const itemResponse = await fetch(
+            `${API_CONFIG.BASE_URL}/api/order-items`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(orderItemData),
+            }
+          );
+
+          return itemResponse.json();
+        });
+
+        const orderItemResults = await Promise.all(orderItemPromises);
+        const allItemsCreated = orderItemResults.every(
+          (result) => result.success
+        );
+
+        if (allItemsCreated) {
+          setOrderNumber(orderResult.data.order_number);
+          setOrderDate(formatOrderDate(orderResult.data.order_date));
+
+          // Remove email sending - backend handles it automatically
+          // await sendOrderConfirmationEmail(orderResult.data);
+
+          // Clear cart
+          cartItems.forEach((item) => {
+            removeFromCart(item.id);
+          });
+
+          setCartItems([]);
+          setCurrentStep(2);
+        } else {
+          console.error("Some order items failed to create:", orderItemResults);
+        }
+      } else {
+        console.error(
+          "Order creation failed:",
+          orderResult.error || orderResult.message
+        );
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+    }
+  };
+
+  if (isPageLoading) {
+    return (
+      <Sidebar>
+        <Container
+          maxW={{ base: "100%", lg: "30%" }}
+          p={0}
+          bg="white"
+          boxShadow="xl"
+          ml={{ base: 0, lg: "40%" }}
+          minH="100vh"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <VStack>
+            <Spinner size="xl" />
+            <Text>Loading...</Text>
+          </VStack>
+        </Container>
+      </Sidebar>
     );
-
-    // Send to Admin
-    await emailjs.send(
-      API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
-      API_CONFIG.VITE_EMAIL_JS_TEMPLATE_ORDER_CONFIRMATION,
-      {
-        ...baseEmailData,
-        to_email: "sales@adamsfoods.us",
-        responseType: "admin",
-        isCustomer: false,
-        isAdmin: true,
-      },
-      API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
-    );
-
-    console.log("Order confirmation email sent successfully");
-  } catch (error) {
-    console.error("Failed to send confirmation email:", error);
   }
-};
 
- const handleOrder = async () => {
-   try {
-     if (!isAuthenticated || !userId) {
-       console.error("User not authenticated");
-       return;
-     }
-     if (!cartItems || cartItems.length === 0) {
-       console.error("Cart is empty");
-       return;
-     }
-     if (!isAgreed1 || !isAgreed2 || !isAgreed3) {
-       console.error("All agreements must be accepted");
-       return;
-     }
+  return (
+    <Sidebar>
+      <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
 
-     const orderData = {
-       user_id: userId,
-       total_amount: finalTotal,
-       subtotal: subtotal,
-       tax_amount: 0,
-       delivery_fee: deliveryFee,
-       order_type: deliveryOption,
-     };
+      <Container
+        ref={contentRef}
+        maxW={{ base: "100%", lg: "30%" }}
+        p={0}
+        bg="white"
+        boxShadow="xl"
+        ml={{ base: 0, lg: "40%" }}
+        minH="100vh"
+      >
+        <Navbar onOpen={onOpen} />
+        <Heading
+          textAlign="center"
+          fontWeight="semibold"
+          mt={12}
+          fontSize="32px"
+        >
+          {currentStep === 0
+            ? "Order Summary"
+            : currentStep === 1
+            ? "Payment"
+            : "Thank You!"}
+        </Heading>
+        <Box w="100%" p={4}>
+          <ThreeStepLine
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+          />
 
-     const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
-       method: "POST",
-       headers: {
-         "Content-Type": "application/json",
-       },
-       body: JSON.stringify(orderData),
-     });
+          {currentStep === 0 && (
+            <VStack pt={12}>
+              <ShowCart cartItems={cartItems} setCartItems={setCartItems} />
+              <VStack spacing={8} alignItems="left" pb={32} w="100%">
+                <HStack
+                  spacing={2}
+                  cursor="pointer"
+                  onClick={() => setDeliveryOption("pickup")}
+                >
+                  <Circle
+                    size="16px"
+                    border="2px solid"
+                    borderColor={
+                      deliveryOption === "pickup" ? "black" : "gray.300"
+                    }
+                    bg={deliveryOption === "pickup" ? "black" : "white"}
+                    position="relative"
+                  >
+                    {deliveryOption === "pickup" && (
+                      <Circle size="6px" bg="white" />
+                    )}
+                  </Circle>
+                  <VStack align="start" spacing={0}>
+                    <Text
+                      fontWeight="bold"
+                      fontSize="16px"
+                      color={deliveryOption === "pickup" ? "black" : "gray.500"}
+                    >
+                      Pickup
+                    </Text>
+                    <Text fontSize="12px" color="gray.500">
+                      {translator(
+                        "Pickup available at DTLA Warehouse",
+                        "픽업은 DTLA 에서 가능합니다."
+                      )}
+                    </Text>
+                  </VStack>
+                </HStack>
 
-     const orderResult = await orderResponse.json();
+                <HStack
+                  spacing={2}
+                  cursor="pointer"
+                  onClick={() => setDeliveryOption("pickup")}
+                >
+                  <Circle
+                    size="16px"
+                    border="2px solid"
+                    borderColor={
+                      deliveryOption === "pickup" ? "black" : "gray.300"
+                    }
+                    bg={deliveryOption === "pickup" ? "black" : "white"}
+                    position="relative"
+                  >
+                    {deliveryOption === "pickup" && (
+                      <Circle size="6px" bg="white" />
+                    )}
+                  </Circle>
+                  <VStack align="start" spacing={0}>
+                    <Text
+                      fontWeight="bold"
+                      fontSize="16px"
+                      color={deliveryOption === "pickup" ? "black" : "gray.500"}
+                    >
+                      Points
+                    </Text>
+                    <Text fontSize="12px" color="gray.500">
+                      {translator(
+                        "Points can be redeemed starting from a minimum of 500 points.",
+                        "포인트는 최소 500점부터 사용하실 수 있습니다."
+                      )}
+                    </Text>
+                  </VStack>
+                </HStack>
+              </VStack>
 
-     if (orderResponse.ok && orderResult.success) {
-       const orderId = orderResult.data.id;
+              <VStack spacing={4} w="100%">
+                <Flex
+                  bg={COLORS.GRAY_LIGHT}
+                  py={4}
+                  pl={4}
+                  pr={6}
+                  align="flex-start"
+                  gap={4}
+                >
+                  <CircleCheck size={16} />
+                  <Text fontSize="12px" color="gray.500" lineHeight="1.2">
+                    {translator(
+                      "For the moment, we do not provide delivery services. We apologize for the inconvenience.",
+                      "인보이스와 픽업 가능 날짜 및 시간을 확정하여, 이메일로 안내해 드립니다."
+                    )}
+                  </Text>
+                </Flex>
 
-       const orderItemPromises = cartItems.map(async (item) => {
-         const orderItemData = {
-           order_id: orderId,
-           item_id: item.id,
-           quantity: item.quantity,
-           unit_price: item.price,
-         };
+                <VStack
+                  spacing={3}
+                  w="100%"
+                  px={4}
+                  py={4}
+                  bg="gray.50"
+                  borderRadius="lg"
+                >
+                  <Text fontSize="md" fontWeight="bold" alignSelf="flex-start">
+                    Order Summary
+                  </Text>
 
-         const itemResponse = await fetch(
-           `${API_CONFIG.BASE_URL}/api/order-items`,
-           {
-             method: "POST",
-             headers: {
-               "Content-Type": "application/json", 
-             },
-             body: JSON.stringify(orderItemData),
-           }
-         );
+                  {deliveryOption === "delivery" && (
+                    <HStack justify="space-between" w="100%">
+                      <Text fontSize="sm" color="gray.600">
+                        Delivery Fee:
+                      </Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        ${deliveryFee.toFixed(2)}
+                      </Text>
+                    </HStack>
+                  )}
 
-         return itemResponse.json();
-       });
+                  <Divider />
 
-       const orderItemResults = await Promise.all(orderItemPromises);
+                  <HStack justify="space-between" w="100%" pt={2}>
+                    <Text fontSize="md" fontWeight="bold">
+                      Total:
+                    </Text>
+                    <Text
+                      fontSize="md"
+                      fontWeight="bold"
+                      color={COLORS.PRIMARY}
+                    >
+                      ${finalTotal.toFixed(2)}
+                    </Text>
+                  </HStack>
+                </VStack>
 
-       const allItemsCreated = orderItemResults.every(
-         (result) => result.success
-       );
+                <Button
+                  size="sm"
+                  bg={COLORS.GRAY_MEDIUM}
+                  color={COLORS.PRIMARY}
+                  _hover={{ bg: COLORS.SECONDARY }}
+                  onClick={() => setCurrentStep(currentStep + 1)}
+                  borderRadius="full"
+                  h="45px"
+                  w="100%"
+                  my={6}
+                >
+                  CHECK OUT ${finalTotal.toFixed(2)}
+                </Button>
+              </VStack>
+            </VStack>
+          )}
 
-       if (allItemsCreated) {
-         setOrderNumber(orderResult.data.order_number);
-         setOrderDate(formatOrderDate(orderResult.data.order_date));
+          {currentStep === 1 && (
+            <VStack>
+              <OrderPayment
+                isAgreed1={isAgreed1}
+                isAgreed2={isAgreed2}
+                isAgreed3={isAgreed3}
+                setIsAgreed1={setIsAgreed1}
+                setIsAgreed2={setIsAgreed2}
+                setIsAgreed3={setIsAgreed3}
+              />
+              <Button
+                bg={COLORS.GRAY_MEDIUM}
+                textColor="black"
+                borderRadius="full"
+                mt={4}
+                isDisabled={!isAgreed1 || !isAgreed2 || !isAgreed3}
+                opacity={!isAgreed1 || !isAgreed2 || !isAgreed3 ? 0.5 : 1}
+                w="100%"
+                my={6}
+                onClick={() => handleOrder()}
+              >
+                PLACE YOUR ORDER - ${finalTotal.toFixed(2)}
+              </Button>
+            </VStack>
+          )}
 
-         await sendOrderConfirmationEmail(orderResult.data);
+          {currentStep === 2 && (
+            <VStack spacing={6} px={4} align="center" minH="60vh" py={8}>
+              <VStack spacing={4} w="100%">
+                <HStack
+                  justify="space-between"
+                  bg="gray.50"
+                  p={3}
+                  borderRadius="full"
+                  border="1px"
+                  borderColor="gray.200"
+                  w="100%"
+                >
+                  <Text fontSize="sm" color="gray.500">
+                    Order Number
+                  </Text>
+                  <Text fontSize="sm" fontWeight="semibold">
+                    #{orderNumber}
+                  </Text>
+                </HStack>
 
-         cartItems.forEach((item) => {
-           removeFromCart(item.id);
-         });
+                <HStack
+                  justify="space-between"
+                  bg="gray.50"
+                  p={3}
+                  borderRadius="full"
+                  border="1px"
+                  borderColor="gray.200"
+                  w="100%"
+                >
+                  <Text fontSize="sm" color="gray.500">
+                    Date
+                  </Text>
+                  <Text fontSize="sm" fontWeight="semibold">
+                    {orderDate}
+                  </Text>
+                </HStack>
+              </VStack>
 
-         setCartItems([]);
-         setCurrentStep(2);
-       } else {
-         console.error("Some order items failed to create:", orderItemResults);
-       }
-     } else {
-       console.error(
-         "Order creation failed:",
-         orderResult.error || orderResult.message
-       );
-     }
-   } catch (error) {
-     console.error("Error creating order:", error);
-   }
- };
+              <Box p={4} w="100%">
+                <HStack align="flex-start" spacing={3}>
+                  <Box mt={1} flexShrink={0}>
+                    <CircleCheck size={16} />
+                  </Box>
 
- if (isPageLoading) {
-   return (
-     <Sidebar>
-       <Container
-         maxW={{ base: "100%", lg: "30%" }}
-         p={0}
-         bg="white"
-         boxShadow="xl"
-         ml={{ base: 0, lg: "40%" }}
-         minH="100vh"
-         display="flex"
-         alignItems="center"
-         justifyContent="center"
-       >
-         <VStack>
-           <Spinner size="xl" />
-           <Text>Loading...</Text>
-         </VStack>
-       </Container>
-     </Sidebar>
-   );
- }
+                  <VStack align="flex-start" spacing={2} flex={1}>
+                    <Text fontSize="sm" color="gray.700" lineHeight="1.4">
+                      {translator(
+                        "Until you receive a confirmation email, your order is not considered confirmed.",
+                        "확인 이메일을 받기 전까지는, 주문이 확정된 것으로 간주되지 않습니다."
+                      )}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500" lineHeight="1.4">
+                      {translator(
+                        "Check your email for order confirmation and quote details.",
+                        "확인 이메일을 꼭 확인해 주세요."
+                      )}
+                    </Text>
+                  </VStack>
+                </HStack>
+              </Box>
 
- return (
-   <Sidebar>
-     <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-
-     <Container
-       ref={contentRef}
-       maxW={{ base: "100%", lg: "30%" }}
-       p={0}
-       bg="white"
-       boxShadow="xl"
-       ml={{ base: 0, lg: "40%" }}
-       minH="100vh"
-     >
-       <Navbar onOpen={onOpen} />
-       <Heading
-         textAlign="center"
-         fontWeight="semibold"
-         mt={12}
-         fontSize="32px"
-       >
-         {currentStep === 0
-           ? "Order Summary"
-           : currentStep === 1
-           ? "Payment"
-           : "Thank You!"}
-       </Heading>
-       <Box w="100%" p={4}>
-         <ThreeStepLine
-           currentStep={currentStep}
-           setCurrentStep={setCurrentStep}
-         />
-
-         {currentStep === 0 && (
-           <VStack pt={12}>
-             <ShowCart cartItems={cartItems} setCartItems={setCartItems} />
-             <VStack spacing={8} alignItems="left" pb={32} w="100%">
-               <HStack
-                 spacing={2}
-                 cursor="pointer"
-                 onClick={() => setDeliveryOption("pickup")}
-               >
-                 <Circle
-                   size="16px"
-                   border="2px solid"
-                   borderColor={
-                     deliveryOption === "pickup" ? "black" : "gray.300"
-                   }
-                   bg={deliveryOption === "pickup" ? "black" : "white"}
-                   position="relative"
-                 >
-                   {deliveryOption === "pickup" && (
-                     <Circle size="6px" bg="white" />
-                   )}
-                 </Circle>
-                 <VStack align="start" spacing={0}>
-                   <Text
-                     fontWeight="bold"
-                     fontSize="16px"
-                     color={deliveryOption === "pickup" ? "black" : "gray.500"}
-                   >
-                     Pickup
-                   </Text>
-                   <Text fontSize="12px" color="gray.500">
-                     {translator(
-                       "Pickup available at DTLA Warehouse",
-                       "픽업은 DTLA 에서 가능합니다."
-                     )}
-                   </Text>
-                 </VStack>
-               </HStack>
-
-               <HStack
-                 spacing={2}
-                 cursor="pointer"
-                 onClick={() => setDeliveryOption("pickup")}
-               >
-                 <Circle
-                   size="16px"
-                   border="2px solid"
-                   borderColor={
-                     deliveryOption === "pickup" ? "black" : "gray.300"
-                   }
-                   bg={deliveryOption === "pickup" ? "black" : "white"}
-                   position="relative"
-                 >
-                   {deliveryOption === "pickup" && (
-                     <Circle size="6px" bg="white" />
-                   )}
-                 </Circle>
-                 <VStack align="start" spacing={0}>
-                   <Text
-                     fontWeight="bold"
-                     fontSize="16px"
-                     color={deliveryOption === "pickup" ? "black" : "gray.500"}
-                   >
-                     Points
-                   </Text>
-                   <Text fontSize="12px" color="gray.500">
-                     {translator(
-                       "Points can be redeemed starting from a minimum of 500 points.",
-                       "포인트는 최소 500점부터 사용하실 수 있습니다."
-                     )}
-                   </Text>
-                 </VStack>
-               </HStack>
-             </VStack>
-
-             <VStack spacing={4} w="100%">
-               <Flex
-                 bg={COLORS.GRAY_LIGHT}
-                 py={4}
-                 pl={4}
-                 pr={6}
-                 align="flex-start"
-                 gap={4}
-               >
-                 <CircleCheck size={16} />
-                 <Text fontSize="12px" color="gray.500" lineHeight="1.2">
-                   {translator(
-                     "For the moment, we do not provide delivery services. We apologize for the inconvenience.",
-                     "인보이스와 픽업 가능 날짜 및 시간을 확정하여, 이메일로 안내해 드립니다."
-                   )}
-                 </Text>
-               </Flex>
-
-               <VStack
-                 spacing={3}
-                 w="100%"
-                 px={4}
-                 py={4}
-                 bg="gray.50"
-                 borderRadius="lg"
-               >
-                 <Text fontSize="md" fontWeight="bold" alignSelf="flex-start">
-                   Order Summary
-                 </Text>
-
-                 {deliveryOption === "delivery" && (
-                   <HStack justify="space-between" w="100%">
-                     <Text fontSize="sm" color="gray.600">
-                       Delivery Fee:
-                     </Text>
-                     <Text fontSize="sm" fontWeight="medium">
-                       ${deliveryFee.toFixed(2)}
-                     </Text>
-                   </HStack>
-                 )}
-
-                 <Divider />
-
-                 <HStack justify="space-between" w="100%" pt={2}>
-                   <Text fontSize="md" fontWeight="bold">
-                     Total:
-                   </Text>
-                   <Text
-                     fontSize="md"
-                     fontWeight="bold"
-                     color={COLORS.PRIMARY}
-                   >
-                     ${finalTotal.toFixed(2)}
-                   </Text>
-                 </HStack>
-               </VStack>
-
-               <Button
-                 size="sm"
-                 bg={COLORS.GRAY_MEDIUM}
-                 color={COLORS.PRIMARY}
-                 _hover={{ bg: COLORS.SECONDARY }}
-                 onClick={() => setCurrentStep(currentStep + 1)}
-                 borderRadius="full"
-                 h="45px"
-                 w="100%"
-                 my={6}
-               >
-                 CHECK OUT ${finalTotal.toFixed(2)}
-               </Button>
-             </VStack>
-           </VStack>
-         )}
-
-         {currentStep === 1 && (
-           <VStack>
-             <OrderPayment
-               isAgreed1={isAgreed1}
-               isAgreed2={isAgreed2}
-               isAgreed3={isAgreed3}
-               setIsAgreed1={setIsAgreed1}
-               setIsAgreed2={setIsAgreed2}
-               setIsAgreed3={setIsAgreed3}
-             />
-             <Button
-               bg={COLORS.GRAY_MEDIUM}
-               textColor="black"
-               borderRadius="full"
-               mt={4}
-               isDisabled={!isAgreed1 || !isAgreed2 || !isAgreed3}
-               opacity={!isAgreed1 || !isAgreed2 || !isAgreed3 ? 0.5 : 1}
-               w="100%"
-               my={6}
-               onClick={() => handleOrder()}
-             >
-               PLACE YOUR ORDER - ${finalTotal.toFixed(2)}
-             </Button>
-           </VStack>
-         )}
-
-         {currentStep === 2 && (
-           <VStack
-             spacing={6}
-             px={4}
-             align="center"
-             minH="60vh"
-             py={8}
-           >
-             <VStack spacing={4} w="100%">
-               <HStack
-                 justify="space-between"
-                 bg="gray.50"
-                 p={3}
-                 borderRadius="full"
-                 border="1px"
-                 borderColor="gray.200"
-                 w="100%"
-               >
-                 <Text fontSize="sm" color="gray.500">
-                   Order Number
-                 </Text>
-                 <Text fontSize="sm" fontWeight="semibold">
-                   #{orderNumber}
-                 </Text>
-               </HStack>
-
-               <HStack
-                 justify="space-between"
-                 bg="gray.50"
-                 p={3}
-                 borderRadius="full"
-                 border="1px"
-                 borderColor="gray.200"
-                 w="100%"
-               >
-                 <Text fontSize="sm" color="gray.500">
-                   Date
-                 </Text>
-                 <Text fontSize="sm" fontWeight="semibold">
-                   {orderDate}
-                 </Text>
-               </HStack>
-             </VStack>
-
-             <Box p={4} w="100%">
-               <HStack align="flex-start" spacing={3}>
-                 <Box mt={1} flexShrink={0}>
-                   <CircleCheck size={16} />
-                 </Box>
-
-                 <VStack align="flex-start" spacing={2} flex={1}>
-                   <Text fontSize="sm" color="gray.700" lineHeight="1.4">
-                     {translator(
-                       "Until you receive a confirmation email, your order is not considered confirmed.",
-                       "확인 이메일을 받기 전까지는, 주문이 확정된 것으로 간주되지 않습니다."
-                     )}
-                   </Text>
-                   <Text fontSize="xs" color="gray.500" lineHeight="1.4">
-                     {translator(
-                       "Check your email for order confirmation and quote details.",
-                       "확인 이메일을 꼭 확인해 주세요."
-                     )}
-                   </Text>
-                 </VStack>
-               </HStack>
-             </Box>
-
-             <VStack spacing={4} w="100%" mt={24}>
-               <Box p={4} borderRadius="md" textAlign="center" w="100%">
-                 <Text fontSize="xs" color="gray.600" mb={2}>
-                   Have any concerns about your order?
-                 </Text>
-                 <HStack justify="center" spacing={1}>
-                   <Text fontSize="xs" color="gray.600">
-                     Email us at
-                   </Text>
-                   <Link
-                     fontSize="sm"
-                     href="mailto:sales@adamsfoods.us"
-                     color="#b3967f"
-                     fontWeight="semibold"
-                     textDecoration="underline"
-                     _hover={{ color: "#494949" }}
-                   >
-                     sales@adamsfoods.us
-                   </Link>
-                 </HStack>
-               </Box>
-               <Button
-                 bg={COLORS.GRAY_MEDIUM}
-                 borderRadius="full"
-                 w="100%"
-                 onClick={() => navigate("/")}
-               >
-                 FINISH
-               </Button>
-             </VStack>
-           </VStack>
-         )}
-       </Box>
-     </Container>
-   </Sidebar>
- );
+              <VStack spacing={4} w="100%" mt={24}>
+                <Box p={4} borderRadius="md" textAlign="center" w="100%">
+                  <Text fontSize="xs" color="gray.600" mb={2}>
+                    Have any concerns about your order?
+                  </Text>
+                  <HStack justify="center" spacing={1}>
+                    <Text fontSize="xs" color="gray.600">
+                      Email us at
+                    </Text>
+                    <Link
+                      fontSize="sm"
+                      href="mailto:sales@adamsfoods.us"
+                      color="#b3967f"
+                      fontWeight="semibold"
+                      textDecoration="underline"
+                      _hover={{ color: "#494949" }}
+                    >
+                      sales@adamsfoods.us
+                    </Link>
+                  </HStack>
+                </Box>
+                <Button
+                  bg={COLORS.GRAY_MEDIUM}
+                  borderRadius="full"
+                  w="100%"
+                  onClick={() => navigate("/")}
+                >
+                  FINISH
+                </Button>
+              </VStack>
+            </VStack>
+          )}
+        </Box>
+      </Container>
+    </Sidebar>
+  );
 };
 
 export default OrderSummaryPage;

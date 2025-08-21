@@ -45,11 +45,9 @@ import {
 } from "@chakra-ui/icons";
 import { API_CONFIG } from "../../constants";
 import { useToast } from "@chakra-ui/react";
-import emailjs from "emailjs-com";
 import { inquiryResponseTemplate } from "../../constants/emailResponse";
 
 const ResponseModal = ({ inquiryData = {}, isOpen, onClose, onEmailSent }) => {
-  
   const toast = useToast();
 
   const handleEmailSend = async () => {
@@ -59,12 +57,28 @@ const ResponseModal = ({ inquiryData = {}, isOpen, onClose, onEmailSent }) => {
         throw new Error("Recipient email is missing");
       }
 
-      await emailjs.send(
-        API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
-        API_CONFIG.VITE_EMAIL_JS_TEMPLATE_RESPONSE,
-        inquiryData,
-        API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}/api/email/send-inquiry-response`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: inquiryData.to_email,
+            customerName: inquiryData.customerName,
+            responseMessage: inquiryData.responseMessage,
+            responseType: "inquiry",
+            originalMessage: inquiryData.originalMessage,
+            companyName: inquiryData.companyName,
+            inquiryDate: inquiryData.inquiryDate,
+          }),
+        }
       );
+
+      if (!response.ok) {
+        throw new Error("Failed to send email");
+      }
 
       toast({
         title: "Response Sent!",
@@ -219,7 +233,6 @@ export const Inquiries = ({ inquiries = {}, setInquiries }) => {
   };
 
   const handleRespondInquiry = async (inquiry, message) => {
-    
     if (!message.trim()) {
       toast({
         title: "Response Required",

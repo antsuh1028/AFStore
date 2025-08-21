@@ -21,7 +21,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import emailjs from "emailjs-com";
 import { getCart } from "../utils/cartActions";
 
 import Footer from "../components/Footer";
@@ -206,17 +205,6 @@ const ContactPage = () => {
       if (!response.ok) {
         throw new Error("Failed to submit inquiry");
       }
-      console.log(inquiryData);
-
-      await emailjs.send(
-        import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
-        import.meta.env.VITE_EMAIL_JS_TEMPLATE_CONTACT,
-        {
-          ...inquiryData,
-          time: new Date().toISOString(),
-        },
-        import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
-      );
 
       toast({
         title: "Inquiry submitted!",

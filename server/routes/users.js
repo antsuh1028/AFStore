@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { isMainThread } from "worker_threads";
+import { sendSignupRequestEmail } from "../utils/emailService.js";
 
 dotenv.config();
 
@@ -93,19 +93,8 @@ UsersRouter.post("/login", async (req, res) => {
 
 UsersRouter.post("/signup", async (req, res) => {
   const { 
-    firstName, 
-    lastName, 
-    companyName, 
-    email, 
-    password, 
-    licenseNumber,
-    companyAddress1,
-    companyAddress2,
-    zipCode,
-    city,
-    state,
-    phone,
-    californiaResale
+    firstName, lastName, companyName, email, password, licenseNumber,
+    companyAddress1, companyAddress2, zipCode, city, state, phone, californiaResale
   } = req.body;
 
   if (!firstName || !lastName || !companyName || !email || !password || !licenseNumber) {
@@ -141,6 +130,12 @@ UsersRouter.post("/signup", async (req, res) => {
       ]
     );
 
+    // Send signup notification email to sales
+    await sendSignupRequestEmail({
+  firstName, lastName, email, companyName, licenseNumber,
+  companyAddress1, companyAddress2, zipCode, city, state, phone, californiaResale
+});
+
     res.status(201).json({
       message: "Signup request submitted successfully. Please wait for admin approval.",
       request: result.rows[0],
@@ -164,7 +159,7 @@ UsersRouter.post("/forgot-password", async (req, res) => {
       [email, token, expiresAt]
     );
 
-    const resetLink = `http://localhost:5173/reset-password?token=${token}&email=${encodeURIComponent(
+    const resetLink = `http://localhost:3001/reset-password?token=${token}&email=${encodeURIComponent(
       email
     )}`;
 

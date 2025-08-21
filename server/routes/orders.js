@@ -1,6 +1,6 @@
 import express from "express";
 import { db } from "../db/index.js";
-
+import { sendOrderConfirmationEmail } from "../utils/emailService.js";
 const OrdersRouter = express.Router();
 
 // Get all orders - SORTED BY MOST RECENT
@@ -27,11 +27,14 @@ OrdersRouter.get("/user/:user_id", async (req, res) => {
       });
     }
 
-    const result = await db.query(`
+    const result = await db.query(
+      `
       SELECT * FROM orders 
       WHERE user_id = $1 
       ORDER BY order_date DESC
-    `, [userId]);
+    `,
+      [userId]
+    );
 
     res.json({
       success: true,
@@ -47,38 +50,109 @@ OrdersRouter.get("/user/:user_id", async (req, res) => {
   }
 });
 
-//Add order
+// Create a new order
 OrdersRouter.post("/", async (req, res) => {
   try {
-    const { user_id, total_amount } = req.body;
+    const { user_id, total_amount, order_type } = req.body;
 
-    if (!user_id) {
-      return res.status(400).json({
-        error: "Missing required fields",
-        required: ["user_id", "total_amount"],
-      });
-    }
+    // Generate order number
+    const orderNumber = `AF${Date.now()}`;
 
-    const orderNumber = "AF" + Date.now();
-
-    const result = await db.query(
-      `INSERT INTO orders (user_id, order_date, order_status, total_amount, order_number, created_at)
-  VALUES ($1, CURRENT_TIMESTAMP, 'pending', $2, $3, CURRENT_TIMESTAMP)
-  RETURNING *`,
-      [user_id, total_amount, orderNumber]
+    // Create order in database
+    const orderResult = await db.query(
+      `INSERT INTO orders (user_id, order_date, total_amount, order_number, order_type, order_status, created_at) 
+  VALUES ($1, NOW(), $2, $3, $4, 'pending', NOW()) RETURNING *`,
+      [user_id, total_amount, orderNumber, order_type || "pickup"]
     );
 
-    res.status(201).json({
-      success: true,
-      data: result.rows[0],
-      message: "Order created successfully",
-    });
-  } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({
-      error: "Internal server error",
-      message: err.message,
-    });
+    const order = orderResult.rows[0];
+
+    // Get user info for email
+    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [
+      user_id,
+    ]);
+    const user = userResult.rows[0];
+    console.log(
+      "User lookup result:",
+      user ? "Found user" : "No user found",
+      user_id
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    let customerAddress = "Address not provided";
+    try {
+      const addressResult = await db.query(
+        "SELECT * FROM addresses WHERE user_id = $1 LIMIT 1",
+        [user_id]
+      );
+      console.log(
+        "Address lookup result:",
+        addressResult.rows.length,
+        "addresses found"
+      );
+
+      if (addressResult.rows.length > 0) {
+        const address = addressResult.rows[0];
+        const addressParts = [
+          address.address_line_1,
+          address.address_line_2,
+          `${address.city}, ${address.state} ${address.zip_code}`,
+        ].filter(Boolean);
+
+        customerAddress = addressParts.join(", ");
+        console.log("Formatted address:", customerAddress);
+      }
+    } catch (addressError) {
+      console.warn("Address lookup failed:", addressError);
+    }
+    // Prepare email data
+    const emailData = {
+      customerName: user.name || "Customer",
+      companyName: user.company || "Not specified",
+      email: user.email,
+      customerAddress: customerAddress,
+      orderNumber: order.order_number,
+      orderDate: new Date(order.order_date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      estimatedTotal: total_amount,
+      orderItems: req.body.cart_items || [],
+    };
+
+    console.log(
+      "Email data prepared for:",
+      emailData.email,
+      "Order:",
+      emailData.orderNumber
+    );
+
+    try {
+      const emailResults = await Promise.allSettled([
+        sendOrderConfirmationEmail(emailData, false),
+        sendOrderConfirmationEmail(emailData, true),
+      ]);
+
+      emailResults.forEach((result, index) => {
+        const type = index === 0 ? "customer" : "admin";
+        if (result.status === "fulfilled") {
+          console.log(`${type} email sent successfully:`, result.value);
+        } else {
+          console.error(`${type} email failed:`, result.reason);
+        }
+      });
+    } catch (error) {
+      console.error("Email promise error:", error);
+    }
+
+    res.status(201).json({ success: true, data: order });
+  } catch (error) {
+    console.error("Order creation error:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -88,7 +162,15 @@ OrdersRouter.put("/:id/status", async (req, res) => {
     const orderId = parseInt(req.params.id);
     const newStatus = req.body.status;
 
-    const allowedStatuses = ["pending", "complete", "incomplete", "contacted", "quote sent", "order placed", "declined"];
+    const allowedStatuses = [
+      "pending",
+      "complete",
+      "incomplete",
+      "contacted",
+      "quote sent",
+      "order placed",
+      "declined",
+    ];
 
     if (isNaN(orderId)) {
       return res.status(400).json({ error: "Invalid order ID" });

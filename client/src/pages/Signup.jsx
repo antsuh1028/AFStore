@@ -23,7 +23,6 @@ import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
 
-import emailjs from "emailjs-com";
 import { API_CONFIG, COLORS } from "../constants";
 import { useLanguage } from "../hooks/LanguageContext";
 import { translator } from "../utils/translator";
@@ -179,102 +178,92 @@ const Signup = () => {
     </Box>
   );
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
+const handleSignup = async (e) => {
+  e.preventDefault();
 
-    const formData = new FormData(e.target);
+  const formData = new FormData(e.target);
 
-    if (emailError || licenseError) {
+  if (emailError || licenseError) {
+    toast({
+      title: "Please fix form errors.",
+      status: "error",
+      duration: 4000,
+      isClosable: true,
+    });
+    return;
+  }
+
+  if (!agreementChecked) {
+    toast({
+      title: "Agreement required.",
+      description:
+        "You must acknowledge the wholesale eligibility requirements.",
+      status: "error",
+      duration: 4000,
+      isClosable: true,
+    });
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/users/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName: formData.get("first_name"),
+        lastName: formData.get("last_name"),
+        companyName: formData.get("company"),
+        email: formData.get("email"),
+        password,
+        licenseNumber: formData.get("business_license"),
+        companyAddress1: formData.get("company_address_1"),
+        companyAddress2: formData.get("company_address_2"),
+        zipCode: formData.get("zip_code"),
+        city: formData.get("city"),
+        state: formData.get("state"),
+        phone: formData.get("phone"),
+        californiaResale: formData.get("california_resale"),
+        timestamp: new Date().toISOString(),
+      }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
       toast({
-        title: "Please fix form errors.",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (!agreementChecked) {
-      toast({
-        title: "Agreement required.",
+        title: "Signup request submitted!",
         description:
-          "You must acknowledge the wholesale eligibility requirements.",
-        status: "error",
-        duration: 4000,
+          "Please wait for admin approval. You'll be contacted within 1-2 business days.",
+        status: "success",
+        duration: 5000,
         isClosable: true,
       });
-      return;
-    }
 
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_CONFIG.BASE_URL}/api/users/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: formData.get("first_name"),
-          lastName: formData.get("last_name"),
-          companyName: formData.get("company"),
-          email: formData.get("email"),
-          password,
-          licenseNumber: formData.get("business_license"),
-          companyAddress1: formData.get("company_address_1"),
-          companyAddress2: formData.get("company_address_2"),
-          zipCode: formData.get("zip_code"),
-          city: formData.get("city"),
-          state: formData.get("state"),
-          phone: formData.get("phone"),
-          californiaResale: formData.get("california_resale"),
-          timestamp: new Date().toISOString(),
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        await emailjs.send(
-          import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
-          import.meta.env.VITE_EMAIL_JS_TEMPLATE_SIGNUP,
-          {
-            ...Object.fromEntries(new FormData(form.current)),
-            time: new Date().toISOString(),
-          },
-          import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
-        );
-
-        toast({
-          title: "Signup request submitted!",
-          description:
-            "Please wait for admin approval. You'll be contacted within 1-2 business days.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-
-        setTimeout(() => {
-          navigate("/", { replace: true });
-        }, 1000);
-      } else {
-        toast({
-          title: "Signup failed.",
-          description: data.message,
-          status: "error",
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      console.error("Signup error:", err);
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 1000);
+    } else {
       toast({
-        title: "Server error.",
-        description: "Please try again later.",
+        title: "Signup failed.",
+        description: data.message,
         status: "error",
         duration: 4000,
         isClosable: true,
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    console.error("Signup error:", err);
+    toast({
+      title: "Server error.",
+      description: "Please try again later.",
+      status: "error",
+      duration: 4000,
+      isClosable: true,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Sidebar>
