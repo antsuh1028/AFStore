@@ -7,6 +7,6 @@ CREATE TABLE IF NOT EXISTS users (
   is_admin BOOLEAN NOT NULL DEFAULT FALSE,
   company TEXT,
   california_resale TEXT,
-  disabled BOOLEAN DEFAULT FALSE,
+  disabled BOOLEAN DEFAULT TRUE,
   password VARCHAR(255) NOT NULL,
 );

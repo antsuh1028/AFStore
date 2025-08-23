@@ -113,29 +113,30 @@ S3Router.post("/upload/document", authenticate, upload.single("file"), async (re
     const { documentType } = req.body;
 
     if (!req.file) {
-      logger.warn("Document upload attempt with no file", { userId: req.user?.id, ip: req.ip });
+      logger.warn("Document upload attempt with no file", { userEmail: req.user?.email, ip: req.ip });
       return res.status(400).json({ error: "No file uploaded" });
     }
 
     if (!documentType) {
-      logger.warn("Document upload missing documentType", { userId: req.user?.id, ip: req.ip });
+      logger.warn("Document upload missing documentType", { userEmail: req.user?.email, ip: req.ip });
       return res.status(400).json({ error: "Missing documentType" });
     }
 
     if (!allowedMimeTypes.has(req.file.mimetype)) {
-      logger.warn("Unsupported file type on upload", { userId: req.user?.id, ip: req.ip, mime: req.file.mimetype });
+      logger.warn("Unsupported file type on upload", { userEmail: req.user?.email, ip: req.ip, mime: req.file.mimetype });
       return res.status(400).json({ error: "Unsupported file type" });
     }
 
-    const userId = req.user.id;
+    const userEmail = req.user.email;
     const timestamp = Date.now();
 
     const originalBase = sanitizeFileName(req.file.originalname.replace(/\.[^.]+$/, ""));
     const ext = getExtensionFromMime(req.file.mimetype) || (req.file.originalname.match(/\.[^.]+$/)?.[0] || "");
 
     const safeDocType = sanitizeFileName(String(documentType));
+    const safeEmail = sanitizeFileName(userEmail);
 
-    const key = `user-documents/${userId}/${safeDocType}/${timestamp}-${originalBase}${ext}`;
+    const key = `user-documents/${safeEmail}/${safeDocType}/${timestamp}-${originalBase}${ext}`;
 
     const put = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME,
@@ -149,14 +150,14 @@ S3Router.post("/upload/document", authenticate, upload.single("file"), async (re
 
     await db.query(
       `INSERT INTO user_documents
-       (user_id, document_type, s3_key, original_filename, file_size, upload_date)
-       VALUES ($1, $2, $3, $4, $5, NOW())`,
-      [userId, safeDocType, key, req.file.originalname, req.file.size]
+       (user_email, document_type, s3_key, original_filename, file_size)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [userEmail, safeDocType, key, req.file.originalname, req.file.size]
     );
 
     const durationMs = Date.now() - start;
     logger.info("Document uploaded", {
-      userId,
+      userEmail,
       ip: req.ip,
       documentType: safeDocType,
       key,
@@ -174,7 +175,7 @@ S3Router.post("/upload/document", authenticate, upload.single("file"), async (re
   } catch (err) {
     const durationMs = Date.now() - start;
     logger.error("Document upload failed", {
-      userId: req.user?.id,
+      userEmail: req.user?.email,
       ip: req.ip,
       error: err.message,
       code: err.code || err.Code,

@@ -25,6 +25,7 @@ import Footer from "../components/Footer";
 
 import emailjs from "emailjs-com";
 import { API_CONFIG, COLORS } from "../constants";
+import { uploadMultipleSignupDocuments } from "../utils/fileUpload";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -37,7 +38,7 @@ const Signup = () => {
   const [emailError, setEmailError] = useState("");
   const [licenseError, setLicenseError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [agreementChecked, setAgreementChecked] = useState(false);
+  const [agreementChecked, setAgreementChecked] = useState(true);
 
   // File upload states
   const [licenseFileName, setLicenseFileName] = useState("");
@@ -50,6 +51,15 @@ const Signup = () => {
   const [govIdFileError, setGovIdFileError] = useState("");
   const [businessFileError, setBusinessFileError] = useState("");
   const [resaleFileError, setResaleFileError] = useState("");
+
+  // File references for actual file objects
+  const [licenseFile, setLicenseFile] = useState(null);
+  const [govIdFile, setGovIdFile] = useState(null);
+  const [businessFile, setBusinessFile] = useState(null);
+  const [resaleFile, setResaleFile] = useState(null);
+
+  // Upload progress state
+  const [uploadProgress, setUploadProgress] = useState("");
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -105,7 +115,7 @@ const Signup = () => {
     return "";
   };
 
-  const FileUploadField = ({ id, name, fileName, setFileName, helpText, error, setError }) => (
+  const FileUploadField = ({ id, name, fileName, setFileName, helpText, error, setError, setFile }) => (
     <Box mb={2} key={`file-upload-${id}`}>
       <input
         id={id}
@@ -130,6 +140,7 @@ const Signup = () => {
             } else {
               setError("");
               setFileName(file.name);
+              if (setFile) setFile(file);
               toast({
                 title: "File uploaded successfully",
                 description: `${file.name} is ready to submit`,
@@ -141,6 +152,7 @@ const Signup = () => {
           } else {
             setFileName("");
             setError("");
+            if (setFile) setFile(null);
           }
         }}
       />
@@ -260,38 +272,91 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_CONFIG.BASE_URL}/api/users/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: formData.get("first_name"),
-          lastName: formData.get("last_name"),
-          companyName: formData.get("company"),
-          email: formData.get("email"),
-          password,
-          licenseNumber: formData.get("business_license"),
-          companyAddress1: formData.get("company_address_1"),
-          companyAddress2: formData.get("company_address_2"),
-          zipCode: formData.get("zip_code"),
-          city: formData.get("city"),
-          state: formData.get("state"),
-          phone: formData.get("phone"),
-          californiaResale: formData.get("california_resale"),
-          timestamp: new Date().toISOString(),
-        }),
-      });
+      // Prepare user data
+      const userData = {
+        firstName: formData.get("first_name"),
+        lastName: formData.get("last_name"),
+        companyName: formData.get("company"),
+        email: formData.get("email"),
+        password,
+        licenseNumber: formData.get("business_license"),
+        companyAddress1: formData.get("company_address_1"),
+        companyAddress2: formData.get("company_address_2"),
+        zipCode: formData.get("zip_code"),
+        city: formData.get("city"),
+        state: formData.get("state"),
+        phone: formData.get("phone"),
+        californiaResale: formData.get("california_resale"),
+        timestamp: new Date().toISOString(),
+      };
 
-      const data = await res.json();
-      if (res.ok) {
-        await emailjs.send(
-          import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
-          import.meta.env.VITE_EMAIL_JS_TEMPLATE_SIGNUP,
-          {
-            ...Object.fromEntries(new FormData(form.current)),
-            time: new Date().toISOString(),
-          },
-          import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
-        );
+      // Collect files for upload
+      const filesToUpload = [];
+      if (licenseFile) filesToUpload.push({ file: licenseFile, documentType: 'business-license' });
+      if (govIdFile) filesToUpload.push({ file: govIdFile, documentType: 'government-id' });
+      if (businessFile) filesToUpload.push({ file: businessFile, documentType: 'business-document' });
+      if (resaleFile) filesToUpload.push({ file: resaleFile, documentType: 'resale-certificate' });
+
+      // Create account and upload documents
+      setUploadProgress("Creating account...");
+      
+      const result = await uploadMultipleSignupDocuments(
+        filesToUpload, 
+        userData,
+        (current, total, docType) => {
+          setUploadProgress(`Uploading ${docType}... (${current}/${total})`);
+        }
+      );
+
+             if (result.success) {
+         if (result.errors && result.errors.length > 0) {
+           console.warn("Some files failed to upload:", result.errors);
+           
+           // Categorize errors for better user feedback
+           const s3Errors = result.errors.filter(err => err.isS3Error);
+           const networkErrors = result.errors.filter(err => err.isNetworkError);
+           const otherErrors = result.errors.filter(err => !err.isS3Error && !err.isNetworkError);
+           
+           let errorMessage = `${result.errors.length} document(s) failed to upload.`;
+           
+           if (s3Errors.length > 0) {
+             errorMessage += ` S3 storage issues: ${s3Errors.map(e => e.documentType).join(', ')}.`;
+           }
+           if (networkErrors.length > 0) {
+             errorMessage += ` Network issues: ${networkErrors.map(e => e.documentType).join(', ')}.`;
+           }
+           if (otherErrors.length > 0) {
+             errorMessage += ` Other issues: ${otherErrors.map(e => e.documentType).join(', ')}.`;
+           }
+           
+           errorMessage += " Please contact support if needed.";
+           
+           toast({
+             title: "Documents upload warning",
+             description: errorMessage,
+             status: "warning",
+             duration: 8000,
+             isClosable: true,
+           });
+         }
+
+        setUploadProgress("");
+
+        // Send email notification (with error handling)
+        try {
+          await emailjs.send(
+            import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
+            import.meta.env.VITE_EMAIL_JS_TEMPLATE_SIGNUP,
+            {
+              ...Object.fromEntries(new FormData(form.current)),
+              time: new Date().toISOString(),
+            },
+            import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
+          );
+        } catch (emailError) {
+          console.warn("Email notification failed:", emailError);
+          // Don't block the signup flow if email fails
+        }
 
         toast({
           title: "Signup request submitted!",
@@ -306,25 +371,59 @@ const Signup = () => {
           navigate("/", { replace: true });
         }, 1000);
       } else {
+        // Handle signup failure
+        console.error("Signup failed:", result.errors);
+        
+        let errorTitle = "Signup failed";
+        let errorMessage = "Please try again later.";
+        
+        if (result.errors && result.errors.length > 0) {
+          const firstError = result.errors[0];
+          
+          if (firstError.isS3Error) {
+            errorTitle = "Document upload failed";
+            errorMessage = `S3 storage error: ${firstError.error}. Your account may have been created, but documents failed to upload.`;
+          } else if (firstError.isNetworkError) {
+            errorTitle = "Network error";
+            errorMessage = `Connection error: ${firstError.error}. Please check your internet connection and try again.`;
+          } else {
+            errorMessage = firstError.error || "Unknown error occurred.";
+          }
+        }
+        
         toast({
-          title: "Signup failed.",
-          description: data.message,
+          title: errorTitle,
+          description: errorMessage,
           status: "error",
-          duration: 4000,
+          duration: 6000,
           isClosable: true,
         });
       }
     } catch (err) {
       console.error("Signup error:", err);
+      
+      let errorTitle = "Server error";
+      let errorMessage = "Please try again later.";
+      
+      // Check if it's a network error that might indicate S3 issues
+      if (err.name === 'TypeError' || err.message.includes('fetch')) {
+        errorTitle = "Connection error";
+        errorMessage = "Unable to connect to our servers. This might be due to S3 storage service being unavailable. Please check your internet connection and try again.";
+      } else if (err.message.includes('S3') || err.message.includes('AWS')) {
+        errorTitle = "Storage service error";
+        errorMessage = "Our document storage service (S3) is currently unavailable. Please try again later or contact support.";
+      }
+      
       toast({
-        title: "Server error.",
-        description: "Please try again later.",
+        title: errorTitle,
+        description: errorMessage,
         status: "error",
-        duration: 4000,
+        duration: 6000,
         isClosable: true,
       });
     } finally {
       setLoading(false);
+      setUploadProgress("");
     }
   };
 
@@ -535,6 +634,7 @@ const Signup = () => {
                     name="license_file"
                     fileName={licenseFileName}
                     setFileName={setLicenseFileName}
+                    setFile={setLicenseFile}
                     helpText="*Please attach the Business License (PDF, JPG, PNG only, max 10MB)"
                     error={licenseFileError}
                     setError={setLicenseFileError}
@@ -558,6 +658,7 @@ const Signup = () => {
                     name="resale_cert_file"
                     fileName={resaleFileName}
                     setFileName={setResaleFileName}
+                    setFile={setResaleFile}
                     helpText="*Please attach the California Resale Certificate (PDF, JPG, PNG only, max 10MB)"
                     error={resaleFileError}
                     setError={setResaleFileError}
@@ -568,7 +669,6 @@ const Signup = () => {
               <CustomCheckbox
                 checked={true}
                 disabled={true}
-                onChange={() => setAgreementChecked(!agreementChecked)}
               >
                 To ensure wholesale eligibility, please provide your license
                 number and upload a copy during sign-up.
@@ -583,6 +683,7 @@ const Signup = () => {
                   name="gov_id_file"
                   fileName={govIdFileName}
                   setFileName={setGovIdFileName}
+                  setFile={setGovIdFile}
                   helpText="*Please attach the government ID (PDF, JPG, PNG only, max 10MB)"
                   error={govIdFileError}
                   setError={setGovIdFileError}
@@ -598,6 +699,7 @@ const Signup = () => {
                   name="business_file"
                   fileName={businessFileName}
                   setFileName={setBusinessFileName}
+                  setFile={setBusinessFile}
                   helpText="*Please attach the business license."
                   error={businessFileError}
                   setError={setBusinessFileError}
@@ -613,13 +715,21 @@ const Signup = () => {
                 </CustomCheckbox>
               </Box>
 
+              {uploadProgress && (
+                <Box textAlign="center" mb={4}>
+                  <Text fontSize="sm" color="blue.600" fontWeight="medium">
+                    {uploadProgress}
+                  </Text>
+                </Box>
+              )}
+
               <Box display="flex" justifyContent="center" width="100%" pt={4}>
                 <Button
                   type="submit"
                   bg={COLORS.PRIMARY}
                   color="white"
-                  isLoading={loading}
-                  loadingText="Creating Account..."
+                  isLoading={loading || uploadProgress !== ""}
+                  loadingText={uploadProgress || "Creating Account..."}
                   borderRadius="full"
                   size="lg"
                   width="100%"
