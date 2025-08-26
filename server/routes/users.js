@@ -5,10 +5,10 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { isMainThread } from "worker_threads";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { logger } from "../utils/logger.js";
+import { sendSignupRequestEmail } from "../utils/emailService.js";
 
 dotenv.config();
 
@@ -19,8 +19,8 @@ const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESSKEYID,
-    secretAccessKey: process.env.AWS_SECRETACCESSKEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
   maxAttempts: 3,
   retryMode: "adaptive",
@@ -64,8 +64,13 @@ const requireAdmin = async (req, res, next) => {
 
     next();
   } catch (err) {
-    logger.error("Admin check failed", { userEmail: req.user?.email, error: err.message });
-    return res.status(500).json({ error: "Server error during admin verification" });
+    logger.error("Admin check failed", {
+      userEmail: req.user?.email,
+      error: err.message,
+    });
+    return res
+      .status(500)
+      .json({ error: "Server error during admin verification" });
   }
 };
 
@@ -88,16 +93,21 @@ UsersRouter.get("/", async (req, res) => {
 });
 
 // GET /api/users/signup-requests — fetch all signup requests
-UsersRouter.get("/signup-requests", authenticate, requireAdmin, async (req, res) => {
-  try {
-    const result = await db.query(
-      "SELECT * FROM signup_requests ORDER BY timestamp DESC"
-    );
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+UsersRouter.get(
+  "/signup-requests",
+  authenticate,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const result = await db.query(
+        "SELECT * FROM signup_requests WHERE show = TRUE ORDER BY timestamp DESC"
+      );
+      res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
-});
+);
 
 // POST /api/users/login — login and return JWT
 UsersRouter.post("/login", async (req, res) => {
@@ -150,14 +160,33 @@ UsersRouter.post("/login", async (req, res) => {
 });
 
 UsersRouter.post("/signup", async (req, res) => {
-  const { 
-    firstName, lastName, companyName, email, password, licenseNumber,
-    companyAddress1, companyAddress2, zipCode, city, state, phone, californiaResale
+  const {
+    firstName,
+    lastName,
+    companyName,
+    email,
+    password,
+    licenseNumber,
+    companyAddress1,
+    companyAddress2,
+    zipCode,
+    city,
+    state,
+    phone,
+    californiaResale,
   } = req.body;
 
-  if (!firstName || !lastName || !companyName || !email || !password || !licenseNumber) {
+  if (
+    !firstName ||
+    !lastName ||
+    !companyName ||
+    !email ||
+    !password ||
+    !licenseNumber
+  ) {
     return res.status(400).json({
-      message: "Required fields: firstName, lastName, companyName, email, password, licenseNumber",
+      message:
+        "Required fields: firstName, lastName, companyName, email, password, licenseNumber",
     });
   }
 
@@ -167,7 +196,9 @@ UsersRouter.post("/signup", async (req, res) => {
   }
 
   try {
-    const existing = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+    const existing = await db.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
     if (existing.rows.length > 0) {
       return res.status(400).json({ message: "Email already in use" });
     }
@@ -182,8 +213,15 @@ UsersRouter.post("/signup", async (req, res) => {
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
       RETURNING id, name, email, company`,
       [
-        `${firstName} ${lastName}`, email, hashedPassword, licenseNumber, phone,
-        companyName, californiaResale, true, false
+        `${firstName} ${lastName}`,
+        email,
+        hashedPassword,
+        licenseNumber,
+        phone,
+        companyName,
+        californiaResale,
+        true,
+        false,
       ]
     );
 
@@ -196,20 +234,42 @@ UsersRouter.post("/signup", async (req, res) => {
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
       RETURNING id, first_name, last_name, email, company`,
       [
-        firstName, lastName, email, hashedPassword, licenseNumber, companyName,
-        companyAddress1, companyAddress2, zipCode, city, state, phone,
-        californiaResale, new Date()
+        firstName,
+        lastName,
+        email,
+        hashedPassword,
+        licenseNumber,
+        companyName,
+        companyAddress1,
+        companyAddress2,
+        zipCode,
+        city,
+        state,
+        phone,
+        californiaResale,
+        new Date(),
       ]
     );
 
     // Send signup notification email to sales
     await sendSignupRequestEmail({
-  firstName, lastName, email, companyName, licenseNumber,
-  companyAddress1, companyAddress2, zipCode, city, state, phone, californiaResale
-});
+      firstName,
+      lastName,
+      email,
+      companyName,
+      licenseNumber,
+      companyAddress1,
+      companyAddress2,
+      zipCode,
+      city,
+      state,
+      phone,
+      californiaResale,
+    });
 
     res.status(201).json({
-      message: "Account created successfully. Please wait for admin approval before you can login.",
+      message:
+        "Account created successfully. Please wait for admin approval before you can login.",
       user: userResult.rows[0],
       request: signupResult.rows[0],
       signupRequestId: signupResult.rows[0].id, // For backward compatibility
@@ -281,50 +341,57 @@ UsersRouter.post("/reset-password", async (req, res) => {
 });
 
 // POST /api/users/:id/approve - approve user signup (enable account)
-UsersRouter.post("/:id/approve", authenticate, requireAdmin, async (req, res) => {
-  const { id } = req.params;
-  
-  try {
-    // First get the signup request to find the user email
-    const signupResult = await db.query(
-      "SELECT email FROM signup_requests WHERE id = $1",
-      [id]
-    );
+UsersRouter.post(
+  "/:id/approve",
+  authenticate,
+  requireAdmin,
+  async (req, res) => {
+    const { id } = req.params;
 
-    if (signupResult.rows.length === 0) {
-      return res.status(404).json({ message: "Signup request not found" });
-    }
+    try {
+      // First get the signup request to find the user email
+      const signupResult = await db.query(
+        "SELECT email FROM signup_requests WHERE id = $1",
+        [id]
+      );
 
-    const userEmail = signupResult.rows[0].email;
+      if (signupResult.rows.length === 0) {
+        return res.status(404).json({ message: "Signup request not found" });
+      }
 
-    // Enable the user account
-    const userResult = await db.query(
-      `UPDATE users 
+      const userEmail = signupResult.rows[0].email;
+
+      // Enable the user account
+      const userResult = await db.query(
+        `UPDATE users 
        SET disabled = false 
        WHERE email = $1 AND disabled = true
        RETURNING id, name, email, company`,
-      [userEmail]
-    );
+        [userEmail]
+      );
 
-    if (userResult.rows.length === 0) {
-      return res.status(404).json({ message: "User not found or already approved" });
+      if (userResult.rows.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "User not found or already approved" });
+      }
+
+      // Remove from signup_requests table
+      await db.query("DELETE FROM signup_requests WHERE id = $1", [id]);
+
+      const user = userResult.rows[0];
+
+      res.json({
+        success: true,
+        message: "User approved successfully",
+        user,
+      });
+    } catch (err) {
+      console.error("Approval error:", err);
+      res.status(500).json({ message: "Server error during approval" });
     }
-
-    // Remove from signup_requests table
-    await db.query("DELETE FROM signup_requests WHERE id = $1", [id]);
-
-    const user = userResult.rows[0];
-    
-    res.json({ 
-      success: true, 
-      message: "User approved successfully",
-      user 
-    });
-  } catch (err) {
-    console.error("Approval error:", err);
-    res.status(500).json({ message: "Server error during approval" });
   }
-});
+);
 
 // PUT /api/users/:id - update user information
 UsersRouter.put("/:id", async (req, res) => {
@@ -344,10 +411,10 @@ UsersRouter.put("/:id", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: "User updated successfully",
-      user: result.rows[0] 
+      user: result.rows[0],
     });
   } catch (err) {
     console.error("Update error:", err);
@@ -356,33 +423,37 @@ UsersRouter.put("/:id", async (req, res) => {
 });
 
 // GET /api/users/:userEmail/documents - List user documents (admin only)
-UsersRouter.get("/:userEmail/documents", authenticate, requireAdmin, async (req, res) => {
-  const start = Date.now();
-  const { userEmail } = req.params;
-  
-  try {
-    // Decode the email parameter (in case it's URL encoded)
-    const decodedEmail = decodeURIComponent(userEmail);
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(decodedEmail)) {
-      return res.status(400).json({ error: "Invalid email format" });
-    }
+UsersRouter.get(
+  "/:userEmail/documents",
+  authenticate,
+  requireAdmin,
+  async (req, res) => {
+    const start = Date.now();
+    const { userEmail } = req.params;
 
-    // Check if the user exists
-    const userResult = await db.query(
-      "SELECT id, name, email FROM users WHERE email = $1",
-      [decodedEmail]
-    );
+    try {
+      // Decode the email parameter (in case it's URL encoded)
+      const decodedEmail = decodeURIComponent(userEmail);
 
-    if (userResult.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(decodedEmail)) {
+        return res.status(400).json({ error: "Invalid email format" });
+      }
 
-    // Fetch user documents
-    const documentsResult = await db.query(
-      `SELECT 
+      // Check if the user exists
+      const userResult = await db.query(
+        "SELECT id, name, email FROM users WHERE email = $1",
+        [decodedEmail]
+      );
+
+      if (userResult.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Fetch user documents
+      const documentsResult = await db.query(
+        `SELECT 
         id,
         document_type,
         s3_key,
@@ -392,80 +463,84 @@ UsersRouter.get("/:userEmail/documents", authenticate, requireAdmin, async (req,
       FROM user_documents 
       WHERE user_email = $1 
       ORDER BY upload_date DESC`,
-      [decodedEmail]
-    );
+        [decodedEmail]
+      );
 
-    const documents = documentsResult.rows.map(doc => ({
-      id: doc.id,
-      documentType: doc.document_type,
-      originalFilename: doc.original_filename,
-      fileSize: doc.file_size,
-      uploadedAt: doc.upload_date,
-      s3Key: doc.s3_key
-    }));
+      const documents = documentsResult.rows.map((doc) => ({
+        id: doc.id,
+        documentType: doc.document_type,
+        originalFilename: doc.original_filename,
+        fileSize: doc.file_size,
+        uploadedAt: doc.upload_date,
+        s3Key: doc.s3_key,
+      }));
 
-    const durationMs = Date.now() - start;
-    logger.info("User documents fetched", {
-      adminUserEmail: req.user.email,
-      targetUserEmail: decodedEmail,
-      documentCount: documents.length,
-      durationMs,
-      ip: req.ip
-    });
+      const durationMs = Date.now() - start;
+      logger.info("User documents fetched", {
+        adminUserEmail: req.user.email,
+        targetUserEmail: decodedEmail,
+        documentCount: documents.length,
+        durationMs,
+        ip: req.ip,
+      });
 
-    res.json({
-      user: userResult.rows[0],
-      documents,
-      total: documents.length
-    });
-
-  } catch (err) {
-    const durationMs = Date.now() - start;
-    logger.error("Failed to fetch user documents", {
-      adminUserEmail: req.user?.email,
-      targetUserEmail: userEmail,
-      error: err.message,
-      durationMs,
-      ip: req.ip
-    });
-    console.error("Error fetching user documents:", err);
-    res.status(500).json({ error: "Failed to fetch user documents" });
+      res.json({
+        user: userResult.rows[0],
+        documents,
+        total: documents.length,
+      });
+    } catch (err) {
+      const durationMs = Date.now() - start;
+      logger.error("Failed to fetch user documents", {
+        adminUserEmail: req.user?.email,
+        targetUserEmail: userEmail,
+        error: err.message,
+        durationMs,
+        ip: req.ip,
+      });
+      console.error("Error fetching user documents:", err);
+      res.status(500).json({ error: "Failed to fetch user documents" });
+    }
   }
-});
+);
 
 // GET /api/users/:userEmail/documents/:documentId/download - Download user document (admin only)
-UsersRouter.get("/:userEmail/documents/:documentId/download", authenticate, requireAdmin, async (req, res) => {
-  const start = Date.now();
-  const { userEmail, documentId } = req.params;
-  
-  try {
-    // Validate parameters
-    const decodedEmail = decodeURIComponent(userEmail);
-    const documentIdNum = parseInt(documentId);
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(decodedEmail)) {
-      return res.status(400).json({ error: "Invalid email format" });
-    }
-    
-    if (isNaN(documentIdNum)) {
-      return res.status(400).json({ error: "Invalid document ID" });
-    }
+UsersRouter.get(
+  "/:userEmail/documents/:documentId/download",
+  authenticate,
+  requireAdmin,
+  async (req, res) => {
+    const start = Date.now();
+    const { userEmail, documentId } = req.params;
 
-    // Check if the user exists
-    const userResult = await db.query(
-      "SELECT email FROM users WHERE email = $1",
-      [decodedEmail]
-    );
+    try {
+      // Validate parameters
+      const decodedEmail = decodeURIComponent(userEmail);
+      const documentIdNum = parseInt(documentId);
 
-    if (userResult.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(decodedEmail)) {
+        return res.status(400).json({ error: "Invalid email format" });
+      }
 
-    // Fetch document information with user validation
-    const documentResult = await db.query(
-      `SELECT 
+      if (isNaN(documentIdNum)) {
+        return res.status(400).json({ error: "Invalid document ID" });
+      }
+
+      // Check if the user exists
+      const userResult = await db.query(
+        "SELECT email FROM users WHERE email = $1",
+        [decodedEmail]
+      );
+
+      if (userResult.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Fetch document information with user validation
+      const documentResult = await db.query(
+        `SELECT 
         ud.id,
         ud.s3_key,
         ud.original_filename,
@@ -475,69 +550,71 @@ UsersRouter.get("/:userEmail/documents/:documentId/download", authenticate, requ
       FROM user_documents ud
       JOIN users u ON ud.user_email = u.email
       WHERE ud.id = $1 AND ud.user_email = $2`,
-      [documentIdNum, decodedEmail]
-    );
+        [documentIdNum, decodedEmail]
+      );
 
-    if (documentResult.rows.length === 0) {
-      return res.status(404).json({ error: "Document not found for this user" });
+      if (documentResult.rows.length === 0) {
+        return res
+          .status(404)
+          .json({ error: "Document not found for this user" });
+      }
+
+      const document = documentResult.rows[0];
+
+      // Generate signed URL for S3 download
+      const command = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: document.s3_key,
+      });
+
+      const signedUrl = await getSignedUrl(s3Client, command, {
+        expiresIn: 3600, // 1 hour
+      });
+
+      const durationMs = Date.now() - start;
+      logger.info("Document download initiated", {
+        adminUserEmail: req.user.email,
+        targetUserEmail: decodedEmail,
+        documentId: documentIdNum,
+        documentType: document.document_type,
+        fileName: document.original_filename,
+        userEmail: document.user_email,
+        durationMs,
+        ip: req.ip,
+      });
+
+      res.json({
+        downloadUrl: signedUrl,
+        document: {
+          id: document.id,
+          originalFilename: document.original_filename,
+          documentType: document.document_type,
+        },
+        user: {
+          name: document.user_name,
+          email: document.user_email,
+        },
+        expiresIn: 3600, // seconds
+      });
+    } catch (err) {
+      const durationMs = Date.now() - start;
+      logger.error("Document download failed", {
+        adminUserEmail: req.user?.email,
+        targetUserEmail: userEmail,
+        documentId: documentId,
+        error: err.message,
+        code: err.code || err.Code,
+        durationMs,
+        ip: req.ip,
+      });
+      console.error("Error generating download URL:", err);
+      res.status(500).json({
+        error: "Failed to generate download URL",
+        message: err.message,
+      });
     }
-
-    const document = documentResult.rows[0];
-
-    // Generate signed URL for S3 download
-    const command = new GetObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: document.s3_key,
-    });
-
-    const signedUrl = await getSignedUrl(s3Client, command, { 
-      expiresIn: 3600 // 1 hour
-    });
-
-    const durationMs = Date.now() - start;
-    logger.info("Document download initiated", {
-      adminUserEmail: req.user.email,
-      targetUserEmail: decodedEmail,
-      documentId: documentIdNum,
-      documentType: document.document_type,
-      fileName: document.original_filename,
-      userEmail: document.user_email,
-      durationMs,
-      ip: req.ip
-    });
-
-    res.json({
-      downloadUrl: signedUrl,
-      document: {
-        id: document.id,
-        originalFilename: document.original_filename,
-        documentType: document.document_type
-      },
-      user: {
-        name: document.user_name,
-        email: document.user_email
-      },
-      expiresIn: 3600 // seconds
-    });
-
-  } catch (err) {
-    const durationMs = Date.now() - start;
-    logger.error("Document download failed", {
-      adminUserEmail: req.user?.email,
-      targetUserEmail: userEmail,
-      documentId: documentId,
-      error: err.message,
-      code: err.code || err.Code,
-      durationMs,
-      ip: req.ip
-    });
-    console.error("Error generating download URL:", err);
-    res.status(500).json({ 
-      error: "Failed to generate download URL",
-      message: err.message 
-    });
   }
-});
+);
 
 UsersRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
@@ -557,79 +634,81 @@ UsersRouter.get("/:id", async (req, res) => {
 
 // POST /api/users/approve-signup/:request_id - approve signup and create user
 UsersRouter.post("/approve-signup/:request_id", async (req, res) => {
- try {
-   const request_id = parseInt(req.params.request_id);
+  try {
+    const request_id = parseInt(req.params.request_id);
 
-   if (isNaN(request_id)) {
-     return res.status(400).json({ error: "Invalid request ID" });
-   }
+    if (isNaN(request_id)) {
+      return res.status(400).json({ error: "Invalid request ID" });
+    }
 
-   const requestResult = await db.query(
-     "SELECT * FROM signup_requests WHERE id = $1",
-     [request_id]
-   );
+    const requestResult = await db.query(
+      "SELECT * FROM signup_requests WHERE id = $1",
+      [request_id]
+    );
 
-   if (requestResult.rows.length === 0) {
-     return res.status(404).json({ error: "Signup request not found" });
-   }
+    if (requestResult.rows.length === 0) {
+      return res.status(404).json({ error: "Signup request not found" });
+    }
 
-   const request = requestResult.rows[0];
+    const request = requestResult.rows[0];
 
-   const existingUser = await db.query(
-     "SELECT * FROM users WHERE email = $1",
-     [request.email]
-   );
+    const existingUser = await db.query(
+      "SELECT * FROM users WHERE email = $1",
+      [request.email]
+    );
 
-   if (existingUser.rows.length > 0) {
-     return res.status(400).json({ error: "Email already exists in users" });
-   }
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: "Email already exists in users" });
+    }
 
-   // Create user
-   const userResult = await db.query(
-     `INSERT INTO users (name, email, password, license_number, phone_number, is_admin, company) 
+    // Create user
+    const userResult = await db.query(
+      `INSERT INTO users (name, email, password, license_number, phone_number, is_admin, company) 
       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, license_number, phone_number, is_admin, company`,
-     [
-       `${request.first_name} ${request.last_name}`,
-       request.email,
-       request.password,
-       request.license_number,
-       request.phone,
-       false,
-       request.company,
-     ]
-   );
-   const userId = userResult.rows[0].id;
+      [
+        `${request.first_name} ${request.last_name}`,
+        request.email,
+        request.password,
+        request.license_number,
+        request.phone,
+        false,
+        request.company,
+      ]
+    );
+    const userId = userResult.rows[0].id;
 
-   // Create address entry
-   await db.query(
-     `INSERT INTO addresses (user_id, address_type, address_line_1, address_line_2, city, state, zip_code) 
+    // Create address entry
+    await db.query(
+      `INSERT INTO addresses (user_id, address_type, address_line_1, address_line_2, city, state, zip_code) 
       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-     [
-       userId,
-       'company',
-       request.company_address_1,
-       request.company_address_2,
-       request.city,
-       request.state,
-       request.zip_code
-     ]
-   );
+      [
+        userId,
+        "company",
+        request.company_address_1,
+        request.company_address_2,
+        request.city,
+        request.state,
+        request.zip_code,
+      ]
+    );
 
-   await db.query("DELETE FROM signup_requests WHERE id = $1", [request_id]);
+    await db.query("DELETE FROM signup_requests WHERE id = $1", [request_id]);
 
-   res.json({
-     success: true,
-     message: "User approved and created successfully",
-     user: userResult.rows[0],
-   });
- } catch (err) {
-   console.error("Database error:", err);
-   res.status(500).json({ error: "Internal server error", message: err.message });
- }
+    res.json({
+      success: true,
+      message: "User approved and created successfully",
+      user: userResult.rows[0],
+    });
+  } catch (err) {
+    console.error("Database error:", err);
+    res
+      .status(500)
+      .json({ error: "Internal server error", message: err.message });
+  }
 });
 
-// DELETE /api/users/signup-requests/:request_id - reject signup request
-UsersRouter.delete("/signup-requests/:request_id", async (req, res) => {
+// PUT /api/users/signup-requests/:request_id - reject signup request
+UsersRouter.put("/signup-requests/:request_id", async (req, res) => {
   try {
     const request_id = parseInt(req.params.request_id);
 
@@ -638,7 +717,8 @@ UsersRouter.delete("/signup-requests/:request_id", async (req, res) => {
     }
 
     const result = await db.query(
-      "DELETE FROM signup_requests WHERE id = $1 RETURNING *",
+      "UPDATE signup_requests SET show = FALSE WHERE id = $1",
+
       [request_id]
     );
 

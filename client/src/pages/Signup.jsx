@@ -46,7 +46,7 @@ const Signup = () => {
   const [govIdFileName, setGovIdFileName] = useState("");
   const [businessFileName, setBusinessFileName] = useState("");
   const [resaleFileName, setResaleFileName] = useState("");
-  
+
   // File upload error states
   const [licenseFileError, setLicenseFileError] = useState("");
   const [govIdFileError, setGovIdFileError] = useState("");
@@ -103,20 +103,34 @@ const Signup = () => {
 
   const validateFile = (file) => {
     const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-    
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+    ];
+
     if (file.size > maxSize) {
       return "File size must be less than 10MB";
     }
-    
+
     if (!allowedTypes.includes(file.type)) {
       return "Only PDF, JPG, and PNG files are allowed";
     }
-    
+
     return "";
   };
 
-  const FileUploadField = ({ id, name, fileName, setFileName, helpText, error, setError, setFile }) => (
+  const FileUploadField = ({
+    id,
+    name,
+    fileName,
+    setFileName,
+    helpText,
+    error,
+    setError,
+    setFile,
+  }) => (
     <Box mb={2} key={`file-upload-${id}`}>
       <input
         id={id}
@@ -243,12 +257,19 @@ const Signup = () => {
     </Box>
   );
 
-const handleSignup = async (e) => {
-  e.preventDefault();
+  const handleSignup = async (e) => {
+    e.preventDefault();
 
-  const formData = new FormData(e.target);
+    const formData = new FormData(e.target);
 
-    if (emailError || licenseError || licenseFileError || govIdFileError || businessFileError || resaleFileError) {
+    if (
+      emailError ||
+      licenseError ||
+      licenseFileError ||
+      govIdFileError ||
+      businessFileError ||
+      resaleFileError
+    ) {
       toast({
         title: "Please fix form errors.",
         description: "Check all form fields and file uploads for errors.",
@@ -259,17 +280,17 @@ const handleSignup = async (e) => {
       return;
     }
 
-  if (!agreementChecked) {
-    toast({
-      title: "Agreement required.",
-      description:
-        "You must acknowledge the wholesale eligibility requirements.",
-      status: "error",
-      duration: 4000,
-      isClosable: true,
-    });
-    return;
-  }
+    if (!agreementChecked) {
+      toast({
+        title: "Agreement required.",
+        description:
+          "You must acknowledge the wholesale eligibility requirements.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
 
     setLoading(true);
     try {
@@ -293,71 +314,78 @@ const handleSignup = async (e) => {
 
       // Collect files for upload
       const filesToUpload = [];
-      if (licenseFile) filesToUpload.push({ file: licenseFile, documentType: 'business-license' });
-      if (govIdFile) filesToUpload.push({ file: govIdFile, documentType: 'government-id' });
-      if (businessFile) filesToUpload.push({ file: businessFile, documentType: 'business-document' });
-      if (resaleFile) filesToUpload.push({ file: resaleFile, documentType: 'resale-certificate' });
+      if (licenseFile)
+        filesToUpload.push({
+          file: licenseFile,
+          documentType: "business-license",
+        });
+      if (govIdFile)
+        filesToUpload.push({ file: govIdFile, documentType: "government-id" });
+      if (businessFile)
+        filesToUpload.push({
+          file: businessFile,
+          documentType: "business-document",
+        });
+      if (resaleFile)
+        filesToUpload.push({
+          file: resaleFile,
+          documentType: "resale-certificate",
+        });
 
       // Create account and upload documents
       setUploadProgress("Creating account...");
-      
+
       const result = await uploadMultipleSignupDocuments(
-        filesToUpload, 
+        filesToUpload,
         userData,
         (current, total, docType) => {
           setUploadProgress(`Uploading ${docType}... (${current}/${total})`);
         }
       );
 
-             if (result.success) {
-         if (result.errors && result.errors.length > 0) {
-           console.warn("Some files failed to upload:", result.errors);
-           
-           // Categorize errors for better user feedback
-           const s3Errors = result.errors.filter(err => err.isS3Error);
-           const networkErrors = result.errors.filter(err => err.isNetworkError);
-           const otherErrors = result.errors.filter(err => !err.isS3Error && !err.isNetworkError);
-           
-           let errorMessage = `${result.errors.length} document(s) failed to upload.`;
-           
-           if (s3Errors.length > 0) {
-             errorMessage += ` S3 storage issues: ${s3Errors.map(e => e.documentType).join(', ')}.`;
-           }
-           if (networkErrors.length > 0) {
-             errorMessage += ` Network issues: ${networkErrors.map(e => e.documentType).join(', ')}.`;
-           }
-           if (otherErrors.length > 0) {
-             errorMessage += ` Other issues: ${otherErrors.map(e => e.documentType).join(', ')}.`;
-           }
-           
-           errorMessage += " Please contact support if needed.";
-           
-           toast({
-             title: "Documents upload warning",
-             description: errorMessage,
-             status: "warning",
-             duration: 8000,
-             isClosable: true,
-           });
-         }
+      if (result.success) {
+        if (result.errors && result.errors.length > 0) {
+          console.warn("Some files failed to upload:", result.errors);
+
+          // Categorize errors for better user feedback
+          const s3Errors = result.errors.filter((err) => err.isS3Error);
+          const networkErrors = result.errors.filter(
+            (err) => err.isNetworkError
+          );
+          const otherErrors = result.errors.filter(
+            (err) => !err.isS3Error && !err.isNetworkError
+          );
+
+          let errorMessage = `${result.errors.length} document(s) failed to upload.`;
+
+          if (s3Errors.length > 0) {
+            errorMessage += ` S3 storage issues: ${s3Errors
+              .map((e) => e.documentType)
+              .join(", ")}.`;
+          }
+          if (networkErrors.length > 0) {
+            errorMessage += ` Network issues: ${networkErrors
+              .map((e) => e.documentType)
+              .join(", ")}.`;
+          }
+          if (otherErrors.length > 0) {
+            errorMessage += ` Other issues: ${otherErrors
+              .map((e) => e.documentType)
+              .join(", ")}.`;
+          }
+
+          errorMessage += " Please contact support if needed.";
+
+          toast({
+            title: "Documents upload warning",
+            description: errorMessage,
+            status: "warning",
+            duration: 8000,
+            isClosable: true,
+          });
+        }
 
         setUploadProgress("");
-
-        // Send email notification (with error handling)
-        try {
-          await emailjs.send(
-            import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
-            import.meta.env.VITE_EMAIL_JS_TEMPLATE_SIGNUP,
-            {
-              ...Object.fromEntries(new FormData(form.current)),
-              time: new Date().toISOString(),
-            },
-            import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
-          );
-        } catch (emailError) {
-          console.warn("Email notification failed:", emailError);
-          // Don't block the signup flow if email fails
-        }
 
         toast({
           title: "Signup request submitted!",
@@ -374,13 +402,13 @@ const handleSignup = async (e) => {
       } else {
         // Handle signup failure
         console.error("Signup failed:", result.errors);
-        
+
         let errorTitle = "Signup failed";
         let errorMessage = "Please try again later.";
-        
+
         if (result.errors && result.errors.length > 0) {
           const firstError = result.errors[0];
-          
+
           if (firstError.isS3Error) {
             errorTitle = "Document upload failed";
             errorMessage = `S3 storage error: ${firstError.error}. Your account may have been created, but documents failed to upload.`;
@@ -391,7 +419,7 @@ const handleSignup = async (e) => {
             errorMessage = firstError.error || "Unknown error occurred.";
           }
         }
-        
+
         toast({
           title: errorTitle,
           description: errorMessage,
@@ -402,19 +430,21 @@ const handleSignup = async (e) => {
       }
     } catch (err) {
       console.error("Signup error:", err);
-      
+
       let errorTitle = "Server error";
       let errorMessage = "Please try again later.";
-      
+
       // Check if it's a network error that might indicate S3 issues
-      if (err.name === 'TypeError' || err.message.includes('fetch')) {
+      if (err.name === "TypeError" || err.message.includes("fetch")) {
         errorTitle = "Connection error";
-        errorMessage = "Unable to connect to our servers. This might be due to S3 storage service being unavailable. Please check your internet connection and try again.";
-      } else if (err.message.includes('S3') || err.message.includes('AWS')) {
+        errorMessage =
+          "Unable to connect to our servers. This might be due to S3 storage service being unavailable. Please check your internet connection and try again.";
+      } else if (err.message.includes("S3") || err.message.includes("AWS")) {
         errorTitle = "Storage service error";
-        errorMessage = "Our document storage service (S3) is currently unavailable. Please try again later or contact support.";
+        errorMessage =
+          "Our document storage service (S3) is currently unavailable. Please try again later or contact support.";
       }
-      
+
       toast({
         title: errorTitle,
         description: errorMessage,
@@ -635,7 +665,6 @@ const handleSignup = async (e) => {
                     name="license_file"
                     fileName={licenseFileName}
                     setFileName={setLicenseFileName}
-
                     setFile={setLicenseFile}
                     error={licenseFileError}
                     setError={setLicenseFileError}
@@ -694,7 +723,7 @@ const handleSignup = async (e) => {
                   fileName={govIdFileName}
                   setFileName={setGovIdFileName}
                   setFile={setGovIdFile}
-                   helpText={translator(
+                  helpText={translator(
                     "*Please attach the government ID (PDF, JPG, PNG only, max 10MB).",
                     "*도매 라이선스를 첨부해 주세요."
                   )}

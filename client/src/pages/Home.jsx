@@ -45,6 +45,8 @@ import { API_CONFIG, COLORS } from "../constants";
 import HomeSkeleton from "../components/skeletons/HomeSkeleton";
 import { handleApiResponse } from "../utils/apiHelpers";
 import { translator } from "../utils/translator";
+import { useLanguage } from "../hooks/LanguageContext";
+import { encodeUserId } from "../utils/urlEncryption";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

@@ -23,6 +23,7 @@ import NavDrawer from "../components/NavDrawer";
 import { useAuthContext } from "../hooks/useAuth";
 import { API_CONFIG, COLORS } from "../constants";
 import { handleApiResponse } from "../utils/apiHelpers";
+import { encodeUserId } from "../utils/urlEncryption";
 
 
 

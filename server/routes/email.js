@@ -1,5 +1,5 @@
 import express from 'express';
-import { sendInquiryResponseEmail } from '../utils/emailService.js';
+import { sendInquiryResponseEmail, sendSignupRequestEmail } from '../utils/emailService.js';
 
 const EmailRouter = express.Router();
 
@@ -30,6 +30,21 @@ EmailRouter.post('/send-contact-notification', async (req, res) => {
   } catch (error) {
     console.error('Contact email error:', error);
     res.status(500).json({ error: 'Failed to send contact notification' });
+  }
+});
+
+EmailRouter.post('/send-signup-notification', async (req, res) => {
+  try {
+    const result = await sendSignupRequestEmail(req.body);
+    
+    if (result.success) {
+      res.json({ success: true, message: 'Signup notification sent successfully' });
+    } else {
+      res.status(500).json({ error: result.error });
+    }
+  } catch (error) {
+    console.error('Signup email error:', error);
+    res.status(500).json({ error: 'Failed to send Signup notification' });
   }
 });
 export default EmailRouter;
