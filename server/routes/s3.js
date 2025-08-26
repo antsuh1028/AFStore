@@ -8,6 +8,8 @@ import {
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import jwt from "jsonwebtoken";
+import { logger } from "../utils/logger.js";
 
 const S3Router = express.Router();
 
@@ -30,6 +32,7 @@ const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024,
   },
+  
 });
 
 const s3Client = new S3Client({
@@ -57,6 +60,137 @@ const constructS3Url = (imageUrl) => {
   
   return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${cleanKey}`;
 };
+
+// middleware 
+const authenticate = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!token) {
+      return res.status(401).json({ error: "Missing authorization token" });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback_secret");
+    req.user = { id: decoded.userId, email: decoded.email };
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+};
+
+const sanitizeFileName = (name) => {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^[-.]+|[-.]+$/g, "");
+};
+
+const allowedMimeTypes = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+]);
+
+const getExtensionFromMime = (mime) => {
+  switch (mime) {
+    case "application/pdf":
+      return ".pdf";
+    case "image/jpeg":
+    case "image/jpg":
+      return ".jpg";
+    case "image/png":
+      return ".png";
+    default:
+      return "";
+  }
+};
+
+// POST /api/s3/upload/document
+S3Router.post("/upload/document", authenticate, upload.single("file"), async (req, res) => {
+  const start = Date.now();
+  try {
+    const { documentType } = req.body;
+
+    if (!req.file) {
+      logger.warn("Document upload attempt with no file", { userEmail: req.user?.email, ip: req.ip });
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    if (!documentType) {
+      logger.warn("Document upload missing documentType", { userEmail: req.user?.email, ip: req.ip });
+      return res.status(400).json({ error: "Missing documentType" });
+    }
+
+    if (!allowedMimeTypes.has(req.file.mimetype)) {
+      logger.warn("Unsupported file type on upload", { userEmail: req.user?.email, ip: req.ip, mime: req.file.mimetype });
+      return res.status(400).json({ error: "Unsupported file type" });
+    }
+
+    const userEmail = req.user.email;
+    const timestamp = Date.now();
+
+    const originalBase = sanitizeFileName(req.file.originalname.replace(/\.[^.]+$/, ""));
+    const ext = getExtensionFromMime(req.file.mimetype) || (req.file.originalname.match(/\.[^.]+$/)?.[0] || "");
+
+    const safeDocType = sanitizeFileName(String(documentType));
+    const safeEmail = sanitizeFileName(userEmail);
+
+    const key = `user-documents/${safeEmail}/${safeDocType}/${timestamp}-${originalBase}${ext}`;
+
+    const put = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+      ServerSideEncryption: "AES256" // optional if bucket default is SSE-S3
+    });
+
+    await s3Client.send(put);
+
+    await db.query(
+      `INSERT INTO user_documents
+       (user_email, document_type, s3_key, original_filename, file_size)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [userEmail, safeDocType, key, req.file.originalname, req.file.size]
+    );
+
+    const durationMs = Date.now() - start;
+    logger.info("Document uploaded", {
+      userEmail,
+      ip: req.ip,
+      documentType: safeDocType,
+      key,
+      size: req.file.size,
+      durationMs
+    });
+
+    const url = constructS3Url(key);
+
+    return res.status(201).json({
+      message: "Document uploaded successfully",
+      key,
+      url,
+    });
+  } catch (err) {
+    const durationMs = Date.now() - start;
+    logger.error("Document upload failed", {
+      userEmail: req.user?.email,
+      ip: req.ip,
+      error: err.message,
+      code: err.code || err.Code,
+      durationMs
+    });
+    console.error("Upload error:", err);
+    return res.status(500).json({
+      error: "Upload failed",
+      name: err.name,
+      code: err.code || err.Code,
+      message: err.message,
+      http: err.$metadata?.httpStatusCode
+    });
+  }
+});
 
 // Upload image to S3
 S3Router.post("/upload", upload.single("file"), async (req, res) => {
@@ -252,40 +386,25 @@ S3Router.post("/items/images/batch", async (req, res) => {
   }
 });
 
-// Get signed URL with caching (for private content)
+// Add logging to signed URL generation as a proxy for document access attempts
 S3Router.get("/signed-url/:key", async (req, res) => {
+  const start = Date.now();
   const { key } = req.params;
-  const cacheKey = `signed_url_${key}`;
-
   try {
-    // Check cache first (signed URLs expire, so shorter TTL)
-    const cachedUrl = imageCache.get(cacheKey);
-    if (cachedUrl) {
-      return res.json({ 
-        url: cachedUrl,
-        cached: true 
-      });
-    }
-
     const command = new GetObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: key,
     });
 
-    const signedUrl = await getSignedUrl(s3Client, command, {
-      expiresIn: 3600, // 1 hour
-    });
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
 
-    // Cache with shorter TTL (50 minutes to be safe)
-    imageCache.set(cacheKey, signedUrl, 3000);
+    const durationMs = Date.now() - start;
+    logger.info("Signed URL generated", { ip: req.ip, key, durationMs });
 
-    res.json({ 
-      url: signedUrl,
-      cached: false 
-    });
-
+    res.json({ url: signedUrl, cached: false });
   } catch (err) {
-    console.error("Error generating signed URL:", err);
+    const durationMs = Date.now() - start;
+    logger.error("Signed URL generation failed", { ip: req.ip, key, error: err.message, durationMs });
     res.status(500).json({ error: "Failed to generate signed URL" });
   }
 });
