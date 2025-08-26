@@ -560,7 +560,7 @@ const AdminDashboard = () => {
   return (
     <Box bg="white" minH="100vh" px={[2, 4, 12]} py={4}>
       <Flex align="center" justify="space-between" mb={4}>
-        <Image w="200px" src="/images/gray_adams.png" alt="Logo" />
+        <Image w="200px" src="/images/gray_adams.png" alt="Logo" onClick={()=>navigate("/")} _hover={{cursor:"pointer"}}/>
         <Text
           fontWeight="regular"
           fontSize="xl"
@@ -656,7 +656,7 @@ const AdminDashboard = () => {
           orderType={orderType}
         />
       )}
-      {currentPage === 3 && <Inquiries inquiries={inquiries} />}
+      {currentPage === 3 && <Inquiries inquiries={inquiries} setInquiries={setInquiries} />}
       {currentPage === 4 && (
         <Signups
           signupRequests={signupRequests}

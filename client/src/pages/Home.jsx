@@ -26,10 +26,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Spinner,
-  Center,
 } from "@chakra-ui/react";
-import { SearchIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { SearchIcon } from "@chakra-ui/icons";
 import { ShoppingCart, UserRound } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -42,6 +40,7 @@ import ImageCarousel from "../components/home/ImageCarousel";
 import { API_CONFIG, COLORS } from "../constants";
 import HomeSkeleton from "../components/skeletons/HomeSkeleton";
 import { handleApiResponse } from "../utils/apiHelpers";
+import { translator } from "../utils/translator";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,7 +52,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const contentRef = useRef(null);
   const searchRef = useRef(null);
-  
+
   const { isAuthenticated, userId, loading } = useAuthContext();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -163,11 +162,11 @@ const HomePage = () => {
     };
 
     if (showDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDropdown]);
 
@@ -359,6 +358,7 @@ const HomePage = () => {
                   variant="ghost"
                   type="submit"
                   isLoading={isLoading}
+                  _hover={{ cursor: "pointer" }}
                 />
               </InputRightElement>
             </InputGroup>
@@ -388,48 +388,50 @@ const HomePage = () => {
               borderColor="gray.200"
             >
               <List spacing={0}>
-                {searchResults.map((item) => (
-                  item.show &&
-                  (<ListItem
-                    key={item.id}
-                    p={3}
-                    cursor="pointer"
-                    _hover={{ bg: "gray.50" }}
-                    onClick={() => handleResultClick(item)}
-                    borderBottom="1px"
-                    borderColor="gray.100"
-                  >
-                    <Flex align="center" gap={3}>
-                      {item.images > 0 && (
-                        <Image
-                          src={`/products/${item.style}/${item.name}/01.avif`}
-                          fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
-                          alt={item.name}
-                          boxSize="40px"
-                          objectFit="cover"
-                          borderRadius="md"
-                        />
-                      )}
-                      {item.images === 0 && (
-                        <Image
-                          src="images/gray.avif"
-                          alt={item.name}
-                          boxSize="40px"
-                          objectFit="cover"
-                          borderRadius="md"
-                        />
-                      )}
-                      <VStack align="start" spacing={1} flex={1}>
-                        <Text fontWeight="semibold" fontSize="sm">
-                          {item.name}
-                        </Text>
-                        <Text fontSize="xs" color="gray.600">
-                          {item.species} • ${item.price}
-                        </Text>
-                      </VStack>
-                    </Flex>
-                  </ListItem>) 
-                ))}
+                {searchResults.map(
+                  (item) =>
+                    item.show && (
+                      <ListItem
+                        key={item.id}
+                        p={3}
+                        cursor="pointer"
+                        _hover={{ bg: "gray.50" }}
+                        onClick={() => handleResultClick(item)}
+                        borderBottom="1px"
+                        borderColor="gray.100"
+                      >
+                        <Flex align="center" gap={3}>
+                          {item.images > 0 && (
+                            <Image
+                              src={`/products/${item.style}/${item.name}/01.avif`}
+                              fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
+                              alt={item.name}
+                              boxSize="40px"
+                              objectFit="cover"
+                              borderRadius="md"
+                            />
+                          )}
+                          {item.images === 0 && (
+                            <Image
+                              src="images/gray.avif"
+                              alt={item.name}
+                              boxSize="40px"
+                              objectFit="cover"
+                              borderRadius="md"
+                            />
+                          )}
+                          <VStack align="start" spacing={1} flex={1}>
+                            <Text fontWeight="semibold" fontSize="sm">
+                              {item.name}
+                            </Text>
+                            <Text fontSize="xs" color="gray.600">
+                              {item.species} • ${item.price}
+                            </Text>
+                          </VStack>
+                        </Flex>
+                      </ListItem>
+                    )
+                )}
               </List>
             </Box>
           )}
@@ -449,55 +451,48 @@ const HomePage = () => {
                   overflowY="auto"
                   maxH="80vh"
                 >
-                  {searchResults.map((item) => (
-                    item.show &&
-                    (<GridItem key={item.id}>
-                      <Flex
-                        p={4}
-                        border="1px"
-                        borderColor="gray.200"
-                        borderRadius="md"
-                        cursor="pointer"
-                        _hover={{ bg: "gray.50" }}
-                        onClick={() => {
-                          handleResultClick(item);
-                          onSearchClose();
-                        }}
-                      >
-                        <OptimizedImage
-                          src={
-                            item.images > 0
-                              ? `/products/${item.style}/${item.name}/01.avif`
-                              : "/images/gray.avif"
-                          }
-                          fallbackSrc={
-                            item.images > 0
-                              ? `/products/${item.style}/${item.name}/01.jpg`
-                              : "/images/gray.avif"
-                          }
-                          alt={item.name}
-                          w="25%"
-                          objectFit="cover"
+                  {searchResults
+                    .filter((item) => item.show && item.images > 0)
+                    .map((item) => (
+                      <GridItem key={item.id}>
+                        <Flex
+                          p={4}
+                          border="1px"
+                          borderColor="gray.200"
                           borderRadius="md"
-                          mr={4}
-                        />
-                        <VStack align="start" spacing={2} flex={1}>
-                          <Text fontWeight="bold">{item.name}</Text>
-                          <Text fontSize="sm" color="gray.600">
-                            {item.description}
-                          </Text>
-                          <HStack>
-                            <Text fontSize="sm" color="blue.600">
-                              {item.species}
+                          cursor="pointer"
+                          _hover={{ bg: "gray.50" }}
+                          onClick={() => {
+                            handleResultClick(item);
+                            onSearchClose();
+                          }}
+                        >
+                          <OptimizedImage
+                            src={`/products/${item.style}/${item.name}/01.avif`}
+                            fallbackSrc={`/products/${item.style}/${item.name}/01.jpg`}
+                            alt={item.name}
+                            w="25%"
+                            objectFit="cover"
+                            borderRadius="md"
+                            mr={4}
+                          />
+                          <VStack align="start" spacing={2} flex={1}>
+                            <Text fontWeight="bold">{item.name}</Text>
+                            <Text fontSize="sm" color="gray.600">
+                              {item.description}
                             </Text>
-                            <Text fontSize="sm" fontWeight="bold">
-                              ${item.price}
-                            </Text>
-                          </HStack>
-                        </VStack>
-                      </Flex>
-                    </GridItem>)
-                  ))}
+                            <HStack>
+                              <Text fontSize="sm" color="blue.600">
+                                {item.species}
+                              </Text>
+                              <Text fontSize="sm" fontWeight="bold">
+                                ${item.price}
+                              </Text>
+                            </HStack>
+                          </VStack>
+                        </Flex>
+                      </GridItem>
+                    ))}
                 </Grid>
               ) : (
                 <Text textAlign="center" color="gray.500">
@@ -530,7 +525,7 @@ const HomePage = () => {
               fallback: "images/processed_button.png",
             },
             {
-              name: "Untrimmed",
+              name: "Whole Meat",
               url: "/wholesale/unprocessed",
               image: "/images/wholesale_button.avif",
               fallback: "/images/wholesale_button.png",
@@ -567,12 +562,27 @@ const HomePage = () => {
 
           {[
             {
+              name: "Adams",
+              icon: (
+                <OptimizedImage
+                  src="/images/home_icons/adams.avif"
+                  fallbackSrc="/images/home_icons/adams.jpg"
+                  alt="Adams"
+                  objectFit="cover"
+                  width="100%"
+                  height="100%"
+                  borderRadius="full"
+                />
+              ),
+              url: "/wholesale/adams-gourmet",
+            },
+            {
               name: "Deal",
               icon: (
                 <OptimizedImage
                   src="/images/home_icons/deal.avif"
                   fallbackSrc="/images/home_icons/deal.jpg"
-                  alt="Order"
+                  alt="Deal"
                   objectFit="cover"
                   width="100%"
                   height="100%"
@@ -595,21 +605,6 @@ const HomePage = () => {
                 />
               ),
               url: "/wholesale/how-to-order",
-            },
-            {
-              name: "Contact",
-              icon: (
-                <OptimizedImage
-                  src="/images/home_icons/contact.avif"
-                  fallbackSrc="/images/home_icons/contact.jpg"
-                  alt="Order"
-                  objectFit="cover"
-                  width="100%"
-                  height="100%"
-                  borderRadius="full"
-                />
-              ),
-              url: "/contact",
             },
           ].map((action, idx) => (
             <GridItem key={idx}>
@@ -744,7 +739,10 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  "Korean-style cutting"
+                  {translator(
+                    '"Korean style cutting"',
+                    '"한국 스타일 고기 컷"'
+                  )}
                 </Text>
               </VStack>
             </GridItem>
@@ -758,23 +756,34 @@ const HomePage = () => {
                   />
                 </Circle>
                 <Text fontWeight="bold" fontSize="sm">
-                  "Trusted partner"
+                  {translator(
+                    '"Trusted partner"',
+                    '"신뢰할 수 있는 파트너"'
+                  )}
                 </Text>
               </VStack>
             </GridItem>
           </Grid>
           <VStack align="flex-start" spacing={4} p={2}>
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              Founded in 2012, Adams Foods produces safe, tailored products in
-              USDA-inspected facilities.
+              {translator(
+                "Founded in 2012, AdamsFoods produces safe, tailored products in USDA inspected facilities.",
+                "2012년에 설립된 AdamdFoods는 USDA에서 검사한 시설 (EST.51212) 에서 안전한 제품을 생산합니다."
+              )}
             </Text>
+
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              Our exclusive Korean-style cutting has built strong partnerships,
-              proudly representing K-BBQ.
+              {translator(
+                "Our exclusive Korean style cutting has built strong partnerships, proudly representing K-BBQ.",
+                "저희 회사만의 독창적인 한국식 고기 커팅 기술은 K-BBQ를 대표하는 강력한 파트너십을 구축해 왔습니다."
+              )}
             </Text>
+
             <Text fontSize="sm" color="gray.600" lineHeight="tall">
-              Through quality and reliability, we have become a trusted partner
-              in LA and beyond.
+              {translator(
+                "Through quality and reliability, we have become a trusted partner in LA and beyond.",
+                "품질과 신뢰를 바탕으로, 저희는 LA를 비롯해, 타 주까지 다양한 지역에서 믿을 수 있는 파트너로 자리매김했습니다."
+              )}
             </Text>
           </VStack>
         </Box>

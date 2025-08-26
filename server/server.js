@@ -20,7 +20,10 @@ app.use(cors({
     'http://localhost:5173',
     'http://localhost:3000',
     'http://127.0.0.1:5173',
-    /vercel\.app$/
+    'https://afwholesales.com',
+    'https://adamswholesales.com',
+    'https://adamsfoodswholesale.com',
+    'https://www.afwholesales.com'
   ],
   credentials: true
 }));

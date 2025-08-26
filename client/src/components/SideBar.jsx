@@ -7,11 +7,19 @@ import {
   useBreakpointValue,
   Image,
 } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ children }) => {
+  const [isMounted, setIsMounted] = useState(false);
   const isDesktop = useBreakpointValue({ base: false, lg: true });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
 
   return (
     <Box display="flex">
@@ -37,10 +45,17 @@ const Sidebar = ({ children }) => {
               justifyContent={"center"}
             >
               <Image
-                src="/images/main_logo.png"
-                alt="Adams Foods Logo"
+              px={4}
+                src="/images/gray_adams.png"
+                alt="AdamsFoods Logo"
+                fallbackSrc="/images/gray_adams.png"
+                mr={2}
+              />
+              {/* <Image
+                src="/images/main_logo.avif"
+                alt="AdamsFoods Logo"
                 boxSize="35px"
-                fallbackSrc="/images/main_logo.jpg"
+                fallbackSrc="/images/main_logo.png"
                 mr={2}
               />
               <Text
@@ -52,7 +67,7 @@ const Sidebar = ({ children }) => {
                   Adams
                 </Box>
                 Foods
-              </Text>
+              </Text> */}
             </Flex>
             <Box
               h="402px"
@@ -130,12 +145,12 @@ const Sidebar = ({ children }) => {
         </Box>
       )}
 
-      {/* Main content area */}
       <Box ml={isDesktop ? "280px" : "0"} width="100%">
         {children}
       </Box>
     </Box>
   );
 };
+
 
 export default Sidebar;

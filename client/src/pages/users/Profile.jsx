@@ -30,9 +30,9 @@ import { useAuthContext } from "../../hooks/useAuth";
 import Footer from "../../components/Footer";
 import { getCart } from "../../utils/cartActions";
 import { ShowCart } from "../../components/profile/ShowCart";
-import { myPages } from "../../components/profile/ProfileComponents.";
-
+import { myPages } from "../../components/profile/ProfileComponents";
 import { API_CONFIG, COLORS } from "../../constants";
+import { useLanguage } from "../../hooks/LanguageContext";
 
 const UserProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,6 +43,7 @@ const UserProfile = () => {
   const location = useLocation();
   const defaultTabIndex = location.state?.activeTab || 0;
   const deleteModalDisclosure = useDisclosure();
+
 
   const {
     userInfo,
@@ -56,6 +57,7 @@ const UserProfile = () => {
     updateUserInfo,
     refreshUserInfo,
   } = useAuthContext();
+  const { selectedLanguage } = useLanguage();
 
   const [orders, setOrders] = useState([]);
   const [cartItems, setCartItems] = useState(() => getCart());
@@ -69,7 +71,9 @@ const UserProfile = () => {
   );
 
   const formatAddress = (addressData) => {
-    if (!addressData || addressData.length === 0) return "—";
+    if (!addressData) return "—"; // Handle null/undefined
+
+    if (Array.isArray(addressData) && addressData.length === 0) return "—";
 
     const addr = Array.isArray(addressData) ? addressData[0] : addressData;
 
@@ -81,13 +85,15 @@ const UserProfile = () => {
       `${addr.city}, ${addr.state} ${addr.zip_code}`,
     ].filter(Boolean);
 
-    return parts.join(",");
+    return parts.join(", "); // Added space after comma for better formatting
   };
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/orders/user/${userId}`);
+        const response = await fetch(
+          `${API_CONFIG.BASE_URL}/api/orders/user/${userId}`
+        );
         const data = await response.json();
         if (data.success) {
           setOrders(data.data);
@@ -116,17 +122,28 @@ const UserProfile = () => {
 
   useEffect(() => {
     const fetchAddress = async () => {
+      if (!userId) return;
+
       try {
         const addressResponse = await fetch(
-          `${API_CONFIG.BASE_URL}/api/shipping-addresses/user/${userId}`
+          `${API_CONFIG.BASE_URL}/api/addresses/user/${userId}` // Changed from shipping-addresses to addresses
         );
 
+        // Handle 404 - user has no address
+        if (addressResponse.status === 404) {
+          setUserAddress(null);
+          return;
+        }
+
         const address = await addressResponse.json();
-        if (address.success) {
+        if (address.success && address.data && address.data.length > 0) {
           setUserAddress(address.data[0]);
+        } else {
+          setUserAddress(null);
         }
       } catch (err) {
-        console.error("Error fetching orders:", err);
+        console.error("Error fetching address:", err);
+        setUserAddress(null); // Set to null on error
       }
     };
 
@@ -262,7 +279,7 @@ const UserProfile = () => {
             <Text as="span" color="gray.500" fontWeight="normal">
               Hello,{" "}
             </Text>
-            <Text as="span" color="black" fontWeight="medium">  
+            <Text as="span" color="black" fontWeight="medium">
               {userName}
             </Text>
           </Heading>
@@ -460,7 +477,7 @@ const UserProfile = () => {
               </TabList>
               <TabPanels my={8}>
                 <TabPanel>
-                  {myPages(currPage, {
+                  {myPages(currPage, selectedLanguage,{
                     userInformation,
                     setUserInformation,
                     updateUserInfo,

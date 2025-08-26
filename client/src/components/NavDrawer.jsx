@@ -38,12 +38,20 @@ const ITEMS = [
     color: COLORS.GRAY_MEDIUM,
   },
   {
-    label: "Untrimmed",
+    label: "Whole Meat",
     to: "/wholesale/unprocessed",
     icon: "/images/wholesale_button.avif",
     fallback: "/images/wholesale_button.png",
     color: COLORS.GRAY_MEDIUM,
   },
+  {
+    label: "Adams",
+    to: "/wholesale/adams-gourmet",
+    icon: "/images/home_icons/adams.avif",
+    fallback: "/images/home_icons/adams.jpg",
+    color: COLORS.GRAY_MEDIUM,
+  },
+
   {
     label: "Deal",
     to: "/wholesale/deal",
@@ -52,13 +60,13 @@ const ITEMS = [
     color: COLORS.GRAY_MEDIUM,
   },
   {
-    label: "Order",
+    label: "How to Order",
     to: "/wholesale/how-to-order",
     icon: "/images/home_icons/how_to_order.avif",
     fallback: "/images/home_icons/how_to_order.jpg",
     color: COLORS.GRAY_MEDIUM,
   },
-  {
+    {
     label: "Contact",
     to: "/contact",
     icon: "/images/home_icons/contact.avif",

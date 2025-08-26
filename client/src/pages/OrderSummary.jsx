@@ -14,64 +14,61 @@ import {
   HStack,
   Button,
   Link,
+  Divider,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/SideBar";
 import { useState, useEffect } from "react";
-import ThreeStepLine from "../components/order/OrderPayment";
+import ThreeStepLine from "../components/order/ThreeStepLine";
 import { ShowCart } from "../components/profile/ShowCart";
 import { CircleCheck } from "lucide-react";
 import { useAuthContext } from "../hooks/useAuth";
 
 import { API_CONFIG, COLORS } from "../constants";
 import { getCart, removeFromCart } from "../utils/cartActions";
+import { useLanguage } from "../hooks/LanguageContext";
+import { translator } from "../utils/translator";
+
+import emailjs from "emailjs-com";
 
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
   return (
-    <HStack spacing={3} align="flex-start">
+    <HStack
+      spacing={3}
+      align="flex-start"
+      cursor="pointer"
+      onClick={() => onChange(!isChecked)}
+    >
       <Box
-        as="input"
-        type="checkbox"
-        checked={isChecked}
-        onChange={(e) => onChange(e.target.checked)}
-        sx={{
-          appearance: "none",
-          width: "16px",
-          height: "16px",
-          borderRadius: "50%",
-          border: "2px solid #A0AEC0",
-          backgroundColor: isChecked ? "black" : "white",
-          cursor: "pointer",
-          flexShrink: 0,
-          marginTop: "2px",
-          position: "relative",
-          "&:checked": {
-            backgroundColor: "black",
-            borderColor: "black",
-          },
-          "&:checked::after": {
-            content: '""',
-            position: "absolute",
-            width: "6px",
-            height: "6px",
-            borderRadius: "50%",
-            backgroundColor: "white",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          },
-          "&:hover": {
-            borderColor: "#4A5568",
-          },
-        }}
-      />
+        as="span"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        boxSize={5}
+        borderRadius="50%"
+        border="2px solid"
+        borderColor={COLORS.PRIMARY}
+        bg="transparent"
+        transition="all 0.2s ease"
+        flexShrink={0}
+        mt="2px"
+      >
+        {isChecked && (
+          <Box
+            width="80%"
+            height="80%"
+            borderRadius="full"
+            bg={COLORS.PRIMARY}
+          />
+        )}
+      </Box>
+
       <Text fontSize="sm" color="gray.700" lineHeight="tall">
         {children}
       </Text>
     </HStack>
   );
 };
-
 const OrderPayment = ({
   isAgreed1,
   setIsAgreed1,
@@ -80,87 +77,148 @@ const OrderPayment = ({
   isAgreed3,
   setIsAgreed3,
 }) => {
+  const { selectedLanguage } = useLanguage();
   return (
     <Box p={6} bg="white" borderRadius="md" maxW="400px">
       <VStack spacing={4} align="stretch">
-        <Box>
-          <Text fontSize="sm" fontWeight="bold" color="black" mb={2}>
-            Order & Payment Policy
-          </Text>
-          <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            After placing your order, you will recieve a confirmation email and
-            pickup time once confirmed.
-          </Text>
-        </Box>
+        {selectedLanguage.code === "en" ? (
+          <>
+            <Box>
+              <Text fontSize="sm" fontWeight="bold" color="black" mb={2}>
+                Order & Payment Policy
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                After placing your order, you will recieve a confirmation email
+                and pickup time once confirmed.
+              </Text>
+            </Box>
 
-        <Box>
-          <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
-            Payment Terms
-          </Text>
-          {/* <Text fontSize="xs" color="gray.700" lineHeight="tall">
+            <Box>
+              <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
+                Payment Terms
+              </Text>
+              {/* <Text fontSize="xs" color="gray.700" lineHeight="tall">
             <Text as="span" fontWeight="bold">
               Delivery:
             </Text>{" "}
             Full prepayment required.
           </Text> */}
-          <Text fontSize="xs" color="gray.700" lineHeight="tall">
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                <Text as="span" fontWeight="bold">
+                  Pickup:
+                </Text>{" "}
+                50% prepayment, balance due at pickup.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall" mt={2}>
+                Pay the balance in cash at pickup and get a up to 5% discount.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                Credit card payments include sales tax.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                Accepted payment methods:
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                Cash & credit card only.
+              </Text>
+            </Box>
+
+            <Box>
+              <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
+                No-Show Policy
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                Two or more missed pickups without notice may result in account
+                suspension.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                Refunds may be limited, and a deposit may be required for future
+                orders.
+              </Text>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box>
+              <Text fontSize="sm" fontWeight="bold" color="black" mb={2}>
+                주문 및 결제 정책
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                주문 후 확인 이메일과 픽업 시간 안내를 받게 됩니다.
+              </Text>
+            </Box>
+
+            <Box>
+              <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
+                결제 조건
+              </Text>
+              {/* <Text fontSize="xs" color="gray.700" lineHeight="tall">
             <Text as="span" fontWeight="bold">
-              Pickup:
+              배송:
             </Text>{" "}
-            50% prepayment, balance due at pickup.
-          </Text>
-          <Text fontSize="xs" color="gray.700" lineHeight="tall" mt={2}>
-            Pay the balance in cash at pickup and get a up to 5% discount.
-          </Text>
-          <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            Credit card payments include sales tax.
-          </Text>
-          <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            Accepted payment methods:
-          </Text>
-          <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            Cash & credit card only (AMEX excluded ).
-          </Text>
-        </Box>
+            전액 선결제 필수.
+          </Text> */}
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                <Text as="span" fontWeight="bold">
+                  픽업:
+                </Text>{" "}
+                50% 선결제, 잔액은 픽업 시 결제.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall" mt={2}>
+                픽업 시 잔액을 현금으로 결제하시면 최대 5% 할인 혜택을 드립니다.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                신용카드 결제 시에는 판매세가 포함됩니다.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                결제 수단: 현금 및 신용카드만 가능합니다.
+              </Text>
+            </Box>
 
-        <Box>
-          <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
-            No-Show Policy
-          </Text>
-          <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            Two or more missed pickups without notice may result in account
-            suspension.
-          </Text>
-          <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            Refunds may be limited, and a deposit may be required for future
-            orders.
-          </Text>
-        </Box>
-
-        <VStack spacing={3} align="stretch">
+            <Box>
+              <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
+                노쇼 정책
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                사전 통보 없이 픽업을 두 번 이상 놓칠 경우 계정이 정지될 수
+                있습니다.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                환불이 제한될 수 있으며, 향후 주문에 보증금이 요구될 수
+                있습니다.
+              </Text>
+            </Box>
+          </>
+        )}
+        <VStack spacing={3} align="stretch" mt={6}>
           <StyledCheckbox
             isChecked={isAgreed1}
             onChange={() => setIsAgreed1(!isAgreed1)}
           >
-            I have read and agree to the Payment & No-Show Policy.
+            {translator(
+              "I have read and agree to the Payment & No-Show Policy.",
+              "결제 및 노쇼 정책을 읽고 동의합니다."
+            )}
           </StyledCheckbox>
 
           <StyledCheckbox
             isChecked={isAgreed2}
             onChange={() => setIsAgreed2(!isAgreed2)}
           >
-            I acknowledge that due to the perishable nature of the products, all
-            sales are final and non-refundable. I have read and understood the
-            Return & Refund Policy.
+            {translator(
+              "I acknowledge that due to the perishable nature of the products, all sales are final and non-refundable. I have read and understood the Return & Refund Policy.",
+              "제품의 부패성으로 인해 모든 판매는 최종적이며 환불이 불가함을 확인하였으며, 반품 및 환불 정책을 숙지하였습니다."
+            )}
           </StyledCheckbox>
 
           <StyledCheckbox
             isChecked={isAgreed3}
             onChange={() => setIsAgreed3(!isAgreed3)}
           >
-            I agree that Adams Foods is not liable for any issues arising after
-            product delivery, including improper storage, preparation, or
-            handling.
+            {translator(
+              "I agree that AdamsFoods is not liable for any issues arising after product delivery, including improper storage, preparation,                 or handling.",
+              "AdamsFoods는 제품 배송 후 보관, 준비, 취급 부주의로 인한 문제에 대해 책임지지 않음을 동의합니다."
+            )}
           </StyledCheckbox>
         </VStack>
       </VStack>
@@ -181,18 +239,23 @@ const OrderSummaryPage = () => {
   const [isAgreed2, setIsAgreed2] = useState(false);
   const [isAgreed3, setIsAgreed3] = useState(false);
 
+  // Add tax and delivery calculations
+  const [salesTax, setSalesTax] = useState(0);
+  const [deliveryFee, setDeliveryFee] = useState(0);
+
   const navigate = useNavigate();
 
   const { userInfo, isAuthenticated, userName, userId, userEmail } =
     useAuthContext();
-
+  const { selectedLanguage } = useLanguage();
   const [userAddress, setUserAddress] = useState(null);
   const [isPageLoading, setIsPageLoading] = useState(true);
 
-  const totalPrice = cartItems.reduce(
+  const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+  const finalTotal = subtotal + deliveryFee;
 
   const formatOrderDate = (dateString) => {
     const date = new Date(dateString);
@@ -210,6 +273,7 @@ const OrderSummaryPage = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
   useEffect(() => {
     const fetchAddress = async () => {
       if (!userId) return;
@@ -229,6 +293,13 @@ const OrderSummaryPage = () => {
 
     fetchAddress();
   }, [userId]);
+  useEffect(() => {
+    if (deliveryOption === "pickup") {
+      setDeliveryFee(0);
+    } else {
+      setDeliveryFee(25);
+    }
+  }, [deliveryOption]);
 
   const handleOrder = async () => {
     try {
@@ -247,7 +318,11 @@ const OrderSummaryPage = () => {
 
       const orderData = {
         user_id: userId,
-        total_amount: totalPrice,
+        total_amount: finalTotal,
+        subtotal: subtotal,
+        tax_amount: 0,
+        delivery_fee: deliveryFee,
+        order_type: deliveryOption,
       };
 
       const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
@@ -295,6 +370,10 @@ const OrderSummaryPage = () => {
         if (allItemsCreated) {
           setOrderNumber(orderResult.data.order_number);
           setOrderDate(formatOrderDate(orderResult.data.order_date));
+
+          // Send confirmation email
+          await sendOrderConfirmationEmail(orderResult.data);
+
           cartItems.forEach((item) => {
             removeFromCart(item.id);
           });
@@ -315,6 +394,50 @@ const OrderSummaryPage = () => {
     }
   };
 
+  const sendOrderConfirmationEmail = async (orderData) => {
+    try {
+      // Format order items as an array of objects for the template
+      const orderItemsForEmail = cartItems.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price.toFixed(2),
+        itemTotal: (item.price * item.quantity).toFixed(2),
+      }));
+
+      const emailData = {
+        customerName: userName,
+        companyName: userInfo?.company || "Not specified",
+        customerAddress: formatAddress(userAddress),
+        orderNumber: orderData.order_number,
+        orderDate: formatOrderDate(orderData.order_date),
+        orderItems: orderItemsForEmail, // Array of item objects
+        totalQuantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+        estimatedTotal: finalTotal.toFixed(2),
+        email: userEmail,
+        name: userName,
+      };
+
+      // Sends to Customer
+      await emailjs.send(
+        API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
+        API_CONFIG.VITE_EMAIL_JS_TEMPLATE_ORDER_CONFIRMATION,
+        emailData,
+        API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
+      );
+
+      // Sends to Admin
+      await emailjs.send(
+        API_CONFIG.VITE_EMAIL_JS_SERVICE_ID,
+        API_CONFIG.VITE_EMAIL_JS_TEMPLATE_ORDER_CONFIRMATION_ADMIN,
+        emailData,
+        API_CONFIG.VITE_EMAIL_JS_PUBLIC_KEY
+      );
+
+      console.log("Order confirmation email sent successfully");
+    } catch (error) {
+      console.error("Failed to send confirmation email:", error);
+    }
+  };
   const formatAddress = (addressData) => {
     if (!addressData) return "—";
 
@@ -414,12 +537,15 @@ const OrderSummaryPage = () => {
                       Pickup
                     </Text>
                     <Text fontSize="12px" color="gray.500">
-                      Pickup available at DTLA Warehouse
+                      {translator(
+                        "Pickup available at DTLA Warehouse",
+                        "픽업은 DTLA 에서 가능합니다."
+                      )}
                     </Text>
                   </VStack>
                 </HStack>
 
-                <HStack spacing={2} cursor="not-allowed" opacity={0.5}>
+                {/* <HStack spacing={2} cursor="not-allowed" opacity={0.5}>
                   <Circle
                     size="16px"
                     border="2px solid"
@@ -430,26 +556,119 @@ const OrderSummaryPage = () => {
                   <Text fontWeight="bold" fontSize="16px" color="gray.400">
                     Delivery
                   </Text>
+                </HStack> */}
+                <HStack
+                  spacing={2}
+                  cursor="pointer"
+                  onClick={() => setDeliveryOption("pickup")}
+                >
+                  <Circle
+                    size="16px"
+                    border="2px solid"
+                    borderColor={
+                      deliveryOption === "pickup" ? "black" : "gray.300"
+                    }
+                    bg={deliveryOption === "pickup" ? "black" : "white"}
+                    position="relative"
+                  >
+                    {deliveryOption === "pickup" && (
+                      <Circle size="6px" bg="white" />
+                    )}
+                  </Circle>
+                  <VStack align="start" spacing={0}>
+                    <Text
+                      fontWeight="bold"
+                      fontSize="16px"
+                      color={deliveryOption === "pickup" ? "black" : "gray.500"}
+                    >
+                      Points
+                    </Text>
+                    <Text fontSize="12px" color="gray.500">
+                      {translator(
+                        "Points can be redeemed starting from a minimum of 500 points.",
+                        "포인트는 최소 500점부터 사용하실 수 있습니다."
+                      )}
+                    </Text>
+                  </VStack>
                 </HStack>
               </VStack>
-              <VStack spacing={4}>
+
+              <VStack spacing={4} w="100%">
                 <Flex
                   bg={COLORS.GRAY_LIGHT}
-                  py={2}
-                  px={6}
+                  py={4}
+                  pl={4}
+                  pr={6}
                   align="flex-start"
                   gap={4}
                 >
-                  <CircleCheck />
-                  {/* <Text fontSize="12px" color="gray.500" lineHeight="1.2">
-                    If you provide your desired delivery address, We will email
-                    you an invoice along with the calculated delivery fee.
-                  </Text> */}
+                  <CircleCheck size={16} />
                   <Text fontSize="12px" color="gray.500" lineHeight="1.2">
-                    For the moment, we do not provide delivery services. We
-                    appologize for the inconvenience.
+                    {translator(
+                      "For the moment, we do not provide delivery services. We apologize for the inconvenience.",
+                      "인보이스와 픽업 가능 날짜 및 시간을 확정하여, 이메일로 안내해 드립니다."
+                    )}
                   </Text>
                 </Flex>
+
+                {/* Order Summary Section */}
+                <VStack
+                  spacing={3}
+                  w="100%"
+                  px={4}
+                  py={4}
+                  bg="gray.50"
+                  borderRadius="lg"
+                >
+                  <Text fontSize="md" fontWeight="bold" alignSelf="flex-start">
+                    Order Summary
+                  </Text>
+                  {/* 
+                  <HStack justify="space-between" w="100%">
+                    <Text fontSize="sm" color="gray.600">
+                      Subtotal:
+                    </Text>
+                    <Text fontSize="sm" fontWeight="medium">
+                      ${subtotal.toFixed(2)}
+                    </Text>
+                  </HStack> */}
+
+                  {/* <HStack justify="space-between" w="100%">
+                    <Text fontSize="sm" color="gray.600">
+                      Sales Tax (9.5%):
+                    </Text>
+                    <Text fontSize="sm" fontWeight="medium">
+                      ${calculatedTax.toFixed(2)}
+                    </Text>
+                  </HStack> */}
+
+                  {deliveryOption === "delivery" && (
+                    <HStack justify="space-between" w="100%">
+                      <Text fontSize="sm" color="gray.600">
+                        Delivery Fee:
+                      </Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        ${deliveryFee.toFixed(2)}
+                      </Text>
+                    </HStack>
+                  )}
+
+                  <Divider />
+
+                  <HStack justify="space-between" w="100%" pt={2}>
+                    <Text fontSize="md" fontWeight="bold">
+                      Total:
+                    </Text>
+                    <Text
+                      fontSize="md"
+                      fontWeight="bold"
+                      color={COLORS.PRIMARY}
+                    >
+                      ${finalTotal.toFixed(2)}
+                    </Text>
+                  </HStack>
+                </VStack>
+
                 <Button
                   size="sm"
                   bg={COLORS.GRAY_MEDIUM}
@@ -461,11 +680,12 @@ const OrderSummaryPage = () => {
                   w="100%"
                   my={6}
                 >
-                  CHECK OUT ${totalPrice.toFixed(2)}
+                  CHECK OUT ${finalTotal.toFixed(2)}
                 </Button>
               </VStack>
             </VStack>
           )}
+
           {currentStep === 1 && (
             <VStack>
               <OrderPayment
@@ -487,20 +707,21 @@ const OrderSummaryPage = () => {
                 my={6}
                 onClick={() => handleOrder()}
               >
-                PLACE YOUR ORDER
+                PLACE YOUR ORDER - ${finalTotal.toFixed(2)}
               </Button>
             </VStack>
           )}
+
           {currentStep === 2 && (
             <VStack
-              spacing={4}
+              spacing={6}
               px={4}
               align="center"
-              h="55vh"
-              justify="space-between"
+              minH="60vh" // Changed from fixed height to minimum height
+              py={8} // Added padding for better spacing
             >
-              {/* Order Number */}
-              <VStack spacing={4}>
+              {/* Order Details Section */}
+              <VStack spacing={4} w="100%">
                 <HStack
                   justify="space-between"
                   bg="gray.50"
@@ -518,7 +739,6 @@ const OrderSummaryPage = () => {
                   </Text>
                 </HStack>
 
-                {/* Date */}
                 <HStack
                   justify="space-between"
                   bg="gray.50"
@@ -536,30 +756,52 @@ const OrderSummaryPage = () => {
                   </Text>
                 </HStack>
 
-                {/* Confirmation Message */}
-                <Box p={4}>
-                  <HStack align="flex-start" spacing={2}>
-                    <CircleCheck />
-                    <VStack align="flex-start" spacing={2}>
-                      <Text fontSize="sm" color="gray.700" lineHeight="1.4">
-                        Until you receive a confirmation email, your order is
-                        not considered confirmed.
-                      </Text>
-                      {/* <Text fontSize="sm" color="gray.700" lineHeight="1.4">
-                        Please check the confirmation email.
-                      </Text> */}
-                    </VStack>
-                  </HStack>
-                </Box>
-              </VStack>
-              <VStack>
-                <Box
-                  mt={8}
-                  p={4}
-                  borderRadius="md"
-                  textAlign="center"
+                {/* <HStack
+                  justify="space-between"
+                  bg="gray.50"
+                  p={3}
+                  borderRadius="full"
+                  border="1px"
                   borderColor="gray.200"
+                  w="100%"
                 >
+                  <Text fontSize="sm" color="gray.500">
+                    Total
+                  </Text>
+                  <Text fontSize="sm" fontWeight="semibold">
+                    ${finalTotal.toFixed(2)}
+                  </Text>
+                </HStack> */}
+              </VStack>
+
+              {/* Confirmation Message */}
+              <Box p={4} w="100%">
+                <HStack align="flex-start" spacing={3}>
+                  <Box mt={1} flexShrink={0}>
+                    <CircleCheck size={16} />
+                  </Box>
+
+                  <VStack align="flex-start" spacing={2} flex={1}>
+                    <Text fontSize="sm" color="gray.700" lineHeight="1.4">
+                      {translator(
+                        "Until you receive a confirmation email, your order is not considered confirmed.",
+                        "확인 이메일을 받기 전까지는, 주문이 확정된 것으로 간주되지 않습니다."
+                      )}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500" lineHeight="1.4">
+                      {translator(
+                        "Check your email for order confirmation and quote details.",
+                        "확인 이메일을 꼭 확인해 주세요."
+                      )}
+                    </Text>
+                  </VStack>
+                </HStack>
+              </Box>
+
+              {/* Bottom Section */}
+              <VStack spacing={4} w="100%" mt={24}>
+                {" "}
+                <Box p={4} borderRadius="md" textAlign="center" w="100%">
                   <Text fontSize="xs" color="gray.600" mb={2}>
                     Have any concerns about your order?
                   </Text>
@@ -569,25 +811,21 @@ const OrderSummaryPage = () => {
                     </Text>
                     <Link
                       fontSize="sm"
-                      href="mailto:admin@adamsfoods.us"
+                      href="mailto:sales@adamsfoods.us"
                       color="#b3967f"
                       fontWeight="semibold"
                       textDecoration="underline"
                       _hover={{ color: "#494949" }}
                     >
-                      admin@adamsfoods.us
+                      sales@adamsfoods.us
                     </Link>
                   </HStack>
                 </Box>
                 <Button
-                  justifySelf="end"
-                  mt={2}
                   bg={COLORS.GRAY_MEDIUM}
                   borderRadius="full"
                   w="100%"
-                  onClick={() => {
-                    navigate("/");
-                  }}
+                  onClick={() => navigate("/")}
                 >
                   FINISH
                 </Button>

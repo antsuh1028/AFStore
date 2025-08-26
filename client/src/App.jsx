@@ -19,15 +19,18 @@ import {
   MarinatedPage,
   ProcessedPage,
   UnprocessedPage,
+  AdamsGourmetPage,
   AllProductsPage,
 } from "./pages/wholesale";
 import ProductDetailPage from "./components/shop/ProductDetails";
 import OrderSummaryPage from "./pages/OrderSummary";
 import AdminDashboard from "./pages/AdminDashboard";
+import { CookiesPage } from "./pages/Cookies";
 import theme from "./theme";
 import "./fonts.css";
 import { AuthProvider } from "./hooks/useAuth";
 import CookieConsentBanner from "./components/CookieConsentBanner";
+import { LanguageProvider } from "./hooks/LanguageContext";
 
 function App() {
   const [showCookieConsent, setShowCookieConsent] = useState(() => {
@@ -35,64 +38,81 @@ function App() {
   });
   return (
     <ChakraProvider theme={theme}>
-      <AuthProvider>
-        <BrowserRouter>
-          <Box minH="100vh" display="flex" flexDirection="column" bg="#f9f9f9">
-            <Box as="main" flex="1">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/wholesale/packing" element={<PackingPage />} />
-                <Route path="/wholesale/faq" element={<FAQPage />} />
-                <Route path="/wholesale/b2b" element={<B2BPage />} />
-                <Route
-                  path="/wholesale/how-to-order"
-                  element={<HowToOrderPage />}
-                />
-                <Route path="/wholesale/deal" element={<DealPage />} />
-                <Route
-                  path="/wholesale/marinated"
-                  element={<MarinatedPage />}
-                />
-                <Route
-                  path="/terms-and-policies"
-                  element={<TermsAndPolicies />}
-                />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/signup/agreements" element={<AgreementGate />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route
-                  path="/wholesale/product/:productId"
-                  element={<ProductDetailPage />}
-                />
-                <Route
-                  path="/wholesale/processed"
-                  element={<ProcessedPage />}
-                />
-                <Route
-                  path="/wholesale/unprocessed"
-                  element={<UnprocessedPage />}
-                />
-                <Route
-                  path="/wholesale/shop-all"
-                  element={<AllProductsPage />}
-                />
-                {/* <Route path="/cart" element={<CartPage />} /> */}
-                <Route path="/order-summary" element={<OrderSummaryPage />} />
-                <Route path="/profile/user/:userId" element={<UserProfile />} />
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              </Routes>
-              {showCookieConsent && (
-                <CookieConsentBanner
-                  onAccept={() => setShowCookieConsent(false)}
-                />
-              )}
+      <LanguageProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Box
+              minH="100vh"
+              display="flex"
+              flexDirection="column"
+              bg="#f9f9f9"
+            >
+              <Box as="main" flex="1">
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/wholesale/packing" element={<PackingPage />} />
+                  <Route path="/wholesale/faq" element={<FAQPage />} />
+                  <Route path="/wholesale/b2b" element={<B2BPage />} />
+                  <Route
+                    path="/wholesale/how-to-order"
+                    element={<HowToOrderPage />}
+                  />
+                  <Route path="/wholesale/deal" element={<DealPage />} />
+                  <Route
+                    path="/wholesale/marinated"
+                    element={<MarinatedPage />}
+                  />
+                  <Route
+                    path="/terms-and-policies"
+                    element={<TermsAndPolicies />}
+                  />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route
+                    path="/signup/agreements"
+                    element={<AgreementGate />}
+                  />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route
+                    path="/wholesale/product/:productId"
+                    element={<ProductDetailPage />}
+                  />
+                  <Route
+                    path="/wholesale/processed"
+                    element={<ProcessedPage />}
+                  />
+                  <Route
+                    path="/wholesale/unprocessed"
+                    element={<UnprocessedPage />}
+                  />
+                  <Route
+                    path="/wholesale/adams-gourmet"
+                    element={<AdamsGourmetPage />}
+                  />
+                  <Route
+                    path="/wholesale/shop-all"
+                    element={<AllProductsPage />}
+                  />
+                  <Route path="/order-summary" element={<OrderSummaryPage />} />
+                  <Route
+                    path="/profile/user/:userId"
+                    element={<UserProfile />}
+                  />
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/cookie" element={<CookiesPage />} />
+                </Routes>
+                {showCookieConsent && (
+                  <CookieConsentBanner
+                    onAccept={() => setShowCookieConsent(false)}
+                  />
+                )}
+              </Box>
             </Box>
-          </Box>
-        </BrowserRouter>
-      </AuthProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </LanguageProvider>
     </ChakraProvider>
   );
 }

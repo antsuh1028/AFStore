@@ -27,6 +27,7 @@ import {
   List,
   ListItem,
   Center,
+  Link,
 } from "@chakra-ui/react";
 import {
   ChevronLeft,
@@ -49,12 +50,18 @@ import ProductDetailSkeleton from "../skeletons/ProductDetailsSkeleton";
 import { useAuthContext } from "../../hooks/useAuth";
 import { COLORS, API_CONFIG } from "../../constants";
 import Navbar from "../Navbar";
+import { useLanguage } from "../../hooks/LanguageContext";
+import { translator } from "../../utils/translator";
 
 const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
   const [loadedImages, setLoadedImages] = useState(new Set());
   const [failedImages, setFailedImages] = useState(new Set());
   const [isCurrentImageLoading, setIsCurrentImageLoading] = useState(true);
+
+  // Touch/swipe state
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   const imagePaths = useMemo(() => {
     if (!productName || !productStyle || !productImages) {
@@ -164,6 +171,30 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
     setIsCurrentImageLoading(true);
   }, []);
 
+  // Touch handlers for swipe functionality
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50; // Swipe left (next image)
+    const isRightSwipe = distance < -50; // Swipe right (previous image)
+
+    if (isLeftSwipe && hasMultipleImages) {
+      nextImage();
+    } else if (isRightSwipe && hasMultipleImages) {
+      prevImage();
+    }
+  };
+
   const currentImagePath = imagePaths[imagePage - 1];
   const isCurrentImageReady =
     currentImagePath &&
@@ -178,6 +209,9 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
       bg="gray.50"
       borderRadius="lg"
       overflow="hidden"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
     >
       {/* Loading overlay */}
       {isCurrentImageLoading && !isCurrentImageReady && (
@@ -306,14 +340,14 @@ const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
 };
 
 const CollapsibleSection = ({ title, isOpen, onToggle, children }) => (
-  <Box w="100%" border="1px" borderColor="gray.100" borderRadius="md">
+  <Box w="100%" borderColor="gray.100" borderRadius="md">
     <Button
       w="100%"
       justifyContent="space-between"
       variant="ghost"
       onClick={onToggle}
       rightIcon={isOpen ? <ChevronUp /> : <ChevronDown />}
-      fontWeight="bold"
+      fontWeight="extrabold"
       py={4}
     >
       {title}
@@ -344,7 +378,7 @@ const ProductDetailPage = () => {
 
   const { userInfo, isAuthenticated, logout, userName, userId, userEmail } =
     useAuthContext();
-
+  const { selectedLanguage } = useLanguage();
   const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
@@ -420,10 +454,14 @@ const ProductDetailPage = () => {
           product?.style === "processed"
             ? "Prepped"
             : product?.style === "unprocessed"
-            ? "Untrimmed"
+            ? "Whole Meat"
+            : product?.style === "premium"
+            ? "Adams Gourmet"
             : product?.style?.charAt(0).toUpperCase() +
               product?.style?.slice(1),
-        url: `/wholesale/${product?.style}`,
+        url: `/wholesale/${
+          product?.style === "premium" ? "adams-gourmet" : product?.style
+        }`,
       },
       { label: (product?.name || "Product").substring(0, 30) + "..." },
     ],
@@ -483,7 +521,7 @@ const ProductDetailPage = () => {
                   textAlign="center"
                 >
                   We couldn't find the product you're looking for. It may no
-                  longer be available. We appologize for the inconvenience.
+                  longer be available. We apologize for the inconvenience.
                 </Text>
               </VStack>
 
@@ -721,22 +759,48 @@ const ProductDetailPage = () => {
                 />
               )}
             </HStack>
-            <Text fontSize="xl" fontWeight="bold" color="black">
-              ${product.price}/lb
-            </Text>
+            {isAuthenticated ? (
+              <Text fontSize="xl" fontWeight="bold" color="black">
+                ${product.price}/lb
+              </Text>
+            ) : (
+              <Link
+                fontSize="sm"
+                fontWeight="bold"
+                color="black"
+                p={2}
+                textAlign="center "
+                href="/login"
+              >
+                Login to see prices
+              </Link>
+            )}
           </HStack>
 
-          <VStack spacing={2} align="stretch" w="100%">
+          <VStack spacing={2} align="stretch" w="100%" mb={4}>
             <Box bg={COLORS.GRAY_LIGHT} p={4} borderRadius="md">
               <HStack spacing={2}>
                 <CheckCircleIcon color="green.500" />
                 <VStack align="flex-start" spacing={0}>
-                  <Text fontSize="sm" fontWeight="medium">
-                    Pick up available at DTLA Warehouse
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    Usually ready in 24 hours
-                  </Text>
+                  {selectedLanguage.code === "en" ? (
+                    <>
+                      <Text fontSize="sm" fontWeight="medium">
+                        Pick up available at DTLA Warehouse
+                      </Text>
+                      <Text fontSize="sm" color="gray.600">
+                        Usually ready in 24 hours
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text fontSize="sm" fontWeight="medium">
+                        픽업은 DTLA DTLA Warehouse에서 가능합니다.
+                      </Text>
+                      <Text fontSize="sm" color="gray.600">
+                        보통 24시간 내에 준비됩니다.
+                      </Text>
+                    </>
+                  )}
                 </VStack>
               </HStack>
             </Box>
@@ -744,22 +808,26 @@ const ProductDetailPage = () => {
             <VStack align="flex-start" px={8} spacing={3}>
               <HStack>
                 <FiThermometer />
-                <Text fontSize="sm">Keep frozen</Text>
-              </HStack>
-              {/* <HStack>
-                <FiTruck />
                 <Text fontSize="sm">
-                  Free local shipping in orders over $3000
+                  {translator("Keep frozen", "냉동 보관해 주세요.")}
                 </Text>
-              </HStack> */}
+              </HStack>
               <HStack>
                 <WarningIcon />
-                <Text fontSize="sm">Cook thoroughly before consumption</Text>
+                <Text fontSize="sm">
+                  {translator(
+                    "Cook thoroughly before consumption",
+                    "섭취 전에는 충분히 익혀서 드시기 바랍니다."
+                  )}
+                </Text>
               </HStack>
               <HStack>
                 <FiPackage />
                 <Text fontSize="sm">
-                  Pack Date: See package label for details
+                  {translator(
+                    "Pack Date: See package label for details",
+                    "포장일자는 패키지 라벨을 참고해 주세요."
+                  )}
                 </Text>
               </HStack>
             </VStack>
@@ -847,19 +915,28 @@ const ProductDetailPage = () => {
               borderColor="yellow.200"
               borderRadius="md"
             >
-              <Text fontSize="xs" color="gray.700" lineHeight="1.4">
-                <Flex
-                  as="span"
-                  fontWeight="semibold"
-                  py={2}
-                >
-                  <Box mr={2}><InfoIcon size={16} /></Box>
-                   Important:
-                </Flex>{" "}
-                All products are processed in facilities that handle soy, wheat,
-                sesame, and other major allergens. Always verify current
-                allergen information on product packaging before use.
-              </Text>
+              <Flex
+                fontSize="xs"
+                color="gray.700"
+                lineHeight="1.4"
+                align="flex-start"
+              >
+                <Box mr={2} mt="1px">
+                  <InfoIcon size={16} />
+                </Box>
+                <Box>
+                  <Text as="span" fontWeight="semibold">
+                    Important:
+                  </Text>
+                  <Text as="span">
+                    {" "}
+                    All products are processed in facilities that handle soy,
+                    wheat, sesame, and other major allergens. Always verify
+                    current allergen information on product packaging before
+                    use.
+                  </Text>
+                </Box>
+              </Flex>
             </Box>
           </CollapsibleSection>
 

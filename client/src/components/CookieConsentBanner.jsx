@@ -1,15 +1,18 @@
-import React from 'react';
-import { Box, Text, Button, HStack, VStack } from '@chakra-ui/react';
-import { COLORS } from '../constants';
+import React from "react";
+import { Box, Text, Button, HStack, VStack, Heading } from "@chakra-ui/react";
+import { COLORS } from "../constants";
+import { useNavigate } from "react-router-dom";
 
 const CookieConsentBanner = ({ onAccept }) => {
+
+  const navigate = useNavigate()
   const handleAccept = () => {
-    localStorage.setItem('cookieAgreement', 'accepted');
+    localStorage.setItem("cookieAgreement", "accepted");
     onAccept();
   };
 
   const handleReject = () => {
-    localStorage.setItem('cookieAgreement', 'rejected');
+    localStorage.setItem("cookieAgreement", "rejected");
     onAccept();
   };
 
@@ -19,7 +22,7 @@ const CookieConsentBanner = ({ onAccept }) => {
       bottom="0"
       left="0"
       right="0"
-      bg="gray.100"
+      bg="white"
       border="1px solid"
       borderColor="gray.200"
       boxShadow="lg"
@@ -28,12 +31,13 @@ const CookieConsentBanner = ({ onAccept }) => {
       opacity={0.9}
     >
       <VStack spacing={3} maxW="600px" mx="auto">
+        <Heading fontSize="lg" fontWeight="extrabold">COOKIE POLICY</Heading>
         <Text fontSize="sm" textAlign="center" color="gray.700">
-          To add items to your cart, we need to store them using cookies. No
-          personal information is collected. By clicking "Accept", you agree to
-          the use of cookies for this purpose.
+          We use cookies to enhance your browsing experience and analyze site
+          traffic. By continuing to use our site, you agree to our use of
+          cookies.
         </Text>
-        
+
         <HStack spacing={3}>
           <Button
             bg={COLORS.PRIMARY}
@@ -52,9 +56,9 @@ const CookieConsentBanner = ({ onAccept }) => {
             size="sm"
             borderRadius="full"
             _hover={{ bg: "gray.50" }}
-            onClick={handleReject}
+            onClick={()=>navigate("/cookie")}
           >
-            Reject
+            Learn More
           </Button>
         </HStack>
       </VStack>

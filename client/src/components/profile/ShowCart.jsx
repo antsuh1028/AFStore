@@ -87,7 +87,7 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice }) => {
                     : item.style === "processed"
                     ? "Prepped Meat"
                     : item.style === "unprocessed"
-                    ? "Untrimmed Meat"
+                    ? "Whole Meat"
                     : item.style}{" "}
                 </Text>
                 <Text

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Box, Image, Text, Skeleton } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../hooks/useAuth";
 
 export const ProductCard = ({
   id,
@@ -19,6 +20,7 @@ export const ProductCard = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageSrc, setImageSrc] = useState("/images/gray.avif");
   const [imageError, setImageError] = useState(false);
+  const { isAuthenticated } = useAuthContext();
 
   // Generate image paths for this product
   const imagePaths = useMemo(() => {
@@ -165,9 +167,11 @@ export const ProductCard = ({
           <Text fontSize="xs" color="gray.600" noOfLines={1} mt={1}>
             {spec}
           </Text>
-          <Text fontWeight="bold" fontSize="sm">
+          {isAuthenticated ? (<Text fontWeight="bold" fontSize="sm">
             ${price}/lb
-          </Text>
+          </Text>) : (<Text fontWeight="bold" fontSize="sm">
+            Unavailable
+          </Text>)}
         </Box>
       </Box>
     </Box>

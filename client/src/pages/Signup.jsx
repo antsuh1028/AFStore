@@ -26,6 +26,8 @@ import Footer from "../components/Footer";
 import emailjs from "emailjs-com";
 import { API_CONFIG, COLORS } from "../constants";
 import { uploadMultipleSignupDocuments } from "../utils/fileUpload";
+import { useLanguage } from "../hooks/LanguageContext";
+import { translator } from "../utils/translator";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -65,6 +67,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const contentRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { selectedLanguage } = useLanguage();
 
   const form = useRef();
 
@@ -85,7 +88,6 @@ const Signup = () => {
         : ""
     );
   };
-  
 
   const inputStyle = {
     borderRadius: "full",
@@ -634,17 +636,21 @@ const Signup = () => {
                     name="license_file"
                     fileName={licenseFileName}
                     setFileName={setLicenseFileName}
+
                     setFile={setLicenseFile}
-                    helpText="*Please attach the Business License (PDF, JPG, PNG only, max 10MB)"
                     error={licenseFileError}
                     setError={setLicenseFileError}
+                    helpText={translator(
+                      "*Please attach the Business License (PDF, JPG, PNG only, max 10MB)",
+                      "*사업자등록증을 첨부해 주세요."
+                    )}
                   />
                 </Box>
               </FormControl>
 
               <FormControl>
                 <FormLabel fontWeight="semibold" fontSize="sm">
-                  California Resale Certificate
+                  California Resale Certificate (CDTFA-230)
                 </FormLabel>
                 <Input
                   type="text"
@@ -659,19 +665,24 @@ const Signup = () => {
                     fileName={resaleFileName}
                     setFileName={setResaleFileName}
                     setFile={setResaleFile}
-                    helpText="*Please attach the California Resale Certificate (PDF, JPG, PNG only, max 10MB)"
+                    helpText={translator(
+                      "*Please attach the California Resale Certificate (PDF, JPG, PNG only, max 10MB)",
+                      "*CA 재판매 증명서를 첨부해 주세요."
+                    )}
                     error={resaleFileError}
                     setError={setResaleFileError}
                   />
                 </Box>
               </FormControl>
-
               <CustomCheckbox
                 checked={true}
                 disabled={true}
+                onChange={() => setAgreementChecked(!agreementChecked)}
               >
-                To ensure wholesale eligibility, please provide your license
-                number and upload a copy during sign-up.
+                {translator(
+                  "To ensure wholesale eligibility, please provide your license number and upload a copy during sign-up.",
+                  "도매 자격 확인을 위해 가입 시 사업자 등록번호를 기재하고 사본을 업로드해 주세요."
+                )}
               </CustomCheckbox>
 
               <FormControl>
@@ -684,13 +695,16 @@ const Signup = () => {
                   fileName={govIdFileName}
                   setFileName={setGovIdFileName}
                   setFile={setGovIdFile}
-                  helpText="*Please attach the government ID (PDF, JPG, PNG only, max 10MB)"
+                   helpText={translator(
+                    "*Please attach the government ID (PDF, JPG, PNG only, max 10MB).",
+                    "*도매 라이선스를 첨부해 주세요."
+                  )}
                   error={govIdFileError}
                   setError={setGovIdFileError}
                 />
               </FormControl>
 
-              <FormControl>
+              {/* <FormControl>
                 <FormLabel fontWeight="semibold" fontSize="sm">
                   Business License or Reseller Permit
                 </FormLabel>
@@ -700,18 +714,22 @@ const Signup = () => {
                   fileName={businessFileName}
                   setFileName={setBusinessFileName}
                   setFile={setBusinessFile}
-                  helpText="*Please attach the business license."
+                  helpText={translator(
+                                "*Please attach the business license."
+                      , "*도매 라이선스를 첨부해 주세요."
+                              )
+                  }
                   error={businessFileError}
                   setError={setBusinessFileError}
                 />
-              </FormControl>
+              </FormControl> */}
 
               <Box bg="gray.50" p={4} borderRadius="md">
                 <CustomCheckbox checked={true} disabled={true}>
-                  Please allow 1-2 business days for account review and
-                  verification. Accounts that do not meet our criteria may be
-                  declined without notice. Providing complete and accurate
-                  documentation helps speed up the approval process.
+                  {translator(
+                    "Please allow 1-2 business days for account review and verification. Accounts that do not meet our criteria may be declined without notice. Providing complete and accurate documentation helps speed up the approval process.",
+                    "계정 검토 및 인증에는 24~48시간이 소요될 수 있습니다. 당사 기준에 부합하지 않는 계정은 사전 통보 없이 거절될 수 있습니다. 완전하고 정확한 서류를 제출하면 승인 절차가 더 빨라집니다."
+                  )}
                 </CustomCheckbox>
               </Box>
 
@@ -733,7 +751,7 @@ const Signup = () => {
                   borderRadius="full"
                   size="lg"
                   width="100%"
-                  _hover={{ bg: COLORS.SECONDARY}}
+                  _hover={{ bg: COLORS.SECONDARY }}
                   _disabled={{ bg: "gray.400" }}
                 >
                   CREATE ACCOUNT

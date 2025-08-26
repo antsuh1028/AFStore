@@ -47,8 +47,6 @@ import { API_CONFIG } from "../../constants";
 import { useToast } from "@chakra-ui/react";
 // import { ChevronUpIcon } from "lucide-react";
 
-
-
 export const Orders = ({
   orders,
   usersMap,
@@ -248,12 +246,78 @@ export const Orders = ({
                     </Td>
                     <Td fontWeight="bold">${order.total_amount}</Td>
                     <Td py={4}>
-                      <Badge
-                        colorScheme={statusColor(order.order_status)}
-                        variant="subtle"
-                      >
-                        {order.order_status}
-                      </Badge>
+                      <Menu>
+                        <MenuButton
+                          as={Button}
+                          rightIcon={<ChevronDownIcon />}
+                          size="xs"
+                          variant="outline"
+                          bg="white"
+                          borderColor="gray.300"
+                          _hover={{ bg: "gray.50" }}
+                          _active={{ bg: "gray.100" }}
+                        >
+                          <Badge colorScheme={statusColor(order.order_status)}>
+                            {order.order_status}
+                          </Badge>
+                        </MenuButton>
+                        <MenuList>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "contacted")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("contacted")}>
+                              contacted
+                            </Badge>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "quote sent")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("quote sent")}>
+                              quote sent
+                            </Badge>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "order placed")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("order placed")}>
+                              order placed
+                            </Badge>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "declined")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("declined")}>
+                              declined
+                            </Badge>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "pending")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("pending")}>
+                              pending
+                            </Badge>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleStatusUpdate(order.id, "complete")
+                            }
+                          >
+                            <Badge colorScheme={statusColor("completion")}>
+                              complete
+                            </Badge>
+                          </MenuItem>
+                        </MenuList>
+                      </Menu>
                     </Td>
 
                     <Td py={4}>
@@ -301,7 +365,7 @@ export const Orders = ({
                                 ? new Date(order.created_at).toLocaleString()
                                 : "N/A"}
                             </Text>
-
+                            {/* 
                             <Menu>
                               <MenuButton
                                 as={Button}
@@ -381,7 +445,7 @@ export const Orders = ({
                                   </Badge>
                                 </MenuItem>
                               </MenuList>
-                            </Menu>
+                            </Menu> */}
                           </Box>
 
                           {/* Right - Items Table */}
@@ -476,4 +540,3 @@ export const InventoryStatus = () => {
     </Box>
   );
 };
-
