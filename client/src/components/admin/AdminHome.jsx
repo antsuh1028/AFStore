@@ -518,7 +518,7 @@ const AdminHome = ({
           <Flex justify="space-between" align="center" mb={6}>
             <Box>
               <Text fontSize="lg" fontWeight="bold" mb={1}>
-                Recently Order History
+                Recent Order History
               </Text>
             </Box>
             <Button
@@ -533,86 +533,97 @@ const AdminHome = ({
               View all
             </Button>
           </Flex>
-
-          <Table variant="simple" size="sm">
-            <Thead>
-              <Tr>
-                <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
-                  Order #
-                </Th>
-                <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
-                  Company
-                </Th>
-                <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
-                  Contact
-                </Th>
-                <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
-                  Date
-                </Th>
-                <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
-                  Status
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {isLoading ? (
+          <Box
+            h={{ base: "250px", md: "80%" }}
+            borderRadius="md"
+            p={4}
+            display="flex"
+            flexDirection="column"
+            alignItems="stretch"
+            overflow="auto"
+            border="1px"
+            borderColor="gray.200"
+          >
+            <Table variant="simple" size="sm">
+              <Thead>
                 <Tr>
-                  <Td colSpan={5} py={8}>
-                    <Center>
-                      <Spinner size="md" color="blue.500" />
-                    </Center>
-                  </Td>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Order #
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Company
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Contact
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Date
+                  </Th>
+                  <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                    Status
+                  </Th>
                 </Tr>
-              ) : recentOrders.length > 0 ? (
-                recentOrders.map((order) => (
-                  <Tr key={order.id}>
-                    <Td py={3} px={4} borderColor="gray.100">
-                      <Text fontSize="xs" fontWeight="medium">
-                        {order.order_number}
-                      </Text>
-                    </Td>
-                    <Td py={3} px={4} borderColor="gray.100">
-                      <Text fontSize="sm" fontWeight="medium">
-                        {getCompanyName(order.user_id)}
-                      </Text>
-                    </Td>
-                    <Td py={3} px={4} borderColor="gray.100">
-                      <Text fontSize="sm" color="gray.700">
-                        {getUserName(order.user_id)}
-                      </Text>
-                    </Td>
-                    <Td py={3} px={4} borderColor="gray.100">
-                      <Text fontSize="sm" color="gray.700">
-                        {order.order_date
-                          ? new Date(order.order_date).toLocaleDateString()
-                          : "N/A"}
-                      </Text>
-                    </Td>
-                    <Td py={3} px={4} borderColor="gray.100">
-                      <Badge
-                        colorScheme={getStatusColorScheme(order.order_status)}
-                        variant="subtle"
-                        borderRadius="full"
-                        px={3}
-                        py={1}
-                        fontSize="xs"
-                      >
-                        {order.order_status || "Unknown"}
-                      </Badge>
+              </Thead>
+              <Tbody>
+                {isLoading ? (
+                  <Tr>
+                    <Td colSpan={5} py={8}>
+                      <Center>
+                        <Spinner size="md" color="blue.500" />
+                      </Center>
                     </Td>
                   </Tr>
-                ))
-              ) : (
-                <Tr>
-                  <Td colSpan={5} py={8}>
-                    <Center>
-                      <Text color="gray.500">No orders found</Text>
-                    </Center>
-                  </Td>
-                </Tr>
-              )}
-            </Tbody>
-          </Table>
+                ) : recentOrders.length > 0 ? (
+                  recentOrders.map((order) => (
+                    <Tr key={order.id}>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text fontSize="xs" fontWeight="medium">
+                          {order.order_number}
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text fontSize="sm" fontWeight="medium">
+                          {getCompanyName(order.user_id)}
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text fontSize="sm" color="gray.700">
+                          {getUserName(order.user_id)}
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Text fontSize="sm" color="gray.700">
+                          {order.order_date
+                            ? new Date(order.order_date).toLocaleDateString()
+                            : "N/A"}
+                        </Text>
+                      </Td>
+                      <Td py={3} px={4} borderColor="gray.100">
+                        <Badge
+                          colorScheme={getStatusColorScheme(order.order_status)}
+                          variant="subtle"
+                          borderRadius="full"
+                          px={3}
+                          py={1}
+                          fontSize="xs"
+                        >
+                          {order.order_status || "Unknown"}
+                        </Badge>
+                      </Td>
+                    </Tr>
+                  ))
+                ) : (
+                  <Tr>
+                    <Td colSpan={5} py={8}>
+                      <Center>
+                        <Text color="gray.500">No orders found</Text>
+                      </Center>
+                    </Td>
+                  </Tr>
+                )}
+              </Tbody>
+            </Table>
+          </Box>
         </Box>
 
         <Box display={{ base: "none", lg: "flex" }} alignItems="center" px={2}>
@@ -660,6 +671,9 @@ const AdminHome = ({
             display="flex"
             flexDirection="column"
             alignItems="stretch"
+            overflow="auto"
+            border="1px"
+            borderColor="gray.200"
           >
             <Table variant="simple" size="sm">
               <Thead>
