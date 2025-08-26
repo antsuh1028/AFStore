@@ -24,6 +24,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
 
 import { API_CONFIG, COLORS } from "../constants";
+import { uploadMultipleSignupDocuments } from "../utils/fileUpload";
 import { useLanguage } from "../hooks/LanguageContext";
 import { translator } from "../utils/translator";
 
@@ -38,12 +39,28 @@ const Signup = () => {
   const [emailError, setEmailError] = useState("");
   const [licenseError, setLicenseError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [agreementChecked, setAgreementChecked] = useState(false);
+  const [agreementChecked, setAgreementChecked] = useState(true);
 
   // File upload states
   const [licenseFileName, setLicenseFileName] = useState("");
   const [govIdFileName, setGovIdFileName] = useState("");
   const [businessFileName, setBusinessFileName] = useState("");
+  const [resaleFileName, setResaleFileName] = useState("");
+  
+  // File upload error states
+  const [licenseFileError, setLicenseFileError] = useState("");
+  const [govIdFileError, setGovIdFileError] = useState("");
+  const [businessFileError, setBusinessFileError] = useState("");
+  const [resaleFileError, setResaleFileError] = useState("");
+
+  // File references for actual file objects
+  const [licenseFile, setLicenseFile] = useState(null);
+  const [govIdFile, setGovIdFile] = useState(null);
+  const [businessFile, setBusinessFile] = useState(null);
+  const [resaleFile, setResaleFile] = useState(null);
+
+  // Upload progress state
+  const [uploadProgress, setUploadProgress] = useState("");
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -84,7 +101,22 @@ const Signup = () => {
     },
   };
 
-  const FileUploadField = ({ id, name, fileName, setFileName, helpText }) => (
+  const validateFile = (file) => {
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+    
+    if (file.size > maxSize) {
+      return "File size must be less than 10MB";
+    }
+    
+    if (!allowedTypes.includes(file.type)) {
+      return "Only PDF, JPG, and PNG files are allowed";
+    }
+    
+    return "";
+  };
+
+  const FileUploadField = ({ id, name, fileName, setFileName, helpText, error, setError, setFile }) => (
     <Box mb={2} key={`file-upload-${id}`}>
       <input
         id={id}
@@ -94,7 +126,35 @@ const Signup = () => {
         style={{ display: "none" }}
         onChange={(e) => {
           const file = e.target.files?.[0];
-          setFileName(file ? file.name : "");
+          if (file) {
+            const validationError = validateFile(file);
+            if (validationError) {
+              setError(validationError);
+              setFileName("");
+              toast({
+                title: "Invalid file",
+                description: validationError,
+                status: "error",
+                duration: 4000,
+                isClosable: true,
+              });
+            } else {
+              setError("");
+              setFileName(file.name);
+              if (setFile) setFile(file);
+              toast({
+                title: "File uploaded successfully",
+                description: `${file.name} is ready to submit`,
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+              });
+            }
+          } else {
+            setFileName("");
+            setError("");
+            if (setFile) setFile(null);
+          }
         }}
       />
       <Flex align="flex-start" gap={2}>
@@ -118,8 +178,13 @@ const Signup = () => {
         </Text>
       </Flex>
       {fileName && (
-        <Text fontSize="xs" color="gray.600" mt={1}>
-          Selected: {fileName}
+        <Text fontSize="xs" color="green.600" mt={1} fontWeight="medium">
+          ✓ Selected: {fileName}
+        </Text>
+      )}
+      {error && (
+        <Text fontSize="xs" color="red.500" mt={1}>
+          {error}
         </Text>
       )}
     </Box>
@@ -183,15 +248,16 @@ const handleSignup = async (e) => {
 
   const formData = new FormData(e.target);
 
-  if (emailError || licenseError) {
-    toast({
-      title: "Please fix form errors.",
-      status: "error",
-      duration: 4000,
-      isClosable: true,
-    });
-    return;
-  }
+    if (emailError || licenseError || licenseFileError || govIdFileError || businessFileError || resaleFileError) {
+      toast({
+        title: "Please fix form errors.",
+        description: "Check all form fields and file uploads for errors.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
 
   if (!agreementChecked) {
     toast({
@@ -205,12 +271,10 @@ const handleSignup = async (e) => {
     return;
   }
 
-  setLoading(true);
-  try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/users/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    setLoading(true);
+    try {
+      // Prepare user data
+      const userData = {
         firstName: formData.get("first_name"),
         lastName: formData.get("last_name"),
         companyName: formData.get("company"),
@@ -225,45 +289,144 @@ const handleSignup = async (e) => {
         phone: formData.get("phone"),
         californiaResale: formData.get("california_resale"),
         timestamp: new Date().toISOString(),
-      }),
-    });
+      };
 
-    const data = await res.json();
-    if (res.ok) {
-      toast({
-        title: "Signup request submitted!",
-        description:
-          "Please wait for admin approval. You'll be contacted within 1-2 business days.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      // Collect files for upload
+      const filesToUpload = [];
+      if (licenseFile) filesToUpload.push({ file: licenseFile, documentType: 'business-license' });
+      if (govIdFile) filesToUpload.push({ file: govIdFile, documentType: 'government-id' });
+      if (businessFile) filesToUpload.push({ file: businessFile, documentType: 'business-document' });
+      if (resaleFile) filesToUpload.push({ file: resaleFile, documentType: 'resale-certificate' });
 
-      setTimeout(() => {
-        navigate("/", { replace: true });
-      }, 1000);
-    } else {
+      // Create account and upload documents
+      setUploadProgress("Creating account...");
+      
+      const result = await uploadMultipleSignupDocuments(
+        filesToUpload, 
+        userData,
+        (current, total, docType) => {
+          setUploadProgress(`Uploading ${docType}... (${current}/${total})`);
+        }
+      );
+
+             if (result.success) {
+         if (result.errors && result.errors.length > 0) {
+           console.warn("Some files failed to upload:", result.errors);
+           
+           // Categorize errors for better user feedback
+           const s3Errors = result.errors.filter(err => err.isS3Error);
+           const networkErrors = result.errors.filter(err => err.isNetworkError);
+           const otherErrors = result.errors.filter(err => !err.isS3Error && !err.isNetworkError);
+           
+           let errorMessage = `${result.errors.length} document(s) failed to upload.`;
+           
+           if (s3Errors.length > 0) {
+             errorMessage += ` S3 storage issues: ${s3Errors.map(e => e.documentType).join(', ')}.`;
+           }
+           if (networkErrors.length > 0) {
+             errorMessage += ` Network issues: ${networkErrors.map(e => e.documentType).join(', ')}.`;
+           }
+           if (otherErrors.length > 0) {
+             errorMessage += ` Other issues: ${otherErrors.map(e => e.documentType).join(', ')}.`;
+           }
+           
+           errorMessage += " Please contact support if needed.";
+           
+           toast({
+             title: "Documents upload warning",
+             description: errorMessage,
+             status: "warning",
+             duration: 8000,
+             isClosable: true,
+           });
+         }
+
+        setUploadProgress("");
+
+        // Send email notification (with error handling)
+        try {
+          await emailjs.send(
+            import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
+            import.meta.env.VITE_EMAIL_JS_TEMPLATE_SIGNUP,
+            {
+              ...Object.fromEntries(new FormData(form.current)),
+              time: new Date().toISOString(),
+            },
+            import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
+          );
+        } catch (emailError) {
+          console.warn("Email notification failed:", emailError);
+          // Don't block the signup flow if email fails
+        }
+
+        toast({
+          title: "Signup request submitted!",
+          description:
+            "Please wait for admin approval. You'll be contacted within 1-2 business days.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+
+        setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 1000);
+      } else {
+        // Handle signup failure
+        console.error("Signup failed:", result.errors);
+        
+        let errorTitle = "Signup failed";
+        let errorMessage = "Please try again later.";
+        
+        if (result.errors && result.errors.length > 0) {
+          const firstError = result.errors[0];
+          
+          if (firstError.isS3Error) {
+            errorTitle = "Document upload failed";
+            errorMessage = `S3 storage error: ${firstError.error}. Your account may have been created, but documents failed to upload.`;
+          } else if (firstError.isNetworkError) {
+            errorTitle = "Network error";
+            errorMessage = `Connection error: ${firstError.error}. Please check your internet connection and try again.`;
+          } else {
+            errorMessage = firstError.error || "Unknown error occurred.";
+          }
+        }
+        
+        toast({
+          title: errorTitle,
+          description: errorMessage,
+          status: "error",
+          duration: 6000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.error("Signup error:", err);
+      
+      let errorTitle = "Server error";
+      let errorMessage = "Please try again later.";
+      
+      // Check if it's a network error that might indicate S3 issues
+      if (err.name === 'TypeError' || err.message.includes('fetch')) {
+        errorTitle = "Connection error";
+        errorMessage = "Unable to connect to our servers. This might be due to S3 storage service being unavailable. Please check your internet connection and try again.";
+      } else if (err.message.includes('S3') || err.message.includes('AWS')) {
+        errorTitle = "Storage service error";
+        errorMessage = "Our document storage service (S3) is currently unavailable. Please try again later or contact support.";
+      }
+      
       toast({
-        title: "Signup failed.",
-        description: data.message,
+        title: errorTitle,
+        description: errorMessage,
         status: "error",
-        duration: 4000,
+        duration: 6000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
+      setUploadProgress("");
     }
-  } catch (err) {
-    console.error("Signup error:", err);
-    toast({
-      title: "Server error.",
-      description: "Please try again later.",
-      status: "error",
-      duration: 4000,
-      isClosable: true,
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <Sidebar>
@@ -472,8 +635,12 @@ const handleSignup = async (e) => {
                     name="license_file"
                     fileName={licenseFileName}
                     setFileName={setLicenseFileName}
+
+                    setFile={setLicenseFile}
+                    error={licenseFileError}
+                    setError={setLicenseFileError}
                     helpText={translator(
-                      "*Please attach the Business License",
+                      "*Please attach the Business License (PDF, JPG, PNG only, max 10MB)",
                       "*사업자등록증을 첨부해 주세요."
                     )}
                   />
@@ -494,18 +661,21 @@ const handleSignup = async (e) => {
                   <FileUploadField
                     id="resale-cert-upload"
                     name="resale_cert_file"
-                    fileName={businessFileName}
-                    setFileName={setBusinessFileName}
+                    fileName={resaleFileName}
+                    setFileName={setResaleFileName}
+                    setFile={setResaleFile}
                     helpText={translator(
-                      "*Please attach the California Resale Certificate",
+                      "*Please attach the California Resale Certificate (PDF, JPG, PNG only, max 10MB)",
                       "*CA 재판매 증명서를 첨부해 주세요."
                     )}
+                    error={resaleFileError}
+                    setError={setResaleFileError}
                   />
                 </Box>
               </FormControl>
               <CustomCheckbox
-                checked={agreementChecked}
-                // disabled={true}
+                checked={true}
+                disabled={true}
                 onChange={() => setAgreementChecked(!agreementChecked)}
               >
                 {translator(
@@ -523,10 +693,13 @@ const handleSignup = async (e) => {
                   name="gov_id_file"
                   fileName={govIdFileName}
                   setFileName={setGovIdFileName}
-                  helpText={translator(
-                    "*Please attach the government ID.",
+                  setFile={setGovIdFile}
+                   helpText={translator(
+                    "*Please attach the government ID (PDF, JPG, PNG only, max 10MB).",
                     "*도매 라이선스를 첨부해 주세요."
                   )}
+                  error={govIdFileError}
+                  setError={setGovIdFileError}
                 />
               </FormControl>
 
@@ -539,11 +712,14 @@ const handleSignup = async (e) => {
                   name="business_file"
                   fileName={businessFileName}
                   setFileName={setBusinessFileName}
+                  setFile={setBusinessFile}
                   helpText={translator(
                                 "*Please attach the business license."
                       , "*도매 라이선스를 첨부해 주세요."
                               )
                   }
+                  error={businessFileError}
+                  setError={setBusinessFileError}
                 />
               </FormControl> */}
 
@@ -556,13 +732,21 @@ const handleSignup = async (e) => {
                 </CustomCheckbox>
               </Box>
 
+              {uploadProgress && (
+                <Box textAlign="center" mb={4}>
+                  <Text fontSize="sm" color="blue.600" fontWeight="medium">
+                    {uploadProgress}
+                  </Text>
+                </Box>
+              )}
+
               <Box display="flex" justifyContent="center" width="100%" pt={4}>
                 <Button
                   type="submit"
                   bg={COLORS.PRIMARY}
                   color="white"
-                  isLoading={loading}
-                  loadingText="Creating Account..."
+                  isLoading={loading || uploadProgress !== ""}
+                  loadingText={uploadProgress || "Creating Account..."}
                   borderRadius="full"
                   size="lg"
                   width="100%"

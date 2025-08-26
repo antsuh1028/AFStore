@@ -22,7 +22,7 @@ import Sidebar from "../components/SideBar";
 import NavDrawer from "../components/NavDrawer";
 import { useAuthContext } from "../hooks/useAuth";
 import { API_CONFIG, COLORS } from "../constants";
-import { encodeUserId } from "../utils/urlEncryption";
+import { handleApiResponse } from "../utils/apiHelpers";
 
 
 
@@ -75,7 +75,7 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
       
-      const data = await res.json();
+      const data = await handleApiResponse(res);
       
       if (res.ok) {
         const result = await login(data.token);
