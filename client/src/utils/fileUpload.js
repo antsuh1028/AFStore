@@ -4,20 +4,18 @@ import { API_CONFIG } from '../constants';
  * Upload a file to S3 for user document
  * @param {File} file - The file to upload
  * @param {string} documentType - Type of document (e.g., 'business-license', 'government-id', etc.)
- * @param {string} authToken - JWT authentication token
+ * @param {string} userEmail - User's email address
  * @returns {Promise<{success: boolean, url?: string, error?: string}>}
  */
-export const uploadUserDocument = async (file, documentType, authToken) => {
+export const uploadUserDocument = async (file, documentType, userEmail) => {
   try {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('documentType', documentType);
+    formData.append('userEmail', userEmail);
 
     const response = await fetch(`${API_CONFIG.BASE_URL}/api/s3/upload/document`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-      },
       body: formData,
     });
 
@@ -64,11 +62,11 @@ export const uploadUserDocument = async (file, documentType, authToken) => {
 /**
  * Upload multiple files for user documents
  * @param {Array<{file: File, documentType: string}>} files - Array of files with their types
- * @param {string} authToken - JWT authentication token
+ * @param {string} userEmail - User's email address
  * @param {Function} onProgress - Progress callback function
  * @returns {Promise<{success: boolean, results: Array, errors: Array}>}
  */
-export const uploadMultipleUserDocuments = async (files, authToken, onProgress) => {
+export const uploadMultipleUserDocuments = async (files, userEmail, onProgress) => {
   const results = [];
   const errors = [];
   
@@ -81,7 +79,7 @@ export const uploadMultipleUserDocuments = async (files, authToken, onProgress) 
     }
     
     try {
-      const result = await uploadUserDocument(file, documentType, authToken);
+      const result = await uploadUserDocument(file, documentType, userEmail);
       
       if (result.success) {
         results.push({
@@ -168,33 +166,12 @@ export const uploadMultipleSignupDocuments = async (files, userData, onProgress)
       };
     }
 
-    // Login to get an auth token for file uploads
-    const loginResponse = await fetch(`${API_CONFIG.BASE_URL}/api/users/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: userData.email,
-        password: userData.password,
-      }),
-    });
-
-    const loginData = await loginResponse.json();
-    if (!loginResponse.ok) {
-      return {
-        success: false,
-        results: [],
-        errors: [{ error: 'Failed to authenticate for file upload' }],
-        signupRequestId,
-      };
-    }
-
-    // Now upload the documents using the auth token
-    const uploadResult = await uploadMultipleUserDocuments(files, loginData.token, onProgress);
+    // Upload the documents using the user's email
+    const uploadResult = await uploadMultipleUserDocuments(files, userData.email, onProgress);
     
     return {
       ...uploadResult,
       signupRequestId,
-      token: loginData.token,
     };
     
   } catch (error) {

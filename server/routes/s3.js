@@ -107,27 +107,30 @@ const getExtensionFromMime = (mime) => {
 };
 
 // POST /api/s3/upload/document
-S3Router.post("/upload/document", authenticate, upload.single("file"), async (req, res) => {
+S3Router.post("/upload/document", upload.single("file"), async (req, res) => {
   const start = Date.now();
   try {
-    const { documentType } = req.body;
+    const { documentType, userEmail } = req.body;
 
     if (!req.file) {
-      logger.warn("Document upload attempt with no file", { userEmail: req.user?.email, ip: req.ip });
+      logger.warn("Document upload attempt with no file", { userEmail, ip: req.ip });
       return res.status(400).json({ error: "No file uploaded" });
     }
 
     if (!documentType) {
-      logger.warn("Document upload missing documentType", { userEmail: req.user?.email, ip: req.ip });
+      logger.warn("Document upload missing documentType", { userEmail, ip: req.ip });
       return res.status(400).json({ error: "Missing documentType" });
     }
 
-    if (!allowedMimeTypes.has(req.file.mimetype)) {
-      logger.warn("Unsupported file type on upload", { userEmail: req.user?.email, ip: req.ip, mime: req.file.mimetype });
-      return res.status(400).json({ error: "Unsupported file type" });
+    if (!userEmail) {
+      logger.warn("Document upload missing userEmail", { ip: req.ip });
+      return res.status(400).json({ error: "Missing userEmail" });
     }
 
-    const userEmail = req.user.email;
+    if (!allowedMimeTypes.has(req.file.mimetype)) {
+      logger.warn("Unsupported file type on upload", { userEmail, ip: req.ip, mime: req.file.mimetype });
+      return res.status(400).json({ error: "Unsupported file type" });
+    }
     const timestamp = Date.now();
 
     const originalBase = sanitizeFileName(req.file.originalname.replace(/\.[^.]+$/, ""));

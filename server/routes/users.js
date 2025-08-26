@@ -140,12 +140,12 @@ UsersRouter.post("/login", async (req, res) => {
       }
     }
 
-    // Allow disabled users to login for document uploads during signup
-    // if (user.disabled) {
-    //   return res.status(401).json({ message: "Account has been suspended" });
-    // }
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    if (user.disabled) {
+      return res.status(403).json({ message: "Your signup request is still pending" });
     }
 
     const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
