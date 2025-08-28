@@ -101,13 +101,24 @@ const Login = () => {
           });
         }
       } else {
-        toast({
-          title: "Login failed.",
-          description: data.message || "Invalid credentials",
-          status: "error",
-          duration: 4000,
-          isClosable: true,
-        });
+        // Handle disabled user case (403 status)
+        if (res.status === 403 && data.message === "Your signup request is still pending") {
+          toast({
+            title: "Account Pending",
+            description: "Your signup request is still pending",
+            status: "warning",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Login failed.",
+            description: data.message || "Invalid credentials",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+          });
+        }
       }
     } catch (err) {
       console.error("Login error:", err);
