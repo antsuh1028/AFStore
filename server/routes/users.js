@@ -8,7 +8,7 @@ import nodemailer from "nodemailer";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { logger } from "../utils/logger.js";
-import { sendSignupRequestEmail } from "../utils/emailService.js";
+import { sendSignupRequestEmail, sendSignupApprovalEmail, sendSignupRejectionEmail } from "../utils/emailService.js";
 
 dotenv.config();
 
@@ -82,6 +82,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
+
 // GET /api/users — fetch all users (testing)
 UsersRouter.get("/", async (req, res) => {
   try {
@@ -100,7 +102,7 @@ UsersRouter.get(
   async (req, res) => {
     try {
       const result = await db.query(
-        "SELECT * FROM signup_requests WHERE show = TRUE ORDER BY timestamp DESC"
+        "SELECT * FROM signup_requests ORDER BY timestamp DESC"
       );
       res.json(result.rows);
     } catch (err) {
@@ -652,6 +654,9 @@ UsersRouter.post("/approve-signup/:request_id", async (req, res) => {
 
     const request = requestResult.rows[0];
 
+    // Send approval email
+    await sendSignupApprovalEmail(request);
+
     const existingUser = await db.query(
       "SELECT * FROM users WHERE email = $1",
       [request.email]
@@ -707,23 +712,38 @@ UsersRouter.post("/approve-signup/:request_id", async (req, res) => {
   }
 });
 
-// PUT /api/users/signup-requests/:request_id - reject signup request
-UsersRouter.put("/signup-requests/:request_id", async (req, res) => {
+// PUT /api/users/reject-signup/:request_id - reject signup request
+UsersRouter.put("/reject-signup/:request_id", async (req, res) => {
   try {
     const request_id = parseInt(req.params.request_id);
+    const { reason } = req.body; 
 
     if (isNaN(request_id)) {
       return res.status(400).json({ error: "Invalid request ID" });
     }
 
-    const result = await db.query(
-      "UPDATE signup_requests SET show = FALSE WHERE id = $1",
-
+    const existingRequest = await db.query(
+      "SELECT * FROM signup_requests WHERE id = $1",
       [request_id]
     );
 
-    if (result.rows.length === 0) {
+    if (existingRequest.rows.length === 0) {
       return res.status(404).json({ error: "Signup request not found" });
+    }
+
+    const request = existingRequest.rows[0];
+
+    const result = await db.query(
+      "UPDATE signup_requests SET show = FALSE WHERE id = $1 RETURNING *",
+      [request_id]
+    );
+
+    // Send rejection email
+    try {
+      await sendSignupRejectionEmail(request, reason);
+      console.log(`Rejection email sent to ${request.email}`);
+    } catch (emailError) {
+      console.error("Failed to send rejection email:", emailError);
     }
 
     res.json({
@@ -740,4 +760,42 @@ UsersRouter.put("/signup-requests/:request_id", async (req, res) => {
   }
 });
 
+// PUT /api/users/signup-requests/revert/:request_id - revert rejection of signup request
+UsersRouter.put("/signup-requests/revert/:request_id", async (req, res) => {
+  try {
+    const request_id = parseInt(req.params.request_id);
+
+    if (isNaN(request_id)) {
+      return res.status(400).json({ error: "Invalid request ID" });
+    }
+
+    // First, check if the request exists
+    const existingRequest = await db.query(
+      "SELECT * FROM signup_requests WHERE id = $1",
+      [request_id]
+    );
+
+    if (existingRequest.rows.length === 0) {
+      return res.status(404).json({ error: "Signup request not found" });
+    }
+
+    // If found, update the request
+    const result = await db.query(
+      "UPDATE signup_requests SET show = TRUE WHERE id = $1 RETURNING *",
+      [request_id]
+    );
+
+    res.json({
+      success: true,
+      message: "Signup request rejected successfully",
+      deletedRequest: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Error rejecting signup request:", err);
+    res.status(500).json({
+      error: "Internal server error",
+      message: err.message,
+    });
+  }
+});
 export { UsersRouter };

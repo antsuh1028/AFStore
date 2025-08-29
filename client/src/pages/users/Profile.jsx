@@ -30,6 +30,7 @@ import { useAuthContext } from "../../hooks/useAuth";
 import Footer from "../../components/Footer";
 import { getCart } from "../../utils/cartActions";
 import { ShowCart } from "../../components/profile/ShowCart";
+import MyRewards from "../../components/profile/MyRewards";
 import { myPages } from "../../components/profile/ProfileComponents";
 import { API_CONFIG, COLORS } from "../../constants";
 import { useLanguage } from "../../hooks/LanguageContext";
@@ -44,7 +45,6 @@ const UserProfile = () => {
   const location = useLocation();
   const defaultTabIndex = location.state?.activeTab || 0;
   const deleteModalDisclosure = useDisclosure();
-
 
   const {
     userInfo,
@@ -65,6 +65,8 @@ const UserProfile = () => {
   const [userAddress, setUserAddress] = useState([]);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const [userInformation, setUserInformation] = useState({});
+  const [userPoints, setUserPoints] = useState([]);
+  const [userTotalPoints, setUserTotalPoints] = useState(0);
   const { encryptedUserId } = useParams();
   const actualUserId = decodeUserId(encryptedUserId);
 
@@ -129,10 +131,9 @@ const UserProfile = () => {
 
       try {
         const addressResponse = await fetch(
-          `${API_CONFIG.BASE_URL}/api/addresses/user/${userId}` // Changed from shipping-addresses to addresses
+          `${API_CONFIG.BASE_URL}/api/addresses/user/${userId}`
         );
 
-        // Handle 404 - user has no address
         if (addressResponse.status === 404) {
           setUserAddress(null);
           return;
@@ -152,6 +153,46 @@ const UserProfile = () => {
 
     if (userId) {
       fetchAddress();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchPoints = async () => {
+      if (!userId) return;
+
+      try {
+        const pointsResponse = await fetch(
+          `${API_CONFIG.BASE_URL}/api/points/user/${userId}`
+        );
+
+        if (pointsResponse.status === 404) {
+          setUserPoints(null);
+          return;
+        }
+
+        const points = await pointsResponse.json();
+        if (points.success && points.data && points.data.length > 0) {
+          setUserPoints(points.data);
+        } else {
+          setUserPoints(null);
+        }
+        const pointsTotalResponse = await fetch(
+          `${API_CONFIG.BASE_URL}/api/points/user/${userId}/total`
+        );
+        const total = await pointsTotalResponse.json();
+        if (total.success && total.data) {
+          setUserTotalPoints(total.data.total_points);
+        } else {
+          setUserTotalPoints(null);
+        }
+      } catch (err) {
+        console.error("Error fetching points:", err);
+        setUserPoints(null);
+      }
+    };
+
+    if (userId) {
+      fetchPoints();
     }
   }, [userId]);
 
@@ -477,10 +518,34 @@ const UserProfile = () => {
                 >
                   Cart
                 </Tab>
+                <Text
+                  mx={2}
+                  color="gray.400"
+                  fontWeight="normal"
+                  fontSize="lg"
+                  userSelect="none"
+                >
+                  |
+                </Text>
+                <Tab
+                  fontWeight="medium"
+                  px={2}
+                  py={1}
+                  fontSize="md"
+                  border="none"
+                  _selected={{
+                    color: "black",
+                    fontWeight: "bold",
+                    border: "none",
+                  }}
+                  color="gray.600"
+                >
+                  Rewards
+                </Tab>
               </TabList>
               <TabPanels my={8}>
                 <TabPanel>
-                  {myPages(currPage, selectedLanguage,{
+                  {myPages(currPage, selectedLanguage, {
                     userInformation,
                     setUserInformation,
                     updateUserInfo,
@@ -530,6 +595,45 @@ const UserProfile = () => {
                       CHECK OUT ${totalPrice.toFixed(2)}
                     </Button>
                   )}
+                </TabPanel>
+                <TabPanel>
+                  <Flex
+                    p={4}
+                    bg={COLORS.PRIMARY}
+                    borderRadius="full"
+                    align="center"
+                    justify="space-between"
+                    h="45px"
+                    mb={8}
+                  >
+                    <Text color="white" fontWeight="bold" ml={2}>
+                      My Rewards
+                    </Text>
+                    <Text
+                      color="white"
+                      fontWeight="normal"
+                      fontSize="14px"
+                      mr={2}
+                    >
+                      Points: {userTotalPoints || 0}
+                    </Text>
+                  </Flex>
+                  <Box
+                    maxH="60vh"
+                    overflow="auto"
+                    sx={{
+                      "&::webkitScrollbar": {
+                        display: "none",
+                      },
+                      msOverflowStyle: "none",
+                      scrollbarWidth: "none",
+                    }}
+                    p = {2}
+                    border="1px"
+                    borderColor="gray.200"
+                  >
+                    <MyRewards rewards={userPoints} />
+                  </Box>
                 </TabPanel>
               </TabPanels>
             </Tabs>

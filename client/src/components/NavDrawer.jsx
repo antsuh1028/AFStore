@@ -375,11 +375,22 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                     |{" "}
                     <Link
                       onClick={handleProfileClick}
+                      mx={2}
                       color="gray.600"
                       cursor="pointer"
                       _hover={{ color: "blue.500" }}
                     >
                       Profile
+                    </Link>
+                    |{" "}
+                    <Link
+                      onClick={handleProfileClick}
+                      mx={2}
+                      color="gray.600"
+                      cursor="pointer"
+                      _hover={{ color: "blue.500" }}
+                    >
+                      Rewards
                     </Link>
                   </>
                 ) : (

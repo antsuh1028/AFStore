@@ -354,3 +354,70 @@ export const sendForgotPasswordEmail = async (userData, resetToken) => {
     return { success: false, error: error.message };
   }
 };
+
+export const sendSignupApprovalEmail = async (requestData) => {
+  const transporter = createTransporter();
+
+  try {
+    const template = loadTemplate("sign-up-approval");
+    const emailContent = replaceVariables(template, {
+      first_name: requestData.first_name,
+      last_name: requestData.last_name,
+    });
+
+    const mailOptions = {
+      from: `"AdamsFoods Wholesale" <${process.env.EMAIL_USER}>`,
+      to: requestData.email,
+      subject: "Welcome to AdamsFoods - Account Approved!",
+      html: emailContent,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Approval email sent to ${requestData.email}:`, info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Signup approval email failed:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Send signup rejection email
+export const sendSignupRejectionEmail = async (requestData, reason = '') => {
+  const transporter = createTransporter();
+
+  try {
+    const template = loadTemplate("sign-up-rejection");
+    
+    // Create reason section
+    const reasonSection = reason 
+      ? `
+      <div style="padding: 20px 30px; border-bottom: 3px solid #f0f0f0;">
+      <h2 style="text-align: left; color: #333; font-size: 16px; margin: 0 0 15px 0; font-weight: bold;">Reason:</h2>
+      <div style="color: #333; font-size: 14px; line-height: 1.6; background-color: #f8f9fa; padding: 15px; border-radius: 6px;">
+      ${reason}
+      </div>
+      </div>
+      `
+      : '';
+
+    const emailContent = replaceVariables(template, {
+      first_name: requestData.first_name,
+      last_name: requestData.last_name,
+      reasonSection: reasonSection,
+    });
+
+
+    const mailOptions = {
+      from: `"AdamsFoods Wholesale" <${process.env.EMAIL_USER}>`,
+      to: requestData.email,
+      subject: "AdamsFoods Account Application Status",
+      html: emailContent,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Signup rejection email failed:", error);
+    return { success: false, error: error.message };
+  }
+};
