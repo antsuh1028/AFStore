@@ -49,7 +49,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        `${API_CONFIG.BASE_URL}/api/auth/forgot-password`,
+        `${API_CONFIG.BASE_URL}/api/users/forgot-password`,
         {
           method: "POST",
           headers: {

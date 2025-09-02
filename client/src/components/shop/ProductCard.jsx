@@ -15,6 +15,7 @@ export const ProductCard = ({
   spec,
   avg_weight,
   style,
+  discounted_price,
 }) => {
   const navigate = useNavigate();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -168,9 +169,9 @@ export const ProductCard = ({
             {spec}
           </Text>
           {isAuthenticated ? (<Text fontWeight="bold" fontSize="sm">
-            ${price}/lb
+            ${discounted_price}/lb
           </Text>) : (<Text fontWeight="bold" fontSize="sm">
-            Unavailable
+            ${price}/lb
           </Text>)}
         </Box>
       </Box>

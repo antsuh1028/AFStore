@@ -771,19 +771,20 @@ const ProductDetailPage = () => {
             </HStack>
             {isAuthenticated ? (
               <Text fontSize="xl" fontWeight="bold" color="black">
-                ${product.price}/lb
+                ${product.discounted_price}/lb
               </Text>
             ) : (
-              <Link
-                fontSize="sm"
-                fontWeight="bold"
-                color="black"
-                p={2}
-                textAlign="center "
-                href="/login"
-              >
-                Login to see prices
-              </Link>
+              // <Link
+              //   fontSize="sm"
+              //   fontWeight="bold"
+              //   color="black"
+              //   p={2}
+              //   textAlign="center "
+              //   href="/login"
+              // >
+              //   Login to see prices
+              // </Link>
+              <Text fontSize="xl" fontWeight="bold" color="black">${product.price}/lb</Text>
             )}
           </HStack>
 

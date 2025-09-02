@@ -355,7 +355,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                     )}
                   </HStack>
                   <Text fontSize="xs" color="gray.400" mt={1}>
-                    Earned in last 6 months
+                    Earned in last 2 months
                   </Text>
                 </Box>
               )}

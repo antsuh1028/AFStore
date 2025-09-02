@@ -329,7 +329,15 @@ export const sendForgotPasswordEmail = async (userData, resetToken) => {
   const transporter = createTransporter();
 
   try {
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    // Use your custom environment variables
+    const frontendUrl = process.env.DEV_CLIENT_HOSTNAME && process.env.DEV_CLIENT_PORT
+      ? `${process.env.DEV_CLIENT_HOSTNAME}:${process.env.DEV_CLIENT_PORT}`  // Development
+      : process.env.FRONTEND_URL;  // Production
+
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(userData.email)}`;
+    console.log("Frontend URL:", frontendUrl);
+    console.log("Reset URL:", resetUrl);
+        
     const template = loadTemplate("forgot-password");
     const emailContent = replaceVariables(template, {
       customerName: userData.name || "User",
@@ -344,10 +352,7 @@ export const sendForgotPasswordEmail = async (userData, resetToken) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log(
-      `Password reset email sent to ${userData.email}:`,
-      info.messageId
-    );
+    console.log(`Password reset email sent to ${userData.email}:`, info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error("Password reset email failed:", error);

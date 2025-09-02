@@ -8,7 +8,8 @@ import nodemailer from "nodemailer";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { logger } from "../utils/logger.js";
-import { sendSignupRequestEmail, sendSignupApprovalEmail, sendSignupRejectionEmail } from "../utils/emailService.js";
+import { sendSignupRequestEmail, sendSignupApprovalEmail, sendSignupRejectionEmail, sendForgotPasswordEmail } from "../utils/emailService.js";
+import { API_CONFIG } from "../../client/src/constants/index.js";
 
 dotenv.config();
 
@@ -78,7 +79,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail", // or another provider
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_APP_PASSWORD,
   },
 });
 
@@ -286,31 +287,39 @@ UsersRouter.post("/signup", async (req, res) => {
 UsersRouter.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   const token = crypto.randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 15); // 15 mins
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60);
 
   try {
+    // Check if user exists first
+    const userResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userResult.rows.length === 0) {
+      return res.json({ message: "If that email is registered, you'll receive a reset link shortly." });
+    }
+
+    const user = userResult.rows[0];
+
+    // Store reset token in database
     await db.query(`DELETE FROM password_resets WHERE email = $1`, [email]);
     await db.query(
       `INSERT INTO password_resets (email, token, expires_at) VALUES ($1, $2, $3)`,
       [email, token, expiresAt]
     );
 
-    const resetLink = `http://localhost:3001/reset-password?token=${token}&email=${encodeURIComponent(
-      email
-    )}`;
+    // IMPORTANT: Pass the req object here
+    const emailResult = await sendForgotPasswordEmail(user, token, req);
+    
+    if (emailResult.success) {
+      res.json({ message: "Password reset email sent! Check your inbox for instructions." });
+    } else {
+      res.status(500).json({ message: "Failed to send reset email. Please try again." });
+    }
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Password Reset",
-      text: `Click here to reset your password: ${resetLink}`,
-    });
-
-    res.json({ message: "Reset link sent" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Password reset error:", err);
+    res.status(500).json({ message: "Server error. Please try again." });
   }
 });
+
 
 // POST /api/users/reset-password
 UsersRouter.post("/reset-password", async (req, res) => {
