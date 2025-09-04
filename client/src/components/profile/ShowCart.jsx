@@ -19,6 +19,7 @@ import {
 import { COLORS } from "../../constants";
 
 export const ShowCart = ({ cartItems, setCartItems, totalPrice }) => {
+  console.log("Cart Items in ShowCart:", cartItems);
   const navigate = useNavigate();
 
   const getImagePath = (name, style) => {
@@ -116,7 +117,7 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice }) => {
 
               <Flex justifyContent="space-between" width="100%" align="center">
                 <Text fontSize="16px" color="black" fontWeight="bold">
-                  ${item.price * item.quantity}
+                  ${item.discounted_price * item.quantity}
                 </Text>
                 <HStack spacing={2}>
                   <Button

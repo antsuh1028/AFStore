@@ -148,7 +148,7 @@ const CartPage = () => {
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.discounted_price * item.quantity,
     0
   );
 

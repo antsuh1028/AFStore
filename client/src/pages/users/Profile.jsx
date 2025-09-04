@@ -71,7 +71,7 @@ const UserProfile = () => {
   const actualUserId = decodeUserId(encryptedUserId);
 
   const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.discounted_price * item.quantity,
     0
   );
 

@@ -252,16 +252,25 @@ const OrderSummaryPage = () => {
     return selectedLanguage.code === "ko" ? koreanText : englishText;
   };
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const finalTotal = subtotal + deliveryFee;
+const subtotal = cartItems.reduce((sum, item) => {
+  let price = parseFloat(item.discounted_price) || 0;
+  
+  if (price === 0) {
+    price = parseFloat(item.price) || 0;
+  }
+  
+  const quantity = parseInt(item.quantity) || 0;
+  
+  return sum + (price * quantity);
+}, 0);
+
+const finalTotal = subtotal + deliveryFee;
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsPageLoading(false);
     }, 500);
+    console.log(cartItems)
     return () => clearTimeout(timer);
   }, []);
 
@@ -300,111 +309,123 @@ const OrderSummaryPage = () => {
     });
   };
 
-  const formatAddress = (addressData) => {
-    if (!addressData) return "—";
-    const parts = [
-      addressData.address_line_1,
-      addressData.address_line_2,
-      `${addressData.city}, ${addressData.state} ${addressData.zip_code}`,
-    ].filter(Boolean);
-    return parts.join(", ");
-  };
 
-  const handleOrder = async () => {
-    try {
-      if (!isAuthenticated || !userId) {
-        console.error("User not authenticated");
-        return;
-      }
-      if (!cartItems || cartItems.length === 0) {
-        console.error("Cart is empty");
-        return;
-      }
-      if (!isAgreed1 || !isAgreed2 || !isAgreed3) {
-        console.error("All agreements must be accepted");
-        return;
-      }
+const handleOrder = async () => {
+  try {
+    if (!isAuthenticated || !userId) {
+      console.error("User not authenticated");
+      return;
+    }
+    if (!cartItems || cartItems.length === 0) {
+      console.error("Cart is empty");
+      return;
+    }
+    if (!isAgreed1 || !isAgreed2 || !isAgreed3) {
+      console.error("All agreements must be accepted");
+      return;
+    }
 
-      const orderData = {
-        user_id: userId,
-        total_amount: finalTotal,
-        order_type: deliveryOption,
-        cart_items: cartItems.map((item) => ({
+    const orderData = {
+      user_id: userId,
+      total_amount: finalTotal,
+      order_type: deliveryOption,
+      cart_items: cartItems.map((item) => {
+        // Convert discounted_price to number, handle string "0" case
+        let price = parseFloat(item.discounted_price) || 0;
+        
+        // If discounted_price is 0 or not valid, fall back to regular price
+        if (price === 0) {
+          price = parseFloat(item.price) || 0;
+        }
+        
+        const quantity = parseInt(item.quantity) || 0;
+        
+        return {
           name: item.name,
-          quantity: item.quantity,
-          price: item.price.toFixed(2),
-          itemTotal: (item.quantity * item.price).toFixed(2),
-        })),
-      };
+          quantity: quantity,
+          price: price.toFixed(2),
+          discountedPrice: price.toFixed(2),
+          itemTotal: (quantity * price).toFixed(2),
+        };
+      }),
+    };
 
-      const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
+    console.log('Order data being sent:', orderData);
+
+    const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderData),
+    });
+
+    const orderResult = await orderResponse.json();
+
+    if (orderResponse.ok && orderResult.success) {
+      const orderId = orderResult.data.id;
+
+      // Create order items
+      const orderItemPromises = cartItems.map(async (item) => {
+        // Same logic for order items
+        let price = parseFloat(item.discounted_price) || 0;
+        
+        if (price === 0) {
+          price = parseFloat(item.price) || 0;
+        }
+        
+        const quantity = parseInt(item.quantity) || 0;
+        
+        const orderItemData = {
+          order_id: orderId,
+          item_id: item.id,
+          quantity: quantity,
+          unit_price: price,
+        };
+
+        const itemResponse = await fetch(
+          `${API_CONFIG.BASE_URL}/api/order-items`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderItemData),
+          }
+        );
+
+        return itemResponse.json();
       });
 
-      const orderResult = await orderResponse.json();
+      const orderItemResults = await Promise.all(orderItemPromises);
+      const allItemsCreated = orderItemResults.every(
+        (result) => result.success
+      );
 
-      if (orderResponse.ok && orderResult.success) {
-        const orderId = orderResult.data.id;
+      if (allItemsCreated) {
+        setOrderNumber(orderResult.data.order_number);
+        setOrderDate(formatOrderDate(orderResult.data.order_date));
 
-        // Create order items
-        const orderItemPromises = cartItems.map(async (item) => {
-          const orderItemData = {
-            order_id: orderId,
-            item_id: item.id,
-            quantity: item.quantity,
-            unit_price: item.price,
-          };
-
-          const itemResponse = await fetch(
-            `${API_CONFIG.BASE_URL}/api/order-items`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(orderItemData),
-            }
-          );
-
-          return itemResponse.json();
+        // Clear cart
+        cartItems.forEach((item) => {
+          removeFromCart(item.id);
         });
 
-        const orderItemResults = await Promise.all(orderItemPromises);
-        const allItemsCreated = orderItemResults.every(
-          (result) => result.success
-        );
-
-        if (allItemsCreated) {
-          setOrderNumber(orderResult.data.order_number);
-          setOrderDate(formatOrderDate(orderResult.data.order_date));
-
-          // Remove email sending - backend handles it automatically
-          // await sendOrderConfirmationEmail(orderResult.data);
-
-          // Clear cart
-          cartItems.forEach((item) => {
-            removeFromCart(item.id);
-          });
-
-          setCartItems([]);
-          setCurrentStep(2);
-        } else {
-          console.error("Some order items failed to create:", orderItemResults);
-        }
+        setCartItems([]);
+        setCurrentStep(2);
       } else {
-        console.error(
-          "Order creation failed:",
-          orderResult.error || orderResult.message
-        );
+        console.error("Some order items failed to create:", orderItemResults);
       }
-    } catch (error) {
-      console.error("Error creating order:", error);
+    } else {
+      console.error(
+        "Order creation failed:",
+        orderResult.error || orderResult.message
+      );
     }
-  };
+  } catch (error) {
+    console.error("Error creating order:", error);
+  }
+};
 
   if (isPageLoading) {
     return (
