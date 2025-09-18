@@ -77,11 +77,11 @@ const Sidebar = ({ children }) => {
               boxShadow="lg"
             >
               <Image
-                src="/images/deal_pg_poster.avif"
+                src="/images/side_image.avif"
                 alt="AdamsFoods Logo"
                 width="100%"
                 height="100%"
-                fallbackSrc="/images/deal_pg_poster.jpg"
+                fallbackSrc="/images/side_image.png"
               />
             </Box>
 

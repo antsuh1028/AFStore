@@ -72,6 +72,7 @@ export const ItemList = ({ items, setItems, token, toast }) => {
       }
 
       const data = await res.json();
+      console.log("UpdateItem response:", data);
       if (data.success) {
         setItems((prevItems) => ({
           ...prevItems,
@@ -221,7 +222,7 @@ export const ItemList = ({ items, setItems, token, toast }) => {
           fontSize="sm"
           textTransform={options.capitalize ? "capitalize" : "none"}
         >
-          {field === "price" ? `$ ${value} / lb` : value || "N/A"}
+          {field === "price" || field === "discounted_price" ? `$ ${value} / lb` : value || "N/A"}
         </Text>
       );
     }
@@ -309,6 +310,9 @@ export const ItemList = ({ items, setItems, token, toast }) => {
                 Product Name
               </Th>
               <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
+                Discounted Price
+              </Th>
+              <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
                 Price
               </Th>
               <Th fontSize="xs" color="gray.600" fontWeight="medium" py={2}>
@@ -334,6 +338,9 @@ export const ItemList = ({ items, setItems, token, toast }) => {
                       <Text fontSize="md" fontWeight="bold">
                         {item.name}
                       </Text>
+                    </Td>
+                    <Td py={3} px={4} borderColor="gray.100">
+                      {renderEditableField(item, "discounted_price", "number")}
                     </Td>
                     <Td py={3} px={4} borderColor="gray.100">
                       {renderEditableField(item, "price", "number")}

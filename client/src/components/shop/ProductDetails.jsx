@@ -380,6 +380,14 @@ const ProductDetailPage = () => {
     useAuthContext();
   const { selectedLanguage } = useLanguage();
 
+    const specs = {
+    "30 lb - 5 lb x 6 packs": "/ 30 lb box",
+    "20 lb - 10 lb x 2 packs": "/ 20 lb box",
+    "50 lb - 50 lb x 1 box": "/ 50 lb box",
+    "C.W. (Catch Weights)": "/lb",
+    
+  };
+
   // Local translator function - no external dependencies
   const t = useCallback(
     (englishText, koreanText) => {
@@ -771,7 +779,7 @@ const ProductDetailPage = () => {
             </HStack>
             {isAuthenticated ? (
               <Text fontSize="xl" fontWeight="bold" color="black">
-                ${product.discounted_price}/lb
+                ${product.discounted_price}{specs[product.spec]}
               </Text>
             ) : (
               // <Link
@@ -784,7 +792,7 @@ const ProductDetailPage = () => {
               // >
               //   Login to see prices
               // </Link>
-              <Text fontSize="xl" fontWeight="bold" color="black">${product.price}/lb</Text>
+              <Text fontSize="xl" fontWeight="bold" color="black">${product.price}{specs[product.spec]}</Text>
             )}
           </HStack>
 

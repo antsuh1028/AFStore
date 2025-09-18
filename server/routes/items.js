@@ -320,7 +320,7 @@ ItemsRouter.patch("/:id", async (req, res) => {
     const allowedFields = [
       'name', 'species', 'description', 'images', 'price', 'brand', 
       'grade', 'origin', 'spec', 'avg_weight', 'style', 'show', 
-      'allergens', 'ingredients'
+      'allergens', 'ingredients', 'discounted_price'
     ];
     
     const updateFields = [];

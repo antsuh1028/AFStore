@@ -518,7 +518,7 @@ const UserProfile = () => {
                 >
                   Cart
                 </Tab>
-                <Text
+                {/* <Text
                   mx={2}
                   color="gray.400"
                   fontWeight="normal"
@@ -541,7 +541,7 @@ const UserProfile = () => {
                   color="gray.600"
                 >
                   Rewards
-                </Tab>
+                </Tab> */}
               </TabList>
               <TabPanels my={8}>
                 <TabPanel>

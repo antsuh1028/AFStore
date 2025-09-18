@@ -9,6 +9,9 @@ import {
   VStack,
   Image,
   Divider,
+  UnorderedList,
+  ListItem,
+  Circle,
 } from "@chakra-ui/react";
 import Footer from "../../components/Footer";
 import Sidebar from "../../components/SideBar";
@@ -39,19 +42,24 @@ const DealPage = () => {
         <Navbar onOpen={onOpen} home={true} />
 
         {/* Deal Header */}
-        
-        <Box textAlign="center" py={6} px={4}>
+
+        <Box textAlign="center" py={6} px={4} mb={12}>
           <Box width="100%">
             <Box py={4} px={6} borderColor="gray.200" bg="white" mb={4}>
-              <Heading as="h1" size="lg" fontWeight="semibold" textAlign="center">
+              <Heading
+                as="h1"
+                size="lg"
+                fontWeight="semibold"
+                textAlign="center"
+              >
                 Deal
               </Heading>
             </Box>
             <Divider mt={2} borderColor="gray.200" />
           </Box>
           <Image
-            src="/images/deal_pg_poster.avif"
-            fallbackSrc="/images/deal_pg_poster.jpg"
+            src="/images/side_image.avif"
+            fallbackSrc="/images/side_image.png"
             boxSize="100%"
             objectFit="cover"
             mb={6}
@@ -75,46 +83,81 @@ const DealPage = () => {
             </Box>
 
             {/* Offer 1 */}
+             {/* Offer 1 */}
             <Box textAlign="left">
               <Flex align="center" mb={2}>
-                <Text fontSize="16px" fontWeight="bold" color=" #CA3836" mr={2}>
-                  1.
-                </Text>
-                <Text fontSize="16px" fontWeight="bold" color=" #CA3836">
-                  {translator("UP TO 5% OFF", "최대 5% 할인")}
+                <Circle size="20px" fontSize="80%" bg="#CA3836" color="white" mr={2}>
+                  1
+                </Circle>
+                <Text fontSize="16px" fontWeight="bold" >
+                  {translator("First Purchase", "첫 구매 (최대 5% 할인)")}
                 </Text>
               </Flex>
-              <Text fontSize="14px" color="gray.600" mb={3}>
-                {translator(
-                  "Sign up now and get up to 5% off during our launch event!",
-                  "지금 가입하고 론칭 이벤트 기간 동안, 최대 5% 할인을 받으세요!"
-                )}
-              </Text>
+
+              {translator(
+                <UnorderedList
+                  spacing={2}
+                  ml={6}
+                  color="gray.600"
+                  fontSize="14px"
+                  lineHeight="1.6"
+                >
+                  <ListItem>
+                    When you sign up, and on your First Purchase — we’ll give you a free meat item (5lb).
+                  </ListItem>
+                  <ListItem>Limited to the first 50 new customers.</ListItem>
+                </UnorderedList>,
+                <UnorderedList
+                  spacing={2}
+                  ml={6}
+                  color="gray.600"
+                  fontSize="14px"
+                  lineHeight="1.6"
+                >
+                  <ListItem>
+                    가입 시 및 첫 구매 시 — 무료 육류(5lb)를 드립니다.
+                  </ListItem>
+                  <ListItem>신규 고객 선착순 50명 한정.</ListItem>
+                </UnorderedList>
+              )}
             </Box>
 
             {/* Offer 2 */}
             <Box textAlign="left">
               <Flex align="center" mb={2}>
-                <Text fontSize="16px" fontWeight="bold" color=" #CA3836" mr={2}>
-                  2.
-                </Text>
-                <Text fontSize="16px" fontWeight="bold" color=" #CA3836">
-                  {translator("EXCLUSIVE DEALS", "단독 혜택")}
+                <Circle size="20px" fontSize="80%" bg="#CA3836" color="white" mr={2}>
+                  2
+                </Circle>
+                <Text fontSize="16px" fontWeight="bold" >
+                  {translator("Ongoing Free Meat Rewards", "지속적인 무료 육류 혜택")}
                 </Text>
               </Flex>
-              <Text fontSize="14px" color="gray.600" mb={3}>
-                {translator(
-                  "Exclusive deals available only on the app.",
-                  "앱에서만 제공되는 단독 할인 및 신제품을 가장 먼저 만나보세요."
-                )}
-              </Text>
-              <Text fontSize="14px" color="gray.600">
-                {translator(
-                  "App-only pricing and early access to new products.",
-                  ""
-                )}
-              </Text>
-              <Flex align="center" mb={2}></Flex>
+
+              {translator(
+                <UnorderedList
+                  spacing={2}
+                  ml={6}
+                  color="gray.600"
+                  fontSize="14px"
+                  lineHeight="1.6"
+                >
+                  <ListItem>
+                    After your first order, we’ll continue to send you email offers for free meat, based on your future purchase amounts.
+                  </ListItem>
+                </UnorderedList>,
+                <UnorderedList
+                  spacing={2}
+                  ml={6}
+                  color="gray.600"
+                  fontSize="14px"
+                  lineHeight="1.6"
+                >
+                  <ListItem>
+                    첫 주문 후에도 향후 구매량에 따라 무료 육류 제공 혜택을 이메일로 계속 안내해 드립니다.
+                  </ListItem>
+                  <ListItem>{`(향후 구매 실적 기준)`}</ListItem>
+                </UnorderedList>
+              )}
             </Box>
           </VStack>
         </Box>

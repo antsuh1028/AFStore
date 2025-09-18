@@ -23,16 +23,24 @@ export const ProductCard = ({
   const [imageError, setImageError] = useState(false);
   const { isAuthenticated } = useAuthContext();
 
+  const specs = {
+    "30 lb - 5 lb x 6 packs": "/ 30 lb box",
+    "20 lb - 10 lb x 2 packs": "/ 20 lb box",
+    "50 lb - 50 lb x 1 box": "/ 50 lb box",
+    "C.W. (Catch Weights)": "/lb",
+    
+  };
+
   // Generate image paths for this product
   const imagePaths = useMemo(() => {
     if (!name || !style) {
       return { avif: "/images/gray.avif", jpg: "/images/gray.avif" };
     }
-    
+
     const basePath = `/products/${style}/${name}`;
     return {
       avif: `${basePath}/01.avif`,
-      jpg: `${basePath}/01.jpg`
+      jpg: `${basePath}/01.jpg`,
     };
   }, [name, style]);
 
@@ -46,35 +54,35 @@ export const ProductCard = ({
 
     setImageLoaded(false);
     setImageError(false);
-    
+
     const loadImage = () => {
       // Try AVIF first
-      const avifImg = document.createElement('img');
-      
+      const avifImg = document.createElement("img");
+
       avifImg.onload = () => {
         setImageSrc(imagePaths.avif);
         setImageLoaded(true);
       };
-      
+
       avifImg.onerror = () => {
         // AVIF failed, try JPG
-        const jpgImg = document.createElement('img');
-        
+        const jpgImg = document.createElement("img");
+
         jpgImg.onload = () => {
           setImageSrc(imagePaths.jpg);
           setImageLoaded(true);
         };
-        
+
         jpgImg.onerror = () => {
           // Both failed, use gray placeholder
           setImageSrc("/images/gray.avif");
           setImageError(true);
           setImageLoaded(true);
         };
-        
+
         jpgImg.src = imagePaths.jpg;
       };
-      
+
       avifImg.src = imagePaths.avif;
     };
 
@@ -119,7 +127,7 @@ export const ProductCard = ({
             borderRadius="md"
           />
         )}
-        
+
         <Image
           src={imageSrc}
           alt={name}
@@ -132,7 +140,7 @@ export const ProductCard = ({
           fallbackSrc="/images/gray.avif"
           onLoad={() => setImageLoaded(true)}
         />
-        
+
         {/* Image status indicator */}
         {imageError && imageLoaded && (
           <Box
@@ -150,7 +158,7 @@ export const ProductCard = ({
           </Box>
         )}
       </Box>
-      
+
       <Box
         p={2}
         display="flex"
@@ -168,11 +176,15 @@ export const ProductCard = ({
           <Text fontSize="xs" color="gray.600" noOfLines={1} mt={1}>
             {spec}
           </Text>
-          {isAuthenticated ? (<Text fontWeight="bold" fontSize="sm">
-            ${discounted_price}/lb
-          </Text>) : (<Text fontWeight="bold" fontSize="sm">
-            ${price}/lb
-          </Text>)}
+          {isAuthenticated ? (
+            <Text fontWeight="bold" fontSize="sm">
+              ${discounted_price}{specs[spec]}
+            </Text>
+          ) : (
+            <Text fontWeight="bold" fontSize="sm">
+              ${price}{specs[spec]}
+            </Text>
+          )}
         </Box>
       </Box>
     </Box>
