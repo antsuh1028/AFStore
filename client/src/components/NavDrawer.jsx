@@ -328,7 +328,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
               </Heading>
 
               {/* Points Display for Authenticated Users */}
-              {isAuthenticated && (
+              {/* {isAuthenticated && (
                 <Box mb={4}>
                   <HStack justify="center" spacing={2}>
                     <Star size={16} color="#b3967f" fill="#b3967f" />
@@ -358,7 +358,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                     Earned in last 2 months
                   </Text>
                 </Box>
-              )}
+              )} */}
 
               <Box my={6} fontSize="sm">
                 {isAuthenticated ? (
@@ -382,7 +382,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                     >
                       Profile
                     </Link>
-                    |{" "}
+                    {/* |{" "}
                     <Link
                       onClick={handleProfileClick}
                       mx={2}
@@ -391,7 +391,7 @@ export default function NavDrawer({ isOpen, onClose, containerRef }) {
                       _hover={{ color: "blue.500" }}
                     >
                       Rewards
-                    </Link>
+                    </Link> */}
                   </>
                 ) : (
                   <>

@@ -778,21 +778,11 @@ const ProductDetailPage = () => {
               )}
             </HStack>
             {isAuthenticated ? (
-              <Text fontSize="xl" fontWeight="bold" color="black">
+              <Text fontSize="100%" textAlign="right" width="40%" noOfLines="1" fontWeight="bold" color="black">
                 ${product.discounted_price}{specs[product.spec]}
               </Text>
             ) : (
-              // <Link
-              //   fontSize="sm"
-              //   fontWeight="bold"
-              //   color="black"
-              //   p={2}
-              //   textAlign="center "
-              //   href="/login"
-              // >
-              //   Login to see prices
-              // </Link>
-              <Text fontSize="xl" fontWeight="bold" color="black">${product.price}{specs[product.spec]}</Text>
+               <Text fontSize="100%" textAlign="right" width="40%" noOfLines="1" fontWeight="bold" color="black">${product.price}{specs[product.spec]}</Text>
             )}
           </HStack>
 

@@ -82,26 +82,60 @@ const AdminHome = ({
     }
   };
 
-  const getDateFilteredOrders = () => {
-    const now = new Date();
-    const weekAgo = new Date(now.getTime() - timeFilter * 24 * 60 * 60 * 1000);
+const getDateFilteredOrders = () => {
+  const now = new Date();
+  
+  if (timeFilter === 7) {
+    // Weekly view - get orders from the last 7 days
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     return orders.filter((order) => {
       const orderDate = new Date(order.order_date);
       return orderDate >= weekAgo && orderDate <= now;
     });
-  };
+  } else {
+    // Monthly view - get orders from the last 30 days
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    return orders.filter((order) => {
+      const orderDate = new Date(order.order_date);
+      return orderDate >= monthAgo && orderDate <= now;
+    });
+  }
+};
 
-  // Add function to filter inquiries by date
-  const getDateFilteredInquiries = () => {
-    const now = new Date();
-    const weekAgo = new Date(now.getTime() - timeFilter * 24 * 60 * 60 * 1000);
+// Also fix the inquiries filtering function
+const getDateFilteredInquiries = () => {
+  const now = new Date();
+  
+  if (timeFilter === 7) {
+    // Set to beginning of the day 7 days ago to include the full day
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    weekAgo.setHours(0, 0, 0, 0); // Start of day
+    
+    const endOfToday = new Date(now);
+    endOfToday.setHours(23, 59, 59, 999); // End of today
+    
     return inquiries.filter((inquiry) => {
       if (!inquiry.timestamp) return false;
+      
       const inquiryDate = new Date(inquiry.timestamp);
-      return inquiryDate >= weekAgo && inquiryDate <= now;
+      return inquiryDate >= weekAgo && inquiryDate <= endOfToday;
     });
-  };
-
+  } else {
+    // Monthly view
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    monthAgo.setHours(0, 0, 0, 0);
+    
+    const endOfToday = new Date(now);
+    endOfToday.setHours(23, 59, 59, 999);
+    
+    return inquiries.filter((inquiry) => {
+      if (!inquiry.timestamp) return false;
+      
+      const inquiryDate = new Date(inquiry.timestamp);
+      return inquiryDate >= monthAgo && inquiryDate <= endOfToday;
+    });
+  }
+};
   const filteredOrders = getDateFilteredOrders();
   const filteredInquiries = getDateFilteredInquiries();
 
@@ -648,7 +682,7 @@ const AdminHome = ({
           p={4}
           minH={{ base: "300px", md: "100%" }}
         >
-          <Flex justify="space-between" align="center" mb={4}>
+          <Flex justify="space-between" align="center" mb={6}>
             <Text fontSize={{ base: "md", md: "lg" }} fontWeight="semibold">
               Sign Up Request
             </Text>

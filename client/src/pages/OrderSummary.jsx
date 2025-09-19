@@ -270,7 +270,6 @@ const finalTotal = subtotal + deliveryFee;
     const timer = setTimeout(() => {
       setIsPageLoading(false);
     }, 500);
-    console.log(cartItems)
     return () => clearTimeout(timer);
   }, []);
 
@@ -350,7 +349,6 @@ const handleOrder = async () => {
       }),
     };
 
-    console.log('Order data being sent:', orderData);
 
     const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
       method: "POST",
@@ -521,7 +519,7 @@ const handleOrder = async () => {
                   </VStack>
                 </HStack>
 
-                <HStack
+                {/* <HStack
                   spacing={2}
                   cursor="pointer"
                   onClick={() => setDeliveryOption("pickup")}
@@ -554,7 +552,7 @@ const handleOrder = async () => {
                       )}
                     </Text>
                   </VStack>
-                </HStack>
+                </HStack> */}
               </VStack>
 
               <VStack spacing={4} w="100%">

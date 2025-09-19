@@ -53,6 +53,45 @@ const ContactPage = () => {
   const location = useLocation();
   const { selectedLanguage } = useLanguage();
 
+  // Test data fill function
+  const fillTestData = () => {
+    if (form.current) {
+      // Basic contact info
+      if (form.current.user_name) form.current.user_name.value = "John Test";
+      if (form.current.user_email) {
+        form.current.user_email.value = "john.test@example.com";
+        setEmail("john.test@example.com");
+        validateEmail("john.test@example.com");
+      }
+      if (form.current.user_phone) form.current.user_phone.value = "555-123-4567";
+      if (form.current.company) form.current.company.value = "Test Company LLC";
+      
+      // Address fields (only if not authenticated)
+      if (!isAuthenticated) {
+        if (form.current.company_address_1) form.current.company_address_1.value = "123 Test Street";
+        if (form.current.company_address_2) form.current.company_address_2.value = "Suite 100";
+        if (form.current.city) form.current.city.value = "Los Angeles";
+        if (form.current.state) form.current.state.value = "CA";
+        if (form.current.zip_code) form.current.zip_code.value = "90210";
+        if (form.current.business_license) form.current.business_license.value = "LA-TEST-123456";
+        if (form.current.california_resale) form.current.california_resale.value = "#TEST-987654";
+      }
+      
+      // Message
+      if (form.current.message) {
+        form.current.message.value = "This is a test inquiry. Please ignore this message as it's for testing purposes only.";
+      }
+
+      toast({
+        title: "Test data filled!",
+        description: "Form has been populated with test data.",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
@@ -93,7 +132,6 @@ const ContactPage = () => {
 
           const data = await response.json();
           if (data.success && data.data.length > 0) {
-            console.log(data.data);
             setUserAddress(data.data[0]);
           }
         } catch (error) {
@@ -173,25 +211,40 @@ const ContactPage = () => {
     const formData = new FormData(form.current);
 
     const inquiryData = {
-      name: formData.get("user_name"),
-      email: formData.get("user_email"),
-      phone: formData.get("user_phone"),
-      company: formData.get("company"),
-      license_number: formData.get("business_license"),
-      message: formData.get("message"),
-      cart_items: cartItems,
-      cart_total: cartItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      ),
-      company_address_1: userAddress?.address_line_1,
-      company_address_2: userAddress?.address_line_2,
-      city: userAddress?.city,
-      state: userAddress?.state,
-      zip_code: userAddress?.zip_code,
-      business_license: userInfo?.license_number,
-      california_resale: userInfo?.california_resale,
-    };
+    name: formData.get("user_name"),
+    email: formData.get("user_email"),
+    phone: formData.get("user_phone"),
+    company: formData.get("company"),
+    license_number: formData.get("business_license"),
+    message: formData.get("message"),
+    cart_items: cartItems,
+    cart_total: cartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    ),
+    // Use form data if not authenticated, otherwise use userAddress/userInfo
+    company_address_1: isAuthenticated 
+      ? userAddress?.address_line_1 
+      : formData.get("company_address_1"),
+    company_address_2: isAuthenticated 
+      ? userAddress?.address_line_2 
+      : formData.get("company_address_2"),
+    city: isAuthenticated 
+      ? userAddress?.city 
+      : formData.get("city"),
+    state: isAuthenticated 
+      ? userAddress?.state 
+      : formData.get("state"),
+    zip_code: isAuthenticated 
+      ? userAddress?.zip_code 
+      : formData.get("zip_code"),
+    business_license: isAuthenticated 
+      ? userInfo?.license_number 
+      : formData.get("business_license"),
+    california_resale: isAuthenticated 
+      ? userInfo?.california_resale 
+      : formData.get("california_resale"),
+  };
 
     try {
       const response = await fetch(`${API_CONFIG.BASE_URL}/api/inquiries`, {
@@ -201,7 +254,6 @@ const ContactPage = () => {
         },
         body: JSON.stringify(inquiryData),
       });
-
       if (!response.ok) {
         throw new Error("Failed to submit inquiry");
       }
@@ -259,6 +311,21 @@ const ContactPage = () => {
           <Text mb={4} color="gray.500" fontSize="md" textAlign="center">
             We look forward to hearing from you
           </Text>
+
+          {/* Test Button - Only show in development */}
+          {process.env.NODE_ENV === 'development' && (
+            <Box mb={4} display="flex" justifyContent="center">
+              <Button
+                onClick={fillTestData}
+                size="sm"
+                colorScheme="yellow"
+                variant="outline"
+                fontSize="xs"
+              >
+                🧪 Fill Test Data
+              </Button>
+            </Box>
+          )}
 
           <Divider mb={6} borderColor="gray.300" />
 
@@ -489,7 +556,7 @@ const ContactPage = () => {
                         )}
                       </Text>
                     </Flex>
-                  </FormControl>{" "}
+                  </FormControl>
                 </>
               )}
 

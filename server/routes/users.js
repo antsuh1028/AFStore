@@ -228,6 +228,26 @@ UsersRouter.post("/signup", async (req, res) => {
       ]
     );
 
+    const userId = userResult.rows[0].id;
+
+    // Create address entry for the user
+    if (companyAddress1 && city && state && zipCode) {
+      await db.query(
+        `INSERT INTO addresses (user_id, address_type, address_line_1, address_line_2, city, state, zip_code)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          userId,
+          'company',
+          companyAddress1,
+          companyAddress2 || null,
+          city,
+          state,
+          zipCode,
+        ]
+      );
+      console.log("Created address for user ID:", userId);
+    }
+
     // Also create entry in signup_requests for admin dashboard
     const signupResult = await db.query(
       `INSERT INTO signup_requests (
@@ -652,6 +672,7 @@ UsersRouter.post("/approve-signup/:request_id", async (req, res) => {
       return res.status(400).json({ error: "Invalid request ID" });
     }
 
+    // Get the signup request
     const requestResult = await db.query(
       "SELECT * FROM signup_requests WHERE id = $1",
       [request_id]
@@ -662,62 +683,52 @@ UsersRouter.post("/approve-signup/:request_id", async (req, res) => {
     }
 
     const request = requestResult.rows[0];
+    console.log("Processing approval for:", request.email);
+
+    // Find the DISABLED user account
+    const existingUser = await db.query(
+      "SELECT * FROM users WHERE email = $1 AND disabled = true",
+      [request.email]
+    );
+
+    if (existingUser.rows.length === 0) {
+      return res.status(400).json({ 
+        error: "No disabled user account found for this email" 
+      });
+    }
+
+    const userId = existingUser.rows[0].id;
+    console.log("Found disabled user with ID:", userId);
+
+    // ENABLE the user account
+    const userResult = await db.query(
+      `UPDATE users 
+       SET disabled = false 
+       WHERE id = $1 
+       RETURNING id, name, email, license_number, phone_number, is_admin, company`,
+      [userId]
+    );
+
+    console.log("Enabled user account:", userResult.rows[0]);
 
     // Send approval email
     await sendSignupApprovalEmail(request);
 
-    const existingUser = await db.query(
-      "SELECT * FROM users WHERE email = $1",
-      [request.email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return res.status(400).json({ error: "Email already exists in users" });
-    }
-
-    // Create user
-    const userResult = await db.query(
-      `INSERT INTO users (name, email, password, license_number, phone_number, is_admin, company) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, license_number, phone_number, is_admin, company`,
-      [
-        `${request.first_name} ${request.last_name}`,
-        request.email,
-        request.password,
-        request.license_number,
-        request.phone,
-        false,
-        request.company,
-      ]
-    );
-    const userId = userResult.rows[0].id;
-
-    // Create address entry
-    await db.query(
-      `INSERT INTO addresses (user_id, address_type, address_line_1, address_line_2, city, state, zip_code) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [
-        userId,
-        "company",
-        request.company_address_1,
-        request.company_address_2,
-        request.city,
-        request.state,
-        request.zip_code,
-      ]
-    );
-
+    // Delete the signup request
     await db.query("DELETE FROM signup_requests WHERE id = $1", [request_id]);
 
     res.json({
       success: true,
-      message: "User approved and created successfully",
+      message: "User account approved and enabled successfully",
       user: userResult.rows[0],
     });
+
   } catch (err) {
-    console.error("Database error:", err);
-    res
-      .status(500)
-      .json({ error: "Internal server error", message: err.message });
+    console.error("Approval error:", err);
+    res.status(500).json({ 
+      error: "Internal server error", 
+      message: err.message 
+    });
   }
 });
 

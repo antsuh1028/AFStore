@@ -78,6 +78,7 @@ const AdminDashboard = () => {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [userAddresses, setUserAddresses] = useState({});
   const [orderType, setOrderType] = useState("pickup");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const pages = {
     1: "Dashboard",
@@ -410,6 +411,154 @@ const AdminDashboard = () => {
     );
   }, [currentPage]);
 
+  const refreshAllData = async () => {
+  setIsRefreshing(true);
+  
+  try {
+    // Show loading toast
+    toast({
+      title: "Refreshing data...",
+      description: "Loading latest information from database",
+      status: "info",
+      duration: 2000,
+      isClosable: true,
+    });
+
+    // Fetch all data in parallel
+    const fetchPromises = [
+      // Orders
+      fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).then(res => res.json()).then(data => {
+        if (Array.isArray(data)) {
+          setOrders(data);
+        } else if (data.data) {
+          setOrders(data.data);
+        }
+      }),
+
+      // Order Items
+      fetch(`${API_CONFIG.BASE_URL}/api/order-items`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).then(res => res.json()).then(data => {
+        if (data.success && Array.isArray(data.data)) {
+          const map = {};
+          data.data.forEach((item) => {
+            if (!map[item.order_id]) map[item.order_id] = [];
+            map[item.order_id].push(item);
+          });
+          setOrderItemsMap(map);
+        }
+      }),
+
+      // Items
+      fetch(`${API_CONFIG.BASE_URL}/api/items`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).then(res => res.json()).then(data => {
+        if (data.success && Array.isArray(data.data)) {
+          const map = {};
+          data.data.forEach((item) => {
+            map[item.id] = item;
+          });
+          setItemsMap(map);
+        }
+      }),
+
+      // Users
+      fetch(`${API_CONFIG.BASE_URL}/api/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).then(res => res.json()).then(data => {
+        if (data && Array.isArray(data)) {
+          const map = {};
+          data.forEach((user) => {
+            if (user && user.id) {
+              map[user.id] = user;
+            }
+          });
+          setUsersMap(map);
+        }
+      }),
+
+      // Addresses
+      fetch(`${API_CONFIG.BASE_URL}/api/addresses`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).then(res => res.json()).then(data => {
+        if (data.data) {
+          const map = {};
+          data.data.forEach((address) => {
+            if (address && address.id) {
+              map[address.user_id] = address;
+            }
+          });
+          setUserAddresses(map);
+        }
+      }),
+
+      // Signup Requests
+      fetch(`${API_CONFIG.BASE_URL}/api/users/signup-requests`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).then(res => res.json()).then(data => {
+        setSignupRequests(data || []);
+      }),
+
+      // Inquiries
+      fetch(`${API_CONFIG.BASE_URL}/api/inquiries`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).then(res => res.json()).then(data => {
+        if (data.success) {
+          setInquiries(data.data);
+        } else {
+          setInquiries([]);
+        }
+      }),
+    ];
+
+    // Wait for all requests to complete
+    await Promise.allSettled(fetchPromises);
+
+    toast({
+      title: "Data refreshed!",
+      description: "All information has been updated successfully",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+  } catch (error) {
+    console.error("Error refreshing data:", error);
+    toast({
+      title: "Refresh failed",
+      description: "There was an error updating the data",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+  } finally {
+    setIsRefreshing(false);
+  }
+};
+
   const getStockStatus = (quantity) => {
     if (quantity <= 50) return "Critical";
     if (quantity <= 150) return "Low";
@@ -561,37 +710,48 @@ const AdminDashboard = () => {
 
   return (
     <Box bg="white" minH="100vh" px={[2, 4, 12]} py={4}>
-      <Flex align="center" justify="space-between" mb={4}>
-        <Image w="200px" src="/images/gray_adams.png" alt="Logo" onClick={()=>navigate("/")} _hover={{cursor:"pointer"}}/>
+    <Flex align="center" justify="space-between" mb={4}>
+      <Image w="200px" src="/images/gray_adams.png" alt="Logo" onClick={()=>navigate("/")} _hover={{cursor:"pointer"}}/>
+      <Text
+        fontWeight="regular"
+        fontSize="xl"
+        color="gray.600"
+        display={["none", "block"]}
+      >
+        <Text as="span" fontWeight="extrabold">
+          MEAT
+        </Text>{" "}
+        WHOLESALE
+      </Text>
+      <Flex align="center" gap={[2, 4]}>
+        {/* Add the refresh button here */}
+        <Button
+          size={["xs", "sm"]}
+          variant="outline"
+          colorScheme="blue"
+          onClick={refreshAllData}
+          isLoading={isRefreshing}
+          loadingText="Refreshing"
+        >
+          Refresh Data
+        </Button>
         <Text
-          fontWeight="regular"
-          fontSize="xl"
+          fontSize={["xs", "sm"]}
           color="gray.600"
           display={["none", "block"]}
         >
-          <Text as="span" fontWeight="extrabold">
-            MEAT
-          </Text>{" "}
-          WHOLESALE
+          Welcome, {userName || userInfo?.name || "Admin"}
         </Text>
-        <Flex align="center" gap={[2, 4]}>
-          <Text
-            fontSize={["xs", "sm"]}
-            color="gray.600"
-            display={["none", "block"]}
-          >
-            Welcome, {userName || userInfo?.name || "Admin"}
-          </Text>
-          <Button
-            variant="outline"
-            size={["xs", "sm"]}
-            colorScheme="red"
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </Flex>
+        <Button
+          variant="outline"
+          size={["xs", "sm"]}
+          colorScheme="red"
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
       </Flex>
+    </Flex>
       <Divider
         orientation="horizontal"
         my={4}

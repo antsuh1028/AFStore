@@ -72,7 +72,6 @@ export const ItemList = ({ items, setItems, token, toast }) => {
       }
 
       const data = await res.json();
-      console.log("UpdateItem response:", data);
       if (data.success) {
         setItems((prevItems) => ({
           ...prevItems,

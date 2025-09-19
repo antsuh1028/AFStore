@@ -52,7 +52,6 @@ const ResponseModal = ({ inquiryData = {}, isOpen, onClose, onEmailSent }) => {
 
   const handleEmailSend = async () => {
     try {
-      console.log("Sending email with data:", inquiryData);
       if (!inquiryData.to_email) {
         throw new Error("Recipient email is missing");
       }
@@ -274,7 +273,6 @@ export const Inquiries = ({ inquiries = {}, setInquiries }) => {
         day: "numeric",
       }),
     };
-    console.log("Email data prepared:", emailData);
 
     setInquiryData(emailData);
     onOpen();
