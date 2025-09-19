@@ -651,7 +651,7 @@ const Signup = () => {
                   value={licenseNumber}
                   onChange={(e) => {
                     setLicenseNumber(e.target.value);
-                    validateLicense(e.target.value);
+                    // validateLicense(e.target.value);
                   }}
                   {...inputStyle}
                 />

@@ -55,13 +55,21 @@ OrdersRouter.post("/", async (req, res) => {
   try {
     const { user_id, total_amount, order_type } = req.body;
 
-    // Generate order number
-    const orderNumber = `AF${Date.now()}`;
+    // Get the next order number by finding the highest existing order ID
+    const maxOrderResult = await db.query(
+      "SELECT COALESCE(MAX(id), 0) + 1 as next_id FROM orders"
+    );
+    const nextOrderId = maxOrderResult.rows[0].next_id;
 
-    // Create order in database
+// Formula: (id * 13 + 2500) to spread out numbers
+const obfuscatedNumber = (nextOrderId * 13) + 2500;
+
+const orderNumber = `AF${String(obfuscatedNumber).padStart(6, "0")}`;
+
+    // Create order in database with the generated order number
     const orderResult = await db.query(
       `INSERT INTO orders (user_id, order_date, total_amount, order_number, order_type, order_status, created_at) 
-  VALUES ($1, NOW(), $2, $3, $4, 'pending', NOW()) RETURNING *`,
+       VALUES ($1, NOW(), $2, $3, $4, 'pending', NOW()) RETURNING *`,
       [user_id, total_amount, orderNumber, order_type || "pickup"]
     );
 
@@ -108,6 +116,7 @@ OrdersRouter.post("/", async (req, res) => {
     } catch (addressError) {
       console.warn("Address lookup failed:", addressError);
     }
+
     // Prepare email data
     const emailData = {
       customerName: user.name || "Customer",

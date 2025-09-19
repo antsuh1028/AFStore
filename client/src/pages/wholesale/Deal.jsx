@@ -103,7 +103,7 @@ const DealPage = () => {
                   lineHeight="1.6"
                 >
                   <ListItem>
-                    When you sign up, and on your First Purchase — we’ll give you a free meat item (5lb).
+                    When you sign up, and on your First Purchase — we’ll give you a free meat item.
                   </ListItem>
                   <ListItem>Limited to the first 50 new customers.</ListItem>
                 </UnorderedList>,
