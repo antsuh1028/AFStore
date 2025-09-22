@@ -21,6 +21,7 @@ import {
   TabPanels,
   TabPanel,
   TabList,
+  Divider,
 } from "@chakra-ui/react";
 import Sidebar from "../../components/SideBar";
 import NavDrawer from "../../components/NavDrawer";
@@ -35,6 +36,7 @@ import { myPages } from "../../components/profile/ProfileComponents";
 import { API_CONFIG, COLORS } from "../../constants";
 import { useLanguage } from "../../hooks/LanguageContext";
 import { decodeUserId } from "../../utils/urlEncryption";
+import { CircleCheck } from "lucide-react";
 
 const UserProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -579,7 +581,45 @@ const UserProfile = () => {
                     cartItems={cartItems}
                     setCartItems={setCartItems}
                     totalPrice={totalPrice}
+                    identifier={userId}
                   />
+
+                  <VStack spacing={3} w="100%" mt={4} mb={24} px={6}>
+                    <Flex
+                      bg={COLORS.GRAY_LIGHT}
+                      p={2}
+                      borderRadius="md"
+                      align="flex-start"
+                      w="100%"
+                    >
+                      <Box mr={3}>
+                        <CircleCheck size={16} color="#494949" />
+                      </Box>
+                      <Text fontSize="13px" color="gray.600" lineHeight="1.4">
+                        The minimum order amount is $250.
+                      </Text>
+                    </Flex>
+
+                    <Flex
+                      bg={COLORS.GRAY_LIGHT}
+                      p={2}
+                      borderRadius="md"
+                      align="flex-start"
+                      w="100%"
+                    >
+                      <Box mr={3} >
+                        <CircleCheck size={16} color="#494949" />
+                      </Box>
+                      <Text fontSize="13px" color="gray.600" lineHeight="1.4" textAlign={"left"}>
+                        In light of current market challenges, including cattle
+                        shortages, facility pressures, and U.S. tariffs, certain
+                        items have already incurred price increases without
+                        prior notice. Additional adjustments may take effect
+                        immediately and vary by customer. Thank you for your
+                        understanding and continued support.
+                      </Text>
+                    </Flex>
+                  </VStack>
 
                   {cartItems.length !== 0 && (
                     <Button
@@ -628,7 +668,7 @@ const UserProfile = () => {
                       msOverflowStyle: "none",
                       scrollbarWidth: "none",
                     }}
-                    p = {2}
+                    p={2}
                     border="1px"
                     borderColor="gray.200"
                   >

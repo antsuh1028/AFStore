@@ -61,10 +61,10 @@ OrdersRouter.post("/", async (req, res) => {
     );
     const nextOrderId = maxOrderResult.rows[0].next_id;
 
-// Formula: (id * 13 + 2500) to spread out numbers
-const obfuscatedNumber = (nextOrderId * 13) + 2500;
+    // Formula: (id * 13 + 2500) to spread out numbers
+    const obfuscatedNumber = nextOrderId * 13 + 2500;
 
-const orderNumber = `AF${String(obfuscatedNumber).padStart(6, "0")}`;
+    const orderNumber = `AF${String(obfuscatedNumber).padStart(6, "0")}`;
 
     // Create order in database with the generated order number
     const orderResult = await db.query(
@@ -118,45 +118,42 @@ const orderNumber = `AF${String(obfuscatedNumber).padStart(6, "0")}`;
     }
 
     // Prepare email data
-    const emailData = {
-      customerName: user.name || "Customer",
-      companyName: user.company || "Not specified",
-      email: user.email,
-      customerAddress: customerAddress,
-      orderNumber: order.order_number,
-      orderDate: new Date(order.order_date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
-      estimatedTotal: total_amount,
-      orderItems: req.body.cart_items || [],
-    };
+    // In OrdersRouter.post("/", async (req, res) => {
+// After preparing emailData, add order type info:
 
-    console.log(
-      "Email data prepared for:",
-      emailData.email,
-      "Order:",
-      emailData.orderNumber
-    );
+const emailData = {
+  customerName: user.name || "Customer",
+  companyName: user.company || "Not specified", 
+  email: user.email,
+  customerAddress: customerAddress,
+  orderNumber: order.order_number,
+  orderDate: new Date(order.order_date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long", 
+    day: "numeric",
+  }),
+  estimatedTotal: total_amount,
+  orderItems: req.body.cart_items || [],
+  orderType: order_type, // Add this line
+};
 
-    try {
-      const emailResults = await Promise.allSettled([
-        sendOrderConfirmationEmail(emailData, false),
-        sendOrderConfirmationEmail(emailData, true),
-      ]);
+try {
+  const emailResults = await Promise.allSettled([
+    sendOrderConfirmationEmail(emailData, false), // Customer email
+    sendOrderConfirmationEmail(emailData, true),  // Admin email
+  ]);
 
-      emailResults.forEach((result, index) => {
-        const type = index === 0 ? "customer" : "admin";
-        if (result.status === "fulfilled") {
-          console.log(`${type} email sent successfully:`, result.value);
-        } else {
-          console.error(`${type} email failed:`, result.reason);
-        }
-      });
-    } catch (error) {
-      console.error("Email promise error:", error);
+  emailResults.forEach((result, index) => {
+    const type = index === 0 ? "customer" : "admin";
+    if (result.status === "fulfilled") {
+      console.log(`${type} email sent successfully:`, result.value);
+    } else {
+      console.error(`${type} email failed:`, result.reason);
     }
+  });
+} catch (error) {
+  console.error("Email promise error:", error);
+}
 
     res.status(201).json({ success: true, data: order });
   } catch (error) {

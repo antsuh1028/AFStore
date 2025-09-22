@@ -44,7 +44,6 @@ const Navbar = ({ onOpen, home }) => {
           size="sm"
           colorScheme="gray"
           onClick={() => {
-            console.log(home);
             home ? navigate("/") : navigate(-1);
           }}
           _hover={{ bg: "gray.100" }}

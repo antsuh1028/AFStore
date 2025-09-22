@@ -384,7 +384,7 @@ const ProductDetailPage = () => {
     "30 lb - 5 lb x 6 packs": "/ 30 lb box",
     "20 lb - 10 lb x 2 packs": "/ 20 lb box",
     "50 lb - 50 lb x 1 box": "/ 50 lb box",
-    "C.W. (Catch Weights)": "/lb",
+    "C.W. (Catch Weights)": "/ ~ 35 lb box",
     
   };
 
@@ -449,7 +449,7 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = useCallback(() => {
     if (localStorage.getItem("cookieAgreement") === "accepted") {
-      addToCart(product);
+      addToCart(product, isAuthenticated ? userId : "guest");
       getCart();
       setShowCartAlert(true);
       setTimeout(() => setShowCartAlert(false), 5000);
@@ -763,10 +763,11 @@ const ProductDetailPage = () => {
                 borderRadius="full"
                 px={8}
               >
+                <Text m={4} fontWeight="bold">
                 CONTACT US
+                </Text>
               </Button>
-              {isAuthenticated && (
-                <IconButton
+              {isAuthenticated && (<IconButton
                   icon={<ShoppingCart size={20} />}
                   aria-label="Add to cart"
                   colorScheme="gray"
@@ -774,8 +775,8 @@ const ProductDetailPage = () => {
                   bg="white"
                   borderRadius="full"
                   onClick={handleAddToCart}
-                />
-              )}
+                />)}
+                
             </HStack>
             {isAuthenticated ? (
               <Text fontSize="100%" textAlign="right" width="40%" noOfLines="1" fontWeight="bold" color="black">
@@ -940,7 +941,7 @@ const ProductDetailPage = () => {
                   <Text as="span">
                     {" "}
                     All products are processed in facilities that handle soy,
-                    wheat, sesame, and other major allergens. Always verify
+                    wheat, sesame, fish,  and other major allergens. Always verify
                     current allergen information on product packaging before
                     use.
                   </Text>

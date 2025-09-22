@@ -34,10 +34,11 @@ const AFCompany = () => {
             bg="gray.100"
           >
             <Image
-              src="/images/adams_entrance.png"
+              src="/images/af_company.avif"
               alt="AdamsFoods Company"
               w="full"
               h="full"
+              fallbackSrc="/images/af_company.jpg"
               objectFit="cover"
             />
           </Box>

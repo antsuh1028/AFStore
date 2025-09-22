@@ -487,6 +487,51 @@ const Signup = () => {
           <Text mb={4} color="gray.500" fontSize="md" textAlign="center">
             Join our wholesale platform. We look forward to working with you!
           </Text>
+          {process.env.NODE_ENV === "development" && (
+            <Box mb={4} display="flex" justifyContent="center">
+              <Button
+                onClick={() => {
+                  setFirstName("John");
+                  setLastName("Doe");
+                  setCompanyName("Acme Restaurant Corp");
+                  setEmail("john.doe@acmerestaurant.com");
+                  setPassword("password123");
+                  setAgreementChecked(true);
+
+                  // Fill form inputs directly
+                  const form = document.querySelector("form");
+                  if (form) {
+                    form.querySelector(
+                      'input[placeholder="1805 Industrial St"]'
+                    ).value = "1805 Industrial St";
+                    form.querySelector('input[placeholder="Suite 100"]').value =
+                      "Suite 100";
+                    form.querySelector('input[placeholder="90021"]').value =
+                      "90021";
+                    form.querySelector('input[placeholder="City"]').value =
+                      "Los Angeles";
+                    form.querySelector('input[placeholder="CA"]').value = "CA";
+                    form.querySelector(
+                      'input[placeholder="(123) 456-7890"]'
+                    ).value = "(323) 943-9318";
+                    form.querySelector(
+                      'input[placeholder="LA-1234567 or 2025-000123"]'
+                    ).value = "LA-1234567";
+                    form.querySelector(
+                      'input[placeholder="# 123-456789"]'
+                    ).value = "# 123-456789";
+                  }
+                }}
+                size="sm"
+                colorScheme="yellow"
+                variant="outline"
+                fontSize="xs"
+                mb={4}
+              >
+                🧪 Fill Test Data
+              </Button>
+            </Box>
+          )}
           <Divider mb={6} borderColor="gray.300" />
 
           <form ref={form} onSubmit={handleSignup}>
@@ -642,7 +687,7 @@ const Signup = () => {
 
               <FormControl isRequired isInvalid={licenseError !== ""}>
                 <FormLabel fontWeight="semibold" fontSize="sm">
-                  Business License
+                  Wholesale License (Seller's Permit)
                 </FormLabel>
                 <Input
                   type="text"
@@ -799,45 +844,6 @@ const Signup = () => {
                 </Button>
               </Box>
             </VStack>
-            {/* <Button
-              onClick={() => {
-                setFirstName("John");
-                setLastName("Doe");
-                setCompanyName("Acme Restaurant Corp");
-                setEmail("john.doe@acmerestaurant.com");
-                setPassword("password123");
-                setAgreementChecked(true);
-
-                // Fill form inputs directly
-                const form = document.querySelector("form");
-                if (form) {
-                  form.querySelector(
-                    'input[placeholder="1805 Industrial St"]'
-                  ).value = "1805 Industrial St";
-                  form.querySelector('input[placeholder="Suite 100"]').value =
-                    "Suite 100";
-                  form.querySelector('input[placeholder="90021"]').value =
-                    "90021";
-                  form.querySelector('input[placeholder="City"]').value =
-                    "Los Angeles";
-                  form.querySelector('input[placeholder="CA"]').value = "CA";
-                  form.querySelector(
-                    'input[placeholder="(123) 456-7890"]'
-                  ).value = "(323) 943-9318";
-                  form.querySelector(
-                    'input[placeholder="LA-1234567 or 2025-000123"]'
-                  ).value = "LA-1234567";
-                  form.querySelector(
-                    'input[placeholder="# 123-456789"]'
-                  ).value = "# 123-456789";
-                }
-              }}
-              size="sm"
-              colorScheme="orange"
-              mb={4}
-            >
-              Fill Test Data
-            </Button> */}
           </form>
 
           <Footer />

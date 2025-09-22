@@ -60,6 +60,7 @@ export const Orders = ({
 }) => {
   const [filter, setFilter] = useState(orderType);
   const [expandedRows, setExpandedRows] = useState(new Set());
+  console.log(orders)
 
   const statusColor = (status) => {
     if (status === "complete" || status === "completion") return "green";

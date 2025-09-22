@@ -45,7 +45,7 @@ const processOrderTemplate = (template, variables) => {
       "{{customerHeader}}",
       `
       <h1 style="text-align: center; color: #333; font-size: 24px; margin: 30px 0 30px 0; font-weight: bold;">Order Received</h1>
-      <p style="text-align: center; color: #666; font-size: 14px; line-height: 1.5; margin: 0;">Thank you for your order! Your order has been received and is currently being processed. Please expect a detailed quote via email within 1-2 business days for confirmation. This order is&nbsp;<strong>not yet confirmed</strong> until you receive and approve our quote.</p>
+      <p style="text-align: center; color: #666; font-size: 14px; line-height: 1.5; margin: 0;">Thank you for your order! Your order has been received and is currently being processed. &nbsp;<strong>Please expect a detailed quote via email within 1-2 business days for confirmation. This order is not yet confirmed until you receive and approve our quote.</strong></p>
     `
     );
     result = result.replace("{{adminHeader}}", "");
@@ -199,9 +199,16 @@ export const sendOrderConfirmationEmail = async (
     const emailContent = processOrderTemplate(template, templateVariables);
 
     const recipientEmail = isAdmin ? "sales@adamsfoods.us" : orderData.email;
-    const subject = isAdmin
-      ? `New Order #${orderData.orderNumber} - ${orderData.customerName}`
-      : `Order Confirmation #${orderData.orderNumber}`;
+    
+    // Modify subject line for express pickup admin emails
+    let subject;
+    if (isAdmin) {
+      subject = orderData.orderType === "express_pickup"
+        ? `🚀 EXPRESS PICKUP ORDER #${orderData.orderNumber} - ${orderData.customerName}`
+        : `New Order #${orderData.orderNumber} - ${orderData.customerName}`;
+    } else {
+      subject = `Order Confirmation #${orderData.orderNumber}`;
+    }
 
     const mailOptions = {
       from: `"AdamsFoods Wholesale" <${process.env.EMAIL_USER}>`,
@@ -218,6 +225,40 @@ export const sendOrderConfirmationEmail = async (
     return { success: false, error: error.message };
   }
 };
+
+// Add this new function to emailService.js
+// export const sendExpressPickupNotificationEmail = async (orderData) => {
+//   const transporter = createTransporter();
+
+//   try {
+//     // You can either create a new template or modify the existing one
+//     const template = loadTemplate("order-confirmation");
+
+//     const templateVariables = {
+//       ...orderData,
+//       isCustomer: false,
+//       isAdmin: true,
+//       isExpressPickup: true, // Add this flag
+//     };
+
+//     // Modify the processOrderTemplate function to handle express pickup
+//     const emailContent = processOrderTemplate(template, templateVariables);
+
+//     const mailOptions = {
+//       from: `"AdamsFoods Wholesale" <${process.env.EMAIL_USER}>`,
+//       to: "sales@adamsfoods.us",
+//       subject: `🚀 EXPRESS PICKUP ORDER #${orderData.orderNumber} - ${orderData.customerName}`,
+//       html: emailContent,
+//     };
+
+//     const info = await transporter.sendMail(mailOptions);
+//     console.log(`Express pickup email sent:`, info.messageId);
+//     return { success: true, messageId: info.messageId };
+//   } catch (error) {
+//     console.error("Express pickup email failed:", error);
+//     return { success: false, error: error.message };
+//   }
+// };
 
 // Send contact us inquiry email
 export const sendContactUsEmail = async (inquiryData) => {

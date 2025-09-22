@@ -4,8 +4,7 @@ import { COLORS } from "../constants";
 import { useNavigate } from "react-router-dom";
 
 const CookieConsentBanner = ({ onAccept }) => {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleAccept = () => {
     localStorage.setItem("cookieAgreement", "accepted");
     onAccept();
@@ -31,11 +30,11 @@ const CookieConsentBanner = ({ onAccept }) => {
       opacity={0.9}
     >
       <VStack spacing={3} maxW="600px" mx="auto">
-        <Heading fontSize="lg" fontWeight="extrabold">COOKIE POLICY</Heading>
         <Text fontSize="sm" textAlign="center" color="gray.700">
-          We use cookies to enhance your browsing experience and analyze site
-          traffic. By continuing to use our site, you agree to our use of
-          cookies.
+          We use cookies and similar technologies (including localStorage) to
+          enhance your browsing experience, store shopping cart data, and
+          analyze site traffic. By clicking "Accept" you consent to the use of
+          these technologies.
         </Text>
 
         <HStack spacing={3}>
@@ -56,7 +55,7 @@ const CookieConsentBanner = ({ onAccept }) => {
             size="sm"
             borderRadius="full"
             _hover={{ bg: "gray.50" }}
-            onClick={()=>navigate("/cookie")}
+            onClick={() => navigate("/cookie")}
           >
             Learn More
           </Button>

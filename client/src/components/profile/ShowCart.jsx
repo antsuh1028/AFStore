@@ -8,6 +8,7 @@ import {
   HStack,
   Divider,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getCart,
@@ -18,9 +19,29 @@ import {
 
 import { COLORS } from "../../constants";
 
-export const ShowCart = ({ cartItems, setCartItems, totalPrice }) => {
-  console.log("Cart Items in ShowCart:", cartItems);
+export const ShowCart = ({
+  cartItems,
+  setCartItems,
+  totalPrice,
+  identifier,
+}) => {
   const navigate = useNavigate();
+
+    const specs = {
+    "30 lb - 5 lb x 6 packs": "/ 30 lb box",
+    "20 lb - 10 lb x 2 packs": "/ 20 lb box",
+    "50 lb - 50 lb x 1 box": "/ 50 lb box",
+    "C.W. (Catch Weights)": "/ ~ 35 lb box",
+    
+  };
+
+  // Ensure parent state synced with storage on mount / identifier change
+  useEffect(() => {
+    if (setCartItems) {
+      setCartItems(getCart(identifier));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [identifier]);
 
   const getImagePath = (name, style) => {
     if (style && name) {
@@ -32,21 +53,24 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice }) => {
   };
 
   const handleAdd = (product) => {
-    addToCart(product);
-    setCartItems(getCart());
+    addToCart(product, identifier);
+    if (setCartItems) setCartItems(getCart(identifier));
   };
 
   const handleRemove = (product_id) => {
-    removeFromCart(product_id);
-    setCartItems(getCart());
+    removeFromCart(product_id, identifier);
+    if (setCartItems) setCartItems(getCart(identifier));
   };
 
   const handleSubtract = (product_id) => {
-    subtractFromCart(product_id);
-    setCartItems(getCart());
+    subtractFromCart(product_id, identifier);
+    if (setCartItems) setCartItems(getCart(identifier));
   };
 
-  return cartItems.length === 0 ? (
+  const items =
+    cartItems && Array.isArray(cartItems) ? cartItems : getCart(identifier);
+
+  return items.length === 0 ? (
     <VStack py={8} spacing={4}>
       <Text color="gray.500">Your cart is empty</Text>
       <Button
@@ -59,7 +83,7 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice }) => {
     </VStack>
   ) : (
     <VStack align="stretch">
-      {cartItems.map((item) => (
+      {items.map((item) => (
         <Box key={item.id} borderRadius="lg" p={2} pb={4} bg="white">
           <Flex gap={3} align="center">
             <Image
@@ -73,7 +97,7 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice }) => {
               _hover={{ cursor: "pointer" }}
               onClick={() => navigate(`/wholesale/product/${item.id}`)}
             />
-            <VStack>
+            <VStack align="stretch" flex="1">
               <Flex gap={8} justifyContent="space-between" width="100%" mb={1}>
                 <Text
                   fontWeight="thin"
@@ -117,7 +141,14 @@ export const ShowCart = ({ cartItems, setCartItems, totalPrice }) => {
 
               <Flex justifyContent="space-between" width="100%" align="center">
                 <Text fontSize="16px" color="black" fontWeight="bold">
-                  ${item.discounted_price * item.quantity}
+                  $
+                  {(
+                    (Number(item.discounted_price) || 0) *
+                    (Number(item.quantity) || 0)
+                  ).toFixed(2)}
+                </Text>
+                <Text fontSize="11px" color="gray.500" ml={2}>
+                  {specs[item.spec]}
                 </Text>
                 <HStack spacing={2}>
                   <Button

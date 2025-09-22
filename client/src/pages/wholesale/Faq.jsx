@@ -95,7 +95,7 @@ const FAQPage = () => {
               {translator("Delivery", "배송")}
             </Heading>
 
-            <Text fontSize="sm" color="gray.700">
+            {/* <Text fontSize="sm" color="gray.700">
               {translator(
                 "We offer free delivery within Los Angeles County for orders that meet our ",
                 "로스앤젤레스 카운티 내 "
@@ -110,6 +110,12 @@ const FAQPage = () => {
               {translator(
                 "If your order does not meet the minimum, you may either pick it up from our facility or pay a delivery fee. This policy enables us to maintain reliable, high-quality service at competitive wholesale prices.",
                 "최소 주문 금액에 미치지 못할 경우, 직접 픽업하시거나 배송비를 부담하셔야 합니다. 이 정책은 경쟁력 있는 도매가로 안정적이고 고품질의 서비스를 유지하기 위함입니다."
+              )}
+            </Text> */}
+            <Text fontSize="sm" mt={4} color="gray.700">
+              {translator(
+                "We do not offer delivery services at this time. Customers are welcome to pick up their orders directly from our facility.",
+                "현재 배송 서비스는 제공하지 않습니다. 고객님께서는 당사 시설에서 직접 주문을 픽업하실 수 있습니다."
               )}
             </Text>
 
@@ -311,8 +317,8 @@ const FAQPage = () => {
 
             <Text fontSize="sm" color="gray.700">
               {translator(
-                "Our products are processed in facilities that may also handle soy, wheat, sesame, fish, shellfish, dairy, eggs, peanuts, and tree nuts. It is the customer's responsibility to communicate potential allergen risks to their end consumers.",
-                "당사 제품은 대두, 밀, 참깨, 생선, 조개류, 유제품, 달걀, 땅콩, 견과류 등을 취급하는 시설에서 가공됩니다. "
+                "Our products are processed in facilities that may also handle soy, wheat, sesame, fish. It is the customer's responsibility to communicate potential allergen risks to their end consumers.",
+                "당사 제품은 대두, 밀, 참깨, 생선, 견과류 등을 취급하는 시설에서 가공됩니다. "
               )}
             </Text>
             <Text fontSize="sm" color="gray.700" mt={4}>

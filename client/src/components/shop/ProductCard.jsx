@@ -27,7 +27,7 @@ export const ProductCard = ({
     "30 lb - 5 lb x 6 packs": "/ 30 lb box",
     "20 lb - 10 lb x 2 packs": "/ 20 lb box",
     "50 lb - 50 lb x 1 box": "/ 50 lb box",
-    "C.W. (Catch Weights)": "/lb",
+    "C.W. (Catch Weights)": "/ ~ 35 lb box",
     
   };
 

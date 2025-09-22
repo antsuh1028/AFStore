@@ -27,7 +27,7 @@ import { useAuthContext } from "../hooks/useAuth";
 import { API_CONFIG, COLORS } from "../constants";
 import { getCart, removeFromCart } from "../utils/cartActions";
 import { useLanguage } from "../hooks/LanguageContext";
-
+import { WarningIcon } from "@chakra-ui/icons";
 
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
   return (
@@ -67,6 +67,7 @@ const StyledCheckbox = ({ isChecked, onChange, children }) => {
     </HStack>
   );
 };
+
 const OrderPayment = ({
   isAgreed1,
   setIsAgreed1,
@@ -98,17 +99,20 @@ const OrderPayment = ({
               <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
                 Payment Terms
               </Text>
-              {/* <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            <Text as="span" fontWeight="bold">
-              Delivery:
-            </Text>{" "}
-            Full prepayment required.
-          </Text> */}
+              <Text fontSize="xs" color="red.600" fontWeight="semibold" mb={2}>
+                IMPORTANT: All prices displayed are estimates only.
+              </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall">
                 <Text as="span" fontWeight="bold">
                   Pickup:
                 </Text>{" "}
-                50% prepayment, balance due at pickup.
+                20% prepayment based on estimated total, balance due at pickup
+                based on final invoice pricing.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall" mt={2}>
+                Final pricing will be confirmed via invoice after order
+                processing. Prices may vary based on market conditions, product
+                availability, and weight verification.
               </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall" mt={2}>
                 Pay the balance in cash at pickup and get a up to 5% discount.
@@ -153,17 +157,11 @@ const OrderPayment = ({
               <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
                 결제 조건
               </Text>
-              {/* <Text fontSize="xs" color="gray.700" lineHeight="tall">
-            <Text as="span" fontWeight="bold">
-              배송:
-            </Text>{" "}
-            전액 선결제 필수.
-          </Text> */}
               <Text fontSize="xs" color="gray.700" lineHeight="tall">
                 <Text as="span" fontWeight="bold">
                   픽업:
                 </Text>{" "}
-                50% 선결제, 잔액은 픽업 시 결제.
+                20% 선결제, 잔액은 픽업 시 결제.
               </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall" mt={2}>
                 픽업 시 잔액을 현금으로 결제하시면 최대 5% 할인 혜택을 드립니다.
@@ -217,7 +215,7 @@ const OrderPayment = ({
             onChange={() => setIsAgreed3(!isAgreed3)}
           >
             {translator(
-              "I agree that AdamsFoods is not liable for any issues arising after product delivery, including improper storage, preparation,                 or handling.",
+              "I agree that AdamsFoods is not liable for any issues arising after product delivery, including improper storage, preparation, or handling.",
               "AdamsFoods는 제품 배송 후 보관, 준비, 취급 부주의로 인한 문제에 대해 책임지지 않음을 동의합니다."
             )}
           </StyledCheckbox>
@@ -240,6 +238,7 @@ const OrderSummaryPage = () => {
   const [isAgreed3, setIsAgreed3] = useState(false);
   const [salesTax, setSalesTax] = useState(0);
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [expressPickupFee, setExpressPickupFee] = useState(0);
   const [userAddress, setUserAddress] = useState(null);
   const [isPageLoading, setIsPageLoading] = useState(true);
 
@@ -252,19 +251,41 @@ const OrderSummaryPage = () => {
     return selectedLanguage.code === "ko" ? koreanText : englishText;
   };
 
-const subtotal = cartItems.reduce((sum, item) => {
-  let price = parseFloat(item.discounted_price) || 0;
-  
-  if (price === 0) {
-    price = parseFloat(item.price) || 0;
-  }
-  
-  const quantity = parseInt(item.quantity) || 0;
-  
-  return sum + (price * quantity);
-}, 0);
+  const subtotal = cartItems.reduce((sum, item) => {
+    let price = parseFloat(item.discounted_price) || 0;
 
-const finalTotal = subtotal + deliveryFee;
+    if (price === 0) {
+      price = parseFloat(item.price) || 0;
+    }
+
+    const quantity = parseInt(item.quantity) || 0;
+
+    return sum + price * quantity;
+  }, 0);
+
+  const specs = {
+    "30 lb - 5 lb x 6 packs": "/ 30 lb box",
+    "20 lb - 10 lb x 2 packs": "/ 20 lb box",
+    "50 lb - 50 lb x 1 box": "/ 50 lb box",
+    "C.W. (Catch Weights)": "/ ~ 35 lb box",
+  };
+  const t_weights = {
+    "30 lb - 5 lb x 6 packs": 30,
+    "20 lb - 10 lb x 2 packs": 20,
+    "50 lb - 50 lb x 1 box": 50,
+    "C.W. (Catch Weights)": 35,
+  };
+
+  // Calculate total weight for express pickup fee
+  const calculateTotalWeight = () => {
+    return cartItems.reduce((totalWeight, item) => {
+      const quantity = parseInt(item.quantity) || 0;
+      const avgWeight = t_weights[item.spec] || 0;
+      return totalWeight + quantity * avgWeight;
+    }, 0);
+  };
+
+  const finalTotal = subtotal + deliveryFee + expressPickupFee;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -291,13 +312,20 @@ const finalTotal = subtotal + deliveryFee;
     fetchAddress();
   }, [userId]);
 
+  // Updated useEffect for delivery option with express pickup calculation
   useEffect(() => {
     if (deliveryOption === "pickup") {
       setDeliveryFee(0);
+      setExpressPickupFee(0);
+    } else if (deliveryOption === "express_pickup") {
+      setDeliveryFee(0);
+      const totalWeight = calculateTotalWeight();
+      setExpressPickupFee(totalWeight * 0.25);
     } else {
       setDeliveryFee(25);
+      setExpressPickupFee(0);
     }
-  }, [deliveryOption]);
+  }, [deliveryOption, cartItems]);
 
   const formatOrderDate = (dateString) => {
     const date = new Date(dateString);
@@ -308,122 +336,117 @@ const finalTotal = subtotal + deliveryFee;
     });
   };
 
+  const handleOrder = async () => {
+    try {
+      if (!isAuthenticated || !userId) {
+        console.error("User not authenticated");
+        return;
+      }
+      if (!cartItems || cartItems.length === 0) {
+        console.error("Cart is empty");
+        return;
+      }
+      if (!isAgreed1 || !isAgreed2 || !isAgreed3) {
+        console.error("All agreements must be accepted");
+        return;
+      }
 
-const handleOrder = async () => {
-  try {
-    if (!isAuthenticated || !userId) {
-      console.error("User not authenticated");
-      return;
-    }
-    if (!cartItems || cartItems.length === 0) {
-      console.error("Cart is empty");
-      return;
-    }
-    if (!isAgreed1 || !isAgreed2 || !isAgreed3) {
-      console.error("All agreements must be accepted");
-      return;
-    }
+      const orderData = {
+        user_id: userId,
+        total_amount: finalTotal,
+        order_type: deliveryOption,
+        delivery_fee: deliveryFee,
+        express_pickup_fee: expressPickupFee,
+        cart_items: cartItems.map((item) => {
+          let price = parseFloat(item.discounted_price) || 0;
 
-    const orderData = {
-      user_id: userId,
-      total_amount: finalTotal,
-      order_type: deliveryOption,
-      cart_items: cartItems.map((item) => {
-        // Convert discounted_price to number, handle string "0" case
-        let price = parseFloat(item.discounted_price) || 0;
-        
-        // If discounted_price is 0 or not valid, fall back to regular price
-        if (price === 0) {
-          price = parseFloat(item.price) || 0;
-        }
-        
-        const quantity = parseInt(item.quantity) || 0;
-        
-        return {
-          name: item.name,
-          quantity: quantity,
-          price: price.toFixed(2),
-          discountedPrice: price.toFixed(2),
-          itemTotal: (quantity * price).toFixed(2),
-        };
-      }),
-    };
-
-
-    const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(orderData),
-    });
-
-    const orderResult = await orderResponse.json();
-
-    if (orderResponse.ok && orderResult.success) {
-      const orderId = orderResult.data.id;
-
-      // Create order items
-      const orderItemPromises = cartItems.map(async (item) => {
-        // Same logic for order items
-        let price = parseFloat(item.discounted_price) || 0;
-        
-        if (price === 0) {
-          price = parseFloat(item.price) || 0;
-        }
-        
-        const quantity = parseInt(item.quantity) || 0;
-        
-        const orderItemData = {
-          order_id: orderId,
-          item_id: item.id,
-          quantity: quantity,
-          unit_price: price,
-        };
-
-        const itemResponse = await fetch(
-          `${API_CONFIG.BASE_URL}/api/order-items`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(orderItemData),
+          if (price === 0) {
+            price = parseFloat(item.price) || 0;
           }
-        );
 
-        return itemResponse.json();
+          const quantity = parseInt(item.quantity) || 0;
+
+          return {
+            name: item.name,
+            quantity: quantity,
+            price: price.toFixed(2),
+            discountedPrice: price.toFixed(2),
+            itemTotal: (quantity * price).toFixed(2),
+          };
+        }),
+      };
+
+      const orderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
       });
 
-      const orderItemResults = await Promise.all(orderItemPromises);
-      const allItemsCreated = orderItemResults.every(
-        (result) => result.success
-      );
+      const orderResult = await orderResponse.json();
 
-      if (allItemsCreated) {
-        setOrderNumber(orderResult.data.order_number);
-        setOrderDate(formatOrderDate(orderResult.data.order_date));
+      if (orderResponse.ok && orderResult.success) {
+        const orderId = orderResult.data.id;
 
-        // Clear cart
-        cartItems.forEach((item) => {
-          removeFromCart(item.id);
+        const orderItemPromises = cartItems.map(async (item) => {
+          let price = parseFloat(item.discounted_price) || 0;
+
+          if (price === 0) {
+            price = parseFloat(item.price) || 0;
+          }
+
+          const quantity = parseInt(item.quantity) || 0;
+
+          const orderItemData = {
+            order_id: orderId,
+            item_id: item.id,
+            quantity: quantity,
+            unit_price: price,
+          };
+
+          const itemResponse = await fetch(
+            `${API_CONFIG.BASE_URL}/api/order-items`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(orderItemData),
+            }
+          );
+
+          return itemResponse.json();
         });
 
-        setCartItems([]);
-        setCurrentStep(2);
+        const orderItemResults = await Promise.all(orderItemPromises);
+        const allItemsCreated = orderItemResults.every(
+          (result) => result.success
+        );
+
+        if (allItemsCreated) {
+          setOrderNumber(orderResult.data.order_number);
+          setOrderDate(formatOrderDate(orderResult.data.order_date));
+
+          cartItems.forEach((item) => {
+            removeFromCart(item.id, userId);
+          });
+
+          setCartItems([]);
+          setCurrentStep(2);
+        } else {
+          console.error("Some order items failed to create:", orderItemResults);
+        }
       } else {
-        console.error("Some order items failed to create:", orderItemResults);
+        console.error(
+          "Order creation failed:",
+          orderResult.error || orderResult.message
+        );
       }
-    } else {
-      console.error(
-        "Order creation failed:",
-        orderResult.error || orderResult.message
-      );
+    } catch (error) {
+      console.error("Error creating order:", error);
     }
-  } catch (error) {
-    console.error("Error creating order:", error);
-  }
-};
+  };
 
   if (isPageLoading) {
     return (
@@ -482,7 +505,11 @@ const handleOrder = async () => {
 
           {currentStep === 0 && (
             <VStack pt={12}>
-              <ShowCart cartItems={cartItems} setCartItems={setCartItems} />
+              <ShowCart
+                cartItems={cartItems}
+                setCartItems={setCartItems}
+                identifier={userId}
+              />
               <VStack spacing={8} alignItems="left" pb={32} w="100%">
                 <HStack
                   spacing={2}
@@ -519,21 +546,21 @@ const handleOrder = async () => {
                   </VStack>
                 </HStack>
 
-                {/* <HStack
+                <HStack
                   spacing={2}
                   cursor="pointer"
-                  onClick={() => setDeliveryOption("pickup")}
+                  onClick={() => setDeliveryOption("express_pickup")}
                 >
                   <Circle
                     size="16px"
                     border="2px solid"
                     borderColor={
-                      deliveryOption === "pickup" ? "black" : "gray.300"
+                      deliveryOption === "express_pickup" ? "black" : "gray.300"
                     }
-                    bg={deliveryOption === "pickup" ? "black" : "white"}
+                    bg={deliveryOption === "express_pickup" ? "black" : "white"}
                     position="relative"
                   >
-                    {deliveryOption === "pickup" && (
+                    {deliveryOption === "express_pickup" && (
                       <Circle size="6px" bg="white" />
                     )}
                   </Circle>
@@ -541,18 +568,27 @@ const handleOrder = async () => {
                     <Text
                       fontWeight="bold"
                       fontSize="16px"
-                      color={deliveryOption === "pickup" ? "black" : "gray.500"}
+                      color={
+                        deliveryOption === "express_pickup"
+                          ? "black"
+                          : "gray.500"
+                      }
                     >
-                      Points
+                      Express Pickup
                     </Text>
                     <Text fontSize="12px" color="gray.500">
                       {translator(
-                        "Points can be redeemed starting from a minimum of 500 points.",
-                        "포인트는 최소 500점부터 사용하실 수 있습니다."
+                        <>
+                          <Text>Pickup available at DTLA Warehouse:</Text>
+                          <Text fontWeight="bold">
+                            additional $0.25 per pound.
+                          </Text>
+                        </>,
+                        "픽업은 DTLA 에서 가능합니다."
                       )}
                     </Text>
                   </VStack>
-                </HStack> */}
+                </HStack>
               </VStack>
 
               <VStack spacing={4} w="100%">
@@ -572,6 +608,51 @@ const handleOrder = async () => {
                     )}
                   </Text>
                 </Flex>
+                <Flex
+                  bg={COLORS.GRAY_LIGHT}
+                  py={4}
+                  pl={4}
+                  pr={6}
+                  align="flex-start"
+                  gap={4}
+                >
+                  <CircleCheck size={16} />
+                  <Text fontSize="12px" color="gray.500" lineHeight="1.2">
+                    We will confirm the invoice, pickup date, and time, and
+                    notify you via email.
+                  </Text>
+                </Flex>
+                <Flex
+                  bg={COLORS.GRAY_LIGHT}
+                  py={4}
+                  pl={4}
+                  pr={6}
+                  align="flex-start"
+                  gap={4}
+                >
+                  <CircleCheck size={12} />
+                  <VStack textAlign={"left"} spacing={1} align="flex-start">
+                    <Text fontSize="12px" color="gray.500" lineHeight="1.2">
+                      CUT OFF TIME
+                    </Text>
+                    <Box>
+                      <Text fontSize="11px" color="gray.500" lineHeight="1.2">
+                        Orders placed before 2:30 PM:
+                        <br />
+                        Confirmation email will be sent within 1–2 business
+                        days.
+                      </Text>
+                    </Box>
+                    <Text fontSize="11px" color="gray.500" lineHeight="1.2">
+                      Orders placed after 2:30 PM: <br />
+                      Confirmation email will be sent within 1–3 business days.
+                    </Text>
+                    <Text fontSize="11px" color="gray.500" lineHeight="1.2">
+                      Orders placed on Friday: <br />
+                      Processing may take 1–3 days including the weekend.
+                    </Text>
+                  </VStack>
+                </Flex>
 
                 <VStack
                   spacing={3}
@@ -584,6 +665,69 @@ const handleOrder = async () => {
                   <Text fontSize="md" fontWeight="bold" alignSelf="flex-start">
                     Order Summary
                   </Text>
+
+                  <Box
+                    bg="orange.50"
+                    p={3}
+                    borderRadius="md"
+                    border="1px"
+                    borderColor="orange.200"
+                    w="100%"
+                  >
+                    <HStack spacing={2} mb={1}>
+                      <WarningIcon color="orange.800" boxSize={3} />
+                      <Text
+                        fontSize="xs"
+                        color="orange.800"
+                        fontWeight="semibold"
+                      >
+                        PRICING DISCLAIMER
+                      </Text>
+                    </HStack>
+                    <Text fontSize="xs" color="orange.700" lineHeight="1.3">
+                      Prices shown are estimates only. Final pricing will be
+                      confirmed in your invoice after order processing. Actual
+                      prices may vary based on market conditions and
+                      availability.
+                    </Text>
+                  </Box>
+                  <VStack spacing={3} w="100%">
+                    {cartItems.map((item) => {
+                      const unitPrice =
+                        parseFloat(item.discounted_price) ||
+                        parseFloat(item.price) ||
+                        0;
+                      const quantity = parseInt(item.quantity) || 0;
+                      const lineTotal = unitPrice * quantity;
+
+                      return (
+                        <HStack key={item.id} justify="space-between" w="100%">
+                          <VStack align="start" spacing={0}>
+                            <Text fontWeight="medium">{item.name}</Text>
+                            <Text fontSize="xs" color="gray.600">
+                              ${unitPrice.toFixed(2)}
+                              {specs[item.spec]} x Qty: {quantity}
+                            </Text>
+                          </VStack>
+                          <Text fontWeight="bold">${lineTotal.toFixed(2)}</Text>
+                        </HStack>
+                      );
+                    })}
+
+                    <Divider />
+                  </VStack>
+
+                  {deliveryOption === "express_pickup" && (
+                    <HStack justify="space-between" w="100%">
+                      <Text fontSize="sm" color="gray.600">
+                        Express Pickup Fee ({calculateTotalWeight().toFixed(1)}{" "}
+                        lbs × $0.25):
+                      </Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        ${expressPickupFee.toFixed(2)}
+                      </Text>
+                    </HStack>
+                  )}
 
                   {deliveryOption === "delivery" && (
                     <HStack justify="space-between" w="100%">
