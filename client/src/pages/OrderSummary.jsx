@@ -104,10 +104,15 @@ const OrderPayment = ({
               </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall">
                 <Text as="span" fontWeight="bold">
+                  Delivery:
+                </Text>{" "}
+                Delivery is not available at this time.
+              </Text>
+              <Text fontSize="xs" color="gray.700" lineHeight="tall">
+                <Text as="span" fontWeight="bold">
                   Pickup:
                 </Text>{" "}
-                20% prepayment based on estimated total, balance due at pickup
-                based on final invoice pricing.
+                30% prepayment, balance due at pickup.
               </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall" mt={2}>
                 Final pricing will be confirmed via invoice after order
@@ -115,16 +120,23 @@ const OrderPayment = ({
                 availability, and weight verification.
               </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall" mt={2}>
-                Pay the balance in cash at pickup and get a up to 5% discount.
+                Pay the balance in cash at pickup and get a discount.
               </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall">
                 Credit card payments include sales tax.
               </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall">
-                Accepted payment methods:
+                Cash & credit card (Excluding AMEX, Discovery) only.
+              </Text>
+            </Box>
+            <Box>
+              <Text fontSize="sm" fontWeight="bold" color="black" mb={1}>
+                Deposit
               </Text>
               <Text fontSize="xs" color="gray.700" lineHeight="tall">
-                Cash & credit card only.
+                To confirm your reservation, a deposit payment is required in
+                advance. Please note that deposits are non-refundable. This
+                policy is in place to prevent no-shows.
               </Text>
             </Box>
 
@@ -329,10 +341,12 @@ const OrderSummaryPage = () => {
 
   const formatOrderDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    
+    return localDate.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
-      day: "numeric",
+      day: "numeric"
     });
   };
 
@@ -837,7 +851,21 @@ const OrderSummaryPage = () => {
                 </HStack>
               </VStack>
 
-              <Box p={4} w="100%">
+              <Box px={4} w="100%">
+                <HStack align="flex-start" spacing={3}>
+                  <Box mt={1} flexShrink={0}>
+                    <CircleCheck size={16} />
+                  </Box>
+                  <Text fontSize="sm" color="gray.700" lineHeight="1.4">
+                    {translator(
+                      "In light of current market challenges, including cattle shortages, facility pressures, and U.S. tariffs, certain items have already incurred price increases without prior notice. Additional adjustments may take effect  immediately and vary by customer. Thank you for your understanding and continued support.",
+                      "현재 소 사육 부족, 시설 운영 압박, 트럼프 대통령 하의 미국 관세 등 시장 상황을 고려할 때, 일부 품목은 사전 통보 없이 이미 가격이 인상되었습니다. 추가 가격 조정은 즉시 시행될 수 있으며, 고객별로 다를 수 있습니다. 이해와 지속적인 성원에 감사드립니다."
+                    )}
+                  </Text>
+                </HStack>
+              </Box>
+
+              <Box px={4} w="100%">
                 <HStack align="flex-start" spacing={3}>
                   <Box mt={1} flexShrink={0}>
                     <CircleCheck size={16} />
@@ -859,6 +887,8 @@ const OrderSummaryPage = () => {
                   </VStack>
                 </HStack>
               </Box>
+
+              
 
               <VStack spacing={4} w="100%" mt={24}>
                 <Box p={4} borderRadius="md" textAlign="center" w="100%">

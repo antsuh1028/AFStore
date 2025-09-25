@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
+
+//TODO: AWS S3 FILE UPLOAD UPON SUBMISSION
 import {
   Box,
   Flex,
@@ -479,7 +481,7 @@ const ContactPage = () => {
                   </HStack>
                   <FormControl>
                     <FormLabel fontWeight="semibold" fontSize="sm">
-                      Business License
+                      Wholesale License (Seller’s Permit)
                     </FormLabel>
                     <Input
                       type="text"
@@ -519,7 +521,7 @@ const ContactPage = () => {
                   </FormControl>
                   <FormControl>
                     <FormLabel fontWeight="semibold" fontSize="sm">
-                      California Resale Certificate
+                      California Resale Certificate (CDTFA-230)
                     </FormLabel>
                     <Input
                       type="text"

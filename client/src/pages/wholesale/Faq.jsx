@@ -114,7 +114,7 @@ const FAQPage = () => {
             </Text> */}
             <Text fontSize="sm" mt={4} color="gray.700">
               {translator(
-                "We do not offer delivery services at this time. Customers are welcome to pick up their orders directly from our facility.",
+                "We do not offer delivery services at this time. Customers are welcome to pick up their orders directly from our facility. We will update you as soon as possible.",
                 "현재 배송 서비스는 제공하지 않습니다. 고객님께서는 당사 시설에서 직접 주문을 픽업하실 수 있습니다."
               )}
             </Text>
@@ -124,7 +124,7 @@ const FAQPage = () => {
             </Box>
 
             {/* Always show these sections in English, with Korean translations when Korean is selected */}
-            <Box my={8}>
+            {/* <Box my={8}>
               <Text
                 fontSize="sm"
                 fontWeight="semibold"
@@ -156,7 +156,34 @@ const FAQPage = () => {
                   "운송 중 적정 온도 유지를 위해 모든 합리적 조치를 취합니다. 온도 관리 실패가 의심될 경우, 배송 후 24시간 이내에 시간 스탬프가 있는 사진과 함께 클레임을 접수해 주셔야 합니다."
                 )}
               </Text>
-            </Box>
+            </Box> */}
+          </Box>
+
+          {/* Q. Express Pick up Order / 빠른 픽업 주문 */}
+          <Box>
+            <Heading size="md" my={6}>
+              <Text as="span" color={COLORS.ACCENT}>
+                Q.
+              </Text>{" "}
+              {translator("Express Pick up Order", "빠른 픽업 주문")}
+            </Heading>
+
+            <Text  color="gray.700" fontSize="sm">
+              {translator("Need it fast?", "빠른 배송이 필요하신가요?")}
+            </Text>
+            <Text color="gray.700" fontSize="sm">
+              {translator(
+                "Our priority service processes your order quicker, with an additional $0.25 per pound.",
+                "우선 처리 서비스(Priority Service)를 이용하면 주문이 더 빠르게 처리되며, 파운드당 추가 $0.25가 부과됩니다."
+              )}
+              
+            </Text>
+
+            <Text  color="gray.700" fontSize="sm" mt={4}>
+              {translator("In case of urgency, please contact us via [Contact Us].", "긴급한 경우, [Contact Us]를 통해 문의해 주세요.")}
+            </Text>
+
+            
           </Box>
 
           {/* Q. Refund / 환불 정책 */}
@@ -308,16 +335,13 @@ const FAQPage = () => {
             <Heading size="md" my={6}>
               <Text as="span" color={COLORS.ACCENT}>
                 Q.
-              </Text>{" "}{translator(
-                "Allergen",
-                "알레르기 유발물질"
-              )}
-              
+              </Text>{" "}
+              {translator("Allergen", "알레르기 유발물질")}
             </Heading>
 
             <Text fontSize="sm" color="gray.700">
               {translator(
-                "Our products are processed in facilities that may also handle soy, wheat, sesame, fish. It is the customer's responsibility to communicate potential allergen risks to their end consumers.",
+                "Our products are processed in facilities that may also handle soy, wheat, sesame, fish. It is the customer’s responsibility to communicate potential allergen risks to their end consumers.",
                 "당사 제품은 대두, 밀, 참깨, 생선, 견과류 등을 취급하는 시설에서 가공됩니다. "
               )}
             </Text>

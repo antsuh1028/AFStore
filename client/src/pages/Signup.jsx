@@ -769,7 +769,7 @@ const Signup = () => {
                   setFileName={setGovIdFileName}
                   setFile={setGovIdFile}
                   helpText={translator(
-                    "*Please attach the government ID (PDF, JPG, PNG only, max 10MB).",
+                    "*Please attach the government issued ID (PDF, JPG, PNG only, max 10MB).",
                     "*도매 라이선스를 첨부해 주세요."
                   )}
                   error={govIdFileError}

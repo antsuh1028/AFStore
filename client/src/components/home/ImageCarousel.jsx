@@ -164,7 +164,7 @@ const ImageCarousel = () => {
         </Box>
 
         {/* Navigation Arrows */}
-        <IconButton
+        {/* <IconButton
           icon={<ChevronLeftIcon />}
           position="absolute"
           left="10px"
@@ -178,9 +178,9 @@ const ImageCarousel = () => {
           onClick={goToPrevious}
           aria-label="Previous image"
           disabled={isAnimating}
-        />
+        /> */}
 
-        <IconButton
+        {/* <IconButton
           icon={<ChevronRightIcon />}
           position="absolute"
           right="10px"
@@ -194,7 +194,7 @@ const ImageCarousel = () => {
           onClick={goToNext}
           aria-label="Next image"
           disabled={isAnimating}
-        />
+        /> */}
 
         {/* Dots Indicator */}
         <Box
@@ -214,6 +214,7 @@ const ImageCarousel = () => {
               cursor="pointer"
               onClick={() => handleDotClick(index)}
               transition="background 0.3s"
+              borderRadius="full"
             />
           ))}
         </Box>
