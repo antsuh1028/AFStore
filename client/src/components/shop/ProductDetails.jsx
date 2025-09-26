@@ -52,6 +52,7 @@ import { COLORS, API_CONFIG } from "../../constants";
 import Navbar from "../Navbar";
 import { useLanguage } from "../../hooks/LanguageContext";
 import { encodeUserId } from "../../utils/urlEncryption";
+import { ViewContainer } from "../ViewContainer";
 
 const ProductImageCarousel = ({ productName, productStyle, productImages }) => {
   const [imagePage, setImagePage] = useState(1);
@@ -607,15 +608,7 @@ const ProductDetailPage = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-        minHeight="100vh"
-      >
+      <ViewContainer contentRef={contentRef}>
         <Navbar onOpen={onOpen} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
@@ -959,7 +952,7 @@ const ProductDetailPage = () => {
         </VStack>
 
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

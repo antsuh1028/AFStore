@@ -33,6 +33,7 @@ import Navbar from "../components/Navbar";
 import { COLORS, API_CONFIG } from "../constants";
 import { useLanguage } from "../hooks/LanguageContext";
 import { translator } from "../utils/translator";
+import { ViewContainer } from "../components/ViewContainer";
 
 const ContactPage = () => {
   const form = useRef();
@@ -287,14 +288,7 @@ const ContactPage = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-      >
+      <ViewContainer contentRef={contentRef}>
         <Navbar onOpen={onOpen} home={true} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
@@ -621,7 +615,7 @@ const ContactPage = () => {
           </form>
         </Box>
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

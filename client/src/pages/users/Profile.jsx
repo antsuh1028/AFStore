@@ -37,6 +37,7 @@ import { API_CONFIG, COLORS } from "../../constants";
 import { useLanguage } from "../../hooks/LanguageContext";
 import { decodeUserId } from "../../utils/urlEncryption";
 import { CircleCheck } from "lucide-react";
+import { ViewContainer } from "../../components/ViewContainer";
 
 const UserProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -288,15 +289,7 @@ const UserProfile = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-        minH="100vh"
-      >
+      <ViewContainer contentRef={contentRef}>
         <Flex p={4} justify="space-between" align="center">
           <IconButton
             aria-label="Back"
@@ -680,7 +673,7 @@ const UserProfile = () => {
           )}
         </Box>
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

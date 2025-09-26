@@ -24,6 +24,7 @@ import { useDisclosure } from "@chakra-ui/react";
 import NavDrawer from "../components/NavDrawer";
 
 import { COLORS } from "../constants";
+import { ViewContainer } from "../components/ViewContainer";
 
 const CartItem = ({
   id,
@@ -185,16 +186,7 @@ const CartPage = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        ml={{ base: 0, lg: "40%" }}
-        minHeight="100vh"
-        boxShadow="xl"
-        position="relative"
-      >
+      <ViewContainer contentRef={contentRef}>
         
         <Navbar onOpen={onOpen} home={true} />
 
@@ -284,7 +276,7 @@ const CartPage = () => {
             </Button>
           </Box>
         )}
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

@@ -24,8 +24,7 @@ import { useAuthContext } from "../hooks/useAuth";
 import { API_CONFIG, COLORS } from "../constants";
 import { handleApiResponse } from "../utils/apiHelpers";
 import { encodeUserId } from "../utils/urlEncryption";
-
-
+import { ViewContainer } from "../components/ViewContainer";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -75,12 +74,12 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      
+
       const data = await handleApiResponse(res);
-      
+
       if (res.ok) {
         const result = await login(data.token);
-        
+
         if (result.success) {
           toast({
             title: "Login successful.",
@@ -89,7 +88,7 @@ const Login = () => {
             duration: 3000,
             isClosable: true,
           });
-          
+
           navigate(result.user.id ? `/profile/user/${encryptedUserId}` : "/");
         } else {
           toast({
@@ -102,7 +101,10 @@ const Login = () => {
         }
       } else {
         // Handle disabled user case (403 status)
-        if (res.status === 403 && data.message === "Your signup request is still pending") {
+        if (
+          res.status === 403 &&
+          data.message === "Your signup request is still pending"
+        ) {
           toast({
             title: "Account Pending",
             description: "Your signup request is still pending",
@@ -150,19 +152,8 @@ const Login = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-        minH="100vh"
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-      >
-        <Box>
+      <ViewContainer contentRef={contentRef}>
+        <Box minH="100vh" display="flex" flexDirection="column" >
           <Flex p={4} justify="space-between" align="center">
             <IconButton
               aria-label="Back"
@@ -179,103 +170,107 @@ const Login = () => {
               onClick={onOpen}
             />
           </Flex>
-        </Box>
 
-        <Box
-          px={6}
-          py={4}
-          flex="1"
-          display="flex"
-          flexDirection="column"
-          justifyContent="flex-start"
-        >
-          <Heading mb={50} fontWeight="bold" fontSize="3xl" textAlign="center">
-            Log in
-          </Heading>
-
-          <form onSubmit={handleLogin}>
-            <VStack spacing={4} align="stretch">
-              <FormControl isRequired isInvalid={emailError !== ""}>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  type="email"
-                  placeholder="Enter Email..."
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    validateEmail(e.target.value);
-                  }}
-                  {...inputStyle}
-                />
-                {emailError && (
-                  <FormErrorMessage>{emailError}</FormErrorMessage>
-                )}
-              </FormControl>
-
-              <FormControl isRequired>
-                <FormLabel>Password</FormLabel>
-                <Input
-                  type="password"
-                  placeholder="Enter Password..."
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  {...inputStyle}
-                />
-              </FormControl>
-
-              <Text
-                mt={-3}
-                ml={4}
-                fontSize="sm"
-                color="gray.600"
-                textDecoration="underline"
-                cursor="pointer"
-                _hover={{ color: COLORS.SECONDARY }}
-                onClick={() => navigate("/forgot-password")}
+          <Flex
+            flex="1"
+            direction="column"
+            justify="center"
+            px={6}
+            mt={-12}
+          >
+            <Box maxW="400px" w="100%" mx="auto" p={4}>
+              <Heading
+                mb={8}
+                fontWeight="bold"
+                fontSize="3xl"
+                textAlign="center"
               >
-                Forgot your password?
-              </Text>
+                Log in
+              </Heading>
 
-              <Box
-                display="flex"
-                justifyContent="center"
-                width="100%"
-                pt={4}
-                mb={-4}
-              >
-                <Button
-                  type="submit"
-                  bg={COLORS.PRIMARY}
-                  color="white"
-                  isLoading={loading}
-                  borderRadius="full"
-                  size="lg"
-                  width="100%"
-                  _hover={{ bg: COLORS.SECONDARY }}
-                  loadingText="Logging in..."
-                >
-                  LOG IN
-                </Button>
-              </Box>
-              <Box pt={4} textAlign="center">
-                <Text
-                  fontSize="sm"
-                  color={COLORS.PRIMARY}
-                  fontWeight="bold"
-                  textDecoration="underline"
-                  cursor="pointer"
-                  _hover={{ color: COLORS.SECONDARY }}
-                  onClick={() => navigate("/signup/agreements")}
-                >
-                  Create Account
-                </Text>
-              </Box>
-            </VStack>
-          </form>
+              <form onSubmit={handleLogin}>
+                <VStack spacing={4} align="stretch">
+                  <FormControl isRequired isInvalid={emailError !== ""}>
+                    <FormLabel>Email</FormLabel>
+                    <Input
+                      type="email"
+                      placeholder="Enter Email..."
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        validateEmail(e.target.value);
+                      }}
+                      {...inputStyle}
+                    />
+                    {emailError && (
+                      <FormErrorMessage>{emailError}</FormErrorMessage>
+                    )}
+                  </FormControl>
 
-          <Box mt={2}></Box>
+                  <FormControl isRequired>
+                    <FormLabel>Password</FormLabel>
+                    <Input
+                      type="password"
+                      placeholder="Enter Password..."
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      {...inputStyle}
+                    />
+                  </FormControl>
+
+                  <Text
+                    mt={-3}
+                    ml={4}
+                    fontSize="sm"
+                    color="gray.600"
+                    textDecoration="underline"
+                    cursor="pointer"
+                    _hover={{ color: COLORS.SECONDARY }}
+                    onClick={() => navigate("/forgot-password")}
+                  >
+                    Forgot your password?
+                  </Text>
+
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    width="100%"
+                    pt={4}
+                    mb={-4}
+                  >
+                    <Button
+                      type="submit"
+                      bg={COLORS.PRIMARY}
+                      color="white"
+                      isLoading={loading}
+                      borderRadius="full"
+                      size="lg"
+                      width="100%"
+                      _hover={{ bg: COLORS.SECONDARY }}
+                      loadingText="Logging in..."
+                    >
+                      LOG IN
+                    </Button>
+                  </Box>
+                  <Box pt={4} textAlign="center">
+                    <Text
+                      fontSize="sm"
+                      color={COLORS.PRIMARY}
+                      fontWeight="bold"
+                      textDecoration="underline"
+                      cursor="pointer"
+                      _hover={{ color: COLORS.SECONDARY }}
+                      onClick={() => navigate("/signup/agreements")}
+                    >
+                      Create Account
+                    </Text>
+                  </Box>
+                </VStack>
+              </form>
+            </Box>
+          </Flex>
         </Box>
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

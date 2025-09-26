@@ -28,6 +28,7 @@ import { API_CONFIG, COLORS } from "../constants";
 import { getCart, removeFromCart } from "../utils/cartActions";
 import { useLanguage } from "../hooks/LanguageContext";
 import { WarningIcon } from "@chakra-ui/icons";
+import { ViewContainer } from "../components/ViewContainer";
 
 const StyledCheckbox = ({ isChecked, onChange, children }) => {
   return (
@@ -489,15 +490,7 @@ const OrderSummaryPage = () => {
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
 
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-        minH="100vh"
-      >
+      <ViewContainer contentRef={contentRef}>
         <Navbar onOpen={onOpen} />
         <Heading
           textAlign="center"
@@ -923,7 +916,7 @@ const OrderSummaryPage = () => {
             </VStack>
           )}
         </Box>
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

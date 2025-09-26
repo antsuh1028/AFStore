@@ -20,7 +20,7 @@ import {
   ErrorMessage,
 } from "../../../components/shop/ProductGrid";
 import { API_CONFIG } from "../../../constants";
-
+import { ViewContainer } from "../../../components/ViewContainer";
 const MarinatedPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
@@ -135,16 +135,7 @@ const MarinatedPage = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-        minHeight="100vh"
-        position="relative"
-      >
+      <ViewContainer contentRef={contentRef}>
         <Navbar onOpen={onOpen} home={true} />
 
         <VStack spacing={0}>
@@ -160,7 +151,7 @@ const MarinatedPage = () => {
         </VStack>
 
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

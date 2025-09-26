@@ -21,6 +21,7 @@ import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { useLanguage } from "../../hooks/LanguageContext";
+import { ViewContainer } from "../../components/ViewContainer";
 
 const PackingPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -182,14 +183,7 @@ const PackingPage = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-      >
+      <ViewContainer contentRef={contentRef}>
         <Navbar onOpen={onOpen} home={true} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
@@ -301,7 +295,7 @@ const PackingPage = () => {
         </VStack>
 
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

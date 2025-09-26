@@ -18,6 +18,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { API_CONFIG } from "../constants";
 import Sidebar from "../components/SideBar";
 import Footer from "../components/Footer";
+import { ViewContainer } from "../components/ViewContainer";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -73,11 +74,13 @@ const ResetPassword = () => {
           body: JSON.stringify({ email, token, newPassword }),
         }
       );
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
-        setSuccess("Password reset successfully! You can now log in with your new password.");
+        setSuccess(
+          "Password reset successfully! You can now log in with your new password."
+        );
         setTimeout(() => {
           navigate("/login");
         }, 3000);
@@ -93,16 +96,7 @@ const ResetPassword = () => {
 
   return (
     <Sidebar>
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        ml={{ base: 0, lg: "40%" }}
-        minH="100vh"
-        display="flex"
-        flexDirection="column"
-      >
+      <ViewContainer contentRef={contentRef}>
         <Box
           flex="1"
           display="flex"
@@ -224,7 +218,7 @@ const ResetPassword = () => {
         <Box pb={8}>
           <Footer />
         </Box>
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

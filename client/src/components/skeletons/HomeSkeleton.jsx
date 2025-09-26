@@ -13,19 +13,13 @@ import {
 import Sidebar from '../SideBar';
 import NavDrawer from '../NavDrawer';
 import Footer from '../Footer';
+import { ViewContainer } from '../ViewContainer';
 
 const HomeSkeleton = ({ isOpen, onClose, contentRef }) => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-      >
+      <ViewContainer contentRef={contentRef}>
         {/* Header Skeleton */}
         <Flex p={4} justify="space-between" align="center">
           <Skeleton height="40px" width="40%" />
@@ -120,7 +114,7 @@ const HomeSkeleton = ({ isOpen, onClose, contentRef }) => {
         </VStack>
 
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

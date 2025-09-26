@@ -20,6 +20,7 @@ import {
   ErrorMessage,
 } from "../../../components/shop/ProductGrid";
 import { API_CONFIG } from "../../../constants";
+import { ViewContainer } from "../../../components/ViewContainer";
 
 const UnprocessedPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -101,16 +102,7 @@ const UnprocessedPage = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-        minHeight="100vh"
-        position="relative"
-      >
+      <ViewContainer contentRef={contentRef}>
         <Navbar onOpen={onOpen} home={true} />
         <VStack spacing={0}>
           <Box fontSize="2xl" fontWeight="semibold" mb={4}>
@@ -125,7 +117,7 @@ const UnprocessedPage = () => {
         </VStack>
 
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

@@ -27,6 +27,7 @@ import { API_CONFIG, COLORS } from "../constants";
 import { uploadMultipleSignupDocuments } from "../utils/fileUpload";
 import { useLanguage } from "../hooks/LanguageContext";
 import { translator } from "../utils/translator";
+import { ViewContainer } from "../components/ViewContainer";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -461,14 +462,7 @@ const Signup = () => {
   return (
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-      >
+      <ViewContainer contentRef={contentRef}>
         <Navbar onOpen={onOpen} />
 
         <Box py={3} px={4} display="flex" justifyContent="center">
@@ -848,7 +842,7 @@ const Signup = () => {
 
           <Footer />
         </Box>
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

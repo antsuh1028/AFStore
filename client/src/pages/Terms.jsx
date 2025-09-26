@@ -18,6 +18,7 @@ import Footer from "../components/Footer";
 import Sidebar from "../components/SideBar";
 import Navbar from "../components/Navbar";
 import { COLORS } from "../constants";
+import { ViewContainer } from "../components/ViewContainer";
 
 const TermsAndPoliciesPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -28,14 +29,7 @@ const TermsAndPoliciesPage = () => {
     <Sidebar>
       <NavDrawer isOpen={isOpen} onClose={onClose} containerRef={contentRef} />
 
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-      >
+      <ViewContainer contentRef={contentRef}>
         <Navbar onOpen={onOpen} home={true} />
 
         {/* Header */}
@@ -622,7 +616,7 @@ const TermsAndPoliciesPage = () => {
         </Box>
 
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

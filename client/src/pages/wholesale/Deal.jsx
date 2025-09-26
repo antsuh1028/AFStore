@@ -18,6 +18,7 @@ import Sidebar from "../../components/SideBar";
 import NavDrawer from "../../components/NavDrawer";
 import Navbar from "../../components/Navbar";
 import { translator } from "../../utils/translator";
+import { ViewContainer } from "../../components/ViewContainer";
 
 const DealPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -25,14 +26,7 @@ const DealPage = () => {
 
   return (
     <Sidebar>
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        boxShadow="xl"
-        ml={{ base: 0, lg: "40%" }}
-      >
+      <ViewContainer contentRef={contentRef}>
         <NavDrawer
           isOpen={isOpen}
           onClose={onClose}
@@ -166,7 +160,7 @@ const DealPage = () => {
         </Box>
 
         <Footer />
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };

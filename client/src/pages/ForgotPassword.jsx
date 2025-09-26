@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { API_CONFIG } from "../constants";
 import Sidebar from "../components/SideBar";
 import Footer from "../components/Footer";
+import { ViewContainer } from "../components/ViewContainer";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -89,17 +90,7 @@ const ForgotPassword = () => {
 
   return (
     <Sidebar>
-      <Container
-        ref={contentRef}
-        maxW={{ base: "100%", lg: "30%" }}
-        p={0}
-        bg="white"
-        // boxShadow="lg"
-        ml={{ base: 0, lg: "40%" }}
-        minH="100vh"
-        display="flex"
-        flexDirection="column"
-      >
+      <ViewContainer contentRef={contentRef}>
         <Box
           flex="1"
           display="flex"
@@ -200,7 +191,7 @@ const ForgotPassword = () => {
         <Box pb={8}>
           <Footer />
         </Box>
-      </Container>
+      </ViewContainer>
     </Sidebar>
   );
 };
