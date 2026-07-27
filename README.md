@@ -21,7 +21,7 @@ server/utils/    # Helper functions
 
 ## Status
 
-**In production** with active restaurant clients. Stable and maintained.
+Shipped to production and used by restaurant clients. Currently paused due to internal operational changes at the company.
 
 ## Getting Started
 
