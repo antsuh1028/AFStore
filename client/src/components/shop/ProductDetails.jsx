@@ -36,10 +36,11 @@ import {
   ChevronUp,
   ShoppingCart,
   InfoIcon,
+  Package,
+  Thermometer,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
-import { FiPackage, FiThermometer, FiTruck } from "react-icons/fi";
 
 import NavDrawer from "../NavDrawer";
 import Sidebar from "../SideBar";
@@ -810,7 +811,7 @@ const ProductDetailPage = () => {
 
             <VStack align="flex-start" px={8} spacing={3}>
               <HStack>
-                <FiThermometer />
+                <Thermometer />
                 <Text fontSize="sm">
                   {t("Keep frozen", "냉동 보관해 주세요.")}
                 </Text>
@@ -825,7 +826,7 @@ const ProductDetailPage = () => {
                 </Text>
               </HStack>
               <HStack>
-                <FiPackage />
+                <Package />
                 <Text fontSize="sm">
                   {t(
                     "Pack Date: See package label for details",
