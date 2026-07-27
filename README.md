@@ -1,5 +1,7 @@
 # AFStore
 
+**Live at [afwholesales.com](https://afwholesales.com)**
+
 A self-serve B2B wholesale ordering portal for AdamsFoods, replacing manual phone and email order intake. Verified restaurant and food-business customers browse the catalog, place orders, and track shipping addresses and order history from one account.
 
 Access is gated on business verification — customers upload a business license and California resale certificate at signup, which staff review before the account is approved.
