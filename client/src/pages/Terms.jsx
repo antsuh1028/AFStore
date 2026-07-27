@@ -11,7 +11,6 @@ import {
   ListItem,
   Divider,
 } from "@chakra-ui/react";
-import { MdCircle } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import NavDrawer from "../components/NavDrawer";
 import Footer from "../components/Footer";
