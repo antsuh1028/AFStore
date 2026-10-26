@@ -1,6 +1,6 @@
 # AFStore
 
-**Live at [afwholesales.com](https://afwholesales.com)**
+**Live at [adamsfoodswholesale.com](https://adamsfoodswholesale.com)**
 
 A self-serve B2B wholesale ordering portal for AdamsFoods, replacing manual phone and email order intake. Verified restaurant and food-business customers browse the catalog, place orders, and track shipping addresses and order history from one account.
 

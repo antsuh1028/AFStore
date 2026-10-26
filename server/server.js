@@ -23,7 +23,8 @@ app.use(cors({
     'https://afwholesales.com',
     'https://adamswholesales.com',
     'https://adamsfoodswholesale.com',
-    'https://www.afwholesales.com'
+    'https://www.afwholesales.com',
+    'https://www.adamsfoodswholesale.com'
   ],
   credentials: true
 }));
